@@ -1,5 +1,7 @@
 # Examples for the Prolog predicate `maplist/2` (as run with SWI-Prolog)
 
+(This page can also be accessed as https://bit.ly/2wirMli)
+
 A few examples for the predicate [`maplist/2`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/2) 
 from [library(apply)](https://eu.swi-prolog.org/pldoc/man?section=apply) as run with SWI-Prolog.
 
