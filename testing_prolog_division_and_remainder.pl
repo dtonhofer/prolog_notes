@@ -1,5 +1,7 @@
 % Run in SWI Prolog 8.1
 
+% The github page for this code is at http://bit.ly/38wQAmS_prolog
+
 % Docs:
 % Predicate "current_prolog_flag": https://eu.swi-prolog.org/pldoc/doc_for?object=current_prolog_flag/2
 % Library "yall":                  https://eu.swi-prolog.org/pldoc/man?section=yall
