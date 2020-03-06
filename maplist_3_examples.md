@@ -1,6 +1,6 @@
 # Examples for the Prolog predicate `maplist/3` (as run with SWI-Prolog)
 
-(This page can also be accessed as: https://bit.ly/39g42wB)
+(This page can also be accessed as: http://bit.ly/2In2NQj_prolog)
 
 A few examples for the predicate [`maplist/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/3) 
 from [library(apply)](https://eu.swi-prolog.org/pldoc/man?section=apply) as run with SWI-Prolog.
