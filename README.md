@@ -15,3 +15,7 @@ Some notes taken while working on Prolog
    -  Link to page aliased to http://bit.ly/38wQAmS_prolog
 - [prolog_output_formatting](prolog_output_formatting.md): Relevant predicates for generating output in Prolog (by order of importance, `format/2` and all that jazz)
    -  Link to page aliased to http://bit.ly/2PSrqJ8_prolog
+- [SWI Prolog strings modes](swi_prolog_string_modes.md: A table inspection the string modes of SWI Prolog.
+   -  Link to page aliased to http://bit.ly/2TtLV0H_prolog
+   
+   
