@@ -7,6 +7,8 @@ _Work in progress_
 - Some predicates are SWI-Prolog specific.
 - Most of the text comes directly from the [SWI Prolog manual](https://www.swi-prolog.org/pldoc/doc_for?object=manual).
 
+# TL;DR
+
 ## 1. Formatted write: "format family"
 
 See chapter "[4.32.2 Format](https://eu.swi-prolog.org/pldoc/man?section=format-predicates)" of the SWI-Prolog documentation.
@@ -20,8 +22,8 @@ We read:
 > The format family of predicates is the most versatile and portable way to produce textual output
 > (unfortunately not covered by any standard.)
 
-> The "format family" was defined by Quintus Prolog and currently available in many Prolog systems,
-> although the details vary.
+> The "format family" was defined by [Quintus Prolog](https://quintus.sics.se/) and currently available 
+> in many Prolog systems, although the details vary.
 
 ### Predicates
 
@@ -42,7 +44,7 @@ This family supports in-text
 They are introduced with the tilde character: `~n`, `~w` etc. 
 
 _(For C-library `printf` and friends and Prolog's "writef family", placeholders are introduced
-with the `%` character. Why and where did that particular change in conventions arise?)_
+with the `%` character. Why and where did that particular change in convention from using `%` to using `~` arise?)_
 
 Placeholders of the C-library `printf` are more extensive and feature-rich than those of `format/x`, in particular for formatting of numeric data. See these:
 
@@ -59,26 +61,27 @@ For a complete list of placeholders, see the description of [`format/2`](https:/
 | `~` | Output the tilde itself.<br>`format("~~").` ▷ `~` |
 | `a` | Output the next argument, which must be convertible to atom.<br>Strings and numerics are ok, a compound term causes an exception to be raised.<br>`format("~a",[a]).` ▷ `a`<br>`format("~a",["s"]).` ▷ `s` |
 | `c` | Interpret the next argument as a character code and add it to the output. This argument must be a valid Unicode character code. Note that the actually emitted bytes are defined by the character encoding of the output stream and an exception may be raised if the output stream is not capable of representing the requested Unicode character. See [section 2.20.1](https://eu.swi-prolog.org/pldoc/man?section=encoding) for details. | `format("~c~c",[2020,0x2020]).` ▷ `ߤ†` |
-| `d` | Output next argument as a decimal number. *It should be an integer*. If a numeric argument is specified, a dot is inserted "argument positions" from the right (useful for doing fixed point arithmetic with integers, such as handling amounts of money) (**Nah, not really**). The colon modifier (e.g., `~:d`) causes the number to be printed according to the locale of the output stream. |
+| `d` | Output next argument as a decimal number. *It should be an integer*. If a numeric argument is specified, a dot is inserted "argument positions" from the right (useful for doing fixed point arithmetic with integers, such as handling amounts of money) (**Nah, not really**, for money a fixed-point decimal notation is needed. Prolog doesn't have that, but the non-standard [rational number atomic type](https://eu.swi-prolog.org/pldoc/man?section=syntax-rational-numbers) is a good fit). The colon modifier (e.g., `~:d`) causes the number to be printed according to the locale of the output stream. |
 
-(More to follow)
-
+(TODO: More to follow)
 
 ### Escape sequences
 
-Backslash escapes (commonly called "[escape sequences](https://en.wikipedia.org/wiki/Escape_sequences_in_C)") 
-are supported. These are not the escapes sequences of the "writef family" but the ones understood by the C-library
-`printf`. `format/x` likely calls the C library `printf` more or less directly, so one would expect this to be the case. However...
+C-style "backslash escapes" (commonly called "[escape sequences](https://en.wikipedia.org/wiki/Escape_sequences_in_C)") 
+are supported. These are not the escapes sequences of the "writef family" but the ones understood by the C-library's
+`printf` procedure. `format/x` likely calls the C library `printf` more or less directly, so one would expect this to be the case. However...
 
 #### What exactly performs the escaping?
 
 I'm not sure what the Prolog lexer does with the in-String escape sequences. Does `\uhhhh` in a String mean that:
+
 - the codepoint for that character appears the resulting String in the compiled code (as is done in Java) or that
 - the character sequence `\uhhhh` appears "as is" in the resulting String in the compiled code, to be interpreted by `format/2`? 
 
-There is ambiguity here, and for some it seems to be the former, so these "escape sequences" are a feature of the
-Prolog lexer, not `format/x`. Indeed, testing what happens with a String with escape sequences that is transformed
-into an atom:
+There is ambiguity here, and for some (all? most?) it seems to be the former, so these "escape sequences" are a
+feature of the Prolog lexer, not of `format/x`. 
+
+Let's test what happens with a String with escape sequences is transformed into an atom:
 
 ````
 % Test unicode
@@ -169,7 +172,7 @@ true.
 #### "Escape sequences in atoms"
 
 There is an additional page which explains the above in the context of atoms, as opposed to strings, but apparently 
-is valid for both cases (whichg wouldn't be surprising):
+is valid for both cases (which wouldn't be surprising):
 
 [2.17.1.3 Character Escape Syntax](https://eu.swi-prolog.org/pldoc/man?section=charescapes)
 
@@ -218,20 +221,22 @@ The "writef family" is not standardized nor mentioned in the Prolog ISO Standard
 
 We read:
 
-> The "writef family" is compatible with Edinburgh C-Prolog and should be considered **deprecated**.
+> The "writef family" is compatible with [Edinburgh C-Prolog](http://www.softwarepreservation.org/projects/prolog/edinburgh/) and should be considered **deprecated**.
 
-### Predicates
+### writef family predicates
 
 | Predicate | Description |
 | :-------- | :---------- |
 | [`writef/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=writef/1)   |  |  
 | [`writef/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=writef/2)   | (page contains details)  |
-| [`swritef/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=swritef/3) |  |
 | [`swritef/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=swritef/2) |  |
+| [`swritef/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=swritef/3) |  |
 
-### Escape sequences
+### writef family escape sequences
 
-As above, escape sequences are interpreted by the Prolog lexer first. The escape sequences appearing the string of `writef/2` are thus already interpreted when `writef/2` sees them, and they are those used by the C-library (except for \?). The escape sequences used in practice are thus exactly the same as for `format/x`. 
+As above, escape sequences are interpreted by the Prolog lexer first. Any escape sequences appearing in the string
+of `writef/2` have already been interpreted when `writef/2` sees them, and they are those used by the C-library
+(except for `\?`). The escape sequences used in practice are thus exactly the same as for `format/x`. 
 
 In particular, at that level, `\%` is an unknown escape sequence and leads to an error:
 
@@ -240,7 +245,7 @@ In particular, at that level, `\%` is an unknown escape sequence and leads to an
 ERROR: Syntax error: Unknown character escape in quoted atom or string: `\%'
 ````
 
-To drill through the Prolog lexer, one has to escape the backslash with a backslash. For example, for the newline:
+To drill through the Prolog lexer, one has to escape the backslash with a backslash:
 
 ````
 ?- writef(">\\%<").
@@ -260,9 +265,10 @@ true.
 Contrary to `format/x`, it does!
 
 So the escape sequences listed on the page of [writef/2](https://eu.swi-prolog.org/pldoc/doc_for?object=writef/2) 
-may well be meaningful. In practice, they won't be used.
+may well be meaningful. In practice, it doesn't look they will be used much (but suppose the string comes in over
+the network, not the terminal. Then they _will_ be used.)
 
-### Placeholders
+### writef family placeholders
 
 Placeholders are introduced with `%`, as is the C tradition.
 
@@ -270,7 +276,9 @@ For a list, see [writef/2](https://eu.swi-prolog.org/pldoc/doc_for?object=writef
 
 ## Printing messages
 
-...see [4.11.4 Printing messages](https://eu.swi-prolog.org/pldoc/man?section=printmsg)
+See [4.11.4 Printing messages](https://eu.swi-prolog.org/pldoc/man?section=printmsg).
+
+Anne Ogborn has a tutorial on [printing messages](http://www.pathwayslms.com/swipltuts/message/).
 
 Corresponds to a logging library like [SLF4J](http://www.slf4j.org/) + [logback](http://logback.qos.ch/) or
 [Apache log4j](https://logging.apache.org/log4j/2.x/) or
@@ -285,7 +293,7 @@ a message term in a human-readable format.
 
 The other predicates from this section allow the user to refine and extend the message system. A common usage
 of [`print_message/2`](https://eu.swi-prolog.org/pldoc/man?predicate=print_message/2) is to print error messages
-from exceptions.
+regarding exceptions.
 
 - [print_message/2](https://eu.swi-prolog.org/pldoc/doc_for?object=print_message/2)
 - [print_message_lines/3](https://eu.swi-prolog.org/pldoc/doc_for?object=print_message_lines/3)
@@ -314,18 +322,12 @@ In particular:
 > Libraries typically use `informational` and `warning`, while libraries should use exceptions for errors
 > (see [`throw/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=throw/1),
 > [`type_error/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=type_error/2), etc.).
-    
-## Character representation and Wide Character support
 
-...see [4.2 Character representation](https://eu.swi-prolog.org/pldoc/man?section=chars) and 
-[2.20 Wide character support](https://eu.swi-prolog.org/pldoc/man?section=widechars).
+### Package "log4p"
 
-In SWI-Prolog, character codes are *always* the Unicode equivalent of the encoding.
+Package [`log4p`](https://www.swi-prolog.org/pack/list?p=log4p) implements 
 
-That is, if [`get_code/1`](https://eu.swi-prolog.org/pldoc/man?predicate=get_code/1) reads from a stream encoded as KOI8-R (used for the Cyrillic alphabet), it returns
-the corresponding Unicode code points. Similarly, assembling or disassembling atoms using
-[`atom_codes/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=atom_codes/2) interprets
-the codes as Unicode points. See "[wide character encoding on streams](https://eu.swi-prolog.org/pldoc/man?section=encoding)" for details.
+> a simple logging library for Prolog, inspired by log4j.
 
 ## Term reading and writing
 
@@ -358,7 +360,9 @@ Notable predicates:
 | [`prompt/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=prompt/2) | Set prompt associated with `read/1` and its derivatives. |
 | [`prompt1/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=prompt1/1) | Sets the prompt for the next line to be read. |
     
-## Primitive character I/O
+## Miscellaneous
+
+### Primitive character I/O
 
 ...see [4.19 Primitive character I/O](https://eu.swi-prolog.org/pldoc/man?section=chario).
 
@@ -370,17 +374,17 @@ Notable predicates:
   output, obeying the encoding defined for the current output stream. Note that this may raise an exception if
    the encoding of the output stream cannot represent Char.
     
-## Analyzing and constructing atoms
+### Analyzing and constructing atoms
 
 ...see [4.22 Analysing and Constructing Atoms](https://eu.swi-prolog.org/pldoc/man?section=manipatom)
 
 These predicates convert between Prolog constants and lists of character codes (which are not Strings in SWI Prolog).
 
-## Libraries to read stuff
+### Libraries to read stuff
 
 `library(readutil)`, `library(pure_input)` or libraries from the extension packages to read XML, JSON, YAML, etc.
 
-## Write unto atoms, code-lists, etc.	
+### Write unto atoms, code-lists, etc.	
 
 ...see [4.17.6 Write onto atoms, code-lists, etc.](https://eu.swi-prolog.org/pldoc/man?section=write-on-atom)
 
@@ -395,13 +399,73 @@ These predicates convert between Prolog constants and lists of character codes (
 > The predicate [`format/3`](https://eu.swi-prolog.org/pldoc/man?predicate=format/3) accepts the same terms as
 > output argument.
 
+### Character representation and Wide Character support
+
+...see [4.2 Character representation](https://eu.swi-prolog.org/pldoc/man?section=chars) and 
+[2.20 Wide character support](https://eu.swi-prolog.org/pldoc/man?section=widechars).
+
+In SWI-Prolog, character codes are *always* the Unicode equivalent of the encoding.
+
+That is, if [`get_code/1`](https://eu.swi-prolog.org/pldoc/man?predicate=get_code/1) reads from a stream encoded as
+(for example) KOI8-R (used for the Cyrillic alphabet), it returns the corresponding Unicode code points.
+Similarly, assembling or disassembling atoms using 
+[`atom_codes/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=atom_codes/2)
+interprets the codes as Unicode points. 
+See "[wide character encoding on streams](https://eu.swi-prolog.org/pldoc/man?section=encoding)" for details.
+
+### The "lynx" library
+
+The [lynx library](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/lynx/index.html) provides some good stuff.
+
+TODO: Try it!
+
+In `swipl/lib/swipl/library/lynx`, we find:
+
+- File `format.pl` exporting predicate `text_format:format_paragraph/2`.
+- File `html_style.pl` exporting predicates `format_style:element_css/3`,
+`format_style:css_block_options/5`,
+`format_style:css_inline_options/3`,
+`format_style:attrs_classes/2`,
+`format_style:style_css_attrs/2`.
+- File `html_text.pl` exporting predicates `html_text:html_text/1`, `html_text::html_text/2`.
+- File `pldoc_style.pl` with module `pldoc_style`, exporting nothing but extending `html_text:style`.
+
+#### Loading the "lynx" library
+
+The "lynx" subdirectory of the SWI Prolog `library` directory is probably not in your library search path. 
+The files won't be found automatically, even though the `library` directory itself is on the search path:
+
+````
+?- bagof(X,file_search_path(library,X),L).
+L = ['/usr/local/logic/swipl/lib/swipl/library',
+     '/usr/local/logic/swipl/lib/swipl/library/clp',
+     '/home/paquette/.local/share/swi-prolog/pack/sldnfdraw/prolog',
+     pce('prolog/lib')].
+````
+
+So add it, then load whatever is in _file_ `format.pl`.
+
+````
+assertz(file_search_path(library,'/usr/local/logic/swipl/lib/swipl/library/lynx')).
+use_module(library(format)).
+````
+
+Alternatively, one could use full paths, as in:
+
+````
+use_module('/usr/local/logic/swipl/lib/swipl/library/lynx/format.pl').
+````
+
+After that:
+
+````
+?- text_format:format_paragraph("hello, world",[width(50),text_align(center)]).
+                   hello, world
+````
+
 ## Updates
 
 ### Update 1
-
-Anne Ogborn has a tutorial on [printing messages](http://www.pathwayslms.com/swipltuts/message/index.html).
-
-### Update 2
 
 Jan Wielemaker says in https://swi-prolog.discourse.group/t/too-many-arguments-to-format-2/1715/14
 
@@ -421,6 +485,9 @@ Jan Wielemaker says in https://swi-prolog.discourse.group/t/too-many-arguments-t
 > In most cases it is probably nicer to output HTML, for which we do have a quite clean infrastructure. There is even a quite reasonable html-to-text renderer that is used by [`help/1`](https://www.swi-prolog.org/pldoc/doc_for?object=help/1) and available in the [lynx directory of the library](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/lynx/index.html).
 >
 > If you want text templating, quasi quotations would be the way to go in SWI-Prolog. One day we should add a nice quasi quotation rule for plain text. As is, only a few lines of code should suffice to connect the HTML quasi quoter to the above lynx library and enjoy nice paragraphs, underline, bold, color, lists and simple tables being rendered on your console.
->
+
+More on quasi-quotation: [Self-evaluating forms and quoting](https://en.wikipedia.org/wiki/Lisp_(programming_language)#Self-evaluating_forms_and_quoting)
+
 > None of this provides good support for logging. The HTTP server provides logging infra structure. The idea is to use [library(broadcast)](https://www.swi-prolog.org/pldoc/man?section=broadcast) which implements a publish/subscribe interface. Now the application broadcasts events as Prolog terms and a subscriber can send these events somewhere (write to a file, send over the network, add to a database, …).
 
+This would be something like a [Log4J JMS Appender](https://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/net/JMSAppender.html). 
