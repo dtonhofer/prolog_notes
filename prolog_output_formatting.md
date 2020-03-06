@@ -376,6 +376,12 @@ Notable predicates:
   output, obeying the encoding defined for the current output stream. Note that this may raise an exception if
    the encoding of the output stream cannot represent Char.
     
+### Less primitive character reading: `library(readutil)`
+
+This exists in SWI Prolog: [https://www.swi-prolog.org/pldoc/man?section=readutil](library(readutil)).
+
+Not sure yet about other implementations.
+
 ### Analyzing and constructing atoms
 
 ...see [4.22 Analysing and Constructing Atoms](https://eu.swi-prolog.org/pldoc/man?section=manipatom)
