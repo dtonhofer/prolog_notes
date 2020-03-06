@@ -9,6 +9,8 @@ _Work in progress_
 
 # TL;DR
 
+![Decision](https://raw.githubusercontent.com/dtonhofer/prolog_notes/master/pics/Printing_Decision.png).
+
 ## 1. Formatted write: "format family"
 
 See chapter "[4.32.2 Format](https://eu.swi-prolog.org/pldoc/man?section=format-predicates)" of the SWI-Prolog documentation.
