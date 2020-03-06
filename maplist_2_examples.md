@@ -118,7 +118,10 @@ However...
 
 ## Using library `yall`
 
-There is library [library(yall)](https://www.swi-prolog.org/pldoc/man?section=yall) which can be used to wrap an existing predicate allowing the following:
+There is library [library(yall)](https://www.swi-prolog.org/pldoc/man?section=yall) which provides lambda expressions.
+(See also the [description in the Logtalk manual](https://logtalk.org/manuals/userman/predicates.html#lambda-expressions)).
+
+`yall` functionality can be used to wrap an existing predicate, thus allowing the following:
 
 Suppose `verify/2` is the same as before but with reversed arguments:
 
