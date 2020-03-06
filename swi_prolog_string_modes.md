@@ -25,6 +25,6 @@ Here is the table of tested behaviours.
 
 For now this is just a screenshot as there is some trouble exporting it properly from the wiki.
 
-![SWI Prolog string modes](prolog_notes/master/pics/SWI_Prolog_string_modes.png)
+![SWI Prolog string modes](pics/SWI_Prolog_string_modes.png)
 
 
