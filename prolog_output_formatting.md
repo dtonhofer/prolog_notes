@@ -394,3 +394,33 @@ These predicates convert between Prolog constants and lists of character codes (
 > [`atom_number/2`](https://eu.swi-prolog.org/pldoc/man?predicate=atom_number/2) converting numbers to atoms, etc. 
 > The predicate [`format/3`](https://eu.swi-prolog.org/pldoc/man?predicate=format/3) accepts the same terms as
 > output argument.
+
+## Updates
+
+### Update 1
+
+Anne Ogborn has a tutorial on [printing messages](http://www.pathwayslms.com/swipltuts/message/index.html).
+
+### Update 2
+
+Jan Wielemaker says in https://swi-prolog.discourse.group/t/too-many-arguments-to-format-2/1715/14
+
+> (SWI-)Prolog’s I/O indeed has some old flavor to it. It isn’t too bad though:
+>
+> For quick and dirty output for debugging purposes, use [`debug/3`](https://www.swi-prolog.org/pldoc/doc_for?object=debug/3). That is by default silent, so your application won’t crash. If you enable a message channel you probably want to see the output. Still, `debug/3` ultimately uses `print_message/2`, which is lenient (see below). In general though, use almost invariably use `~p` as this prints anything for debug purposes and thus only the number of arguments must match the format.
+>
+> For printing messages to the user, use [`print_message/2`](https://www.swi-prolog.org/pldoc/doc_for?object=print_message/2). The `print_message/2` predicate is lenient (in recent versions) in the sense that it it prints the exception that occurred without propagating the exception.
+>
+> Proper printing of text is a bit rare these days, but [`format/3`](https://www.swi-prolog.org/pldoc/doc_for?object=format/3) can be used for that. This indeed suffers from positional arguments. We can use [`format_types/2`](https://www.swi-prolog.org/pldoc/doc_for?object=prolog_format%3Aformat_types/2) to realise a lint-like checker:
+>
+> ````
+> ?- format_types('~w: ~d', Types).
+> Types = [any, integer].
+> ````
+>
+> In most cases it is probably nicer to output HTML, for which we do have a quite clean infrastructure. There is even a quite reasonable html-to-text renderer that is used by [`help/1`](https://www.swi-prolog.org/pldoc/doc_for?object=help/1) and available in the [lynx directory of the library](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/lynx/index.html).
+>
+> If you want text templating, quasi quotations would be the way to go in SWI-Prolog. One day we should add a nice quasi quotation rule for plain text. As is, only a few lines of code should suffice to connect the HTML quasi quoter to the above lynx library and enjoy nice paragraphs, underline, bold, color, lists and simple tables being rendered on your console.
+>
+> None of this provides good support for logging. The HTTP server provides logging infra structure. The idea is to use [library(broadcast)](https://www.swi-prolog.org/pldoc/man?section=broadcast) which implements a publish/subscribe interface. Now the application broadcasts events as Prolog terms and a subscriber can send these events somewhere (write to a file, send over the network, add to a database, …).
+
