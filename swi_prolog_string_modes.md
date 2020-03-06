@@ -1,5 +1,7 @@
 # SWI Prolog strings modes: How is something enclosed by double quotes `"` interpreted?
 
+(This page is also reachable via http://bit.ly/2TtLV0H_prolog)
+
 This is an SWI-Prolog specific extension to ISO-conforming Prolog: 
 
 - ISO-conforming Prolog maps program text between an opening and closing `"` to a _list_ of character codes
