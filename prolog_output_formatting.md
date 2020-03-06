@@ -1,6 +1,8 @@
 # Relevant predicates for generating output in Prolog (by order of importance)
 
-(Work in progress)
+(This page can also be accessed through http://bit.ly/38wQAmS_prolog)
+
+_Work in progress_
 
 - Some predicates are SWI-Prolog specific.
 - Most of the text comes directly from the [SWI Prolog manual](https://www.swi-prolog.org/pldoc/doc_for?object=manual).
