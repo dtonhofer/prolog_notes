@@ -1,6 +1,10 @@
 # prolog_notes
 Some notes taken while working on Prolog
 
+## The Logic Programming Landscape
+
+![The Logic Programming Landscape](pics/quick_map_of_LP_landscape.png)
+
 ## Documentation
 
 - [maplist_2_examples.md](maplist_2_examples.md):
