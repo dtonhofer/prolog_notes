@@ -486,7 +486,7 @@ Jan Wielemaker says in https://swi-prolog.discourse.group/t/too-many-arguments-t
 >
 > If you want text templating, quasi quotations would be the way to go in SWI-Prolog. One day we should add a nice quasi quotation rule for plain text. As is, only a few lines of code should suffice to connect the HTML quasi quoter to the above lynx library and enjoy nice paragraphs, underline, bold, color, lists and simple tables being rendered on your console.
 
-More on quasi-quotation: [Self-evaluating forms and quoting](https://en.wikipedia.org/wiki/Lisp_(programming_language)#Self-evaluating_forms_and_quoting)
+More on quasi-quotation: [quasi_quotations.pl -- Define Quasi Quotation syntax](https://eu.swi-prolog.org/pldoc/doc/_SWI_/library/quasi_quotations.pl)
 
 > None of this provides good support for logging. The HTTP server provides logging infra structure. The idea is to use [library(broadcast)](https://www.swi-prolog.org/pldoc/man?section=broadcast) which implements a publish/subscribe interface. Now the application broadcasts events as Prolog terms and a subscriber can send these events somewhere (write to a file, send over the network, add to a database, …).
 
