@@ -399,7 +399,7 @@ Notable predicates:
     
 ### Less primitive character reading: `library(readutil)`
 
-This exists in SWI Prolog: [https://www.swi-prolog.org/pldoc/man?section=readutil](library(readutil)).
+This exists in SWI Prolog: [library(readutil)](https://www.swi-prolog.org/pldoc/man?section=readutil)
 
 Not sure yet about other implementations.
 
