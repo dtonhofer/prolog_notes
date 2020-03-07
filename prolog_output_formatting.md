@@ -485,7 +485,7 @@ L = ['/usr/local/logic/swipl/lib/swipl/library',
      pce('prolog/lib')].
 ````
 
-So add it, then load whatever is in _file_ `format.pl`.
+So add it, then load whatever is in _file_ `format.pl` (not _module_ `format`)
 
 ````
 assertz(file_search_path(library,'/usr/local/logic/swipl/lib/swipl/library/lynx')).
@@ -496,6 +496,12 @@ Alternatively, one could use full paths, as in:
 
 ````
 use_module('/usr/local/logic/swipl/lib/swipl/library/lynx/format.pl').
+````
+
+or even
+
+````
+use_module(library(lynx/format)).
 ````
 
 After that:
