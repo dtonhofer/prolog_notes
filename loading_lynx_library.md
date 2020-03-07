@@ -72,7 +72,7 @@ After that:
                    hello, world
 ````
 
-or with qualification:
+or with qualification of the predicate:
 
 ````
 ?- text_format:format_paragraph("hello, world",[width(50),text_align(center)]).
@@ -84,16 +84,22 @@ Perfect.
 There is also a very nice predicate to examine predicate metadata,
 [predicate_property/2](https://www.swi-prolog.org/pldoc/man?predicate=predicate_property%2f2):
 
-But does it really work?
+Perhaps surprisingly, the term denoting the predicate is not given in `functor/arity` style, 
 
 ````
+% WRONG
 ?- predicate_property(format_paragraph/2,imported_from(M)).
 M = yall.
 ````
 
+but in the form of a "callable term":
+
 ````
-?- predicate_property(format_paragraph/2,file(M)).
-M = '/usr/local/logic/swipl/lib/swipl/library/yall.pl'.
+% CORRECT
+?- predicate_property(format_paragraph(_,_),imported_from(M)).
+M = text_format.
+
+?- predicate_property(format_paragraph(_,_),file(F)).
+F = '/usr/local/logic/swipl/lib/swipl/library/lynx/format.pl'.
 ````
 
-Something seems wrong.
