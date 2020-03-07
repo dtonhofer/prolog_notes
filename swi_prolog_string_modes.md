@@ -32,16 +32,16 @@ TODO: Does that library really do something?
 
 ## Testing this
 
-Here is the table of tested behaviours. 
-
 We use 
 
 - [`string/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=string/1) to test for "stringy-ness".
 - [`write/1`](https://eu.swi-prolog.org/pldoc/man?predicate=write/1) to write a string as term.
 
-### `set_prolog_flag(double_quotes,string)` - Default mode for SWI Prolog
+### Default mode for SWI Prolog
+
+`set_prolog_flag(double_quotes,string).`
 	
-Something written as `"..."` designates an element of the particular SWI Prolog type _string_.
+Something written as `"..."` designates an instance of the particular SWI Prolog type _string_.
 
 #### Nonempty string
 
@@ -103,15 +103,18 @@ hello, ▽△ ¡ €
 true.
 ````
 
-### `set_prolog_flag(double_quotes,codes)` - Traditional, ISO-conforming Prolog
-	
+### Traditional: ISO-conforming Prolog
+
+`set_prolog_flag(double_quotes,codes).`
+
 Something written as `"..."` designates a list of character codes (i.e. integers >= 0).
 
-In SWI Prolog, the character codes correspond to **Unicode** character points. See: [Unicode Prolog source](https://eu.swi-prolog.org/pldoc/man?section=unicodesyntax)
+In SWI Prolog, the character codes correspond to **Unicode** character points. 
+See: [Unicode Prolog source](https://eu.swi-prolog.org/pldoc/man?section=unicodesyntax)
 
 #### Nonempty string
 
-It's a list of integer:
+It's a list of _integer_:
 
 ````
 ?- [F|_]="a",integer(F).
@@ -144,28 +147,19 @@ false.
 
 #### Writing the nonempty string
 
-Term-writing it:
-
-Note that the EURO sign for example is correctly mapped to Unicode `0x8364` and not to something arcane like, say "Windows Codepage 1250" `0x80`.
-
-````
-?- [F|_] = "hello, ▽△ ¡ €", F = 104, integer(F).
-F = 104.
-````
+Term-writing it results in a list of character:
 
 ````
 ?- write("hello, ▽△ ¡ €").
 [104,101,108,108,111,44,32,9661,9651,32,161,32,8364]
-````
-
-List stays list with `format/1` and `~w`
-
-````
 ?- format("~w",["hello, ▽△ ¡ €"]).
 [104,101,108,108,111,44,32,9661,9651,32,161,32,8364]
 ````
 
-If you leave out one level or brackets for `format/2` with `~w`:
+Note that the EURO sign for example is correctly mapped to Unicode `0x8364` and not to
+something arcane like, say "Windows Codepage 1250" `0x80`.
+
+If you leave out one level or brackets for `format/2` with `~w` by mistake:
 
 ````
 ?- format("~w","hello, ▽△ ¡ €").
@@ -179,7 +173,7 @@ Get the string back using `~s`:
 hello, ▽△ ¡ €
 ````
 
-If you leave out one level or brackets for format/2 with `~s`:
+If you leave out one level or brackets for format/2 with `~s` by mistake:
 
 ````
 ?- format("~s","hello, ▽△ ¡ €").
@@ -190,18 +184,19 @@ Note that code 0x80 for example is silently accepted (although it is not a valid
 
 ````
 ?- format("~s",[[128]]).
+
 true.
 ````
 
-# `set_prolog_flag(double_quotes,chars)` - Useful if you want to specify lists of atoms in your code.
-	
-Something written as `"..."` designates a list of char.
+### A list of atoms
 
-Note that Prolog has no separate datatype _char_. It's just an integer, interpreted in context.
+`set_prolog_flag(double_quotes,chars).` 
 
+Something written as `"..."` designates a list of atoms. 
 A single char is mapped to an _atom_ (which is a symbol that stands for itself).
+Useful if you want to specify lists of atoms in your code (to avoid quoting for example).	
 
-## Nonempty string
+#### Nonempty string
 
 It's a list of atom!
 
@@ -210,14 +205,16 @@ It's a list of atom!
 F = a.
 ````
 
-It is not a string according to `string/1`:
+It is not a _string_:
 
 ````
 ?- string("ab").
 false.
 ````
 
-## Empty string
+#### Empty string
+
+Term-writing it gives the empty list:
 
 ````
 ?- write("").
@@ -225,59 +222,55 @@ false.
 true.
 ````
 
-It is a string according to `string/1`
+Still not a _string_:
 
 ````
 ?- string("").
 false.
 ````
 
-## Nonempty string
+#### Nonempty string
 
-````
-?- [F|_] = "hello, ▽△ ¡ €", F = h, atom(F).
-F = h.
-````
+The text withing `"..."` is decomposed into a list of atoms (are there any characters that cannot appear in an atom?):
 
 ````
 ?- write("hello, ▽△ ¡ €").
 [h,e,l,l,o,,, ,▽,△, ,¡, ,€]
 ````
 
-List stays list with `format/1` and `~w`
+Same as:
 
 ````
 ?- format("~w",["hello, ▽△ ¡ €"]).
 [h,e,l,l,o,,, ,▽,△, ,¡, ,€]
 ````
 
-If you leave out one level or brackets for `format/2` with `~w`
-
-````
-?- format("~w",["hello, ▽△ ¡ €"]).
-h
-````
-
-Get the string back using `~s`
+Get the string back using `~s`:
 
 ````
 ?- format("~s",["hello, ▽△ ¡ €"]).
 hello, ▽△ ¡ €
 ````
 
-# `set_prolog_flag(double_quotes,atom)` - _(when is this useful?)_
+### Just an atom
 
-Something written as `"..."` designates an atom. It is not a string according to `string/1`
+`set_prolog_flag(double_quotes,atom).` 
+
+Something written as `"..."` designates a single atom (when is this useful?)
 
 ````
 ?- atom("ab").
 true.
+````
 
+It is not a _string_:
+
+````
 ?- string("ab").
 false.
 ````
 
-## Empty string
+#### Empty string
 
 Results in the _empty atom_.
 
@@ -287,23 +280,12 @@ true.
 
 ?- atom("").
 true.
-````
 
-It is a string according to `string/1`?
-
-````
 ?- string("").
 false.
 ````
 
-Note that in SWI-Prolog, the thing denoted by `[]` (the empty list) is not an atom:
-
-````
-?- atom([]).
-false.
-````
-
-## Nonempty string
+#### Nonempty string
 
 ````
 ?- atom("hello, ▽△ ¡ €").
@@ -318,9 +300,7 @@ hello, ▽△ ¡ €
 true.
 ````
 
-````
 Get the string back using ~s
-````
 
 ````
 ?- format("~s",["hello, ▽△ ¡ €"]).
