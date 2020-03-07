@@ -11,7 +11,7 @@ _Work in progress_
 
 ![Decision](https://raw.githubusercontent.com/dtonhofer/prolog_notes/master/pics/Printing_Decision.png).
 
-## 1. Formatted write: "format family"
+## Formatted write: "format family"
 
 See chapter "[4.32.2 Format](https://eu.swi-prolog.org/pldoc/man?section=format-predicates)" of the SWI-Prolog documentation.
 
@@ -213,7 +213,7 @@ If not, the built-in formatting rules described by `format/x`, `writef/x` are us
 | [`current_format_predicate/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=current_format_predicate/2) |  |
 
 
-## 2. Formatted write: "writef family" 
+## Formatted write: "writef family" 
 
 N.B.: **writef/x**, not **write/x**, which is the predicate for serializing out terms (see further below).
 
@@ -276,7 +276,7 @@ Placeholders are introduced with `%`, as is the C tradition.
 
 For a list, see [writef/2](https://eu.swi-prolog.org/pldoc/doc_for?object=writef/2).
 
-## Printing messages
+## Printing messages (logging)
 
 See [4.11.4 Printing messages](https://eu.swi-prolog.org/pldoc/man?section=printmsg).
 
@@ -331,17 +331,38 @@ Package [`log4p`](https://www.swi-prolog.org/pack/list?p=log4p) implements
 
 > a simple logging library for Prolog, inspired by log4j.
 
-## Term reading and writing
+## Term reading and writing (serialization)
 
 ...see [4.20 Term reading and writing](https://eu.swi-prolog.org/pldoc/man?section=termrw)
 
-Corresponds to serialization / deserialization and REPL I/O.
+Corresponds to [serialization](https://en.wikipedia.org/wiki/Serialization)/Deserialization of objects (see also 
+[Comparison of data-serialization formats](https://en.wikipedia.org/wiki/Comparison_of_data-serialization_formats)).
 
 The following predicates are listed in the ISO standard for Prolog, chapter 8.14: 
 `read_term/(2,3)`, `read/(1,2)`, `write_term/(2,3)`, `write/(1,2)`, `writeq/(1,2)`, `write_canonical/(1,2)`.
 
 Note that reading is sensitive to the Prolog `flag character_escapes`, which controls the interpretation of
 the `\` character in quoted atoms and strings.
+
+Example:
+
+````
+?- with_output_to(
+      string(Buf),
+      write_term(a(b,c,[1,2,3],var(ZZ)),[])), 
+   read_term_from_atom(Buf, T, []).
+   
+Buf = "a(b,c,[1,2,3],var(_7256))",
+T = a(b, c, [1, 2, 3], var(_7848)).
+````
+
+For fast binary I/O, there is [this](https://eu.swi-prolog.org/pldoc/man?section=fast-term-io).
+
+Hmmm....
+
+1. ... How do I check terms received from the network against a specification? (As in "XML Schema"). 
+[Langsec](http://langsec.org/) is important. I suppose DCGs can be deployed to advantage here. (TODO: Write example code).
+2. ... Is the underlying reader (i.e. the implementation underneath `read/n` robust? (as in, it's probably not been implemented using [Hammer](https://github.com/sergeybratus/HammerPrimer) Time for fuzzing tests. Such fun!
 
 Notable predicates:
 
