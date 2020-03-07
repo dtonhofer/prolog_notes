@@ -399,9 +399,22 @@ Notable predicates:
     
 ### Less primitive character reading: `library(readutil)`
 
-This exists in SWI Prolog: [library(readutil)](https://www.swi-prolog.org/pldoc/man?section=readutil)
+This exists in SWI Prolog: [`library(readutil)`](https://www.swi-prolog.org/pldoc/man?section=readutil)
 
-Not sure yet about other implementations.
+Not sure yet about other implementations. 
+
+This is adapted to getting input from users. For example, using [`read_line_to_string/2`](https://www.swi-prolog.org/pldoc/doc_for?object=read_line_to_string/2):
+
+````
+?- format("Answer me!\n"), 
+   read_line_to_string(user_input,S1), 
+   string_lower(S1,S2), 
+   (member(S2,["yes","1","ok","y","ja","oui"]) -> format("OK!") ; (format("NOK"), fail)).
+   
+Answer me!
+|: YES
+OK!
+````
 
 ### Analyzing and constructing atoms
 
