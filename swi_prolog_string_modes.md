@@ -4,16 +4,22 @@
 
 This is an SWI-Prolog specific extension to ISO-conforming Prolog: 
 
-- ISO-conforming Prolog maps program text between an opening and closing `"` to a _list_ of character codes
+- **ISO-conforming Prolog** maps text between opening and closing double quotes `"..."` to a _list_ of character codes
   (i.e. integers >= 0).
-- SWI Prolog has a dedicated data type _string_, and maps program text between an opening and closing `"`  to 
-  a _string_ instance, by default. However, default behaviour can be changed by setting the flag `double_quotes`.
+- **SWI Prolog** has a dedicated data type _string_, and maps program text between opening and closing double
+  quotes `"..."`   to a _string_ instance, by default. However, default behaviour can be changed by setting the
+  flag `double_quotes`.
 
 The flag `double_quotes` and a host of others are described in section
 [Environment Control (Prolog flags)](https://www.swi-prolog.org/pldoc/man?section=flags) of the SWI-Prolog manual.
 
 - [Description for the flag `double_quotes`](https://eu.swi-prolog.org/pldoc/man?section=flags#flag:double_quotes)
-- [Introduction and motivation for the _string_ data typ](https://eu.swi-prolog.org/pldoc/man?section=flags#flag:double_quotes)
+- [The string type and its double quoted syntax](https://eu.swi-prolog.org/pldoc/man?section=strings)
+- [Why has the representation of double quoted text changed?](https://eu.swi-prolog.org/pldoc/man?section=ext-dquotes-motivation)
+
+Note that a string can contain NUL characters (value 0), unlike for C strings.
+
+## portray_text
 
 There is also a library to set whether lists of integers are printed out as strings:
 
@@ -24,10 +30,7 @@ Which is no longer the SWI-Prolog way.
 
 TODO: Does that library really do something?
 
-Another SWI-Prolog specific extension:
-
-- The "empty list", written `[]`, is not an atom (in particular, not the atom `'[]'`) in SWI-Prolog. 
-  See: [Lists are special](https://www.swi-prolog.org/pldoc/man?section=ext-lists).
+## Testing this
 
 Here is the table of tested behaviours. 
 
@@ -36,14 +39,11 @@ We use
 - [`string/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=string/1) to test for "stringy-ness".
 - [`write/1`](https://eu.swi-prolog.org/pldoc/man?predicate=write/1) to write a string as term.
 
-# `set_prolog_flag(double_quotes,string)` - Default mode for SWI Prolog
+### `set_prolog_flag(double_quotes,string)` - Default mode for SWI Prolog
 	
-Something written as `"..."` designates an element of the particular SWI Prolog _string datatype_. See:
-[the documentation on "strings"](https://eu.swi-prolog.org/pldoc/man?section=strings). 
+Something written as `"..."` designates an element of the particular SWI Prolog type _string_.
 
-A string can contain NUL characters (value 0), unlike for C strings, which use NUL as the end-of-string-data indicator.
-
-## Nonempty string
+#### Nonempty string
 
 It's not a list:
 
@@ -52,14 +52,14 @@ It's not a list:
 false.
 ````
 
-It's a "string" according to `string/1`:
+It's a _string_:
 
 ````
 ?- string("ab").
 true.
 ````
 
-## Empty string
+#### Empty string
 
 Also a "string" according to `string/1`!
 
@@ -75,13 +75,14 @@ What happens when we term-write it?
 true.
 ````
 
-## Writing the nonempty string
+#### Writing the nonempty string
 
 Term-writing it:
 
 ````
 ?- write("hello, ▽△ ¡ €").
 hello, ▽△ ¡ €
+true.
 ````
 
 Writing using [`format/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=format/2) with `~w`, which calls
@@ -90,6 +91,7 @@ Writing using [`format/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=format
 ````
 ?- format("~w",["hello, ▽△ ¡ €"]).
 hello, ▽△ ¡ €
+true.
 ````
 
 Writing using [`format/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=format/2) with `~s` (_"Output text from
@@ -98,17 +100,16 @@ a list of character codes or a string from the next argument"_):
 ````
 ?- format("~s",["hello, ▽△ ¡ €"]).
 hello, ▽△ ¡ €
+true.
 ````
 
-# `set_prolog_flag(double_quotes,codes)` - Traditional, ISO-conforming Prolog
+### `set_prolog_flag(double_quotes,codes)` - Traditional, ISO-conforming Prolog
 	
 Something written as `"..."` designates a list of character codes (i.e. integers >= 0).
 
 In SWI Prolog, the character codes correspond to **Unicode** character points. See: [Unicode Prolog source](https://eu.swi-prolog.org/pldoc/man?section=unicodesyntax)
 
-Note that the EURO sign for example is correctly mapped to Unicode `0x8364` and not to something arcane like, say "Windows Codepage 1250" `0x80`.
-
-## Nonempty string
+#### Nonempty string
 
 It's a list of integer:
 
@@ -117,14 +118,16 @@ It's a list of integer:
 F = 97.
 ````
 
-It is not a string according to `string/1`:
+It is not a _string_:
 
 ````
 ?- string("ab").
 false.
 ````
 
-## Empty string
+#### Empty string
+
+Term-writing it gives the empty list (because it's a list of zero characters):
 
 ````
 ?- write("")
@@ -132,14 +135,18 @@ false.
 true.
 ````
 
-It is a string according to `string/1`?
+Still not a _string_:
 
 ````
 ?- string("").
 false.
 ````
 
-## Writing the nonempty string
+#### Writing the nonempty string
+
+Term-writing it:
+
+Note that the EURO sign for example is correctly mapped to Unicode `0x8364` and not to something arcane like, say "Windows Codepage 1250" `0x80`.
 
 ````
 ?- [F|_] = "hello, ▽△ ¡ €", F = 104, integer(F).
