@@ -361,8 +361,8 @@ For fast binary I/O, there is [this](https://eu.swi-prolog.org/pldoc/man?section
 Hmmm....
 
 1. ... How do I check terms received from the network against a specification? (As in "XML Schema"). 
-[Langsec](http://langsec.org/) is important. I suppose DCGs can be deployed to advantage here. (TODO: Write example code).
-2. ... Is the underlying reader (i.e. the implementation underneath `read/n` robust? (as in, it's probably not been implemented using [Hammer](https://github.com/sergeybratus/HammerPrimer) Time for fuzzing tests. Such fun!
+[Langsec](http://langsec.org/) is important! I suppose DCGs can be deployed to advantage here. (TODO: Write example code).
+2. ... Is the underlying reader (i.e. the implementation underneath `read/n`) robust? (as in, it's probably not been implemented using [Hammer](https://github.com/sergeybratus/HammerPrimer). Time for fuzzing tests? Such fun!
 
 Notable predicates:
 
