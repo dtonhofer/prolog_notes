@@ -9,7 +9,7 @@ _Work in progress_
 
 # TL;DR
 
-![Decision](https://raw.githubusercontent.com/dtonhofer/prolog_notes/master/pics/Printing_Decision.png).
+![TL;DR Diagram](master/pics/printing_tldr/printing_tldr.png).
 
 ## Formatted write: "format family"
 
