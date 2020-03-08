@@ -212,3 +212,11 @@ and cannot decide to "leave out" en element of the output list, as can be
 done in functional programming. Being a relation relating elements of the
 input list to elements of the output list, the input list and the output
 list must have the same length. Hence, NULL placeholders.
+
+# Do it in SQL
+
+(TBD)
+
+# Do it in R
+
+[It's a different approach, still compact](https://github.com/dtonhofer/rstudio_coding/blob/master/rdbms_like_operations.md)
