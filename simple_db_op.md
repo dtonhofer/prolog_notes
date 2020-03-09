@@ -1,3 +1,5 @@
+# A Simple Relational Database Operation
+
 Inspired by this StackOverflow question:
 
 [Find mutual element in different facts in swi-prolog](https://stackoverflow.com/questions/60582295/find-mutual-element-in-different-facts-in-swi-prolog)
@@ -8,27 +10,140 @@ which led to:
 
 # Problem statement
 
-Given a database of "actors starring in movies":
+> Given a database of "actors starring in movies":
+> 
+> ````
+> starsin(a,bob).
+> starsin(c,bob).
+>
+> starsin(a,maria).
+> starsin(b,maria).
+> starsin(c,maria).
+>
+> starsin(a,george).
+> starsin(b,george).
+> starsin(c,george).
+> starsin(d,george).
+> ````
+>
+> And given set of movies _M_, find those actors that starred in all the movies of _M_.
+
+# SQL solution
+
+This problem is squarely in the domain of relational algebra, and there is a sorta-kinda 
+interface to implementations of that, namely SQL.
+
+In MySQL/MariaDB. 
+
+SQL loves to YELL AT THE TERMINAL IN PUNCHCARDSPEAK, so we continue in that tradition.
+
+First, set up the facts.
 
 ````
-starsin(a,bob).
-starsin(c,bob).
+DROP TABLE IF EXISTS starsin;
 
-starsin(a,maria).
-starsin(b,maria).
-starsin(c,maria).
-
-starsin(a,george).
-starsin(b,george).
-starsin(c,george).
-starsin(d,george).
+CREATE TABLE starsin (movie CHAR(20) NOT NULL, actor CHAR(20) NOT NULL);
+      
+INSERT INTO starsin VALUES
+   ( "a" , "bob" ),
+   ( "c" , "bob" ),
+   ( "a" , "maria" ),
+   ( "b" , "maria" ),
+   ( "c" , "maria" ),
+   ( "a" , "george" ),
+   ( "b" , "george" ),
+   ( "c" , "george" ),
+   ( "d",  "george" );
 ````
 
-And given set of movies, find those actors that starred in all the movies of said set.
+Regarding the set of movies given as input, we assume it is given in the form of a (temporary) table.
+That would be natural. In MySQL, "temporary tables" are
+[local to the session](http://www.geeksengine.com/database/manage-table/create-temporary-table.php). Good.
 
-I first had an ugly solution, but then...
+````
+DROP TABLE IF EXISTS movies_in;
+CREATE TEMPORARY TABLE movies_in (movie CHAR(20) NOT NULL);
+INSERT INTO movies_in VALUES ("a"), ("b");
+````
 
-# Solution that is nice
+The results can now be obtained by getting, for each actor, the intersection of the set of movies denoted by
+`movies_in` and the set of movies in which an actor ever appeared (created for each actor via the inner join),
+then counting (for each actor) whether the resulting set has at least as many entries as the set `movies_in`.
+
+Wrap the query into a procedure for practical reasons.
+A [delimiter](https://stackoverflow.com/questions/10259504/delimiters-in-mysql) is useful here:
+
+````
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS actors_appearing_in_movies;
+
+CREATE PROCEDURE actors_appearing_in_movies()
+BEGIN
+
+SELECT 
+     d.actor 
+   FROM 
+     starsin d, movies_in q
+   WHERE 
+     d.movie = q.movie 
+   GROUP BY 
+     actor 
+   HAVING 
+     COUNT(*) >= (SELECT COUNT(*) FROM movies_in);
+
+END$$
+
+DELIMITER ;
+````     
+
+Run it!
+
+````
+DROP TABLE IF EXISTS movies_in;
+CREATE TEMPORARY TABLE movies_in (movie CHAR(20) NOT NULL);
+CALL actors_appearing_in_movies();
+
+Empty set.
+This is unexpected, I was expect "all actors" because every actor appears in all the films of the empty set.
+
+
+DROP TABLE IF EXISTS movies_in;
+CREATE TEMPORARY TABLE movies_in (movie CHAR(20) NOT NULL);
+INSERT INTO movies_in VALUES ("a"), ("b");
+CALL actors_appearing_in_movies();
++--------+
+| actor  |
++--------+
+| george |
+| maria  |
++--------+
+
+DROP TABLE IF EXISTS movies_in;
+CREATE TEMPORARY TABLE movies_in (movie CHAR(20) NOT NULL);
+INSERT INTO movies_in VALUES ("a"), ("b"), ("c");
+CALL actors_appearing_in_movies();
++--------+
+| actor  |
++--------+
+| george |
+| maria  |
++--------+
+
+DROP TABLE IF EXISTS movies_in;
+CREATE TEMPORARY TABLE movies_in (movie CHAR(20) NOT NULL);
+INSERT INTO movies_in VALUES ("a"), ("b"), ("c"), ("d");
+CALL actors_appearing_in_movies();
++--------+
+| actor  |
++--------+
+| george |
++--------+
+````
+
+# Prolog solution that is nice
+
+(For the ugly solution, see further below)
 
 Clarify the problem:
 
@@ -71,29 +186,21 @@ This seems to be it already!
 The feel when there are λ Expressions but there is
 no λ on the keyboard or in the syntax. 
 
-Wrap up into predicate:
+Wrap up into predicate. Note that one must existentially quantify `MovAx` otherwise Prolog 
+will start backtracking over possible instantiation of `MovAx` and you will see individual
+responses on the toplevel:
 
 ````
 actors_appearing_in_movies(MovIn,ActOut) :-
-   setof(Ax, ( setof(Mx,starsin(Mx,Ax),MovAx) , subset(MovIn, MovAx) ) , ActOut).
+   setof(Ax, ( MovAx^setof(Mx,starsin(Mx,Ax),MovAx) , subset(MovIn, MovAx) ) , ActOut).
 ````
 
-Unfortunately the above doesn't work.
-
-There is backtracking going on, apparently I need to wrap everything into another `setof/3`,
-but why?? 
-
-````
-?- actors_appearing_in_movies([a,b],ActOut).
-ActOut = [maria] ;
-ActOut = [george].
-````
-
-The following **does** work:
+For clarity, one can also write:
 
 ````
 subselect(Ax,MovIn) :- 
    setof(Mx,starsin(Mx,Ax),MovAx), subset(MovIn, MovAx).
+   
 actors_appearing_in_movies(MovIn,ActOut) :- 
    setof(Ax, subselect(Ax,MovIn) , ActOut).
 ````
@@ -102,8 +209,6 @@ actors_appearing_in_movies(MovIn,ActOut) :-
 ?- actors_appearing_in_movies([a,b],ActOut).
 ActOut = [george, maria].
 ````
-
-## Testing
 
 Testing is just running a few goals.
 
@@ -189,9 +294,7 @@ actors_appearing_in_movies_ugly(MoviesIn,ActorsOut) :-
     include(not_empty_list,ActorsOutWithNulls,ActorsOut).
 ````
 
-## Testing
-
-Same as earlier:
+Testing is just running a few goals:
 
 ````
 actors_appearing_in_movies_ugly([],ActOut),permutation([bob, george, maria],ActOut),!. 
@@ -200,8 +303,6 @@ actors_appearing_in_movies_ugly([a,b],ActOut),permutation([george, maria],ActOut
 actors_appearing_in_movies_ugly([a,b,c],ActOut),permutation([george, maria],ActOut),!.
 actors_appearing_in_movies_ugly([a,b,c,d],ActOut),permutation([george],ActOut),!.
 ````
-
-## Notes:
 
 That solution just feels too complex (and as we know, there is a nice, one-liner solution) 
 
@@ -212,10 +313,6 @@ and cannot decide to "leave out" en element of the output list, as can be
 done in functional programming. Being a relation relating elements of the
 input list to elements of the output list, the input list and the output
 list must have the same length. Hence, NULL placeholders.
-
-# Do it in SQL
-
-(TBD)
 
 # Do it in R
 
