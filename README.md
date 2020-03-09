@@ -5,11 +5,11 @@ Some notes taken while working on Prolog
 
 ![The Logic Programming Landscape](pics/quick_map_of_lp_landscape/quick_map_of_lp_landscape.png)
 
-## Resources
+## External Resources
 
 [Extensive list at klaussinani's github account](https://github.com/klaussinani/awesome-prolog#resources)
 
-## Documentation
+## Pages in this repository
 
 - [maplist_2_examples.md](maplist_2_examples.md):
   Examples for [`maplist/2` from SWI Prolog](https://www.swi-prolog.org/pldoc/man?predicate=maplist%2f2)
