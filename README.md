@@ -5,6 +5,10 @@ Some notes taken while working on Prolog
 
 ![The Logic Programming Landscape](pics/quick_map_of_lp_landscape/quick_map_of_lp_landscape.png)
 
+## Resources
+
+[Extensive list at klaussinani's github account](https://github.com/klaussinani/awesome-prolog#resources)
+
 ## Documentation
 
 - [maplist_2_examples.md](maplist_2_examples.md):
