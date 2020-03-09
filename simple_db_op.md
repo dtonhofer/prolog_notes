@@ -213,7 +213,7 @@ actors_appearing_in_movies(MovIn,ActOut) :-
 Testing is just running a few goals.
 
 Note that for the empty set of movies, we get all the actors. This is arguably correct: 
-every actors stars in all the movies of the empty set.
+every actors stars in all the movies of the empty set ([Vacuous Truth](https://en.wikipedia.org/wiki/Vacuous_truth)]
 
 ````
 actors_appearing_in_movies([],ActOut),permutation([bob, george, maria],ActOut),!. 
