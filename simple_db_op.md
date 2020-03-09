@@ -186,13 +186,18 @@ This seems to be it already!
 The feel when there are λ Expressions but there is
 no λ on the keyboard or in the syntax. 
 
-Wrap up into predicate. Note that one must existentially quantify `MovAx` otherwise Prolog 
+Wrap up into predicate. Note that one must isolate (existentially quantify?) `MovAx` otherwise Prolog 
 will start backtracking over possible instantiation of `MovAx` and you will see individual
-responses on the toplevel:
-
+responses on the toplevel. The construct `+Var^Goal` tells the outer `setof/3` not to bind `MovAx` in goal 
+ `setof(Mx,starsin(Mx,Ax),MovAx), subset(MovIn,MovAx)` ... it is not a variable we are interested in at the toplevel.
+ 
 ````
 actors_appearing_in_movies(MovIn,ActOut) :-
-   setof(Ax, ( MovAx^setof(Mx,starsin(Mx,Ax),MovAx) , subset(MovIn, MovAx) ) , ActOut).
+    setof(
+        Ax,
+        MovAx^(setof(Mx,starsin(Mx,Ax),MovAx), subset(MovIn,MovAx)),
+        ActOut
+    ).    
 ````
 
 For clarity, one can also write:
@@ -203,11 +208,6 @@ subselect(Ax,MovIn) :-
    
 actors_appearing_in_movies(MovIn,ActOut) :- 
    setof(Ax, subselect(Ax,MovIn) , ActOut).
-````
-
-````
-?- actors_appearing_in_movies([a,b],ActOut).
-ActOut = [george, maria].
 ````
 
 Testing is just running a few goals.
