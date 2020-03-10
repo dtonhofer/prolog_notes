@@ -215,12 +215,22 @@ Testing is just running a few goals.
 Note that for the empty set of movies, we get all the actors. This is arguably correct: 
 every actors stars in all the movies of the empty set ([Vacuous Truth](https://en.wikipedia.org/wiki/Vacuous_truth)]
 
+Using [library(plunit)](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/plunit.html%27), we can pack this into a unit test:
+
 ````
-actors_appearing_in_movies([],ActOut),permutation([bob, george, maria],ActOut),!. 
-actors_appearing_in_movies([a],ActOut),permutation([bob, george, maria],ActOut),!.
-actors_appearing_in_movies([a,b],ActOut),permutation([george, maria],ActOut),!.
-actors_appearing_in_movies([a,b,c],ActOut),permutation([george, maria],ActOut),!.
-actors_appearing_in_movies([a,b,c,d],ActOut),permutation([george],ActOut),!.
+:- begin_tests(exercise).
+
+expect([],[bob, george, maria]).
+expect([a],[bob, george, maria]).
+expect([a,b],[george, maria]).
+expect([a,b,c],[george, maria]).
+expect([a,b,c,d],[george]).
+
+test("movie stars", forall(expect(Movies,Actors))) :- 
+   actors_appearing_in_movies(Movies,ActOut),
+   permutation(ActOut,Actors). 
+
+:- end_tests(exercise).
 ````
 
 # Solution that is ugly
