@@ -233,6 +233,15 @@ test("movie stars", forall(expect(Movies,Actors))) :-
 :- end_tests(exercise).
 ````
 
+Load the test block above from a file, not through `[user]`. Run the tests with:
+
+````
+?- run_tests(exercise).
+% PL-Unit: exercise ..... done
+% All 5 tests passed
+true.
+````
+
 # Solution that is ugly
 
 What you want are _vector operations_. 
@@ -327,3 +336,41 @@ list must have the same length. Hence, NULL placeholders.
 # Do it in R
 
 [It's a different approach, still compact](https://github.com/dtonhofer/rstudio_coding/blob/master/rdbms_like_operations.md)
+
+# All the Prolog code in one place.
+
+````
+starsin(a,bob).
+starsin(c,bob).
+
+starsin(a,maria).
+starsin(b,maria).
+starsin(c,maria).
+
+starsin(a,george).
+starsin(b,george).
+starsin(c,george).
+starsin(d,george).
+
+actors_appearing_in_movies(MovIn,ActOut) :-
+    setof(
+        Ax,
+        MovAx^(setof(Mx,starsin(Mx,Ax),MovAx), subset(MovIn,MovAx)),
+        ActOut
+    ).    
+
+:- begin_tests(exercise).
+
+expect([],[bob, george, maria]).
+expect([a],[bob, george, maria]).
+expect([a,b],[george, maria]).
+expect([a,b,c],[george, maria]).
+expect([a,b,c,d],[george]).
+
+test("movie stars", forall(expect(Movies,Actors))) :- 
+   actors_appearing_in_movies(Movies,ActOut),permutation(ActOut,Actors),!. 
+
+:- end_tests(exercise).
+
+````
+
