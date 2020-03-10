@@ -4,10 +4,6 @@ Inspired by this StackOverflow question:
 
 [Find mutual element in different facts in swi-prolog](https://stackoverflow.com/questions/60582295/find-mutual-element-in-different-facts-in-swi-prolog)
 
-which led to:
-
-[setof/3 inside setof/3 not working, but why?](https://stackoverflow.com/questions/60591072/setof-3-inside-setof-3-not-working-but-why)
-
 # Problem statement
 
 > Given a database of "actors starring in movies":
@@ -141,7 +137,7 @@ CALL actors_appearing_in_movies();
 +--------+
 ````
 
-# Prolog solution which is elegant
+# Prolog solution which is nice
 
 (For the ugly solution, see further below)
 
