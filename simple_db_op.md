@@ -141,7 +141,7 @@ CALL actors_appearing_in_movies();
 +--------+
 ````
 
-# Prolog solution that is nice
+# Prolog solution which is elegant
 
 (For the ugly solution, see further below)
 
@@ -192,7 +192,7 @@ responses on the toplevel. The construct `+Var^Goal` tells the outer `setof/3` n
  `setof(Mx,starsin(Mx,Ax),MovAx), subset(MovIn,MovAx)` ... it is not a variable we are interested in at the toplevel.
  
 ````
-actors_appearing_in_movies(MovIn,ActOut) :-
+actors_appearing_in_movies_nice(MovIn,ActOut) :-
     setof(
         Ax,
         MovAx^(setof(Mx,starsin(Mx,Ax),MovAx), subset(MovIn,MovAx)),
@@ -206,7 +206,7 @@ For clarity, one can also write:
 subselect(Ax,MovIn) :- 
    setof(Mx,starsin(Mx,Ax),MovAx), subset(MovIn, MovAx).
    
-actors_appearing_in_movies(MovIn,ActOut) :- 
+actors_appearing_in_movies_nice(MovIn,ActOut) :- 
    setof(Ax, subselect(Ax,MovIn) , ActOut).
 ````
 
@@ -215,10 +215,12 @@ Testing is just running a few goals.
 Note that for the empty set of movies, we get all the actors. This is arguably correct: 
 every actors stars in all the movies of the empty set ([Vacuous Truth](https://en.wikipedia.org/wiki/Vacuous_truth)]
 
-Using [library(plunit)](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/plunit.html%27), we can pack this into a unit test:
+Using [library(plunit)](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/plunit.html%27), we can pack this into a unit test.
+
+(Note the final `!` to make the test goal deterministic. Is that correct?)
 
 ````
-:- begin_tests(exercise).
+:- begin_tests(exercise_nice).
 
 expect([],[bob, george, maria]).
 expect([a],[bob, george, maria]).
@@ -227,22 +229,24 @@ expect([a,b,c],[george, maria]).
 expect([a,b,c,d],[george]).
 
 test("movie stars", forall(expect(Movies,Actors))) :- 
-   actors_appearing_in_movies(Movies,ActOut),
-   permutation(ActOut,Actors). 
+   actors_appearing_in_movies_nice(Movies,ActOut),permutation(ActOut,Actors),!. 
 
-:- end_tests(exercise).
+:- end_tests(exercise_nice).
 ````
 
-Load the test block above from a file, not through `[user]`. Run the tests with:
+Load the test block above from a file, not through `[user]` (otherwise there will errors when you attempt
+to redefine it9. 
+
+Run the tests with:
 
 ````
-?- run_tests(exercise).
+?- run_tests(exercise_nice).
 % PL-Unit: exercise ..... done
 % All 5 tests passed
 true.
 ````
 
-# Solution that is ugly
+# Prolog solution which is ugly
 
 What you want are _vector operations_. 
 
@@ -283,25 +287,14 @@ movies_of_actor(Actor,MovieSet) :-
     bagof(Movie,starsin(Movie,Actor),MovieBag),
     list_to_ord_set(MovieBag,MovieSet).
 
-% A predicate (in the sense of filter function) to filter the empty list.
-
-not_empty_list([]) :- !,fail.
-not_empty_list(_).
-
 % Selection for "Actor".
 % Always succeeds, but:
 % If the "ActorIn" appears in all the movies listed in "MoviesMust",
-% ... then ActorOut is unified with Actor
-% ... otherwise, ActorOut is unified with [], a NULL value
+% ... then ActorOut is unified with ActorIn
+% ... otherwise, ActorOut is unified with []
 
-select(MoviesMust,[ActorIn,MoviesAre],ActorOut) :-
-    format("MoviesMust = ~w, ActorIn = ~w, MoviesAre = ~w\n",
-           [MoviesMust,ActorIn,MoviesAre]),
-    (ord_subset(MoviesMust,MoviesAre) 
-     -> 
-     ActorIn = ActorOut
-     ;
-     ActorOut = []).
+select(MoviesMust,[ActorIn,MoviesAre],ActorIn) :- ord_subset(MoviesMust,MoviesAre),!.
+select(_MoviesMust,[_ActorIn,_MoviesAre],[]).
 
 % ***MAIN PREDICATE***
 
@@ -310,34 +303,41 @@ actors_appearing_in_movies_ugly(MoviesIn,ActorsOut) :-
     actors_with_movies(ActorsWithMovies),
     format("~w\n",[ActorsWithMovies]),
     maplist(select(MovieSet),ActorsWithMovies,ActorsOutWithNulls),
-    include(not_empty_list,ActorsOutWithNulls,ActorsOut).
+    include(\=([]),ActorsOutWithNulls,ActorsOut).
 ````
 
-Testing is just running a few goals:
+Testing is the same as earlier:
 
 ````
-actors_appearing_in_movies_ugly([],ActOut),permutation([bob, george, maria],ActOut),!. 
-actors_appearing_in_movies_ugly([a],ActOut),permutation([bob, george, maria],ActOut),!.
-actors_appearing_in_movies_ugly([a,b],ActOut),permutation([george, maria],ActOut),!.
-actors_appearing_in_movies_ugly([a,b,c],ActOut),permutation([george, maria],ActOut),!.
-actors_appearing_in_movies_ugly([a,b,c,d],ActOut),permutation([george],ActOut),!.
+:- begin_tests(exercise_ugly).
+
+expect([],[bob, george, maria]).
+expect([a],[bob, george, maria]).
+expect([a,b],[george, maria]).
+expect([a,b,c],[george, maria]).
+expect([a,b,c,d],[george]).
+
+test("movie stars", forall(expect(Movies,Actors))) :- 
+   actors_appearing_in_movies_ugly(Movies,ActOut),permutation(ActOut,Actors),!. 
+
+:- end_tests(exercise_ugly).
 ````
 
 That solution just feels too complex (and as we know, there is a nice, one-liner solution) 
 
 Also, I'm not happy about the the temporary appearance of `[]` to stand for
 a NULL, which then has to be filtered out afterwards. It works but feels
-weird. It is actually due to the fact that `maplist/3` must always succeed
-and cannot decide to "leave out" en element of the output list, as can be
-done in functional programming. Being a relation relating elements of the
-input list to elements of the output list, the input list and the output
-list must have the same length. Hence, NULL placeholders.
+weird. It is due to the fact that `maplist/3` must always succeed
+and is not free to leave out an element of the output list, which must have the same length
+as the input list. Because this is a relation, not a function.
 
 # Do it in R
 
 [It's a different approach, still compact](https://github.com/dtonhofer/rstudio_coding/blob/master/rdbms_like_operations.md)
 
 # All the Prolog code in one place.
+
+## Nice but hard-to-understand
 
 ````
 starsin(a,bob).
@@ -352,14 +352,14 @@ starsin(b,george).
 starsin(c,george).
 starsin(d,george).
 
-actors_appearing_in_movies(MovIn,ActOut) :-
+actors_appearing_in_movies_nice(MovIn,ActOut) :-
     setof(
         Ax,
         MovAx^(setof(Mx,starsin(Mx,Ax),MovAx), subset(MovIn,MovAx)),
         ActOut
     ).    
-
-:- begin_tests(exercise).
+    
+:- begin_tests(exercise_nice).
 
 expect([],[bob, george, maria]).
 expect([a],[bob, george, maria]).
@@ -368,9 +368,91 @@ expect([a,b,c],[george, maria]).
 expect([a,b,c,d],[george]).
 
 test("movie stars", forall(expect(Movies,Actors))) :- 
-   actors_appearing_in_movies(Movies,ActOut),permutation(ActOut,Actors),!. 
+   actors_appearing_in_movies_nice(Movies,ActOut),permutation(ActOut,Actors),!. 
 
-:- end_tests(exercise).
+:- end_tests(exercise_nice).
 
+test_nice :- run_tests(exercise_nice).
+````
+
+## Ugly but readable
+
+````
+starsin(a,bob).
+starsin(c,bob).
+
+starsin(a,maria).
+starsin(b,maria).
+starsin(c,maria).
+
+starsin(a,george).
+starsin(b,george).
+starsin(c,george).
+starsin(d,george).
+
+
+% Create a combination structure of [Actor, List-of-Movies-with-Actor]
+% actors_with_movies(X).
+% X = [[bob, [a, c]], [george, [a, b, c, d]], [maria, [a, b, c]]]
+
+actors_with_movies(ActorsWithMovies) :-
+   all_actors(ActorSet),
+   maplist(combine_actor_with_movies,ActorSet,ActorsWithMovies).
+
+% Just rearrange variables into a specific format 
+
+combine_actor_with_movies(Actor,[Actor,MovieSet]) :-
+    movies_of_actor(Actor,MovieSet).
+
+% Collect all actors that exist by scanning the facts.
+% all_actors(X).
+% X = [bob, george, maria]
+
+all_actors(ActorSet) :- 
+    bagof(Actor,Movie^starsin(Movie,Actor),ActorBag),
+    list_to_ord_set(ActorBag,ActorSet).
+
+% Collect all the movies of a given actor.
+% movies_of_actor(bob,[a,c]).
+% movies_of_actor(maria,X).
+% X = [a,b,c]
+
+movies_of_actor(Actor,MovieSet) :-
+    bagof(Movie,starsin(Movie,Actor),MovieBag),
+    list_to_ord_set(MovieBag,MovieSet).
+
+% Selection for "Actor".
+% Always succeeds, but:
+% If the "ActorIn" appears in all the movies listed in "MoviesMust",
+% ... then ActorOut is unified with ActorIn
+% ... otherwise, ActorOut is unified with []
+
+select(MoviesMust,[ActorIn,MoviesAre],ActorIn) :- ord_subset(MoviesMust,MoviesAre),!.
+select(_MoviesMust,[_ActorIn,_MoviesAre],[]).
+
+% main predicate
+
+actors_appearing_in_movies_ugly(MoviesIn,ActorsOut) :-
+    list_to_ord_set(MoviesIn,MovieSet),
+    actors_with_movies(ActorsWithMovies),
+    format("~w\n",[ActorsWithMovies]),
+    maplist(select(MovieSet),ActorsWithMovies,ActorsOutWithNulls),
+    include(\=([]),ActorsOutWithNulls,ActorsOut).
+
+
+:- begin_tests(exercise_ugly).
+
+expect([],[bob, george, maria]).
+expect([a],[bob, george, maria]).
+expect([a,b],[george, maria]).
+expect([a,b,c],[george, maria]).
+expect([a,b,c,d],[george]).
+
+test("movie stars", forall(expect(Movies,Actors))) :- 
+   actors_appearing_in_movies_ugly(Movies,ActOut),permutation(ActOut,Actors),!. 
+
+:- end_tests(exercise_ugly).
+
+test_ugly :- run_tests(exercise_ugly).
 ````
 
