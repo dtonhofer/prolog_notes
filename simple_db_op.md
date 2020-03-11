@@ -221,7 +221,8 @@ as the input list. Because this is a relation, not a function.
 This problem is squarely in the domain of relational algebra, and there is a sorta-kinda 
 interface to implementations of that, namely SQL.
 
-Here we are using [MariaDB](https://en.wikipedia.org/wiki/MariaDB)/MySQL SQL. [T-SQL](https://en.wikipedia.org/wiki/Transact-SQL) or [PL/SQL](https://en.wikipedia.org/wiki/PL/SQL) are more complete.
+Here we are using [MariaDB](https://en.wikipedia.org/wiki/MariaDB)/[MySQL](https://en.wikipedia.org/wiki/MySQL) SQL.
+[T-SQL](https://en.wikipedia.org/wiki/Transact-SQL) or [PL/SQL](https://en.wikipedia.org/wiki/PL/SQL) are more complete.
 
 SQL loves to YELL AT THE TERMINAL IN PUNCHCARDSPEAK, so we continue in that tradition.
 
