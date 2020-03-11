@@ -228,6 +228,9 @@ SQL loves to YELL AT THE TERMINAL IN PUNCHCARDSPEAK, so we continue in that trad
 
 - [Manual page for CREATE TABLE](https://mariadb.com/kb/en/create-table/)
 - [Manual page for CREATE PROCEDURE](https://mariadb.com/kb/en/create-procedure/)
+- [Manual page for data types in MariaDB](https://mariadb.com/kb/en/data-types/)
+
+Note that SQL has no vector data types that can be passed to procedures. Gotta work without that.
 
 First, set up the facts.
 
@@ -297,8 +300,8 @@ DELIMITER ;
 ````     
 
 Test it. There is no ready-to-use unit testing framework for MariaDB, so we "test by hand" and write a 
-procedure, the out of which we check manually. Variadic arguments don't exist
-(although once could pass a column maybe?). Let's accept up to 4 movies as input.
+procedure, the out of which we check manually. Variadic arguments don't exist, vector data types don't exist.
+Let's accept up to 4 movies as input and check the result manually. 
 
 ````
 DELIMITER $$
@@ -352,7 +355,7 @@ CALL test_movies("a","b","c","d");
 
 ## Solution 2 (empty set yields all actors as output ... good!)
 
-This solution involves counting, because we don't want to "lose" actor rows in joins.
+This solution involves counting and an `UPDATE`.
 
 ````
 DELIMITER $$
@@ -377,9 +380,13 @@ BEGIN
      UNION
      (SELECT ta.actor, "--" FROM tmp_actor ta);
    
+   -- SELECT * FROM tmp_needed;
+   
    -- Mark those (actor, movie) combinations which actually exist with a numeric 1
    UPDATE tmp_needed tn SET actual = 1 WHERE EXISTS
       (SELECT * FROM starsin si WHERE si.actor = tn.actor AND si.movie = tn.movie);
+
+   -- SELECT * FROM tmp_needed;
 
    -- The result is the set of actors in "tmp_needed" which have as many entries
    -- flagged "actual" as there are entries in "movies_in"
@@ -392,39 +399,76 @@ END$$
 DELIMITER ;
 ````
 
-The above passes all the manual tests
+The above passes all the manual tests, in particular:
 
 ````
 CALL test_movies(NULL,NULL,NULL,NULL);
-CALL test_movies(NULL,NULL,NULL,"a");
-CALL test_movies(NULL,NULL,"a","b");
-CALL test_movies(NULL,"a","b","c");
-CALL test_movies("a","b","c","d");
+
++--------+
+| actor  |
++--------+
+| bob    |
+| george |
+| maria  |
++--------+
+3 rows in set (0.003 sec)
 ````
 
-For example, for `movies_in` equal to:
+For example, for `CALL test_movies("a","b",NULL,NULL);`
+
+First set up the table with all actors against in all the movies in the input set, including the 
+"doesn't exist" movie represented by a placeholder `--`. 
 
 ````
-+-------+
-| movie |
-+-------+
-| a     |
-| b     |
-| c     |
-| d     |
-+-------+
++--------+--------+-------+
+| actual | actor  | movie |
++--------+--------+-------+
+|      0 | bob    | --    |
+|      0 | bob    | a     |
+|      0 | bob    | b     |
+|      0 | george | --    |
+|      0 | george | a     |
+|      0 | george | b     |
+|      0 | maria  | --    |
+|      0 | maria  | a     |
+|      0 | maria  | b     |
++--------+--------+-------+
 ````
 
+Then mark those rows with a 1 where the actor-movie combination actually exists in `starsin`.
 
+````
++--------+--------+-------+
+| actual | actor  | movie |
++--------+--------+-------+
+|      0 | bob    | --    |
+|      1 | bob    | a     |
+|      0 | bob    | b     |
+|      0 | george | --    |
+|      1 | george | a     |
+|      1 | george | b     |
+|      0 | maria  | --    |
+|      1 | maria  | a     |
+|      1 | maria  | b     |
++--------+--------+-------+
+````
 
+Finally select an actor for inclsion in the solution if the `SUM(actual)` is equal to the
+number of entries in the input movies table (it cannot be larger), as that means that the
+actor indeed appears in all movies of the input movies table. In the special case where that
+table is empty, the actor-movie combination table will only contain
 
+````
++--------+--------+-------+
+| actual | actor  | movie |
++--------+--------+-------+
+|      0 | bob    | --    |
+|      0 | george | --    |
+|      0 | maria  | --    |
++--------+--------+-------+
+````
 
-
-
-
-
-
-
+and thus all actors will be selected, which is what we want.
 
 # All the Prolog code in one place.
 
@@ -550,5 +594,80 @@ test_ugly :- run_tests(exercise_ugly).
 # All the SQL code in one place.
 
 ````
+CREATE OR REPLACE TABLE starsin 
+   (movie CHAR(20) NOT NULL, actor CHAR(20) NOT NULL, 
+    PRIMARY KEY (movie, actor));
 
+INSERT INTO starsin VALUES
+   ( "a" , "bob" ),
+   ( "c" , "bob" ),
+   ( "a" , "maria" ),
+   ( "b" , "maria" ),
+   ( "c" , "maria" ),
+   ( "a" , "george" ),
+   ( "b" , "george" ),
+   ( "c" , "george" ),
+   ( "d",  "george" );
+
+DELIMITER $$
+
+CREATE OR REPLACE PROCEDURE 
+   test_movies(IN m1 CHAR(20),IN m2 CHAR(20),IN m3 CHAR(20),IN m4 CHAR(20))
+BEGIN
+   CREATE OR REPLACE TEMPORARY TABLE movies_in (movie CHAR(20) PRIMARY KEY);   
+   CREATE OR REPLACE TEMPORARY TABLE args (movie CHAR(20));
+   INSERT INTO args VALUES (m1),(m2),(m3),(m4); -- contains duplicates and NULLs
+   INSERT INTO movies_in (SELECT DISTINCT movie FROM args WHERE movie IS NOT NULL); -- clean
+   DROP TABLE args;   
+   CALL actors_appearing_in_movies();        
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE OR REPLACE PROCEDURE actors_appearing_in_movies()
+BEGIN
+
+   -- collect all the actors
+   CREATE OR REPLACE TEMPORARY TABLE tmp_actor (actor CHAR(20) PRIMARY KEY)
+     AS SELECT DISTINCT actor from starsin;
+
+   -- table of "all actors x (input movies + '--' placeholder)"
+   -- (combinations that are needed for an actor to show up in the result)
+   -- and a flag indicating whether that combination shows up for real
+   CREATE OR REPLACE TEMPORARY TABLE tmp_needed 
+     (actor CHAR(20), 
+      movie CHAR(20), 
+      actual TINYINT NOT NULL DEFAULT 0,
+     PRIMARY KEY (actor, movie))
+   AS 
+     (SELECT ta.actor, mi.movie FROM tmp_actor ta, movies_in mi)
+     UNION
+     (SELECT ta.actor, "--" FROM tmp_actor ta);
+   
+   -- SELECT * FROM tmp_needed;
+   
+   -- Mark those (actor, movie) combinations which actually exist with a numeric 1
+   UPDATE tmp_needed tn SET actual = 1 WHERE EXISTS
+      (SELECT * FROM starsin si WHERE si.actor = tn.actor AND si.movie = tn.movie);
+
+   -- SELECT * FROM tmp_needed;
+
+   -- The result is the set of actors in "tmp_needed" which have as many entries
+   -- flagged "actual" as there are entries in "movies_in"
+   
+   SELECT actor FROM tmp_needed GROUP BY actor 
+      HAVING SUM(actual) = (SELECT COUNT(*) FROM movies_in);
+   
+END$$
+
+DELIMITER ;
+
+CALL test_movies(NULL,NULL,NULL,NULL);
+CALL test_movies(NULL,NULL,NULL,"a");
+CALL test_movies(NULL,NULL,"a","b");
+CALL test_movies(NULL,"a","b","c");
+CALL test_movies("a","b","c","d");
 ````
+
