@@ -357,6 +357,23 @@ CALL test_movies("a","b","c","d");
 
 This solution involves counting and an `UPDATE`.
 
+**Update**: You can make it basically a one-liner using the SQL from [this answer by Gordon Linoff](https://stackoverflow.com/questions/60604700/prolog-to-sql-any-way-to-improve-sql-code-for-unit-tests-and-fix-an-edge-case-e/60606025#60606025):
+
+````
+select 
+   a.actor,
+from 
+   actor a left join starsin si
+     on a.actor = si.actor 
+        and si.movie in (select * from movies_in)
+group 
+   by a.actor
+having
+   count(si.movie) = (select count(*) from movies_in);
+````
+
+But here is the multitable solution:
+
 ````
 DELIMITER $$
 
