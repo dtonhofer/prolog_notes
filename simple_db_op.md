@@ -24,120 +24,7 @@
 >
 > And given set of movies _M_, find those actors that starred in all the movies of _M_.
 
-# SQL solution
-
-This problem is squarely in the domain of relational algebra, and there is a sorta-kinda 
-interface to implementations of that, namely SQL.
-
-In MySQL/MariaDB. 
-
-SQL loves to YELL AT THE TERMINAL IN PUNCHCARDSPEAK, so we continue in that tradition.
-
-First, set up the facts.
-
-````
-DROP TABLE IF EXISTS starsin;
-
-CREATE TABLE starsin (movie CHAR(20) NOT NULL, actor CHAR(20) NOT NULL);
-      
-INSERT INTO starsin VALUES
-   ( "a" , "bob" ),
-   ( "c" , "bob" ),
-   ( "a" , "maria" ),
-   ( "b" , "maria" ),
-   ( "c" , "maria" ),
-   ( "a" , "george" ),
-   ( "b" , "george" ),
-   ( "c" , "george" ),
-   ( "d",  "george" );
-````
-
-Regarding the set of movies given as input, we assume it is given in the form of a (temporary) table.
-That would be natural. In MySQL, "temporary tables" are
-[local to the session](http://www.geeksengine.com/database/manage-table/create-temporary-table.php). Good.
-
-````
-DROP TABLE IF EXISTS movies_in;
-CREATE TEMPORARY TABLE movies_in (movie CHAR(20) NOT NULL);
-INSERT INTO movies_in VALUES ("a"), ("b");
-````
-
-The results can now be obtained by getting, for each actor, the intersection of the set of movies denoted by
-`movies_in` and the set of movies in which an actor ever appeared (created for each actor via the inner join),
-then counting (for each actor) whether the resulting set has at least as many entries as the set `movies_in`.
-
-Wrap the query into a procedure for practical reasons.
-A [delimiter](https://stackoverflow.com/questions/10259504/delimiters-in-mysql) is useful here:
-
-````
-DELIMITER $$
-
-DROP PROCEDURE IF EXISTS actors_appearing_in_movies;
-
-CREATE PROCEDURE actors_appearing_in_movies()
-BEGIN
-
-SELECT 
-     d.actor 
-   FROM 
-     starsin d, movies_in q
-   WHERE 
-     d.movie = q.movie 
-   GROUP BY 
-     actor 
-   HAVING 
-     COUNT(*) >= (SELECT COUNT(*) FROM movies_in);
-
-END$$
-
-DELIMITER ;
-````     
-
-Run it!
-
-````
-DROP TABLE IF EXISTS movies_in;
-CREATE TEMPORARY TABLE movies_in (movie CHAR(20) NOT NULL);
-CALL actors_appearing_in_movies();
-
-Empty set.
-This is unexpected, I was expect "all actors" because every actor appears in all the films of the empty set.
-
-
-DROP TABLE IF EXISTS movies_in;
-CREATE TEMPORARY TABLE movies_in (movie CHAR(20) NOT NULL);
-INSERT INTO movies_in VALUES ("a"), ("b");
-CALL actors_appearing_in_movies();
-+--------+
-| actor  |
-+--------+
-| george |
-| maria  |
-+--------+
-
-DROP TABLE IF EXISTS movies_in;
-CREATE TEMPORARY TABLE movies_in (movie CHAR(20) NOT NULL);
-INSERT INTO movies_in VALUES ("a"), ("b"), ("c");
-CALL actors_appearing_in_movies();
-+--------+
-| actor  |
-+--------+
-| george |
-| maria  |
-+--------+
-
-DROP TABLE IF EXISTS movies_in;
-CREATE TEMPORARY TABLE movies_in (movie CHAR(20) NOT NULL);
-INSERT INTO movies_in VALUES ("a"), ("b"), ("c"), ("d");
-CALL actors_appearing_in_movies();
-+--------+
-| actor  |
-+--------+
-| george |
-+--------+
-````
-
-# Prolog solution which is nice
+# Prolog solution that is "nice"
 
 (For the ugly solution, see further below)
 
@@ -242,7 +129,7 @@ Run the tests:
 true.
 ````
 
-# Prolog solution which is ugly
+# Prolog solution that is "ugly"
 
 What do we need in our toolbox?
 
@@ -325,13 +212,199 @@ weird. It is due to the fact that `maplist/3` must always succeed
 and is not free to leave out an element of the output list, which must have the same length
 as the input list. Because this is a relation, not a function.
 
-# Do it in R
+# Addendum: Solution in R
 
 [It's a different approach, still compact](https://github.com/dtonhofer/rstudio_coding/blob/master/rdbms_like_operations.md)
 
+# Addendum: Solution in SQL
+
+This problem is squarely in the domain of relational algebra, and there is a sorta-kinda 
+interface to implementations of that, namely SQL.
+
+Here we are using [MariaDB](https://en.wikipedia.org/wiki/MariaDB)/MySQL SQL. [T-SQL](https://en.wikipedia.org/wiki/Transact-SQL) or [PL/SQL](https://en.wikipedia.org/wiki/PL/SQL) are more complete.
+
+SQL loves to YELL AT THE TERMINAL IN PUNCHCARDSPEAK, so we continue in that tradition.
+
+First, set up the facts.
+
+- [Manual page for CREATE TABLE](https://mariadb.com/kb/en/create-table/)
+
+````
+CREATE OR REPLACE TABLE starsin 
+   (movie CHAR(20) NOT NULL, actor CHAR(20) NOT NULL)
+   INDEX (movie, actor) PRIMARY KEY;
+INSERT INTO starsin VALUES
+   ( "a" , "bob" ),
+   ( "c" , "bob" ),
+   ( "a" , "maria" ),
+   ( "b" , "maria" ),
+   ( "c" , "maria" ),
+   ( "a" , "george" ),
+   ( "b" , "george" ),
+   ( "c" , "george" ),
+   ( "d",  "george" );
+````
+
+Regarding the set of movies given as input, we assume it is given in the form of a (temporary) table.
+That would be natural. In MySQL, "temporary tables" are
+[local to the session](http://www.geeksengine.com/database/manage-table/create-temporary-table.php). Good.
+
+One can set up this input table, `movies_in` like this:
+
+````
+CREATE OR REPLACE TEMPORARY TABLE movies_in
+   (movie CHAR(20) PRIMARY KEY);
+INSERT INTO movies_in VALUES ("a"), ("b");
+````
+
+Query and Test will be wrapped into procedures so that they can be called at will instead of being entered
+again and again on the terminal. A [delimiter](https://stackoverflow.com/questions/10259504/delimiters-in-mysql)
+is useful here.
+
+## Solution 1 (empty set yields empty output ... bad!)
+
+This one possibility of many. The results can be obtained by getting,
+
+- for each actor
+   - the intersection of the set of movies denoted by `movies_in` and
+   - the set of movies in which an actor ever appeared (created for each actor via the inner join).
+- then counting (for each actor) whether the resulting set has at least as many entries as the set `movies_in`.
+
+- [Manual page for CREATE PROCEDURE](https://mariadb.com/kb/en/create-procedure/)
+
+````
+DELIMITER $$
+
+CREATE OR REPLACE PROCEDURE 
+   actors_appearing_in_movies()
+BEGIN
+
+SELECT 
+     d.actor 
+   FROM 
+     starsin d, movies_in q
+   WHERE 
+     d.movie = q.movie 
+   GROUP BY 
+     actor 
+   HAVING 
+     COUNT(*) >= (SELECT COUNT(*) FROM movies_in);
+
+END$$
+
+DELIMITER ;
+````     
+
+Test it. There is no ready-to-use unit testing framework for MariaDB, so we "test by hand" and write a 
+procedure, the out of which we check manually. Variadic arguments don't exist
+(although once could pass a column maybe?). Let's accept up to 4 movies as input.
+
+````
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS test_movies;
+
+CREATE OR REPLACE PROCEDURE 
+   test_movies(IN m1 CHAR(20),IN m2 CHAR(20),IN m3 CHAR(20),IN m4 CHAR(20))
+BEGIN
+
+   CREATE OR REPLACE TEMPORARY TABLE movies_in (movie CHAR(20) PRIMARY KEY);   
+   CREATE OR REPLACE TEMPORARY TABLE args (movie CHAR(20));
+   INSERT INTO args VALUES (m1),(m2),(m3),(m4); -- contains duplicates and NULLs
+   INSERT INTO movies_in (SELECT DISTINCT movie FROM args WHERE movie IS NOT NULL); -- clean
+   DROP TABLE args;   
+   CALL actors_appearing_in_movies();        
+END$$
+
+DELIMITER ;
+````
+
+Run it:
+
+````
+CALL test_movies(NULL,NULL,NULL,NULL);
+Empty set (0.002 sec)
+````
+
+This should NOT be the empty set, but the set of all actors.
+
+It works otherwise:
+
+````
+CALL test_movies(NULL,NULL,"a","b");
+
++--------+
+| actor  |
++--------+
+| george |
+| maria  |
++--------+
+````
+
+````
+CALL test_movies("a","b","c","d");
++--------+
+| actor  |
++--------+
+| george |
++--------+
+````
+
+## Solution 2 (empty set yields all actors as output ... good!)
+
+This solution involves counting, because we don't want to "lose" actor rows in joins.
+
+````
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS actors_appearing_in_movies;
+
+CREATE PROCEDURE actors_appearing_in_movies()
+BEGIN
+
+   -- collect all the actors
+   DROP TABLE IF EXISTS tmp_actors;
+   CREATE TEMPORARY TABLE tmp_actors (actor CHAR(20) PRIMARY KEY)
+     AS SELECT DISTINCT actor from starsin;
+
+   -- table of all actors x (movies+NULL) and a flag (that would inefficient in real life)
+   DROP TABLE IF EXISTS tmp_score;
+   CREATE TEMPORARY TABLE tmp_score 
+     (actor CHAR(20), movie CHAR(20), needed BOOLEAN NOT NULL DEFAULT TRUE) 
+     INDEX (actor, movie) PRIMARY KEY;
+     AS SELECT DISTINCT actor from starsin;
+   
+SELECT 
+     d.actor 
+   FROM 
+     starsin d, movies_in q
+   WHERE 
+     d.movie = q.movie 
+   GROUP BY 
+     actor 
+   HAVING 
+     COUNT(*) >= (SELECT COUNT(*) FROM movies_in);
+
+END$$
+
+DELIMITER ;
+
+DELIMITER ;
+````
+
+
+
+
+
+
+
+
+
+
+
 # All the Prolog code in one place.
 
-## Nice but hard-to-understand
+## "Nice" but hard-to-understand
 
 ````
 starsin(a,bob).
@@ -369,7 +442,7 @@ test("movie stars", forall(expect(Movies,Actors))) :-
 test_nice :- run_tests(exercise_nice).
 ````
 
-## Ugly but readable
+## "Ugly" but readable
 
 ````
 starsin(a,bob).
