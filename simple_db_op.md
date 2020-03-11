@@ -226,9 +226,10 @@ Here we are using [MariaDB](https://en.wikipedia.org/wiki/MariaDB)/[MySQL](https
 
 SQL loves to YELL AT THE TERMINAL IN PUNCHCARDSPEAK, so we continue in that tradition.
 
-First, set up the facts.
-
 - [Manual page for CREATE TABLE](https://mariadb.com/kb/en/create-table/)
+- [Manual page for CREATE PROCEDURE](https://mariadb.com/kb/en/create-procedure/)
+
+First, set up the facts.
 
 ````
 CREATE OR REPLACE TABLE starsin 
@@ -272,8 +273,6 @@ This one possibility of many. The results can be obtained by getting,
    - the set of movies in which an actor ever appeared (created for each actor via the inner join).
 - then counting (for each actor) whether the resulting set has at least as many entries as the set `movies_in`.
 
-- [Manual page for CREATE PROCEDURE](https://mariadb.com/kb/en/create-procedure/)
-
 ````
 DELIMITER $$
 
@@ -304,12 +303,9 @@ procedure, the out of which we check manually. Variadic arguments don't exist
 ````
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS test_movies;
-
 CREATE OR REPLACE PROCEDURE 
    test_movies(IN m1 CHAR(20),IN m2 CHAR(20),IN m3 CHAR(20),IN m4 CHAR(20))
 BEGIN
-
    CREATE OR REPLACE TEMPORARY TABLE movies_in (movie CHAR(20) PRIMARY KEY);   
    CREATE OR REPLACE TEMPORARY TABLE args (movie CHAR(20));
    INSERT INTO args VALUES (m1),(m2),(m3),(m4); -- contains duplicates and NULLs
@@ -341,6 +337,7 @@ CALL test_movies(NULL,NULL,"a","b");
 | george |
 | maria  |
 +--------+
+2 rows in set (0.002 sec)
 ````
 
 ````
@@ -350,6 +347,7 @@ CALL test_movies("a","b","c","d");
 +--------+
 | george |
 +--------+
+1 row in set (0.002 sec)
 ````
 
 ## Solution 2 (empty set yields all actors as output ... good!)
@@ -359,40 +357,64 @@ This solution involves counting, because we don't want to "lose" actor rows in j
 ````
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS actors_appearing_in_movies;
-
-CREATE PROCEDURE actors_appearing_in_movies()
+CREATE OR REPLACE PROCEDURE actors_appearing_in_movies()
 BEGIN
 
    -- collect all the actors
-   DROP TABLE IF EXISTS tmp_actors;
-   CREATE TEMPORARY TABLE tmp_actors (actor CHAR(20) PRIMARY KEY)
+   CREATE OR REPLACE TEMPORARY TABLE tmp_actor (actor CHAR(20) PRIMARY KEY)
      AS SELECT DISTINCT actor from starsin;
 
-   -- table of all actors x (movies+NULL) and a flag (that would inefficient in real life)
-   DROP TABLE IF EXISTS tmp_score;
-   CREATE TEMPORARY TABLE tmp_score 
-     (actor CHAR(20), movie CHAR(20), needed BOOLEAN NOT NULL DEFAULT TRUE) 
-     INDEX (actor, movie) PRIMARY KEY;
-     AS SELECT DISTINCT actor from starsin;
+   -- table of "all actors x (input movies + '--' placeholder)"
+   -- (combinations that are needed for an actor to show up in the result)
+   -- and a flag indicating whether that combination shows up for real
+   CREATE OR REPLACE TEMPORARY TABLE tmp_needed 
+     (actor CHAR(20), 
+      movie CHAR(20), 
+      actual TINYINT NOT NULL DEFAULT 0,
+     PRIMARY KEY (actor, movie))
+   AS 
+     (SELECT ta.actor, mi.movie FROM tmp_actor ta, movies_in mi)
+     UNION
+     (SELECT ta.actor, "--" FROM tmp_actor ta);
    
-SELECT 
-     d.actor 
-   FROM 
-     starsin d, movies_in q
-   WHERE 
-     d.movie = q.movie 
-   GROUP BY 
-     actor 
-   HAVING 
-     COUNT(*) >= (SELECT COUNT(*) FROM movies_in);
+   -- Mark those (actor, movie) combinations which actually exist with a numeric 1
+   UPDATE tmp_needed tn SET actual = 1 WHERE EXISTS
+      (SELECT * FROM starsin si WHERE si.actor = tn.actor AND si.movie = tn.movie);
 
+   -- The result is the set of actors in "tmp_needed" which have as many entries
+   -- flagged "actual" as there are entries in "movies_in"
+   
+   SELECT actor FROM tmp_needed GROUP BY actor 
+      HAVING SUM(actual) = (SELECT COUNT(*) FROM movies_in);
+   
 END$$
 
 DELIMITER ;
-
-DELIMITER ;
 ````
+
+The above passes all the manual tests
+
+````
+CALL test_movies(NULL,NULL,NULL,NULL);
+CALL test_movies(NULL,NULL,NULL,"a");
+CALL test_movies(NULL,NULL,"a","b");
+CALL test_movies(NULL,"a","b","c");
+CALL test_movies("a","b","c","d");
+````
+
+For example, for `movies_in` equal to:
+
+````
++-------+
+| movie |
++-------+
+| a     |
+| b     |
+| c     |
+| d     |
++-------+
+````
+
 
 
 
@@ -525,3 +547,8 @@ test("movie stars", forall(expect(Movies,Actors))) :-
 test_ugly :- run_tests(exercise_ugly).
 ````
 
+# All the SQL code in one place.
+
+````
+
+````
