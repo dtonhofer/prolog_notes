@@ -232,8 +232,9 @@ First, set up the facts.
 
 ````
 CREATE OR REPLACE TABLE starsin 
-   (movie CHAR(20) NOT NULL, actor CHAR(20) NOT NULL)
-   INDEX (movie, actor) PRIMARY KEY;
+   (movie CHAR(20) NOT NULL, actor CHAR(20) NOT NULL, 
+    PRIMARY KEY (movie, actor));
+
 INSERT INTO starsin VALUES
    ( "a" , "bob" ),
    ( "c" , "bob" ),
