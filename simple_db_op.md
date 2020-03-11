@@ -209,11 +209,11 @@ actors_appearing_in_movies_nice(MovIn,ActOut) :-
 Testing is just running a few goals.
 
 Note that for the empty set of movies, we get all the actors. This is arguably correct: 
-every actors stars in all the movies of the empty set ([Vacuous Truth](https://en.wikipedia.org/wiki/Vacuous_truth)]
+every actors stars in all the movies of the empty set ([Vacuous Truth](https://en.wikipedia.org/wiki/Vacuous_truth))
 
-Using [library(plunit)](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/plunit.html%27), we can pack this into a unit test.
+Using [`library(plunit)`](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/plunit.html%27), we can pack this into a unit test.
 
-(Note the final `!` to make the test goal deterministic. Is that correct?)
+(Note the final `!` to make the test goal deterministic. Is that correct? I tdefinitely works. That clause is not really Prolog, it is Meta-Prolog.)
 
 ````
 :- begin_tests(exercise_nice).
@@ -231,9 +231,9 @@ test("movie stars", forall(expect(Movies,Actors))) :-
 ````
 
 Load the test block above from a file, not through `[user]` (otherwise there will errors when you attempt
-to redefine it9. 
+to redefine it). 
 
-Run the tests with:
+Run the tests:
 
 ````
 ?- run_tests(exercise_nice).
@@ -243,8 +243,6 @@ true.
 ````
 
 # Prolog solution which is ugly
-
-What you want are _vector operations_. 
 
 What do we need in our toolbox?
 
