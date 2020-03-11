@@ -1,6 +1,6 @@
 # A Simple Relational Database Operation
 
-Inspired by this StackOverflow question:
+ This is not about connecting to a database using SQL. It is inspired by this StackOverflow question:
 
 [Find mutual element in different facts in swi-prolog](https://stackoverflow.com/questions/60582295/find-mutual-element-in-different-facts-in-swi-prolog)
 
