@@ -453,7 +453,7 @@ Then mark those rows with a 1 where the actor-movie combination actually exists 
 +--------+--------+-------+
 ````
 
-Finally select an actor for inclsion in the solution if the `SUM(actual)` is equal to the
+Finally select an actor for inclusion in the solution if the `SUM(actual)` is equal to the
 number of entries in the input movies table (it cannot be larger), as that means that the
 actor indeed appears in all movies of the input movies table. In the special case where that
 table is empty, the actor-movie combination table will only contain
