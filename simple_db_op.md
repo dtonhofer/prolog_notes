@@ -558,9 +558,9 @@ table is empty, the actor-movie combination table will only contain
 
 and thus all actors will be selected, which is what we want.
 
-# All the Prolog code in one place.
+# Collected code
 
-## "Nice" but hard-to-understand
+## Prolog "nice" solution
 
 ````
 starsin(a,bob).
@@ -574,6 +574,13 @@ starsin(a,george).
 starsin(b,george).
 starsin(c,george).
 starsin(d,george).
+
+expect([],[bob, george, maria]).
+expect([a],[bob, george, maria]).
+expect([a,b],[george, maria]).
+expect([a,b,c],[george, maria]).
+expect([a,b,c,d],[george]).
+
 
 actors_appearing_in_movies_nice(MovIn,ActOut) :-
     setof(
@@ -581,102 +588,17 @@ actors_appearing_in_movies_nice(MovIn,ActOut) :-
         MovAx^(setof(Mx,starsin(Mx,Ax),MovAx), subset(MovIn,MovAx)),
         ActOut
     ).    
-    
-expect([],[bob, george, maria]).
-expect([a],[bob, george, maria]).
-expect([a,b],[george, maria]).
-expect([a,b,c],[george, maria]).
-expect([a,b,c,d],[george]).
 
 :- begin_tests(exercise_nice).
 
-test("movie stars", forall(expect(Movies,Actors))) :- 
+test("movie stars, nice", forall(expect(Movies,Actors))) :- 
    actors_appearing_in_movies_nice(Movies,ActOut),permutation(ActOut,Actors),!. 
 
 :- end_tests(exercise_nice).
-
-testit :- run_tests(exercise_nice).
 ````
 
-## "Ugly" but readable
-
 ````
-starsin(a,bob).
-starsin(c,bob).
-
-starsin(a,maria).
-starsin(b,maria).
-starsin(c,maria).
-
-starsin(a,george).
-starsin(b,george).
-starsin(c,george).
-starsin(d,george).
-
-
-% Create a combination structure of [Actor, List-of-Movies-with-Actor]
-% actors_with_movies(X).
-% X = [[bob, [a, c]], [george, [a, b, c, d]], [maria, [a, b, c]]]
-
-actors_with_movies(ActorsWithMovies) :-
-   all_actors(ActorSet),
-   maplist(combine_actor_with_movies,ActorSet,ActorsWithMovies).
-
-% Just rearrange variables into a specific format 
-
-combine_actor_with_movies(Actor,[Actor,MovieSet]) :-
-    movies_of_actor(Actor,MovieSet).
-
-% Collect all actors that exist by scanning the facts.
-% all_actors(X).
-% X = [bob, george, maria]
-
-all_actors(ActorSet) :- 
-    bagof(Actor,Movie^starsin(Movie,Actor),ActorBag),
-    list_to_ord_set(ActorBag,ActorSet).
-
-% Collect all the movies of a given actor.
-% movies_of_actor(bob,[a,c]).
-% movies_of_actor(maria,X).
-% X = [a,b,c]
-
-movies_of_actor(Actor,MovieSet) :-
-    bagof(Movie,starsin(Movie,Actor),MovieBag),
-    list_to_ord_set(MovieBag,MovieSet).
-
-% Selection for "Actor".
-% Always succeeds, but:
-% If the "ActorIn" appears in all the movies listed in "MoviesMust",
-% ... then ActorOut is unified with ActorIn
-% ... otherwise, ActorOut is unified with []
-
-select(MoviesMust,[ActorIn,MoviesAre],ActorIn) :- ord_subset(MoviesMust,MoviesAre),!.
-select(_MoviesMust,[_ActorIn,_MoviesAre],[]).
-
-% main predicate
-
-actors_appearing_in_movies_ugly(MoviesIn,ActorsOut) :-
-    list_to_ord_set(MoviesIn,MovieSet),
-    actors_with_movies(ActorsWithMovies),
-    format("~w\n",[ActorsWithMovies]),
-    maplist(select(MovieSet),ActorsWithMovies,ActorsOutWithNulls),
-    include(\=([]),ActorsOutWithNulls,ActorsOut).
-
-
-:- begin_tests(exercise_ugly).
-
-expect([],[bob, george, maria]).
-expect([a],[bob, george, maria]).
-expect([a,b],[george, maria]).
-expect([a,b,c],[george, maria]).
-expect([a,b,c,d],[george]).
-
-test("movie stars", forall(expect(Movies,Actors))) :- 
-   actors_appearing_in_movies_ugly(Movies,ActOut),permutation(ActOut,Actors),!. 
-
-:- end_tests(exercise_ugly).
-
-test_ugly :- run_tests(exercise_ugly).
+run_tests(exercise_nice).
 ````
 
 # All the SQL code in one place.
