@@ -114,7 +114,7 @@ expect([a,b,c,d],[george]).
 
 :- begin_tests(exercise_nice).
 
-test("movie stars", forall(expect(Movies,Actors))) :- 
+test("movie stars, nice", forall(expect(Movies,Actors))) :- 
    actors_appearing_in_movies_nice(Movies,ActOut),permutation(ActOut,Actors),!. 
 
 :- end_tests(exercise_nice).
@@ -255,16 +255,24 @@ Testing is the same as earlier:
 ````
 :- begin_tests(exercise_ugly).
 
-expect([],[bob, george, maria]).
-expect([a],[bob, george, maria]).
-expect([a,b],[george, maria]).
-expect([a,b,c],[george, maria]).
-expect([a,b,c,d],[george]).
-
-test("movie stars", forall(expect(Movies,Actors))) :- 
+test("movie stars, ugly", forall(expect(Movies,Actors))) :- 
    actors_appearing_in_movies_ugly(Movies,ActOut),permutation(ActOut,Actors),!. 
 
 :- end_tests(exercise_ugly).
+````
+
+Well, it works:
+
+````
+?- run_tests(exercise_ugly).
+% PL-Unit: exercise_ugly [[bob,[a,c]],[george,[a,b,c,d]],[maria,[a,b,c]]]
+.[[bob,[a,c]],[george,[a,b,c,d]],[maria,[a,b,c]]]
+.[[bob,[a,c]],[george,[a,b,c,d]],[maria,[a,b,c]]]
+.[[bob,[a,c]],[george,[a,b,c,d]],[maria,[a,b,c]]]
+.[[bob,[a,c]],[george,[a,b,c,d]],[maria,[a,b,c]]]
+. done
+% All 5 tests passed
+true.
 ````
 
 That solution just feels too complex (and as we know, there is a nice, one-liner solution) 
