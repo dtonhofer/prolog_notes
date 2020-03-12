@@ -103,13 +103,16 @@ Using [`library(plunit)`](https://www.swi-prolog.org/pldoc/doc_for?object=sectio
 (Note the final `!` to make the test goal deterministic. Is that correct? I tdefinitely works. That clause is not really Prolog, it is Meta-Prolog.)
 
 ````
-:- begin_tests(exercise_nice).
+% You can put the "expect/2" fact outside or inside of the begin_tests/end_tests
+% block, but if they are outside they cna reused by other tests.
 
 expect([],[bob, george, maria]).
 expect([a],[bob, george, maria]).
 expect([a,b],[george, maria]).
 expect([a,b,c],[george, maria]).
 expect([a,b,c,d],[george]).
+
+:- begin_tests(exercise_nice).
 
 test("movie stars", forall(expect(Movies,Actors))) :- 
    actors_appearing_in_movies_nice(Movies,ActOut),permutation(ActOut,Actors),!. 
@@ -125,6 +128,66 @@ Run the tests:
 ````
 ?- run_tests(exercise_nice).
 % PL-Unit: exercise ..... done
+% All 5 tests passed
+true.
+````
+
+## Alternate Solution
+
+In Stack Overflow question "[Prolog Recursion through Set of](https://stackoverflow.com/questions/60644753/prolog-recursion-through-set-of)", user Rafe proposes the following approache, here slight rewritten:
+
+````
+actors_appearing_in_movies_alt(Movies, ActOut) :-
+    setof(Actor, starsin_all(Movies, Actor), ActOut).
+
+starsin_all([Movie | RestMovies], Actor) :-
+    starsin(Movie, Actor),
+    \+ (member(SomeMovie, RestMovies), \+ starsin(SomeMovie, Actor)).
+
+% For "any actor appears in the list of empty movies", we cannot just write
+% starsin_all([], _Actor).
+% we must anchor the variable to a concrete actor
+
+starsin_all([], Actor) :- starsin(_, Actor).
+
+:- begin_tests(exercise_alt).
+
+test("movie stars, alt", forall(expect(Movies,Actors))) :- 
+   actors_appearing_in_movies_alt(Movies,ActOut),permutation(ActOut,Actors),!. 
+
+:- end_tests(exercise_alt).
+````
+
+````
+?- run_tests(exercise_alt).
+% PL-Unit: exercise_alt ..... done
+% All 5 tests passed
+true.
+````
+
+or
+
+````
+actors_appearing_in_movies_alt2(Movies, ActOut) :-
+    setof(Actor, starsin_all2(Movies, Actor), ActOut).
+
+starsin_all2([Movie | RestMovies], Actor) :-
+    starsin(Movie, Actor),
+    forall(member(SomeMovie, RestMovies), starsin(SomeMovie, Actor)).
+
+starsin_all2([], Actor) :- starsin(_, Actor).
+
+:- begin_tests(exercise_alt2).
+
+test("movie stars, alt 2", forall(expect(Movies,Actors))) :- 
+   actors_appearing_in_movies_alt2(Movies,ActOut),permutation(ActOut,Actors),!. 
+
+:- end_tests(exercise_alt2).
+````
+
+````
+?- run_tests(exercise_alt2).
+% PL-Unit: exercise_alt2 ..... done
 % All 5 tests passed
 true.
 ````
@@ -511,20 +574,20 @@ actors_appearing_in_movies_nice(MovIn,ActOut) :-
         ActOut
     ).    
     
-:- begin_tests(exercise_nice).
-
 expect([],[bob, george, maria]).
 expect([a],[bob, george, maria]).
 expect([a,b],[george, maria]).
 expect([a,b,c],[george, maria]).
 expect([a,b,c,d],[george]).
 
+:- begin_tests(exercise_nice).
+
 test("movie stars", forall(expect(Movies,Actors))) :- 
    actors_appearing_in_movies_nice(Movies,ActOut),permutation(ActOut,Actors),!. 
 
 :- end_tests(exercise_nice).
 
-test_nice :- run_tests(exercise_nice).
+testit :- run_tests(exercise_nice).
 ````
 
 ## "Ugly" but readable
