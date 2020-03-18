@@ -21,7 +21,7 @@ been set to somewhere else in the code. Not so here.
 
 The line can be separated into the following parts:
 
-
+![Prolog clause](pics/prolog_clause_explainer/Prolog Clause.png)
 
 
 
