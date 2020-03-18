@@ -74,7 +74,7 @@ Out = [0,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5].
 ````
 )
 
-### The second list is constrained
+### The second list is constrained by `maplist/3`
 
 Second list argument is the result of applying, a function to the first list argument, member-by-member:
 
@@ -88,7 +88,7 @@ Out = [0,2,4,6,8,10,12,14,16,18,20].
 
 Note that `Out` is not even constrained to be a list at call time.
 
-### The first list is constrained
+### The first list is constrained by `maplist/3`
 
 First list argument is the result of applying, a function to the second list argument, member-by-member: 
 
@@ -100,7 +100,7 @@ First list argument is the result of applying, a function to the second list arg
 Out = [0,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5].
 ````
 
-### Both lists are constrained symmetrically
+### Both lists are constrained symmetrically by `maplist/3`
 
 With the [`#=`](https://eu.swi-prolog.org/pldoc/doc_for?object=%23%3D%20/%202) constraint
 predicate of the library for "Constraint Logic Programming over Finite Domains", you can work "symmetrically":
