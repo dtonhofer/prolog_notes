@@ -1,6 +1,6 @@
 # Examples for the Prolog predicate `maplist/2` (as run with SWI-Prolog)
 
-- This page can also be accessed as  http://bit.ly/2IrNfuG_prolog)
+- This page can also be accessed as  http://bit.ly/2IrNfuG_prolog
 - For examples about `maplist/3`, see [this page](maplist_3_examples.md)
 
 ## About
@@ -36,7 +36,7 @@ you do dirty coding) so performing _max_, _min_ and similar full-list operations
 Use the neighboring `foldl`, `scanl` or homegrown predicates for this. 
 
 Here we test whether all items, assumed to be numeric, are less 5.
-We are also performing side-effects by printing to STDOUT:
+We are also performing side-effects by printing to `stdout`:
 
 ````
 verify(X) :- format("verify(~d)\n", X), X < 5.
@@ -121,7 +121,7 @@ ERROR: Unknown procedure: (',')/3
 
 However...
 
-## Using library `yall`
+### Library `yall` can help you all!
 
 There is library [library(yall)](https://www.swi-prolog.org/pldoc/man?section=yall) which provides lambda expressions.
 (See also the [description in the Logtalk manual](https://logtalk.org/manuals/userman/predicates.html#lambda-expressions)).
@@ -201,7 +201,7 @@ S3 = 2.0.
 
 Sounds artificial? Well, yes.
 
-## Generate lists
+## Generating lists
 
 We can also generate lists.
 
