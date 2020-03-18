@@ -1,4 +1,4 @@
-# Loading the "lynx" library
+# Prolog module loading example: Loading the "lynx" library
 
 Suppose you want to load the [lynx library](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/lynx/index.html).
 
