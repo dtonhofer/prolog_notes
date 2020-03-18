@@ -1,6 +1,9 @@
 # Examples for the Prolog predicate `maplist/2` (as run with SWI-Prolog)
 
-(This page can also be accessed as  http://bit.ly/2IrNfuG_prolog)
+- This page can also be accessed as  http://bit.ly/2IrNfuG_prolog)
+- For examples about `maplist/3`, see [this page](maplist_3_examples.md)
+
+## About
 
 A few examples for the predicate [`maplist/2`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/2) 
 from [library(apply)](https://eu.swi-prolog.org/pldoc/man?section=apply) as run with SWI-Prolog.
@@ -13,6 +16,8 @@ to first call:
 ````
 ?- set_prolog_flag(answer_write_options,[max_depth(0)]).
 ````
+
+## Intro
 
 The description for [`maplist/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/2) says:
 
