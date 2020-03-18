@@ -2,16 +2,47 @@
 
 Suppose you want to load the [lynx library](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/lynx/index.html).
 
+Support `$SWIPROLOG` is the filesystem tree location where SWI Prolog has been installed (in my case, `/usr/local/logic/swipl`)
+
+Then the relevant slice of the filesystem tree is as follows:
+
+````
+$SWIPROLOG
+├── lib
+│   └── swipl
+│       ├── library
+│       │   ├── lynx
+│       │   │   ├── format.pl
+│       │   │   ├── html_style.pl
+│       │   │   ├── html_text.pl
+│       │   │   └── pldoc_style.pl
+````
+
 In directory `$SWIPROLOG/lib/swipl/library/lynx`, we find:
 
-- File `format.pl` exporting predicate `text_format:format_paragraph/2`.
-- File `html_style.pl` exporting predicates `format_style:element_css/3`,
-`format_style:css_block_options/5`,
-`format_style:css_inline_options/3`,
-`format_style:attrs_classes/2`,
-`format_style:style_css_attrs/2`.
-- File `html_text.pl` exporting predicates `html_text:html_text/1`, `html_text::html_text/2`.
-- File `pldoc_style.pl` with module `pldoc_style`, exporting nothing but extending `html_text:style`.
+- File `format.pl`
+   - part of module `text_format`
+   - exporting predicates
+      - `format_paragraph/2`
+      - `trim_line/2`
+- File `html_style.pl`
+   - part of module `format_style`
+   - exporting predicates
+      - `element_css/3`
+      - `css_block_options/5`
+      - `css_inline_options/3`
+      - `attrs_classes/2`
+      - `style_css_attrs/2`
+- File `html_text.pl`
+   - part of module `html_text`
+   - exporting predicates
+      - `html_text/1`
+      - `html_text/2`
+- File `pldoc_style.pl`
+   - part of module `pldoc_style`
+   - exporting nothing but extending `html_text:style/3` via the [`multifile`](https://eu.swi-prolog.org/pldoc/doc_for?object=(multifile)/1) directive.
+
+## Problem
 
 The `lynx` subdirectory of the SWI Prolog library directory is probably not in your library search path.
 
@@ -25,47 +56,86 @@ L = ['/usr/local/logic/swipl/lib/swipl/library',
      pce('prolog/lib')].
 ````
 
-If we take a look at the file `/usr/local/logic/swipl/lib/swipl/library/lynx/format.pl`, we see
-the declaration of the module and the exports:
-
-````
-:- module(text_format,
-          [ format_paragraph/2          % +Text, +Options
-          ]).
-````
-
-Try to use `format_paragraph/2`
+Try to use `format_paragraph/2`, fully qualified:
 
 ````
 ?- text_format:format_paragraph("hello, world",[width(50),text_align(center)]).
 ERROR: Unknown procedure: text_format:format_paragraph/2 (DWIM could not correct goal)
 ````
 
-So let's make accesible the predicates found in **file** `format.pl`. (**not** predicates found in module `format`).
+## Solution
+
+Let's make the predicates found in **file** `format.pl`. (**not** predicates found in module `format`) accessible.
 
 (More precisely, "those predicates exported from some module _foo_, a part of which is defined in file `format.pl`.
 This _is_ confusing.)
 
-You can load the predicate like this:
+You can:
+
+**Use the relative path of a file underneath the library search path**
+
+In interactive mode, use the predicate:
 
 ````
 use_module(library(lynx/format)).
 ````
 
-or extend the file search path:
+Inside a source file or when reading `[user]`, use the directive (actually, you can use the predicate, too -
+it will just be run when you close `[user]` instead of immediately):
+
+````
+:- use_module(library(lynx/format)).
+````
+
+**Extend the `library` file search path by adding a mapping for atom `library` to a directory**
+
+In interactive mode, use `assertz/2`:
 
 ````
 assertz(file_search_path(library,'/usr/local/logic/swipl/lib/swipl/library/lynx')).
 use_module(library(format)).
 ````
 
-or use full paths, as in:
+Inside a source file or when reading `[user]`, assert a new fact for `file_search_path(library,DIR)`, then 
+call the `use_module/1` directive:
+
+````
+file_search_path(library,'/usr/local/logic/swipl/lib/swipl/library/lynx').
+:- use_module(library(format)).
+````
+
+**Create a new file search path and search that**
+
+In interactive mode, use `assertz/2`:
+
+````
+assertz(file_search_path(lynx,'/usr/local/logic/swipl/lib/swipl/library/lynx')).
+use_module(lynx(format)).
+````
+
+Inside a source file or when reading `[user]`, assert a new fact for `file_search_apth(ALIAS,DIR)`, then 
+call the `use_module/1` directive:
+
+````
+file_search_path(lynx,'/usr/local/logic/swipl/lib/swipl/library/lynx').
+:- use_module(lynx(format)).
+````
+
+**Indicate full path to file**
+
+In interactive mode:
 
 ````
 use_module('/usr/local/logic/swipl/lib/swipl/library/lynx/format.pl').
 ````
 
-After that:
+Inside a source file or when reading `[user]`:
+
+````
+:- use_module('/usr/local/logic/swipl/lib/swipl/library/lynx/format.pl').
+````
+
+## Now the predicate is accessible!
 
 ````
 ?- format_paragraph("hello, world",[width(50),text_align(center)]).
@@ -80,6 +150,8 @@ or with qualification of the predicate:
 ````
 
 Perfect.
+
+## Addendum
 
 There is also a very nice predicate to examine predicate metadata,
 [predicate_property/2](https://www.swi-prolog.org/pldoc/man?predicate=predicate_property%2f2):
