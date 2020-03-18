@@ -1,3 +1,5 @@
+# Prolog clause explainer:
+
 You are presented with this line in Prolog:
 
 ````
@@ -8,17 +10,43 @@ How to read this?
 
 First off:
 
-- the `X`, `Y`, `Z` are _variables_ because they are identifiers starting with an uppercase letter.
+- the `X`, `Y`, `Z` are _variables_ because they are symbols starting with an uppercase letter.
 - the `h`, `p`, `q` are _predicate identifiers_ used in `predicate calls`:
-   - they starting with a lowercase letter (constant names)
+   - they start with a lowercase letter (indicating they are not variables)
    - and depend on arguments `q(.,.)`
-   - they appear at the line's top level, are not inside predicate calls themselves: `p(X,Y)`, not `q(p(X,Y),Y)`.
-- the `w` is a constant
+   - they appear at the line's "top level", not inside parenthesis of other expressions: `p(X,Y)`, not `q(p(X,Y),Y)`.
+- finally the `w`, not being a variable, is a constant.
 
-The present line can be read in isolation of anything else in the logic program. None of the elements
-are determined by their context. 
+Unlike in other programming languages, nothing in that line "resolves" to anything, nothing is replaced by values, computed or looked-up. The constant `w` is just the constant `w`. 
 
-In other languages this is not the case: the meaning of `p(x)` depends on what `x` has
+In fact, you will often see things like this:
+
+````
+h(X,k) :- p(f(X),g(a,b)),q(X).
+````
+
+The `f(X)` and `g(a,b)` look like function calls, and `f` and `g` are even called _function symbols_ but there is no 
+intent to express an evaluation. `f(X)` and `g(a,b)` are just syntax to represent trees of stuff. Trees of stuff are also 
+called _terms_. If a term is a leaf of the tree, it is generally an _atom_ like `a`, also called a _constant_, or a variable like `X`. Otherwise it is a special atom appearing as a "functor", with subterms listed inside parenthesis. If the functor appears at the top level, it is a "predicate symbol", otherwise it is a _fucntion symbol_.
+
+Here, 
+
+- the variables are in deep blue;
+- the functors which appear as predicate symbols are in yellow;
+- the functors which appear as function symbols are in orange;
+- the constants are in purple;
+- "operators", which are just specially designated functors written in infix fashion, are in grey.
+
+![Prolog tree of stuff](pics/prolog_clause_explainer/Prolog%20Tree%20of%20Stuff.png)
+
+Back to:
+
+````
+h(X,Z) :- p(X,Y) , q(Y,Z,w) .
+````
+
+That line can be read in isolation of anything else in the logic program. None of the elements
+are determined by context. In other languages this is not the case: the meaning of `p(x)` depends on what `x` has
 been set to somewhere else in the code. Not so here.
 
 The line can be separated into the following parts:
