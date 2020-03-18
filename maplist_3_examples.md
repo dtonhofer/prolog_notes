@@ -25,6 +25,8 @@ The description for [`maplist/3`](https://eu.swi-prolog.org/pldoc/doc_for?object
 >
 > _"As maplist/2, operating on pairs of elements from two lists."_
 
+## The two lists are fully grounded
+
 The two maps given to `maplist/3` can be fully grounded (i.e. fully constrained), which is the first thing one
 would think of when one is used to functional or imperative programming:
 
@@ -51,6 +53,8 @@ A  call to `myprint/2` is replaced by a call to an "anonymous predicate" written
 true.
 ````
 
+## One of the lists is unconstrained
+
 If we leave the third argument (that is to say, the second _list_ argument) of `maplist/3` unconstrained, 
 we can make `maplist/3` work in the same way as the 
 [`map`](https://en.wikipedia.org/wiki/Map_(higher-order_function)) operation
@@ -62,43 +66,66 @@ Create a list of integers 0..10, then apply a function to each member.
 In the following code, instead of typing the list in, you can also create the "input list" using `bagof/3`.:
 
 ````
-?- bagof(X,between(0,10,X),In),maplist([X,Y]>>(X is Y/2),Out,In).
+?- bagof(X,between(0,10,X),In),
+   maplist([X,Y]>>(X is Y/2),Out,In).
+   
 In = [0,1,2,3,4,5,6,7,8,9,10],
 Out = [0,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5].
 ````
 )
 
-**One way.** Second list argument is the result of applying, a function to the first list argument, member-by-member:
+### The second list is constrained
+
+Second list argument is the result of applying, a function to the first list argument, member-by-member:
 
 ````
-?- maplist([X,Y]>>(Y is 2*X),[0,1,2,3,4,5,6,7,8,9,10],Out).
+?- maplist([X,Y]>>(Y is 2*X),
+           [0,1,2,3,4,5,6,7,8,9,10],
+	   Out).
+
 Out = [0,2,4,6,8,10,12,14,16,18,20].
 ````
 
 Note that `Out` is not even constrained to be a list at call time.
 
-**The other way.** First list argument is the result of applying, a function to the second list argument, member-by-member: 
+### The first list is constrained
+
+First list argument is the result of applying, a function to the second list argument, member-by-member: 
 
 ````
-?- maplist([X,Y]>>(X is Y/2),Out,[0,1,2,3,4,5,6,7,8,9,10]).
+?- maplist([X,Y]>>(X is Y/2),
+           Out,
+	   [0,1,2,3,4,5,6,7,8,9,10]).
+
 Out = [0,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5].
 ````
 
+### Both lists are constrained symmetrically
 
-**The symmetric way**. With the [`#=`](https://eu.swi-prolog.org/pldoc/doc_for?object=%23%3D%20/%202) constraint
+With the [`#=`](https://eu.swi-prolog.org/pldoc/doc_for?object=%23%3D%20/%202) constraint
 predicate of the library for "Constraint Logic Programming over Finite Domains", you can work "symmetrically":
 
 ````
 :- use_module(library(clpfd)).
-?- maplist([X,Y]>>(X #= Y-1),[0,S1,2],[S0,1,3]).
+
+?- maplist([X,Y]>>(X #= Y-1),
+           [0,S1,2],
+	   [S0,1,3]).
+
 S1 = 0,
 S0 = 1.
 ````
 
+## Notes 
+
 Of course we have the usual possibilities of unification. Here with side effects:
 
 ````
-?- maplist([X,Y]>>((Y is 2*X),format("~w\n",[(X,Y)])),[0,1,2,3,4,5,6,7,8,9,10],[0,2,A,6,8,10,12|R]).
+?- maplist([X,Y]>>((Y is 2*X),
+           format("~w\n",[(X,Y)])),
+	   [0,1,2,3,4,5,6,7,8,9,10],
+	   [0,2,A,6,8,10,12|R]).
+	   
 0,0
 1,2
 2,4
@@ -114,11 +141,15 @@ A = 4,
 R = [14,16,18,20].
 ````
 
-Unification, must, of course, succeed. This is not transactional, side-effects will be run before unification failure
+Unification, must succeed. This is not transactional, side-effects will be run before unification failure
 hits:
 
 ````
-?- maplist([X,Y]>>((Y is 2*X),format("~w\n",[(X,Y)])),[0,1,2,3,4,5,6,7,8,9,10],[0,2,A]).
+?- maplist([X,Y]>>((Y is 2*X),
+           format("~w\n",[(X,Y)])),
+	   [0,1,2,3,4,5,6,7,8,9,10],
+	   [0,2,A]).
+	   
 0,0
 1,2
 2,4
@@ -137,7 +168,10 @@ Here we want to call `verify/3` on
 ```
 verify(A,B,C) :- format("Received A = ~w, B = ~w, C = ~w\n",[A,B,C]).
 
-?- maplist(verify(6), [a,b,c,d,e,f], [X,Y,Z,x,y,z]).
+?- maplist(verify(6), 
+           [a,b,c,d,e,f],
+	   [X,Y,Z,x,y,z]).
+	   
 Received A = 6, B = a, C = _8442
 Received A = 6, B = b, C = _8448
 Received A = 6, B = c, C = _8454
@@ -150,7 +184,10 @@ true.
 This works for unconstrained variables (here, `K`) as well:
 
 ```
- ?- maplist(verify(K), [a,b,c,d,e,f], [X,Y,Z,x,y,z]).
+ ?- maplist(verify(K),
+            [a,b,c,d,e,f],
+	    [X,Y,Z,x,y,z]).
+	    
 Received A = _8402, B = a, C = _8442
 Received A = _8402, B = b, C = _8448
 Received A = _8402, B = c, C = _8454
@@ -163,7 +200,10 @@ true.
 Use `library(yall)` to move values around:
 
 ```
-?- maplist([Arg1,Arg2]>>verify(Arg1,6,Arg2), [a,b,c,d,e,f], [X,Y,Z,x,y,z]).
+?- maplist([Arg1,Arg2]>>verify(Arg1,6,Arg2),
+           [a,b,c,d,e,f],
+	   [X,Y,Z,x,y,z]).
+	   
 Received A = a, B = 6, C = _18906
 Received A = b, B = 6, C = _18912
 Received A = c, B = 6, C = _18918
