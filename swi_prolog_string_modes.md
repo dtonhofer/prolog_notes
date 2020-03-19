@@ -1,6 +1,8 @@
 # SWI Prolog strings modes: How is something enclosed by double quotes `"` interpreted?
 
-(This page is also reachable via http://bit.ly/2TtLV0H_prolog)
+- This page is also reachable via http://bit.ly/2TtLV0H_prolog
+
+## Intro
 
 This is an SWI-Prolog specific extension to ISO-conforming Prolog: 
 
@@ -19,7 +21,7 @@ The flag `double_quotes` and a host of others are described in section
 
 Note that a string can contain NUL characters (value 0), unlike for C strings.
 
-## portray_text
+## `portray_text`
 
 There is also a library to set whether lists of integers are printed out as strings:
 
@@ -30,279 +32,229 @@ Which is no longer the SWI-Prolog way.
 
 TODO: Does that library really do something?
 
-## Testing this
+## Trying it out
 
 We use 
 
-- [`string/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=string/1) to test for "stringy-ness".
+- [`string/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=string/1) to test for "stringy-ness". This only succeeds if
+  passed the SWI-Prolog specific "string" type.
+. [`format/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=format/2) with `~w`, which calls  
 - [`write/1`](https://eu.swi-prolog.org/pldoc/man?predicate=write/1) to write a string as term.
 
-### Default mode for SWI Prolog
 
-`set_prolog_flag(double_quotes,string).`
+To transform various forms of "text representation" back into the SWI-Prolog _string_ use:
+
+- [`text_to_string/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=text_to_string/2)
+
+Note that it does not seem to be possible to change the `double_quotes` flag "in flight". You have to issue the
+`set_prolog_flag/2` command at the toplevel, or (I imagine) as a directive in source code. If you issue it in a clause
+body, it doesn't take effect. This makes sense, as the option changes the behaviour of the reader, so calling
+it from a read-in and compiled program is dubious.
+
+Below REPL ouput is preceded with `%`  so that you can copy-paste the text with wild abandon.
+(Prolog's prompt is `?-` ... it should really by `%-` to allow copypastaing. And a line preceded with `|:` should
+directly be interpreted as source entered at the REPL.)
+
+### Default mode for SWI Prolog: `set_prolog_flag(double_quotes,string).`
 	
-Something written as `"..."` designates an instance of the particular SWI Prolog type _string_.
-
-#### Nonempty string
-
-It's not a list:
+Something written in between double quotes `"..."` is mapped to the SWI Prolog type _string_.
 
 ````
-?- [F|_]="a".
-false.
+set_prolog_flag(double_quotes,string).
 ````
 
-It's a _string_:
-
 ````
-?- string("ab").
-true.
-````
+maplist([L,R]>>(string(L) -> R = 'string'; R = 'no'), 
+         ["xx",'xx',xx,""], 
+         Out).
 
-#### Empty string
-
-Also a "string" according to `string/1`!
-
-````
-?- string("").
-true.
+% Out = [string, no, no, string].
 ````
 
-What happens when we term-write it?
-
 ````
-?- write("").
-true.
-````
+maplist([X]>>format("string: ~s, term: ~w\n",[X,X]),["xx",'xx',xx,""]).
 
-#### Writing the nonempty string
-
-Term-writing it:
-
-````
-?- write("hello, ▽△ ¡ €").
-hello, ▽△ ¡ €
-true.
+% string: xx, term: xx
+% string: xx, term: xx
+% string: xx, term: xx
+% string: , term: 
 ````
 
-Writing using [`format/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=format/2) with `~w`, which calls
-[`write/1`](https://eu.swi-prolog.org/pldoc/man?predicate=write/1), writing the term, same as above:
+In the snippet below, format strings are given as double-quoted strings:
 
 ````
-?- format("~w",["hello, ▽△ ¡ €"]).
-hello, ▽△ ¡ €
-true.
+out(I) :- format("read: ~w\n", [I]), 
+          text_to_string(I,S), 
+          format("out-term: ~w\nout-string: ~s\n", [S,S]).
+	  
+out("Hello, World!").
+
+% read: Hello, World!
+% out-term: Hello, World!
+% out-string: Hello, World!
 ````
 
-Writing using [`format/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=format/2) with `~s` (_"Output text from
-a list of character codes or a string from the next argument"_):
+### Traditional: ISO-conforming Prolog: `set_prolog_flag(double_quotes,codes).`
 
-````
-?- format("~s",["hello, ▽△ ¡ €"]).
-hello, ▽△ ¡ €
-true.
-````
-
-### Traditional: ISO-conforming Prolog
-
-`set_prolog_flag(double_quotes,codes).`
-
-Something written as `"..."` designates a list of character codes (i.e. integers >= 0).
+Something written in between double quotes `"..."` is mapped to a list of character codes (i.e. integers >= 0).
 
 In SWI Prolog, the character codes correspond to **Unicode** character points. 
 See: [Unicode Prolog source](https://eu.swi-prolog.org/pldoc/man?section=unicodesyntax)
 
-#### Nonempty string
-
-It's a list of _integer_:
-
-````
-?- [F|_]="a",integer(F).
-F = 97.
-````
-
-It is not a _string_:
+Using his is useful if you want to create a list of character codes from double-quoted quickly at the REPL. 
+(But when do you need to do that?)
 
 ````
-?- string("ab").
-false.
+set_prolog_flag(double_quotes,codes). 
 ````
 
-#### Empty string
-
-Term-writing it gives the empty list (because it's a list of zero characters):
-
 ````
-?- write("")
-[]
-true.
+maplist([L,R]>>((L=[A|_],integer(A)) -> R = 'list-of-int'; R = 'no'), 
+         ["xx",'xx',xx,""], 
+         Out).
+	   
+% Out = ['list-of-int', no, no, no].
 ````
 
-Still not a _string_:
+The empty double-quoted "thing" is the empty list, as expected:
 
 ````
-?- string("").
-false.
+"" = [].
+
+% true
 ````
 
-#### Writing the nonempty string
+````
+maplist([X]>>format('string: ~s, term: ~w\n',[X,X]),["xx",'xx',xx,""]).
 
-Term-writing it results in a list of character:
+% string: xx, term: [120,120]
+% string: xx, term: xx
+% string: xx, term: xx
+% string: , term: []
+````
+
+In the snippet below, format strings are given as single-quoted strings (i.e. atoms) to avoid them being
+transformed into lists, utterly confusing `format/2`:
 
 ````
-?- write("hello, ▽△ ¡ €").
-[104,101,108,108,111,44,32,9661,9651,32,161,32,8364]
-?- format("~w",["hello, ▽△ ¡ €"]).
-[104,101,108,108,111,44,32,9661,9651,32,161,32,8364]
+out(I) :- format('read: ~w\n', [I]), 
+          text_to_string(I,S), 
+          format('out-term: ~w\nout-string: ~s\n', [S,S]).
+	  
+out("Hello, World!").
+
+% read: [72,101,108,108,111,44,32,87,111,114,108,100,33]
+% out-term: Hello, World!
+% out-string: Hello, World!
+````
+
+Trying out non-ASCII:
+
+````
+write("hello, ▽△ ¡ €").
+
+% [104,101,108,108,111,44,32,9661,9651,32,161,32,8364]
+
+format('~w',["hello, ▽△ ¡ €"]).
+% [104,101,108,108,111,44,32,9661,9651,32,161,32,8364]
 ````
 
 Note that the EURO sign for example is correctly mapped to Unicode `0x8364` and not to
 something arcane like, say "Windows Codepage 1250" `0x80`.
 
-If you leave out one level or brackets for `format/2` with `~w` by mistake:
+The code 0x80 for example is silently accepted (although it is not a valid Unicode code point):
 
 ````
-?- format("~w","hello, ▽△ ¡ €").
-104
+format("~s",[[128]]).
+
+% true.
 ````
 
-Get the string back using `~s`:
+### String as a list of atoms: `set_prolog_flag(double_quotes,chars).` 
+
+Something written in between double quotes `"..."` is mapped to a list of atoms. 
 
 ````
-?- format("~s",["hello, ▽△ ¡ €"]).
-hello, ▽△ ¡ €
+set_prolog_flag(double_quotes,chars). 
 ````
 
-If you leave out one level or brackets for format/2 with `~s` by mistake:
-
 ````
-?- format("~s","hello, ▽△ ¡ €").
-ERROR: Illegal argument to format sequence ~s: 104
-````
-
-Note that code 0x80 for example is silently accepted (although it is not a valid Unicode code point):
-
-````
-?- format("~s",[[128]]).
-
-true.
+maplist([L,R]>>((L=[A|_],atom(A)) -> R = 'list-of-atom'; R = 'no'), 
+        ["xx",'xx',xx,""], 
+        Out).
+	
+% Out = ['list-of-atom', no, no, no].	   
 ````
 
-### A list of atoms
-
-`set_prolog_flag(double_quotes,chars).` 
-
-Something written as `"..."` designates a list of atoms. 
-A single char is mapped to an _atom_ (which is a symbol that stands for itself).
-Useful if you want to specify lists of atoms in your code (to avoid quoting for example).	
-
-#### Nonempty string
-
-It's a list of atom!
+The empty double-quoted "thing" is the empty list, as expected:
 
 ````
-?- [F|_]="a",atom(F).
-F = a.
+"" = [].
+
+% true
 ````
 
-It is not a _string_:
-
 ````
-?- string("ab").
-false.
-````
+maplist([X]>>format('string: ~s, term: ~w\n',[X,X]),["xx",'xx',xx,""]).
 
-#### Empty string
-
-Term-writing it gives the empty list:
-
-````
-?- write("").
-[]
-true.
+string: xx, term: [x,x]
+string: xx, term: xx
+string: xx, term: xx
+string: , term: []
 ````
 
-Still not a _string_:
-
 ````
-?- string("").
-false.
-````
+out(I) :- format('read: ~w\n', [I]), 
+          text_to_string(I,S), 
+          format('out-term: ~w\nout-string: ~s\n', [S,S]).
+	  
+out("Hello, World!").
 
-#### Nonempty string
-
-The text withing `"..."` is decomposed into a list of atoms (are there any characters that cannot appear in an atom?):
-
-````
-?- write("hello, ▽△ ¡ €").
-[h,e,l,l,o,,, ,▽,△, ,¡, ,€]
+% read: [H,e,l,l,o,,, ,W,o,r,l,d,!]
+% out-term: Hello, World!
+% out-string: Hello, World!  
 ````
 
-Same as:
+### String as a single atom: `set_prolog_flag(double_quotes,atom).` 
+
+Something written in between double quotes `"..."` is mapped to a single atom.
 
 ````
-?- format("~w",["hello, ▽△ ¡ €"]).
-[h,e,l,l,o,,, ,▽,△, ,¡, ,€]
+set_prolog_flag(double_quotes,atom). 
 ````
 
-Get the string back using `~s`:
-
 ````
-?- format("~s",["hello, ▽△ ¡ €"]).
-hello, ▽△ ¡ €
-````
+maplist([L,R]>>(atom(L) -> R = 'atom'; R = 'no'), 
+        ["xx",'xx',xx,""], 
+        Out).
 
-### Just an atom
-
-`set_prolog_flag(double_quotes,atom).` 
-
-Something written as `"..."` designates a single atom (when is this useful?)
-
-````
-?- atom("ab").
-true.
+% Out = [atom, atom, atom, atom].
 ````
 
-It is not a _string_:
+It's a bit weird that the "empty atom" even exists, but it does:
 
 ````
-?- string("ab").
-false.
+atom("").
+
+% true.
 ````
 
-#### Empty string
-
-Results in the _empty atom_.
-
 ````
-?- write("").
-true.
+maplist([X]>>format('string: ~s, term: ~w\n',[X,X]),["xx",'xx',xx,""]).
 
-?- atom("").
-true.
-
-?- string("").
-false.
+% string: xx, term: xx
+% string: xx, term: xx
+% string: xx, term: xx
+% string: , term: 
 ````
 
-#### Nonempty string
-
 ````
-?- atom("hello, ▽△ ¡ €").
-true.
-````
-
-Get the string back using `~w`
-
-````
-?- format("~w",["hello, ▽△ ¡ €"]).
-hello, ▽△ ¡ €
-true.
-````
-
-Get the string back using ~s
-
-````
-?- format("~s",["hello, ▽△ ¡ €"]).
-hello, ▽△ ¡ €
+out(I) :- format('read: ~w\n', [I]), 
+          text_to_string(I,S), 
+          format('out-term: ~w\nout-string: ~s\n', [S,S]).
+	  
+% ?- out("Hello, World!").
+% read: Hello, World!
+% out-term: Hello, World!
+% out-string: Hello, World!
 ````
