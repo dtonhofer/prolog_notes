@@ -26,11 +26,11 @@ The description for [`maplist/2`](https://eu.swi-prolog.org/pldoc/doc_for?object
 > _"True if Goal can successfully be applied on all elements of List. Arguments are reordered to 
 > gain performance as well as to make the predicate deterministic under normal circumstances."_
 
-So, what can we do with this?
+That actually sounds like a `for` loop, or a [`foreach`](https://perldoc.perl.org/perlsyn.html#Foreach-Loops) loop.
 
-## Testing list items
+## Example usage: processing list items
 
-For one, we can us it to apply an _individual_ test on all items (aka. member or elements) of a list. 
+We can use `maplist` to apply an _individual_ test on all items of a list. 
 Why individual? There is no way to pass state between invocations of the Goal given to `maplist/2` (unless
 you do dirty coding) so performing _max_, _min_ and similar full-list operations cannot be done with `maplist/2`.
 Use the neighboring `foldl`, `scanl` or homegrown predicates for this. 
@@ -179,7 +179,7 @@ verify(2 < 2)
 false.
 ````
 
-## Computing results
+## Example usage: Computing a result for each element of a list
 
 Although it is far better to use [`maplist/3`](https://www.swi-prolog.org/search?for=maplist%2F3)
 for this, `maplist/2` can also be used for computing results:
@@ -201,7 +201,7 @@ S3 = 2.0.
 
 Sounds artificial? Well, yes.
 
-## Generating lists
+## Example usage: Generating lists
 
 We can also generate lists.
 
