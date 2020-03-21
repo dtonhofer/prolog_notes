@@ -265,3 +265,59 @@ L = [1, 0, 1] ;
 L = [1, 1, 0] ;
 L = [1, 1, 1].
 ````
+
+---+ Addendum: Crazy idea: Using `maplist/2` to copy a list the hard way
+
+This code regenerates the list passed to `maplist/2` by re-constructing said list in the variable given byy the first argument of the predicate passed to `maplist/2`. This variable gets updated step-by-step.
+
+I think this is strongly linked to "difference lists", but how?
+
+````
+% "Append" Elem to the "List with dangling tail" "Conses" by going down the chain
+% until the dangling tail is found, then setting it to another consbox containing
+% Elem in head position
+
+consify(Conses,Elem) :- 
+   var(Conses),
+   Conses = [Elem|_RestConses].
+   
+consify(Conses,Elem) :- 
+   \+var(Conses),
+   Conses = [_|RestConses],
+   consify(RestConses,Elem).
+
+% Make a list of "Conses" by constraining/patching its dangling "rightmost tail", 
+% still a variable, with '[]'
+
+listify(Conses) :-
+   var(Conses),
+   format("Conses is var and will now be constrained to be []. The end!\n"),
+   Conses = [].
+   
+listify(Conses) :-
+   \+var(Conses),
+   Conses = [_|BackOfList], 
+   format("Conses is not var but ~w\n",Conses),
+   listify(BackOfList).
+````  
+ 
+```` 
+?- maplist(consify(Conses),[1,2,3,4,X,Y,Z]), 
+   listify(Conses).
+   
+Conses is not var but [1,2,3,4,_26266,_26272,_26278|_26954]
+Conses is not var but [2,3,4,_26266,_26272,_26278|_26954]
+Conses is not var but [3,4,_26266,_26272,_26278|_26954]
+Conses is not var but [4,_26266,_26272,_26278|_26954]
+Conses is not var but [_26266,_26272,_26278|_26954]
+Conses is not var but [_26272,_26278|_26954]
+Conses is not var but [_26278|_26954]
+Conses is var and will now be constrained to be []. The end!
+Conses = [1, 2, 3, 4, X, Y, Z] ;
+```` 
+
+Idle thoughts: 
+
+- The above looks like the self-modifying code of logic programming, the state of the computation has direct influence on the predicate values; there should probably be some special syntax to highlight this.
+- There is some mixup in Prolog in "looking at what is the content of a variable without modifying it" (meta) and updating a variable with constraints (i.e. setting it to term, possibly containing other variables) (in-language).
+- Predicates should say whether they are "trapdoor" ("do not constrain further").
