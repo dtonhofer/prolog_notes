@@ -266,7 +266,7 @@ L = [1, 1, 0] ;
 L = [1, 1, 1].
 ````
 
----+ Addendum: Crazy idea: Using `maplist/2` to copy a list the hard way
+## Addendum: Crazy idea: Using `maplist/2` to copy a list the hard way
 
 This code regenerates the list passed to `maplist/2` by re-constructing said list in the variable given byy the first argument of the predicate passed to `maplist/2`. This variable gets updated step-by-step.
 
@@ -316,7 +316,7 @@ Conses is var and will now be constrained to be []. The end!
 Conses = [1, 2, 3, 4, X, Y, Z] ;
 ```` 
 
-Idle thoughts: 
+**Idle thoughts:**
 
 - The above looks like the self-modifying code of logic programming, the state of the computation has direct influence on the predicate values; there should probably be some special syntax to highlight this.
 - There is some mixup in Prolog in "looking at what is the content of a variable without modifying it" (meta) and updating a variable with constraints (i.e. setting it to term, possibly containing other variables) (in-language).
