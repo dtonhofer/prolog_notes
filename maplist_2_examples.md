@@ -30,7 +30,7 @@ The description for [`maplist/2`](https://eu.swi-prolog.org/pldoc/doc_for?object
 
 That actually sounds like a `for` loop, or a [`foreach`](https://perldoc.perl.org/perlsyn.html#Foreach-Loops) loop.
 
-It's all about a predicate (or a more complex goal) to members of a known list of elements, which may or may not be variables. The list must be of known length,as there is no way to have the called predicate or goal tell `maplist/2` that it should stop now going through the list: returning `false` will cause `amplist/2` to fail, and variable constraints built during its run will be rolled back.
+It's all about applying a predicate (or a more complex goal) to members of a list of elements, which may be fully or partially ground. The list must be of **known length**, as there is no way to have the called predicate or goal tell `maplist/2` that it should stop now going through the list: returning `false` will cause `maplist/2` to fail, and variable constraints built up during its run will be rolled back.
 
 **Applications**
 
