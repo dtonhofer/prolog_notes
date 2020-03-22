@@ -8,7 +8,9 @@
 A few examples for the predicate [`maplist/2`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/2) 
 from [library(apply)](https://eu.swi-prolog.org/pldoc/man?section=apply) as run with SWI-Prolog.
 
-`library(apply)`: _"This module defines meta-predicates that apply a predicate on all members of a list."_
+> `library(apply)`
+>
+> This module defines meta-predicates that apply a predicate on all members of a list.
 
 In order for lists to be printed fully instead of elided at their end with ellipses ("`|...`") you may have
 to first call:
@@ -23,8 +25,8 @@ The description for [`maplist/2`](https://eu.swi-prolog.org/pldoc/doc_for?object
 
 > `maplist(:Goal, ?List)`
 >
-> _"True if Goal can successfully be applied on all elements of List. Arguments are reordered to 
-> gain performance as well as to make the predicate deterministic under normal circumstances."_
+> True if Goal can successfully be applied on all elements of List. Arguments are reordered to 
+> gain performance as well as to make the predicate deterministic under normal circumstances.
 
 That actually sounds like a `for` loop, or a [`foreach`](https://perldoc.perl.org/perlsyn.html#Foreach-Loops) loop.
 
@@ -64,7 +66,7 @@ true.
 false.
 ````
 
-For a somewhat unhinged use of "applying a predicate to each list member", seel the end of this page.
+For a somewhat unhinged use of "applying a predicate to each list member", see the very end of this page.
 
 ## Example usage: verifying list items
 
