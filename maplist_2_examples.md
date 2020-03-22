@@ -28,7 +28,45 @@ The description for [`maplist/2`](https://eu.swi-prolog.org/pldoc/doc_for?object
 
 That actually sounds like a `for` loop, or a [`foreach`](https://perldoc.perl.org/perlsyn.html#Foreach-Loops) loop.
 
-## Example usage: processing list items
+It's all about a predicate (or a more complex goal) to members of a known list of elements, which may or may not be variables. The list must be of known length,as there is no way to have the called predicate or goal tell `maplist/2` that it should stop now going through the list: returning `false` will cause `amplist/2` to fail, and variable constraints built during its run will be rolled back.
+
+**Applications**
+
+Writing the list members (partially or fully ground) out to some data sink:
+
+````
+% writing terms, the last of which happens to be  a variable
+?- maplist(write,["a-","b-","c-",X]).
+a-b-c-_8002
+true.
+````
+
+Reading the list members (partially or fully ground) from some data source:
+
+````
+?- maplist(read,[X,f(Y,Z),c]).
+|: "Hello, World".
+|: f(1000,2201).
+|: c.
+
+X = "Hello, World",
+Y = 1000,
+Z = 2201.
+````
+
+Applying a predicate to each list member. 
+
+````
+?- maplist(atom,[a,c,d]).
+true.
+
+?- maplist(atom,[a,[],d]).
+false.
+````
+
+For a somewhat unhinged use of "applying a predicate to each list member", seel the end of this page.
+
+## Example usage: verifying list items
 
 We can use `maplist` to apply an _individual_ test on all items of a list. 
 Why individual? There is no way to pass state between invocations of the Goal given to `maplist/2` (unless
