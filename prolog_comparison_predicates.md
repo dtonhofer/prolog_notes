@@ -16,13 +16,13 @@ The vocabulary is not clear...
 - Predicate
 - Constraint
 - Operator
+- Functions. "Functions are terms that can appear in the argument of (the predicates) is/2, =:=/2, >/2, etc." But notation os the same as for predicates. `functor/arity`
 
 ## The `=` predicate: "do the terms unify?"
 
 This is classed under:
 
-- [Comparison and unification of terms](https://eu.swi-prolog.org/pldoc/man?section=compare)
-   - [Predicate `=/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3D)/2) 
+[Comparison and unification of terms](https://eu.swi-prolog.org/pldoc/man?section=compare)/[Predicate `=/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3D)/2) 
 
 > `?Term1 = ?Term2`: Unify `Term1` with `Term2`. True if the unification succeeds. 
 > or behaviour on cyclic terms see the Prolog flag 
@@ -34,7 +34,7 @@ This is classed under:
 
 **Negation using NAF**
 
-- [\=](https://eu.swi-prolog.org/pldoc/doc_for?object=(%5C%3D)/2) 
+[\=](https://eu.swi-prolog.org/pldoc/doc_for?object=(%5C%3D)/2) 
 
 > Equivalent to `\+(Term1 = Term2)`.
 > This predicate is logically sound if its arguments are sufficiently instantiated. In other cases,
@@ -50,10 +50,8 @@ This is really not a predicate, it is a special instruction to trigger evaluatio
 
 This is classed under:
 
-- [Arithmetic](https://eu.swi-prolog.org/pldoc/man?section=arith)
-   - [General purpose arithmetic](https://eu.swi-prolog.org/pldoc/man?section=arithpreds)
-      - [Predicate is](https://eu.swi-prolog.org/pldoc/doc_for?object=(is)/2)
-            
+[Arithmetic](https://eu.swi-prolog.org/pldoc/man?section=arith)/[General purpose arithmetic](https://eu.swi-prolog.org/pldoc/man?section=arithpreds)/[Predicate is](https://eu.swi-prolog.org/pldoc/doc_for?object=(is)/2)
+  
 > `-Number is +Expr`: True when _Number_ is the value to which _Expr_ evaluates. 
 > Typically, `is/2` should be used with unbound left operand. If equality is to be
 > tested, =:=/2 should be used. 
