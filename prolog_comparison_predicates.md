@@ -263,7 +263,8 @@ ERROR: Type error: ...
 
 **TL;DR**
 
-There is generally no good reason to use these!
+- For `\==/2`:  This is probably not what you want:  Use `dif/2` instead of `\==/2` to keep the program declarative.
+- For `==/2`: This is a stronger statement than unification. Is it really what you want? You may want `=/2` (unification) or even `\+(\+(X=Y))` (to dump any unifier in case of unification success), instead of `==`.
 
 **Found under**
 
@@ -301,6 +302,26 @@ The results for the exact same LHS and RHS may vary depending on the state of th
 LHS = RHS, RHS = f(g(Y)),
 X = Y.
 ```
+
+Or even simpler, program result changes by rearranging the predicate calls (this should not be the case in a 
+"pure" logic program)
+
+```Logtalk
+? LHS \== RHS, LHS = RHS.
+LHS = RHS.
+
+? LHS = RHS, LHS \== RHS.
+false.
+```
+
+**Performance considerations**
+
+If one is looking for speed, then it would be resasonable to expect `\==` (it can fail fast when comparing trees and does
+not need to build a unifier) to be faster than `\+ \=` (NAF of NAF of unification). 
+
+If one can ensure that at the point of use of `\==`, further refinement of terms would not the success of `\==` result when moving rightwards in the clause (which all depends on the terms being sufficiently grounded at the time of the test), then the use `\==` is certainly justified. 
+
+On the other hand `==` is a really strong statement. Whatever refinement happens, `==` will remain true.
 
 **Examples**
 
@@ -373,16 +394,14 @@ false.
 
 On the other hand, if two terms are equivalent, then they will unify with a trivial MGU consisting in variable renaming.
 
-This is not about arithmetic equivalence! It is term equivalence:
+This is not about arithmetic equivalence either!
 
 ```Logtalk
-?- 1.0 == 1.
-false.
-```
-
-```Logtalk
-?- 1.0 =:= 1.
+?- 1.0 =:= 1.  % These terms are "arithmetically equivalent"
 true.
+
+?- 1.0 == 1.   % But these same terms are NOT "term-equivalent"
+false.
 ```
 
 ## `=:=` and `=\=`: Arithmetic equality and inequality tests
@@ -484,25 +503,7 @@ See _declarative integer arithmetic_ ([section A.9.3](https://eu.swi-prolog.org/
 
 **Dicussion**
 
-When LHS and RHS are fully ground terms (no variables), then `dif/2` and `\=/2` are the same things:
-
-```Logtalk
-?- dif(a,b).
-true.
-
-?- \=(a,b).
-true.
-```
-If subtree of the terms are non-ground, it's still the same thing, as long as the procedures can determine that LHS and 
-RHS are sufficiently different that they cannot unify:
-
-```Logtalk
-?- dif(f(X,b),f(Y,c)).
-true.
-
-?- f(X,b) \= f(Y,c).
-true.
-```
+In [https://stackoverflow.com/questions/13757261/using-2-or-dif-2/13770020)
 
 
 
