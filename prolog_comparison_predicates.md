@@ -261,6 +261,10 @@ ERROR: Type error: ...
 
 ## `==` and `\==`: Term equivalence and non-equivalence
 
+**TL;DR**
+
+There is generally no good reason to use these!
+
 **Found under**
 
 - [Comparison and Unification of terms](https://eu.swi-prolog.org/pldoc/man?section=compare)
@@ -270,7 +274,7 @@ ERROR: Type error: ...
 
 > `@Term1 == @Term2`:
 > 
-> True if `Term1` is equivalent to `Term2`. A variable is only identical (should be "equivalent") to a sharing variable.
+> True if `Term1` is equivalent to `Term2`. A variable is only identical (should be "equivalent"?) to a sharing variable.
 
 The negation is implemented using negation-as-failure:
 
@@ -278,7 +282,25 @@ The negation is implemented using negation-as-failure:
 >
 > Equivalent to `\+(Term1 == Term2)`.
 
-Note the `@` mode of the declaration, indicating that `==` does not constrain (does not instantiate) the passed terms any further.
+Note the `@` mode of the declaration, indicating that `==` does not constrain (does not instantiate) the passed terms any further. In fact, it cannot. If the equivalence test fails, no additional constraints can persist. If the equivalence test
+passes, the terms are the same module variable names.
+
+Note that this is a "non-logical" predicate: It doesn't say anything about the problem constraints, it examines the
+state of the computation at the moment of the call. It is a predicate for control and branch management. It could be 
+of some use in a meta-interpreter.
+
+The results for the exact same LHS and RHS may vary depending on the state of the computation:
+
+```Logtalk
+?- LHS=f(g(X)), 
+   RHS=f(g(Y)), 
+   LHS\==RHS,  % not equivalent at this point
+   X=Y,
+   LHS==RHS.   % equivalent at this point
+   
+LHS = RHS, RHS = f(g(Y)),
+X = Y.
+```
 
 **Examples**
 
@@ -338,7 +360,7 @@ X = Y.
 A = B, B = f(X).
 ```
 
-This is not unification. Although the following two terms unify, they are clearly not equivalent:
+This is not unification! Although the following two terms unify, they are clearly not equivalent:
 
 ```Logtalk
 ?- f(g(X),A) = f(B,h(Y)).
@@ -349,7 +371,9 @@ B = g(X).
 false.
 ```
 
-This is not arithmetic equivalence, but term equivalence:
+On the other hand, if two terms are equivalent, then they will unify with a trivial MGU consisting in variable renaming.
+
+This is not about arithmetic equivalence! It is term equivalence:
 
 ```Logtalk
 ?- 1.0 == 1.
@@ -457,4 +481,33 @@ See _declarative integer arithmetic_ ([section A.9.3](https://eu.swi-prolog.org/
 > 
 > The `dif/2` predicate is realised using attributed variables associated with the module `dif`. It is an autoloaded
 > predicate that is defined in the library `library(dif)`.
+
+**Dicussion**
+
+When LHS and RHS are fully ground terms (no variables), then `dif/2` and `\=/2` are the same things:
+
+```Logtalk
+?- dif(a,b).
+true.
+
+?- \=(a,b).
+true.
+```
+If subtree of the terms are non-ground, it's still the same thing, as long as the procedures can determine that LHS and 
+RHS are sufficiently different that they cannot unify:
+
+```Logtalk
+?- dif(f(X,b),f(Y,c)).
+true.
+
+?- f(X,b) \= f(Y,c).
+true.
+```
+
+
+
+
+
+
+
 
