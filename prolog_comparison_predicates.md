@@ -38,6 +38,11 @@ The vocabulary is a bit confusing...
 
 ## `=`: Unification  <a name="unification"></a>
 
+**Found under**
+
+- [Comparison and unification of terms](https://eu.swi-prolog.org/pldoc/man?section=compare)
+- ...[Predicate `=/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3D)/2) 
+
 **Description**
 
 > `?Term1 = ?Term2`
@@ -46,11 +51,6 @@ The vocabulary is a bit confusing...
 > For behaviour on cyclic terms see the Prolog flag 
 > [occurs_check](https://eu.swi-prolog.org/pldoc/man?section=flags#flag:occurs_check). 
 > It acts as if defined by the following fact: `=(Term, Term).`
-
-**Found under**
-
-- [Comparison and unification of terms](https://eu.swi-prolog.org/pldoc/man?section=compare)
-- ...[Predicate `=/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3D)/2) 
 
 **Can be read as**
 
@@ -119,11 +119,17 @@ String vs. Atom:
 false.
 ```
 
-### Negation of `=` using NAF: `\=`
+## `\=`: Negation of `=` using negation-as-failure
+
+**Found under**
+
+- [Comparison and unification of terms](https://eu.swi-prolog.org/pldoc/man?section=compare)
+- ...[Predicate `\=`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%5C%3D)/2)
 
 **Description**
 
 > Equivalent to `\+(Term1 = Term2)`.
+>
 > This predicate is logically sound if its arguments are sufficiently instantiated. In other cases,
 > such as `?- X \= Y.`, the predicate fails although there are solutions. This is due to the incomplete
 > nature of `\+/1`.
@@ -131,10 +137,6 @@ false.
 > To make your programs work correctly also in situations where the arguments are not yet sufficiently
 > instantiated, use `dif/2` instead.
 
-**Found under**
-
-- [Comparison and unification of terms](https://eu.swi-prolog.org/pldoc/man?section=compare)
-- ...[Predicate `\=`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%5C%3D)/2)
 
 **Can be read as**
 
@@ -197,7 +199,7 @@ Left = f(G, 1),
 Right = f(1, H).
 ```
 
-## `is`: Evaluate, then unify  <a name="evaluate_then_unify"></a>
+## `is`: Evaluate, then unify
 
 This is really not a predicate, it is a special instruction to trigger evaluation (reduction?) of a function 
 on the right-hand side and unify the (always numeric?) result with the left-hand side.
@@ -256,17 +258,24 @@ This should really work but doesn't. Why? Historical reasons! Maybe this will ch
 ERROR: Type error: ...
 ```
 
-## `==`: Term equivalence <a href="term_equivalence"></a>
+## `==` and `\==`: Term equivalence and non-equivalence
 
 **Found under**
 
 - [Comparison and Unification of terms](https://eu.swi-prolog.org/pldoc/man?section=compare)
 - ...[Standard Order of Terms](https://eu.swi-prolog.org/pldoc/man?section=standardorder)
 - ......[Predicate `==/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3D%3D)/2)
+- ......[Predicate `\==`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%5C%3D%3D)/2)
 
 > `@Term1 == @Term2`:
 > 
 > True if `Term1` is equivalent to `Term2`. A variable is only identical (should be "equivalent") to a sharing variable.
+
+The negation is implemented using negation-as-failure:
+
+> `@Term1 \== @Term2`:
+>
+> Equivalent to `\+(Term1 == Term2)`.
 
 Note the `@` mode of the declaration, indicating that `==` does not constrain (does not instantiate) the passed terms any further.
 
@@ -351,42 +360,75 @@ false.
 true.
 ```
 
-**Negation using NAF: [\==](https://eu.swi-prolog.org/pldoc/doc_for?object=(%5C%3D%3D)/2)**
+## `=:=` and `=\=`: Arithmetic equality and inequality tests
 
-> Equivalent to `\+Term1 == Term2`.
-
-## `=:=`: Arithmetical equality test <a href="artihmetical_equality_test"></a>
-
-This is classed under:
+**Found under**
 
 - [Arithmetic](https://eu.swi-prolog.org/pldoc/man?section=arith)
 - ...[General purpose arithmetic](https://eu.swi-prolog.org/pldoc/man?section=arithpreds)
-- ......[Predicate =:=](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3D%3A%3D)/2)
+- ......[Predicate `=:=`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3D%3A%3D)/2)
+- ......[Predicate `=\=`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3D%5C%3D)/2)
 
-> `+Expr1 =:= +Expr2`: True if expression `Expr1` evaluates to a number equal to `Expr2`.
+> `+Expr1 =:= +Expr2`
+>
+> True if expression `Expr1` evaluates to a number equal to `Expr2`.
     
-**Negation: [`=\=`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3D%5C%3D)/2)**
+>`+Expr1 =\= +Expr2`
+>
+> True if expression `Expr1` evaluates to a number non-equal to `Expr2`.
 
->`+Expr1 =\= +Expr2`: True if expression `Expr1` evaluates to a number non-equal to `Expr2`.
-      
-## `#=`: Arithmetical equality constraint <a href="arithmetical_equality_constraint"></a>
+**Examples**
 
-This is classed under:
+```Logtalk
+?- 4 =:= 4.
+true.
+
+?- 4 =:= 4.0.
+true.
+
+?- 4 =:= 4.00001.
+false.
+
+?- 1*10 =:= 2+3+5.
+true.
+
+?- 1*10 =:= 2+3+5+epsilon.
+true.
+
+?- cos(X) =\= sin(X).
+ERROR: Arguments are not sufficiently instantiated
+
+?- X=pi, cos(X) =\= sin(X).
+X = pi.
+```
+
+## `#=` and `#\=`: Arithmetic equality/inequality constraints over the integers
+
+**Found under**
 
 - [library(clpfd): CLP(FD): Constraint Logic Programming over Finite Domains](https://eu.swi-prolog.org/pldoc/man?section=clpfd)
-- ...[arithmetic constraints](https://eu.swi-prolog.org/pldoc/man?section=clpfd-arith-constraints)
-- ......[predicate #=](https://eu.swi-prolog.org/pldoc/doc_for?object=%23%3D%20/%202)
+- ...[Arithmetic Constraints](https://eu.swi-prolog.org/pldoc/man?section=clpfd-arith-constraints)
+- ......[Predicate `#=`](https://eu.swi-prolog.org/pldoc/doc_for?object=%23%3D%20/%202)
+- ......[Predicate `#\=/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=%23%5C%3D%20/%202)
 
-> `?X #= ?Y`: The arithmetic expression `X` equals `Y`. This is the most important arithmetic constraint
+**Description**
+
+> `?X #= ?Y`
+> 
+> The arithmetic expression `X` equals `Y`. This is the most important arithmetic constraint
 > ([section A.9.2](https://eu.swi-prolog.org/pldoc/man?section=clpfd-arith-constraints)), subsuming
-> and replacing both `(is)/2` and `(=:=)/2` over integers. See _declarative integer arithmetic_
-> ([section A.9.3](https://eu.swi-prolog.org/pldoc/man?section=clpfd-integer-arith)).
+> and replacing both `(is)/2` and `(=:=)/2` over integers.
 
-**Negation: [`#\=/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=%23%5C%3D%20/%202)**
-
+> `?X #\= ?Y`
+> 
 > The arithmetic expressions _X_ and _Y_ evaluate to distinct integers. When reasoning over integers, 
-> replace `(=\=)/2` by `#\=/2` to obtain more general relations. See declarative integer arithmetic
-([section A.9.3](https://eu.swi-prolog.org/pldoc/man?section=clpfd-integer-arith)).
+> replace `(=\=)/2` by `#\=/2` to obtain more general relations. 
+
+See _declarative integer arithmetic_ ([section A.9.3](https://eu.swi-prolog.org/pldoc/man?section=clpfd-integer-arith)).
+
+
+
+
 
 
 
