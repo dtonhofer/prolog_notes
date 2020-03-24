@@ -29,12 +29,12 @@ The vocabulary is a bit confusing...
 
 ## TOC
 
-- `=`: Unification (#unification)
-- `is`: Evaluate, then unify (#evaluate_then_unify)
-- `==`: Term equivalence  (#term_equivalence)
-- `=:=`: Arithmetical equality test (#artihmetical_equality_test)
-- `#=`: Arithmetical equality constraint (#arithmetical_equality_constraint)
-- `dif`: Impossible-to-unify constraint (#impossible_to_unify_constraint)  
+- [`=`: Unification](#unification)
+- [`is`: Evaluate, then unify](#evaluate_then_unify)
+- [`==`: Term equivalence](#term_equivalence)
+- [`=:=`: Arithmetical equality test](#artihmetical_equality_test)
+- [`#=`: Arithmetical equality constraint](#arithmetical_equality_constraint)
+- [`dif`: Impossible-to-unify constraint](#impossible_to_unify_constraint)  
 
 ## `=`: Unification  <a name="unification"></a>
 
