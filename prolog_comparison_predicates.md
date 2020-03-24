@@ -107,7 +107,9 @@ both `(is)/2` and `(=:=)/2` over integers. See _declarative integer arithmetic_ 
 
 This is classed under:
 
-[constraint logic programming](https://www.swi-prolog.org/pldoc/man?section=clp)/[coroutining](https://www.swi-prolog.org/pldoc/man?section=coroutining)/[Predicate dif/2](https://eu.swi-prolog.org/pldoc/doc_for?object=dif/2)
+- [constraint logic programming](https://www.swi-prolog.org/pldoc/man?section=clp)
+- ...[coroutining](https://www.swi-prolog.org/pldoc/man?section=coroutining)
+- ......[Predicate dif/2](https://eu.swi-prolog.org/pldoc/doc_for?object=dif/2)
 
 > `dif(@A, @B)`: The `dif/2` predicate is a constraint that is true if and only if _A_ and _B_ are different terms.
 > If _A_ and _B_ can **never unify**, `dif/2` succeeds deterministically. If _A_ and _B_ are **identical**, it fails
