@@ -24,7 +24,7 @@ The vocabulary is a bit confusing...
 - LHS = "left hand side"
 - RHS = "right-hand side"
 
-## The `=` predicate
+## `=`: Unification
 
 **Description**
 
@@ -107,7 +107,7 @@ String vs. Atom:
 false.
 ```
 
-## Negation of `=` using NAF: `\=`
+## `\=`: Negation of `=` using NAF
 
 **Description**
 
@@ -185,7 +185,7 @@ Left = f(G, 1),
 Right = f(1, H).
 ```
 
-## The `is` predicate: Force evaluation, then unify
+## `is`: Trigger evaluation, then unify
 
 This is really not a predicate, it is a special instruction to trigger evaluation (reduction?) of a function 
 on the right-hand side and unify the (always numeric?) result with the left-hand side.
@@ -244,7 +244,7 @@ This should really work but doesn't. Why? Historical reasons! Maybe this will ch
 ERROR: Type error: ...
 ```
 
-## The `==` predicate: "after unification, do terms compare 'the same'?"
+## `==`: After unification, do terms compare 'the same'?
 
 This is classed under:
 
@@ -258,7 +258,7 @@ This is classed under:
 
 > Equivalent to `\+Term1 == Term2`.
 
-## The `=:=` predicate: "arithmetically equal"
+## `=:=`: Arithmetic equality
 
 This is classed under:
 
@@ -272,7 +272,7 @@ This is classed under:
 
 >`+Expr1 =\= +Expr2`: True if expression `Expr1` evaluates to a number non-equal to `Expr2`.
       
-## The `#=` predicate: "constraint to be arithmetically equal"
+## `#=`: constrain to be arithmetically equal
 
 This is classed under:
 
@@ -291,7 +291,7 @@ This is classed under:
 > replace `(=\=)/2` by `#\=/2` to obtain more general relations. See declarative integer arithmetic
 ([section A.9.3](https://eu.swi-prolog.org/pldoc/man?section=clpfd-integer-arith)).
 
-## The `dif` predicate: "constrain to be different"
+## `dif`: constrain to be not unifiable
 
 This is classed under:
 
