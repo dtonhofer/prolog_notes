@@ -17,6 +17,11 @@ The vocabulary is not clear...
 - Constraint
 - Operator
 - Functions. "Functions are terms that can appear in the argument of (the predicates) is/2, =:=/2, >/2, etc." But notation os the same as for predicates. `functor/arity`
+- (two terms are) identical
+- (two terms are) equivalent
+- (two terms are) equal
+- (two terms are) (can) unify
+
 
 ## The `=` predicate: "do the terms unify?"
 
@@ -50,7 +55,7 @@ This is really not a predicate, it is a special instruction to trigger evaluatio
 
 This is classed under:
 
-[Arithmetic](https://eu.swi-prolog.org/pldoc/man?section=arith)/[General purpose arithmetic](https://eu.swi-prolog.org/pldoc/man?section=arithpreds)/[Predicate is](https://eu.swi-prolog.org/pldoc/doc_for?object=(is)/2)
+[Arithmetic](https://eu.swi-prolog.org/pldoc/man?section=arith)/[General purpose arithmetic](https://eu.swi-prolog.org/pldoc/man?section=arithpreds)/[Predicate `is`](https://eu.swi-prolog.org/pldoc/doc_for?object=(is)/2)
   
 > `-Number is +Expr`: True when _Number_ is the value to which _Expr_ evaluates. 
 > Typically, `is/2` should be used with unbound left operand. If equality is to be
@@ -66,15 +71,13 @@ This is classed under:
 
 This is classed under:
 
-- [Comparison and unification of terms](https://eu.swi-prolog.org/pldoc/man?section=compare)
-   - [Standard order of Terms](https://eu.swi-prolog.org/pldoc/man?section=standardorder)
-      - [Predicate `==/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3D%3D)/2)
+[Comparison and unification of terms](https://eu.swi-prolog.org/pldoc/man?section=compare)/[Standard order of Terms](https://eu.swi-prolog.org/pldoc/man?section=standardorder)/[Predicate `==/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3D%3D)/2)
 
 > `@Term1 == @Term2`: True if `Term1` is equivalent to `Term2`. A variable is only identical to a sharing variable.
 
 **Negation using NAF**
 
-- [\==](https://eu.swi-prolog.org/pldoc/doc_for?object=(%5C%3D%3D)/2)
+[\==](https://eu.swi-prolog.org/pldoc/doc_for?object=(%5C%3D%3D)/2)
 
 > Equivalent to `\+Term1 == Term2`.
 
@@ -82,30 +85,39 @@ This is classed under:
 
 This is classed under:
 
-- [Arithmetic](https://eu.swi-prolog.org/pldoc/man?section=arith)
-   - [General purpose arithmetic](https://eu.swi-prolog.org/pldoc/man?section=arithpreds)
-      - [Predicate =:=](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3D%3A%3D)/2)
+[Arithmetic](https://eu.swi-prolog.org/pldoc/man?section=arith)/[General purpose arithmetic](https://eu.swi-prolog.org/pldoc/man?section=arithpreds)/[Predicate =:=](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3D%3A%3D)/2)
 
-Negation: [=\=](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3D%5C%3D)/2)
+**Negation:**
 
+[=\=](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3D%5C%3D)/2)
 
+>`+Expr1 =\= +Expr2`: True if expression `Expr1` evaluates to a number non-equal to `Expr2`.
       
 ## The `#=` predicate: Constraint to be arithmetically equal
 
 This is classed under:
 
-- [library(clpfd): CLP(FD): Constraint Logic Programming over Finite Domains](https://eu.swi-prolog.org/pldoc/man?section=clpfd)
-   - [Arithmetic Constraints](https://eu.swi-prolog.org/pldoc/man?section=clpfd-arith-constraints)
-      - [Predicate #=](https://eu.swi-prolog.org/pldoc/doc_for?object=%23%3D%20/%202)
+[library(clpfd): CLP(FD): Constraint Logic Programming over Finite Domains](https://eu.swi-prolog.org/pldoc/man?section=clpfd)/[Arithmetic Constraints](https://eu.swi-prolog.org/pldoc/man?section=clpfd-arith-constraints)/[Predicate #=](https://eu.swi-prolog.org/pldoc/doc_for?object=%23%3D%20/%202)
+
+`?X #= ?Y`: The arithmetic expression _X_ equals _Y_. This is the most important arithmetic constraint
+([section A.9.2](https://eu.swi-prolog.org/pldoc/man?section=clpfd-arith-constraints)), subsuming and replacing
+both `(is)/2` and `(=:=)/2` over integers. See _declarative integer arithmetic_ ([section A.9.3](https://eu.swi-prolog.org/pldoc/man?section=clpfd-integer-arith)).
 
 ## The `dif` predicate: Constrain to be different
 
-Link: [dif/2](https://www.swi-prolog.org/pldoc/doc_for?object=dif/2)
-
 This is classed under:
 
-- [constraint logic programming](https://www.swi-prolog.org/pldoc/man?section=clp)
-   - [coroutining](https://www.swi-prolog.org/pldoc/man?section=coroutining)
-      - [Predicate dif/2](https://eu.swi-prolog.org/pldoc/doc_for?object=dif/2)
-      
+[constraint logic programming](https://www.swi-prolog.org/pldoc/man?section=clp)/[coroutining](https://www.swi-prolog.org/pldoc/man?section=coroutining)/[Predicate dif/2](https://eu.swi-prolog.org/pldoc/doc_for?object=dif/2)
+
+> `dif(@A, @B)`: The `dif/2` predicate is a constraint that is true if and only if _A_ and _B_ are different terms.
+> If _A_ and _B_ can **never unify**, `dif/2` succeeds deterministically. If _A_ and _B_ are **identical**, it fails
+> immediately. Finally, if _A_ and _B_ **can unify**, goals are delayed that prevent _A_ and _B_ to become equal. 
+> It is this last property that makes `dif/2` a more general and more declarative alternative for `\=/2` and 
+> related predicates.
+> 
+>  This predicate behaves as if defined by `dif(X, Y) :- when(?=(X,Y), X \== Y)`. See also `?=/2`. The
+> implementation can deal with cyclic terms.
+> 
+> The `dif/2` predicate is realised using attributed variables associated with the module `dif`. It is an autoloaded
+> predicate that is defined in the library `library(dif)`.
 
