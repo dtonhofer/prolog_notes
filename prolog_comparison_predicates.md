@@ -26,7 +26,9 @@ The vocabulary is a bit confusing...
 
 **Description**
 
-> `?Term1 = ?Term2`: Unify `Term1` with `Term2`. True if the unification succeeds. 
+> `?Term1 = ?Term2`
+> Unify `Term1` with `Term2`. True if the unification succeeds. 
+>
 > For behaviour on cyclic terms see the Prolog flag 
 > [occurs_check](https://eu.swi-prolog.org/pldoc/man?section=flags#flag:occurs_check). 
 > It acts as if defined by the following fact: `=(Term, Term).`
