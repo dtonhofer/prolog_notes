@@ -16,7 +16,7 @@ The vocabulary is not clear...
 - Predicate
 - Constraint
 - Operator
-- Functions. "Functions are terms that can appear in the argument of (the predicates) is/2, =:=/2, >/2, etc." But notation os the same as for predicates. `functor/arity`
+- Functions. "Functions are terms that can appear in the argument of (the predicates) is/2, =:=/2, >/2, etc." But notation os the same as for predicates. `functor/arity`. See [list of functions](https://eu.swi-prolog.org/pldoc/man?section=functions)
 - (two terms are) identical
 - (two terms are) equivalent
 - (two terms are) equal
@@ -30,12 +30,60 @@ This is classed under:
 - ...[Predicate `=/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3D)/2) 
 
 > `?Term1 = ?Term2`: Unify `Term1` with `Term2`. True if the unification succeeds. 
-> or behaviour on cyclic terms see the Prolog flag 
+> For behaviour on cyclic terms see the Prolog flag 
 > [occurs_check](https://eu.swi-prolog.org/pldoc/man?section=flags#flag:occurs_check). 
 > It acts as if defined by the following fact: `=(Term, Term).`
 
-- For unification see: [Unification](https://en.wikipedia.org/wiki/Unification_(computer_science))
-- For occurs check see: [Occurs check](https://en.wikipedia.org/wiki/Occurs_check)
+- More on [Unification](https://en.wikipedia.org/wiki/Unification_(computer_science))
+- More on [Occurs check](https://en.wikipedia.org/wiki/Occurs_check)
+
+Example: the two syntax trees describing variables `Left` and `Right` are unified, leading to other variables being 
+
+```logtalk
+Left  = f(h(X),X,g(K)),        format("Left  = ~w\n",[Left]),  % Left unified with complex term
+Right = f(h(a),Z,g(l(X,Z,H))), format("Right = ~w\n",[Right]), % Right unified with complex term
+format("Unifying...\n"),
+Left = Right,
+format("Both terms are exactly the same now!\n"),
+format("Left  = ~w\n",[Left]),
+format("Right = ~w\n",[Right]).
+```
+
+```logtalk
+Left  = f(h(_2934),_2934,g(_2938))
+Right = f(h(a),_2982,g(l(_2934,_2982,_2984)))
+Unifying...
+Both terms are exactly the same now!
+Left  = f(h(a),a,g(l(a,a,_2984)))
+Right = f(h(a),a,g(l(a,a,_2984)))
+
+Left = Right, Right = f(h(a), a, g(l(a, a, H))),
+X = Z, Z = a,
+K = l(a, a, H).
+```
+
+You cannot unify values of different type!
+
+Integer vs. Float:
+
+```logtalk
+?- 1 = 1.0.
+false.
+```
+
+or
+
+```logtalk
+?- I=1, integer(I), F=1.0, float(F), F=I.
+false.
+```
+
+String vs. Atom:
+
+```logtalk
+?- "string vs. atom" = 'string vs. atom'.
+false.
+```
 
 **Negation using NAF: [\=](https://eu.swi-prolog.org/pldoc/doc_for?object=(%5C%3D)/2)**
 
