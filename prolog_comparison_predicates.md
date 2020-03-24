@@ -34,7 +34,7 @@ The vocabulary is a bit confusing...
 - [`==`: Term equivalence](#term_equivalence)
 - [`=:=`: Arithmetical equality test](#artihmetical_equality_test)
 - [`#=`: Arithmetical equality constraint](#arithmetical_equality_constraint)
-- [`dif`: Impossible-to-unify constraint](#impossible_to_unify_constraint)  
+- [`dif`: Impossible-to-unify constraint](#dif-impossible-to-unify-constraint)  
 
 ## `=`: Unification  <a name="unification"></a>
 
@@ -390,8 +390,6 @@ This is classed under:
 
 
 
-
-<a href="#impossible_to_unify_constraint"></a>
 
 ## `dif`: Impossible-to-unify constraint 
 
