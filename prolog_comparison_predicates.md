@@ -21,6 +21,8 @@ The vocabulary is a bit confusing...
 - (two terms are) equivalent
 - (two terms are) equal
 - (two terms are) (can) unify
+- LHS = "left hand side"
+- RHS = "right-hand side"
 
 ## The `=` predicate
 
@@ -40,7 +42,7 @@ The vocabulary is a bit confusing...
 
 **Can be read as**
 
-"To continue past this point, first unify the terms on the left and right"
+"To continue past this point, first unify the terms on the LHS and RHS"
 
 **Intention**
 
@@ -54,6 +56,8 @@ Prolog may be more about _unification_ than proof search because unification is 
 - More on [Occurs check](https://en.wikipedia.org/wiki/Occurs_check)
 
 **Examples**
+
+TBD. Examples on cyclical terms.
 
 Two syntax trees describing variables `Left` and `Right` are unified, leading to then being considered as equal past the point of unification, with other variables being constrained in the same process:
 
