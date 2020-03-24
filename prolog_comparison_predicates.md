@@ -8,6 +8,8 @@ copying text from there.
 **Good stuff:**
 
 - Stackoverflow: [Using \==/2 or dif/2](https://stackoverflow.com/questions/13757261/using-2-or-dif-2/13770020)
+- [Notation of Predicate Descriptions](https://www.swi-prolog.org/pldoc/man?section=preddesc)
+- [Type, mode and determinism declaration headers](https://www.swi-prolog.org/pldoc/man?section=modes)
 
 ## Vocabulary
 
@@ -21,6 +23,7 @@ The vocabulary is a bit confusing...
 - (two terms are) equivalent
 - (two terms are) equal
 - (two terms are) (can) unify
+- a variable is constrained? instantiate? refined? with additional contraints.
 - LHS = "left hand side"
 - RHS = "right-hand side"
 
@@ -244,15 +247,104 @@ This should really work but doesn't. Why? Historical reasons! Maybe this will ch
 ERROR: Type error: ...
 ```
 
-## `==`: After unification, do terms compare 'the same'?
+## `==`: Are two terms equivalent?
 
-This is classed under:
+**Found under**
 
-- [Comparison and unification of terms](https://eu.swi-prolog.org/pldoc/man?section=compare)
-- ...[Standard order of Terms](https://eu.swi-prolog.org/pldoc/man?section=standardorder)
+- [Comparison and Unification of terms](https://eu.swi-prolog.org/pldoc/man?section=compare)
+- ...[Standard Order of Terms](https://eu.swi-prolog.org/pldoc/man?section=standardorder)
 - ......[Predicate `==/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3D%3D)/2)
 
-> `@Term1 == @Term2`: True if `Term1` is equivalent to `Term2`. A variable is only identical to a sharing variable.
+> `@Term1 == @Term2`:
+> 
+> True if `Term1` is equivalent to `Term2`. A variable is only identical (should be "equivalent") to a sharing variable.
+
+Note the `@` mode of the declaration, indicating that `==` does not constrain (does not instantiate) the passed terms any further.
+
+**Examples**
+
+Two nonground, unrelated variables are *not* equivalent:
+
+```Logtalk
+?- X==Y.
+false.
+```
+
+If they are ground to the same term, they *are* equivalent:
+
+```Logtalk
+?- X=a, Y=a, X==Y.
+X = Y, Y = a.
+```
+
+If they are ground to different terms, they are *not* equivalent:
+
+```Logtalk
+?- X=a, Y=b, X==Y.
+false.
+```
+
+If they are set to a sharing variable, they *are* equivalent:
+
+```Logtalk
+?- X=A, Y=A, X==Y.
+X = A, A = Y.
+```
+
+```Logtalk
+A=B, X=A, Y=B, X==Y.
+A = B, B = X, X = Y.
+```
+
+Similarly:
+
+```Logtalk
+?- A=f(X), B=f(X), A==B.
+A = B, B = f(X).
+```
+
+```Logtalk
+?- A=f(X), B=f(Y), A==B.
+false.
+```
+
+```Logtalk
+?- A=f(X), B=f(Y), X=Y, A==B.
+A = B, B = f(Y),
+X = Y.
+```
+
+```Logtalk
+?- A=f(X), B=A, A==B.
+A = B, B = f(X).
+```
+
+This is not unification. Although the following two terms unify, they are clearly not equivalent:
+
+```Logtalk
+?- f(g(X),A) = f(B,h(Y)).
+A = h(Y),
+B = g(X).
+
+?- f(g(X),A) == f(B,h(Y)).
+false.
+```
+
+This is not arithmetic equivalence, but term equivalence:
+
+```Logtalk
+?- 1.0 == 1.
+false.
+```
+
+```Logtalk
+?- 1.0 =:= 1.
+true.
+```
+
+
+
+
 
 **Negation using NAF: [\==](https://eu.swi-prolog.org/pldoc/doc_for?object=(%5C%3D%3D)/2)**
 
