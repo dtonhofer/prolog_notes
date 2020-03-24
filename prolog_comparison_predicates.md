@@ -22,17 +22,31 @@ The vocabulary is not clear...
 - (two terms are) equal
 - (two terms are) (can) unify
 
-## The `=` predicate: "do the terms unify?"
+## The `=` predicate
+
+Can be read as:
+
+- Unify!
+- Is it possible to unify?
+- To continue past this point, first unify!
+
+> `?Term1 = ?Term2`: Unify `Term1` with `Term2`. True if the unification succeeds. 
+> For behaviour on cyclic terms see the Prolog flag 
+> [occurs_check](https://eu.swi-prolog.org/pldoc/man?section=flags#flag:occurs_check). 
+> It acts as if defined by the following fact: `=(Term, Term).`
 
 This is classed under:
 
 - [Comparison and unification of terms](https://eu.swi-prolog.org/pldoc/man?section=compare)
 - ...[Predicate `=/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3D)/2) 
 
-> `?Term1 = ?Term2`: Unify `Term1` with `Term2`. True if the unification succeeds. 
-> For behaviour on cyclic terms see the Prolog flag 
-> [occurs_check](https://eu.swi-prolog.org/pldoc/man?section=flags#flag:occurs_check). 
-> It acts as if defined by the following fact: `=(Term, Term).`
+**Intention**
+
+Given two terms `A` and `B`, fully or partially constrained, try to find a _most general unifier_ (a variable substitution) which constrains any variables appearing in `A` and `B` so that the  `A` and `B` are the same term after the substitution has been applied. If this succeeds, continue with the proof search, assuming the suitably constrained variables. If no variable substitution can be found, the terms `A` and `B` are dissimilar: a solution cannot be found by proceeding,  `A = B` cannot be made true. Unification fails, and backtracking to an anterior point of the computation will happen.
+
+Unification is applied at every predicate call by matching the parameters on the caller's side with the arguments appearing in the head of the called predicate. This can be used to "broadcast" values constructed in the called predicate to all predicates on the stack that use a common variable (TBD: example): information is returned from callee to caller. Compare with simple pattern matching against the head, which communicates information only from caller to callee.
+
+Prolog may be more about _unification_ than proof search because unification is _the_ operation that constructs complex data structures on the heap.
 
 - More on [Unification](https://en.wikipedia.org/wiki/Unification_(computer_science))
 - More on [Occurs check](https://en.wikipedia.org/wiki/Occurs_check)
@@ -93,7 +107,11 @@ false.
 > nature of `\+/1`.
 > 
 > To make your programs work correctly also in situations where the arguments are not yet sufficiently
-> instantiated, use dif/2 instead.
+> instantiated, use `dif/2` instead.
+
+
+
+
 
 ## The `is` predicate: Force evaluation, then unify
 
