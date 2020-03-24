@@ -138,15 +138,7 @@ false.
 
 We don't know whether X and Y cannot be unified. They could be the same! So the answer to _"is there no evidence that terms X and Y can be unified (at this point in time)"_ is indeed false.
 
-?- Left=f(G,1), Right=f(1,G), Left \= Right.
-
-Because there is a unified:
-
-?- Left=f(G,1), Right=f(1,G), Left = Right.
-Left = Right, Right = f(1, 1),
-G = 1.
-
-### Special sauce 
+### NAF of NAF unification
 
 There is a subtle difference between 
 
@@ -189,25 +181,62 @@ Right = f(1, H).
 
 ## The `is` predicate: Force evaluation, then unify
 
-This is really not a predicate, it is a special instruction to trigger evaluation/reduction of the right-hand side.
+This is really not a predicate, it is a special instruction to trigger evaluation (reduction?) of a function 
+on the right-hand side and unify the (always numeric?) result with the left-hand side.
 
-This is classed under:
+**Description** 
+
+> `-Number is +Expr`: True when _Number_ is the value to which _Expr_ evaluates. 
+> Typically, `is/2` should be used with unbound left operand. If equality is to be
+> tested, `=:=/2` should be used. 
+
+**Found under**
 
 - [Arithmetic](https://eu.swi-prolog.org/pldoc/man?section=arith)
 - ...[General purpose arithmetic](https://eu.swi-prolog.org/pldoc/man?section=arithpreds)
 - ......[Predicate `is`](https://eu.swi-prolog.org/pldoc/doc_for?object=(is)/2)
   
-> `-Number is +Expr`: True when _Number_ is the value to which _Expr_ evaluates. 
-> Typically, `is/2` should be used with unbound left operand. If equality is to be
-> tested, =:=/2 should be used. 
+**Can be read as**
 
-Notes:
+"Evaluate the RHS and unify with the LHS"
+
+**Note**
 
 - A "force evaluation" instruction should be used for more than just numeric terms! String operations, obtaining data 
   from non-logical sources (`CurrentTime is time()`, `Data is read(Source)`) or even side-effects in obvious manner
   (`BytesWritten is writeBytes(Sink,String)`) should all be used that way instead of pretending rather disingeneously that
-  such operations are "prediates". `is` is the gateway to function calls!
-- Consider using `#=` to state constraints between variables instead.
+  such operations are "prediates". `is` is the gateway drug to function calls!
+- Use `#=` to state constraints between numeric variables instead, what is generally what you want to do.
+
+**Example**
+
+Evaluate RHS and unify with LHS, i.e. 12
+
+```Logtalk
+?- 12 is 2*6.  
+true.
+```
+
+Same as above but now we have different types on the LHS and RHS, so unification fails!
+
+```Logtalk
+12.0 is 2*6.
+false.
+```
+
+Generally one evals the RHS and unifies with an unbound variable on the LHS. This looks like assignment:
+
+```Logtalk
+?- Result is 2*6.
+Result = 12.
+```
+
+This should really work but doesn't. Why? Historical reasons! Maybe this will change someday.
+
+```Logtalk
+?- Result is "Hello," + 1 + " World".
+ERROR: Type error: ...
+```
 
 ## The `==` predicate: "after unification, do terms compare 'the same'?"
 
