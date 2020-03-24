@@ -1,17 +1,17 @@
 # Prolog's comparison predicates
 
-WORK IN PROGRESS.
-
-EXAMPLES & TEST CASES TO BE ADDED
+WORK IN PROGRESS. EXAMPLES & TEST CASES TO BE ADDED
 
 I'm going with the [SWI Prolog manual](https://eu.swi-prolog.org/pldoc/doc_for?object=manual) at this point and also
 copying text from there.
 
-Good stuff:
+**Good stuff:**
 
 - Stackoverflow: [Using \==/2 or dif/2](https://stackoverflow.com/questions/13757261/using-2-or-dif-2/13770020)
 
-The vocabulary is not clear...
+## Vocabulary
+
+The vocabulary is a bit confusing...
 
 - Predicate
 - Constraint
@@ -24,21 +24,21 @@ The vocabulary is not clear...
 
 ## The `=` predicate
 
-Can be read as:
-
-- Unify!
-- Is it possible to unify?
-- To continue past this point, first unify!
+**Description**
 
 > `?Term1 = ?Term2`: Unify `Term1` with `Term2`. True if the unification succeeds. 
 > For behaviour on cyclic terms see the Prolog flag 
 > [occurs_check](https://eu.swi-prolog.org/pldoc/man?section=flags#flag:occurs_check). 
 > It acts as if defined by the following fact: `=(Term, Term).`
 
-This is classed under:
+**Found under**
 
 - [Comparison and unification of terms](https://eu.swi-prolog.org/pldoc/man?section=compare)
 - ...[Predicate `=/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3D)/2) 
+
+**Can be read as**
+
+"To continue past this point, first unify the terms on the left and right"
 
 **Intention**
 
@@ -51,7 +51,9 @@ Prolog may be more about _unification_ than proof search because unification is 
 - More on [Unification](https://en.wikipedia.org/wiki/Unification_(computer_science))
 - More on [Occurs check](https://en.wikipedia.org/wiki/Occurs_check)
 
-Example: the two syntax trees describing variables `Left` and `Right` are unified, leading to other variables being 
+**Examples**
+
+Two syntax trees describing variables `Left` and `Right` are unified, leading to then being considered as equal past the point of unification, with other variables being constrained in the same process:
 
 ```logtalk
 Left  = f(h(X),X,g(K)),        format("Left  = ~w\n",[Left]),  % Left unified with complex term
@@ -99,7 +101,9 @@ String vs. Atom:
 false.
 ```
 
-**Negation using NAF: [\=](https://eu.swi-prolog.org/pldoc/doc_for?object=(%5C%3D)/2)**
+## Negation of `=` using NAF: `\=`
+
+**Description**
 
 > Equivalent to `\+(Term1 = Term2)`.
 > This predicate is logically sound if its arguments are sufficiently instantiated. In other cases,
@@ -109,9 +113,79 @@ false.
 > To make your programs work correctly also in situations where the arguments are not yet sufficiently
 > instantiated, use `dif/2` instead.
 
+**Found under**
 
+- [Comparison and unification of terms](https://eu.swi-prolog.org/pldoc/man?section=compare)
+- ...[Predicate `\=`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%5C%3D)/2)
 
+**Can be read as**
 
+"is there no evidence that terms X and Y can be unified (at this point in time)?
+
+(alternatively, "if there is any way that terms X and Y can be unified, fail!"). 
+
+**Examples**
+
+```Logtalk
+?- 1 \= 1.0.
+true.
+```
+
+```Logtalk
+?- X \= Y.
+false.
+```
+
+We don't know whether X and Y cannot be unified. They could be the same! So the answer to _"is there no evidence that terms X and Y can be unified (at this point in time)"_ is indeed false.
+
+?- Left=f(G,1), Right=f(1,G), Left \= Right.
+
+Because there is a unified:
+
+?- Left=f(G,1), Right=f(1,G), Left = Right.
+Left = Right, Right = f(1, 1),
+G = 1.
+
+### Special sauce 
+
+There is a subtle difference between 
+
+- "unify the terms on the left and right and proceed if that succeeds.
+- "test whether the terms on the left and right unify, and procced if yes" and
+
+One may want to drop information collected during the successful unification in the second case!
+
+Here is the trick how to Test/Unify something and proceed on success without retaining information about the  unification:
+
+Retain MGU information:
+
+```Logtalk
+?- Left=f(G,1), Right=f(1,H),
+   format("%> Left = ~w, Right = ~w, G = ~w, H = ~w\n",[Left,Right,G,H]),
+   Left = Right, 
+   format("%> Left = ~w, Right = ~w, G = ~w, H = ~w\n",[Left,Right,G,H]).
+
+%> Left = f(_13862,1), Right = f(1,_13876), G = _13862, H = _13876
+%> Left = f(1,1), Right = f(1,1), G = 1, H = 1
+
+Left = Right, Right = f(1, 1),
+G = H, H = 1.
+```
+
+Drop MGU information:
+
+```Logtalk
+?- Left=f(G,1), Right=f(1,H),
+   format("%> Left = ~w, Right = ~w, G = ~w, H = ~w\n",[Left,Right,G,H]),
+   \+( Left \= Right ), 
+   format("%> Left = ~w, Right = ~w, G = ~w, H = ~w\n",[Left,Right,G,H]).
+
+%> Left = f(_15796,1), Right = f(1,_15810), G = _15796, H = _15810
+%> Left = f(_15796,1), Right = f(1,_15810), G = _15796, H = _15810
+
+Left = f(G, 1),
+Right = f(1, H).
+```
 
 ## The `is` predicate: Force evaluation, then unify
 
