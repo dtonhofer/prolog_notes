@@ -27,7 +27,16 @@ The vocabulary is a bit confusing...
 - LHS = "left hand side"
 - RHS = "right-hand side"
 
-## `=`: Unification
+## TOC
+
+- `=`: Unification (#unification)
+- `is`: Evaluate, then unify (#evaluate_then_unify)
+- `==`: Term equivalence  (#term_equivalence)
+- `=:=`: Arithmetical equality test (#artihmetical_equality_test)
+- `#=`: Arithmetical equality constraint (#arithmetical_equality_constraint)
+- `dif`: Impossible-to-unify constraint (#impossible_to_unify_constraint)  
+
+## `=`: Unification  <a name="unification"></a>
 
 **Description**
 
@@ -110,7 +119,7 @@ String vs. Atom:
 false.
 ```
 
-## `\=`: Negation of `=` using NAF
+### Negation of `=` using NAF: `\=`
 
 **Description**
 
@@ -188,7 +197,7 @@ Left = f(G, 1),
 Right = f(1, H).
 ```
 
-## `is`: Trigger evaluation, then unify
+## `is`: Evaluate, then unify  <a name="evaluate_then_unify"></a>
 
 This is really not a predicate, it is a special instruction to trigger evaluation (reduction?) of a function 
 on the right-hand side and unify the (always numeric?) result with the left-hand side.
@@ -247,7 +256,7 @@ This should really work but doesn't. Why? Historical reasons! Maybe this will ch
 ERROR: Type error: ...
 ```
 
-## `==`: Are two terms equivalent?
+## `==`: Term equivalence <a href="term_equivalence"></a>
 
 **Found under**
 
@@ -342,15 +351,11 @@ false.
 true.
 ```
 
-
-
-
-
 **Negation using NAF: [\==](https://eu.swi-prolog.org/pldoc/doc_for?object=(%5C%3D%3D)/2)**
 
 > Equivalent to `\+Term1 == Term2`.
 
-## `=:=`: Arithmetic equality
+## `=:=`: Arithmetical equality test <a href="artihmetical_equality_test"></a>
 
 This is classed under:
 
@@ -364,7 +369,7 @@ This is classed under:
 
 >`+Expr1 =\= +Expr2`: True if expression `Expr1` evaluates to a number non-equal to `Expr2`.
       
-## `#=`: constrain to be arithmetically equal
+## `#=`: Arithmetical equality constraint <a href="arithmetical_equality_constraint"></a>
 
 This is classed under:
 
@@ -383,21 +388,29 @@ This is classed under:
 > replace `(=\=)/2` by `#\=/2` to obtain more general relations. See declarative integer arithmetic
 ([section A.9.3](https://eu.swi-prolog.org/pldoc/man?section=clpfd-integer-arith)).
 
-## `dif`: constrain to be not unifiable
 
-This is classed under:
+
+
+
+## `dif`: Impossible-to-unify constraint <a href="#impossible_to_unify_constraint"></a>
+
+**Found under**
 
 - [constraint logic programming](https://www.swi-prolog.org/pldoc/man?section=clp)
 - ...[coroutining](https://www.swi-prolog.org/pldoc/man?section=coroutining)
 - ......[predicate dif/2](https://eu.swi-prolog.org/pldoc/doc_for?object=dif/2)
 
-> `dif(@A, @B)`: The `dif/2` predicate is a constraint that is true if and only if _A_ and _B_ are different terms.
+**Description**
+
+> `dif(@A, @B)`
+>
+> The `dif/2` predicate is a constraint that is true if and only if _A_ and _B_ are different terms.
 > If _A_ and _B_ can **never unify**, `dif/2` succeeds deterministically. If _A_ and _B_ are **identical**, it fails
 > immediately. Finally, if _A_ and _B_ **can unify**, goals are delayed that prevent _A_ and _B_ to become equal. 
 > It is this last property that makes `dif/2` a more general and more declarative alternative for `\=/2` and 
 > related predicates.
 > 
->  This predicate behaves as if defined by `dif(X, Y) :- when(?=(X,Y), X \== Y)`. See also `?=/2`. The
+> This predicate behaves as if defined by `dif(X, Y) :- when(?=(X,Y), X \== Y)`. See also `?=/2`. The
 > implementation can deal with cyclic terms.
 > 
 > The `dif/2` predicate is realised using attributed variables associated with the module `dif`. It is an autoloaded
