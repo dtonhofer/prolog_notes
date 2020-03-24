@@ -85,31 +85,46 @@ This is classed under:
 
 This is classed under:
 
-[Arithmetic](https://eu.swi-prolog.org/pldoc/man?section=arith)/[General purpose arithmetic](https://eu.swi-prolog.org/pldoc/man?section=arithpreds)/[Predicate =:=](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3D%3A%3D)/2)
+- [Arithmetic](https://eu.swi-prolog.org/pldoc/man?section=arith)
+- ...[General purpose arithmetic](https://eu.swi-prolog.org/pldoc/man?section=arithpreds)
+- ......[Predicate =:=](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3D%3A%3D)/2)
 
+> `+`_Expr1_ `=:=` `+`_Expr2_: True if expression _Expr1_ evaluates to a number equal to _Expr2_.
+    
 **Negation:**
 
-[=\=](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3D%5C%3D)/2)
+[`=\=`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3D%5C%3D)/2)
 
 >`+Expr1 =\= +Expr2`: True if expression `Expr1` evaluates to a number non-equal to `Expr2`.
       
-## The `#=` predicate: Constraint to be arithmetically equal
+## The `#=` predicate: "constraint to be arithmetically equal"
 
 This is classed under:
 
-[library(clpfd): CLP(FD): Constraint Logic Programming over Finite Domains](https://eu.swi-prolog.org/pldoc/man?section=clpfd)/[Arithmetic Constraints](https://eu.swi-prolog.org/pldoc/man?section=clpfd-arith-constraints)/[Predicate #=](https://eu.swi-prolog.org/pldoc/doc_for?object=%23%3D%20/%202)
+- [library(clpfd): CLP(FD): Constraint Logic Programming over Finite Domains](https://eu.swi-prolog.org/pldoc/man?section=clpfd)
+- ...[arithmetic constraints](https://eu.swi-prolog.org/pldoc/man?section=clpfd-arith-constraints)
+- ......[predicate #=](https://eu.swi-prolog.org/pldoc/doc_for?object=%23%3D%20/%202)
 
-`?X #= ?Y`: The arithmetic expression _X_ equals _Y_. This is the most important arithmetic constraint
-([section A.9.2](https://eu.swi-prolog.org/pldoc/man?section=clpfd-arith-constraints)), subsuming and replacing
-both `(is)/2` and `(=:=)/2` over integers. See _declarative integer arithmetic_ ([section A.9.3](https://eu.swi-prolog.org/pldoc/man?section=clpfd-integer-arith)).
+> `?X #= ?Y`: The arithmetic expression _X_ equals _Y_. This is the most important arithmetic constraint
+> ([section A.9.2](https://eu.swi-prolog.org/pldoc/man?section=clpfd-arith-constraints)), subsuming
+> and replacing both `(is)/2` and `(=:=)/2` over integers. See _declarative integer arithmetic_
+> ([section A.9.3](https://eu.swi-prolog.org/pldoc/man?section=clpfd-integer-arith)).
 
-## The `dif` predicate: Constrain to be different
+**Negation:**
+
+[`#\=/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=%23%5C%3D%20/%202)
+
+> The arithmetic expressions _X_ and _Y_ evaluate to distinct integers. When reasoning over integers, 
+> replace `(=\=)/2` by `#\=/2` to obtain more general relations. See declarative integer arithmetic
+([section A.9.3](https://eu.swi-prolog.org/pldoc/man?section=clpfd-integer-arith)).
+
+## The `dif` predicate: "constrain to be different"
 
 This is classed under:
 
 - [constraint logic programming](https://www.swi-prolog.org/pldoc/man?section=clp)
 - ...[coroutining](https://www.swi-prolog.org/pldoc/man?section=coroutining)
-- ......[Predicate dif/2](https://eu.swi-prolog.org/pldoc/doc_for?object=dif/2)
+- ......[predicate dif/2](https://eu.swi-prolog.org/pldoc/doc_for?object=dif/2)
 
 > `dif(@A, @B)`: The `dif/2` predicate is a constraint that is true if and only if _A_ and _B_ are different terms.
 > If _A_ and _B_ can **never unify**, `dif/2` succeeds deterministically. If _A_ and _B_ are **identical**, it fails
