@@ -347,12 +347,11 @@ false.
 
 **Performance considerations**
 
-If one is looking for speed, then it would be resasonable to expect `\==` (it can fail fast when comparing trees and does
-not need to build a unifier) to be faster than `\+ \=` (NAF of NAF of unification). 
+If one is looking for speed, then it would be resasonable to expect `Term1 \== Term2` to be faster than `Term1 \= Term2`. It can fail fast when comparing terms that are highly likly to be different and does not need to build a unifier. 
 
-If one can ensure that at the point of use of `\==`, further refinement of terms would not the success of `\==` result when moving rightwards in the clause (which all depends on the terms being sufficiently grounded at the time of the test), then the use `\==` is certainly justified. 
+If one can ensure that at the point of use of `\==`, further refinement of terms would not change the success of `\==` result when moving forwards in the computation / rightwards in the clause (which all depends on the terms being sufficiently grounded at the time of the test), then the use `\==` is certainly justified. 
 
-On the other hand `==` is a really strong statement. Whatever refinement happens, `==` will remain true.
+On the other hand `==` is a really strong statement. Whatever refinement happens if `Term1 == Term2` is true, it will remain true. But it's not very useful.
 
 **Examples**
 
@@ -435,6 +434,14 @@ true.
 false.
 ```
 
+Here we can see the effect [copy_term/2](https://www.swi-prolog.org/pldoc/doc_for?object=copy_term/2): After copying into a fresh variable `Y`, the "in" (`X`) and "out" (`Y`) terms are term-non-equivalent because the variables are disjoint:
+
+```
+?- X=f(a,B),copy_term(X,Y),X\==Y.
+X = f(a, B),
+Y = f(a, _21790).
+```
+
 ## `=:=` and `=\=`: Arithmetic equality and inequality tests
 
 **Found under**
@@ -452,7 +459,51 @@ false.
 >
 > True if expression `Expr1` evaluates to a number non-equal to `Expr2`.
 
+Evaluation is performed on both the LHS and RHS, then the two sides are compared "by value", disregarding any differences in type on LHS and RHS. Any variables appearing in the expressions must be fully constrained to numeric values at the point of evaluation. 
+
 **Examples**
+
+Everything must be known at the time of evaluation:
+
+```Logtalk
+?- 2*2 =:= X.
+ERROR: Arguments are not sufficiently instantiated
+
+?- X=4.0, 2*2 =:= X.
+X = 4.0.
+
+?- cos(X) =\= sin(X).
+ERROR: Arguments are not sufficiently instantiated
+
+% Ok, then!
+
+?- X=pi, cos(X) =\= sin(X).
+X = pi.
+```
+
+Sadly `=:=` is a bit fussy. It shouldn't even worry about X here:
+
+```Logtalk
+?- X*0+1 =:= 1.0.
+ERROR: Arguments are not sufficiently instantiated
+```
+
+However it can deal with subexpressions:
+
+```Logtalk
+?- X=(1+1), X*2 =:= 4.0.
+X = 1+1.
+```
+
+"is" can do that too:
+
+```Logtalk
+?- X=(1+1), Y is X*2.
+X = 1+1,
+Y = 4.
+```
+
+Differences in [arithmetic type](https://eu.swi-prolog.org/pldoc/man?section=artypes) don't matter.
 
 ```Logtalk
 ?- 4 =:= 4.
@@ -460,21 +511,30 @@ true.
 
 ?- 4 =:= 4.0.
 true.
+```
 
-?- 4 =:= 4.00001.
-false.
+This works even for [rational numbers](https://www.swi-prolog.org/pldoc/man?section=rational):
 
+```Logtalk
+?- X=1/7, X =:= 2/14.
+X = 1/7.
+```
+
+Evaluation occurs on both sides
+
+```Logtalk
 ?- 1*10 =:= 2+3+5.
 true.
 
-?- 1*10 =:= 2+3+5+epsilon.
+?- sqrt(2.0) =:= sqrt(4.0/2)
 true.
+```
 
-?- cos(X) =\= sin(X).
-ERROR: Arguments are not sufficiently instantiated
+The constant "epsilon" is the [machine epsilon](https://en.wikipedia.org/wiki/Machine_epsilon) and reveals floating point limitations:
 
-?- X=pi, cos(X) =\= sin(X).
-X = pi.
+```Logtalk
+?- 1.0 =:= 1.0 + 0.5*epsilon.
+true.
 ```
 
 ## `#=` and `#\=`: Arithmetic equality/inequality constraints over the integers
