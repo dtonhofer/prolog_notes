@@ -1,31 +1,62 @@
 # Prolog's comparison predicates
 
-WORK IN PROGRESS. EXAMPLES & TEST CASES TO BE ADDED
+> Wed 25 Mar 08:39:30 CET 2020
+> WORK IN PROGRESS.
+> EXAMPLES & TEST CASES TO BE ADDED
+> LOTS OF CLARIFICATIONS NEEDED
+
+## Sources
 
 I'm going with the [SWI Prolog manual](https://eu.swi-prolog.org/pldoc/doc_for?object=manual) at this point and also
 copying text from there.
 
-**Good stuff:**
+**Good stuff**
 
 - Stackoverflow: [Using \==/2 or dif/2](https://stackoverflow.com/questions/13757261/using-2-or-dif-2/13770020)
 - [Notation of Predicate Descriptions](https://www.swi-prolog.org/pldoc/man?section=preddesc)
 - [Type, mode and determinism declaration headers](https://www.swi-prolog.org/pldoc/man?section=modes)
+- 
 
 ## Vocabulary
 
-The vocabulary is a bit confusing...
+The vocabulary is a bit confusing. Needs review
 
-- Predicate
+- Predicate (whch may not behave like a predicate at all)
 - Constraint
 - Operator
-- Functions. "Functions are terms that can appear in the argument of (the predicates) is/2, =:=/2, >/2, etc." But notation os the same as for predicates. `functor/arity`. See [list of functions](https://eu.swi-prolog.org/pldoc/man?section=functions)
+- **Functions**: Functions are terms that can appear in the argument of (the predicates) `is/2`, `=:=/2`, `>/2`, etc.
+  They reduce to a value. The notation of functions and predicates is, however, the same: `functor/arity`. 
+  See [list of functions](https://eu.swi-prolog.org/pldoc/man?section=functions).
 - (two terms are) identical
 - (two terms are) equivalent
 - (two terms are) equal
-- (two terms are) (can) unify
-- a variable is constrained? instantiate? refined? with additional contraints.
+- (two terms can) unify
+- a variable is 
+   - constrained
+   - instantiated
+   - refined with additional contraints.
 - LHS = "left hand side"
 - RHS = "right-hand side"
+
+## Structuring the problem
+
+- Testing for "equality" vs. testing for "inequality" (according to some specific definition of equality)
+   - Equality testing is slow because it's in fact an AND expression that must be checked for being TRUE and
+     has to be traversed to the end (A eq B <=> A1 eq B1 & A2 eq B2 & A3 eq B3 ... )
+   - Inequality testing is "fail fast" because it's on fact an OR expression that must be checked for being FALSE
+     and can be exited as soon as a TRUE is found (A neq B <=> A1 neq B1 | A2 neq B2 | A3 new B3 ...)
+- Constraints like "dif" that stay active once set up vs. "point of computation" tests like `==`
+- Tests can only return TRUE or FALSE (or possibly throw an ERROR) but cannot return "I DON'T KNOW AT THIS POINT".
+   - "Not knowing" would correctly imply goal suspension and going on with the computation, hoping to find out more.
+      - "Set aside for later"
+      - Goal is run again once variables are instantiated more. If it fails at that point, to where does backtracking
+        track back?
+      - This is a real problem constraint. "Go ahead with the search but check that the constraint is fulfilled by
+        any new assignment".
+   - Anything obtained through NAF is problematic "point in time knowledge" subjet to revision
+   - Maybe predicates should be able to return a third truth value! (That would be hacky!)
+   - What tests for equality/inequality stay TRUE (or stay FALSE) as computation progresses? E.g. moving `==`
+     around in a clause will cause its truth value to change.  
 
 ## TOC
 
@@ -500,15 +531,4 @@ See _declarative integer arithmetic_ ([section A.9.3](https://eu.swi-prolog.org/
 > 
 > The `dif/2` predicate is realised using attributed variables associated with the module `dif`. It is an autoloaded
 > predicate that is defined in the library `library(dif)`.
-
-**Dicussion**
-
-In [https://stackoverflow.com/questions/13757261/using-2-or-dif-2/13770020)
-
-
-
-
-
-
-
 
