@@ -561,12 +561,7 @@ true.
 
 See _declarative integer arithmetic_ ([section A.9.3](https://eu.swi-prolog.org/pldoc/man?section=clpfd-integer-arith)).
 
-
-
-
-
-
-
+See [CLP(FD) and CLP(ℤ): Prolog Integer Arithmetic](https://www.metalevel.at/prolog/clpz) in Markus Triska's "The Power of prolog"
 
 ## `dif`: Impossible-to-unify constraint 
 
