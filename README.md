@@ -28,7 +28,7 @@ Some notes taken while working on Prolog
 ## Overview of comparison predicates
 
 - [Overview of comparison predicates](prolog_comparison_predicates/prolog_comparison_predicates.md), work in progress
-   - Link to page aliased to 
+   - Link to page aliased to https://bit.ly/2Jk4e2o_prolog
 
 ## Esoteric "string mode" flag
 
