@@ -1,9 +1,8 @@
 # Prolog's comparison predicates
 
-> Wed 25 Mar 08:39:30 CET 2020
-> WORK IN PROGRESS.
-> EXAMPLES & TEST CASES TO BE ADDED
-> LOTS OF CLARIFICATIONS NEEDED
+- WORK IN PROGRESS.
+- EXAMPLES & TEST CASES TO BE ADDED
+- LOTS OF CLARIFICATIONS NEEDED
 
 ## Sources
 
@@ -15,7 +14,7 @@ copying text from there.
 - Stackoverflow: [Using \==/2 or dif/2](https://stackoverflow.com/questions/13757261/using-2-or-dif-2/13770020)
 - [Notation of Predicate Descriptions](https://www.swi-prolog.org/pldoc/man?section=preddesc)
 - [Type, mode and determinism declaration headers](https://www.swi-prolog.org/pldoc/man?section=modes)
-- 
+- [Defining (mathematical) function in Prolog](https://stackoverflow.com/questions/18419975/defining-mathematical-function-in-prolog)
 
 ## Vocabulary
 
@@ -31,12 +30,19 @@ The vocabulary is a bit confusing. Needs review
 - (two terms are) equivalent
 - (two terms are) equal
 - (two terms can) unify
-- a variable is 
+- a variable or term is 
    - constrained
    - instantiated
    - refined with additional contraints.
-- LHS = "left hand side"
-- RHS = "right-hand side"
+- a term is bound to a variable
+- a term with variables can be "resolved" (must resolve to something) by looking up the value of variables at the point of computation
+- Terms are ground or must resolve to a fully ground term
+- LHS = "left hand side" (also called operand)
+- RHS = "right-hand side" (also called operand)
+- operator - sometimes its is the predicate, sometimes something which has been efoined with `op`
+- the point of use of a predicate / point of of computation / call time
+- guard expression: "Test whether to proceed with this predicate or use another alternative"
+- arithmetic vs. numeric: The SWI Prolog manual (and maybe the ISO spec?) calls the predicates dealing with expressions and evaluation "arithmetic"; should really be "numeric".
 
 ## Structuring the problem
 
