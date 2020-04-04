@@ -3,6 +3,7 @@
 - WORK IN PROGRESS.
 - EXAMPLES & TEST CASES TO BE ADDED
 - LOTS OF CLARIFICATIONS NEEDED
+- I missed: [=@=](https://www.swi-prolog.org/pldoc/doc_for?object=(%3D@%3D)/2) ... structural term equivalence.
 
 ## Overview
 
