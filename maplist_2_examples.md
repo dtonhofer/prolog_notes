@@ -66,6 +66,13 @@ true.
 false.
 ````
 
+Generating a list of random numbers (here using `library(yall)` notation, see further below):
+
+````
+?- length(L,6),maplist([X]>>(X is random(100)),L).
+L = [61, 15, 82, 74, 83, 31].
+````
+
 For a somewhat unhinged use of "applying a predicate to each list member", see the very end of this page.
 
 ## Example usage: verifying list items
@@ -206,6 +213,20 @@ verify(1 < 3)
 verify(2 < 3)
 verify(3 < 3)
 false.
+````
+
+As an non-inconsiderable bonus, the above is actually readable.
+
+Would you rather _puzzle_ over this obscure line:
+
+````
+maplist(my_verify(3), [1,2,3,4,5]).
+````
+
+than _know_ with this elegant line:
+
+````
+maplist([X]>>verify(3,X), [1,2,3,4,5]).
 ````
 
 Similary, this notation allows us to invoke complex goals:
