@@ -1,0 +1,7 @@
+Write:
+
+replace
+vector_replace
+
+exercise property-based testing
+

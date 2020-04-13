@@ -39,8 +39,6 @@
 % ===
 
 % ===
-% TODO: Test more modes!!!
-%
 % Consider the following possibilites:
 % 1 = nonvar at that argument place
 % 0 = var at at that argument place
@@ -68,59 +66,60 @@
 % [0 . 0 . 1] - Not enough info to limit length of list
 % ==
 
-splinter0(List, N, Front, Element, Back) :-
-    ground_flags([List, N, Front, Element, Back], GroundFlags),
-    splinter0_dispatch(GroundFlags, List, N, Front, Element, Back).
+splinter0(List, N, FrontList, Element, BackList) :-
+    ground_flags([List, N, FrontList, Element, BackList], GroundFlags),
+    splinter0_dispatch(GroundFlags, List, N, FrontList, Element, BackList).
 
 % ---
 % Handle cases depending on what variables are ground/nonground
 % ---
 
-splinter0_dispatch([1,1|_], List, N, Front, Element, Back) :-
+splinter0_dispatch([1,1|_], List, N, FrontList, Element, BackList) :-
    !,
-   splinter0_forward(List, N, Front, Element, Back).
+   splinter0_forward(List,N,FrontList,Element,BackList).
  
-splinter0_dispatch([1,_,1|_], List, N, Front, Element, Back) :-
+splinter0_dispatch([1,_,1|_], List, N, FrontList, Element, BackList) :-
    !,
-   splinter0_forward(List, N, Front, Element, Back).
+   splinter0_forward(List,N,FrontList,Element,BackList).
  
-splinter0_dispatch([1,_,_,_,1], List, N, Front, Element, Back) :-
+splinter0_dispatch([1,_,_,_,1], List, N, FrontList, Element, BackList) :-
    !,
-   length(Back,B),
+   length(BackList,B),
    length(List,L),
    N is L-B-1,
-   splinter0_forward(List,N,Front,Element,Back).
+   splinter0_forward(List,N,FrontList,Element,BackList).
 
-splinter0_dispatch([_,_,1,_,1], List, N, Front, Element, Back) :-
+splinter0_dispatch([_,_,1,_,1], List, N, FrontList, Element, BackList) :-
    !,
-   length(Back,B),
-   length(Front,F),
+   length(BackList,B),
+   length(FrontList,F),
    L is B+F+1,
    length(List,L), % generate fresh variables if var(List)
    N is F,   
-   splinter0_forward(List,N,Front,Element,Back).
+   splinter0_forward(List,N,FrontList,Element,BackList).
  
-splinter0_dispatch([_,1,_,_,1], List, N, Front, Element, Back) :-
+splinter0_dispatch([_,1,_,_,1], List, N, FrontList, Element, BackList) :-
    !,
-   length(Back,B),
+   length(BackList,B),
    F is N,
    L is F+B+1,
    length(List,L), % generate fresh variables if var(List)
-   splinter0_forward(List,N,Front,Element,Back).
+   splinter0_forward(List,N,FrontList,Element,BackList).
  
-splinter0_dispatch([1|_], List, N, Front, Element, Back) :-
+splinter0_dispatch([1|_], List, N, FrontList, Element, BackList) :-
    !,
-   length(List,L),   % known
-   length(Front,N),  % generate
-   succ(N,L),        % test on length
-   append(Front,[Element|Back],List).
+   length(List,L),     % known list, known length
+   succ(N_max,L),
+   between(0,N_max,N), % generate Ns because "length(Front,N)" alone won't stop
+   length(FrontList,N),    % know length, known list of fresh variables
+   append([FrontList,[Element],BackList],List).
 
 splinter0_dispatch(GFs,_,_,_,_,_) :-
    with_output_to(string(Buffer),format("Not enough info to limit the length of the list! ground_flags = ~q",[GFs])),
    throw(error(Buffer)).
 
 % ---
-% Workhorse
+% The Workhorse. There are only two lines!
 % ---
 
 splinter0_forward(List, N, Front, Element, Back) :-
@@ -143,53 +142,91 @@ ground_flags([],[]).
 
 :- begin_tests(splinter0).
 
-% negative index
+longlist([a,b,c,d,e,f,g,h]). % "global variable" longlist
 
-test(oob,[throws(error(_,_))]) :- splinter0([a,b],-1,_,_,_).
+test(negative_index,[throws(error(_,_))]) :- splinter0([a,b],-1,_,_,_).
+test(empty_list_1,[fail]) :- splinter0([],0,_,_,_).
+test(empty_list_2,[fail]) :- splinter0([],1,_,_,_).
+test(out_of_bounds,[fail]) :- splinter0([a,b],2,_,_,_).
+test(too_much_freedom,[throws(_)]) :- splinter0(_List,_N,_FrontList,_Element,_BackList).
 
-% out of bounds on list
-
-test(oob0,[fail]) :- splinter0([],0,_,_,_).
-test(oob1,[fail]) :- splinter0([],1,_,_,_).
-test(oob2,[fail]) :- splinter0([a,b],2,_,_,_).
-
-% "global variable" llonglist
-
-longlist([a,b,c,d,e,f,g,h]).
-
-% working forwards: generating "front,element,back" from "list,N"
+% ---
 
 test(list_and_N_known) :-
    longlist(List),
-   length(List,Len),
-   succ(Nmax,Len),
-   foreach(between(0,Nmax,N),fwd_list_and_N_known(List,N)).
+   length(List,ListLen),
+   succ(N_max,ListLen),
+   foreach(between(0,N_max,N),list_and_N_known(List,N)).
 
-fwd_list_and_N_known(List,N) :-
-   splinter0(List,N,Fl,Elem,Bl),
-   format("~w N=~w ==> ~w ~w ~w\n",[List,N,Fl,Elem,Bl]),
-   % test consist in ... checking the spec!
-   append([Fl,[Elem],Bl],List), % format("append ok!\n"),
-   length(Fl,N).                % format("length ok!\n"). 
+list_and_N_known(List,N) :-
+   splinter0(List,N,FrontList_out,Element_out,BackList_out),
+   format("List=~w N=~w ==> ~w ~w ~w\n",[List,N,FrontList_out,Element_out,BackList_out]),
+   % test consists in checking the spec!
+   append([FrontList_out,[Element_out],BackList_out],List),
+   length(FrontList_out,N).
 
-% working backwards: recomposing "list,N" from "front,element,back"
+% ---
 
-test(backwards) :-
+test(list_and_frontlist_known) :- 
    longlist(List),
-   length(List,Len),
-   succ(Nmax,Len),
-   foreach(between(0,Nmax,N),bwd(List,N)).
+   FrontList=[a,b,c,d],
+   splinter0(List,N,FrontList,Element,BackList),
+   append([FrontList,[Element],BackList],List),
+   length(FrontList,N).
 
-bwd(List,N) :-
-   splinter0(List,N,Fl,Elem,Bl),              % splinter a known list (work forward, assumed correct)
-   splinter0(RecontList,RecontN,Fl,Elem,Bl),  % reconstitute List and N from the result of splintering
-   format("~w ~w ~w ==> ~w N=~w\n",[Fl,Elem,Bl,RecontList,RecontN]),
+% ---
+
+test(list_and_backlist_known) :-
+   longlist(List),
+   length(List,ListLen),
+   succ(BackListLen_max,ListLen),
+   foreach(between(0,BackListLen_max,BackListLen),list_and_backlist_known(List,BackListLen)).
+
+list_and_backlist_known(List,BackListLen) :-
+   extract_a_back_list(List,BackListLen,BackList),
+   splinter0(List,N_out,FrontList_out,Element_out,BackList),
+   format("List=~w BackList=~w ==> ~w ~w ~w\n",[List,BackList,FrontList_out,Element_out,N_out]),
+   % test consists in checking the spec!
+   append([FrontList_out,[Element_out],BackList],List),
+   length(FrontList_out,N_out).
+
+extract_a_back_list(List,BackListLen,BackList_out) :-
+   length(BackList_out,BackListLen),
+   append([_,BackList_out],List).
+
+% ---
+
+test(frontlist_and_backlist_known) :-
+   longlist(List),
+   length(List,ListLen),
+   succ(N_max,ListLen),
+   foreach(between(0,N_max,N),frontlist_and_backlist_known(List,N)).
+
+frontlist_and_backlist_known(List,N) :-
+   splinter0(List,N,FrontList_mid,Element_mid,BackList_mid), % splinter a known list, assumed to work correctly
+   splinter0(List_rebuild,N_rebuild,FrontList_mid,Element_mid,BackList_mid), 
+   format("FrontList=~w Element=~w BackList=~w ==> ~w N=~w\n",[FrontList_mid,Element_mid,BackList_mid,List_rebuild,N_rebuild]),
    % test consist in comparing!
-   RecontList = List, % format("list comparison ok!\n"),
-   RecontN = N.       % format("index comparison ok!\n").         
+   List = List_rebuild,
+   N = N_rebuild.
 
-% 
+% ---
+
+test(backlist_and_N_known) :-
+   splinter0(L,3,FL,E,[f,g,h]),
+   E  = e,
+   FL = [x,y,z],
+   L  = [x,y,z,e,f,g,h].
+
+% ---
+
+test(only_list_known) :-
+   bagof([N,FrontList,Element,BackList],splinter0([a,b,c,d],N,FrontList,Element,BackList),Bag),
+   Bag = [[0, [], a, [b, c, d]], 
+          [1, [a], b, [c, d]], 
+          [2, [a, b], c, [d]], 
+          [3, [a, b, c], d, []]].
+
 :- end_tests(splinter0).
 
 rt :- run_tests(splinter0).
-
