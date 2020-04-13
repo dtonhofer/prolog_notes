@@ -1,7 +1,18 @@
 % ===
 % A vector version of nth0(Index,List,Element)
 % See https://eu.swi-prolog.org/pldoc/doc_for?object=nth0/3
+%
+% ---
 % Sun 12 Apr 21:39:05 UTC 2020
+% ---
+% This is free and unencumbered software released into the public domain.
+% 
+% Anyone is free to copy, modify, publish, use, compile, sell, or
+% distribute this software, either in source code form or as a compiled
+% binary, for any purpose, commercial or non-commercial, and by any
+% means.
+% 
+% For more information, please refer to <http://unlicense.org/>
 % ===
 
 vector_nth0(Indexes,List,Elements) :-
