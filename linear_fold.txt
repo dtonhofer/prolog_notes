@@ -1,0 +1,186 @@
+Linear "foldl" and "foldr" in Prolog
+====================================
+
+See: https://en.wikipedia.org/wiki/Fold_(higher-order_function)
+
+(LINEAR) FOLDR
+==============
+
+Consider a list backbone (as opposed to the list representation 
+[a,b,c,d] - here we are interested in the list's underlying 
+structure itself!)
+
+      +---+---+---+---[]
+      |   |   |   | 
+      a   b   c   d
+
+Reducing it (folding) according to "foldr" means:
+
+RECURSE DOWN THE LIST BACKBONE, HIT THE END, THEN COME UP COMPUTING (DEEPEST FIRST EVALUATION)
+
+NOT SUBJECT TO TAIL-CALL OPTIMIZATION
+
+- Recurse down, following the list backbone until you hit []
+  - Replace [] with a specific value (the "starter value")
+- Come back up from recursion, and on each node of the list backbone
+  perform 2-arg computation (function application) using some 
+  function f on the list item of the node and the result of the
+  previous computation.  
+
+  Out--<--f--<--f--<--f--<--f--<--starter
+          |     |     |     | 
+          a     b     c     d
+
+In particular, if the starter value is [] and the function applied
+is "cons", i.e. list construction, FOLDR is the identity function
+(as long as the argument are given to the function in the right order).
+
+If the function f is given the arguments in this way:
+
+- node item as first argument
+- result of previous computation as second argument
+
+then
+
+ Out = f(a,f(b,f(c,f(d,starter))))
+
+   or in operator notation:
+
+ Out = (a*(b*(c*(d*starter))))   "head-to-tail, right associative"
+
+If the function f is given the arguments in this way:
+
+- result of previous computation as first argument
+- node item as second argument
+
+then
+
+ Out = f(f(f(f(starter,d),c),b),a)
+
+   or in operator notation:
+
+ Out = ((((starter*d)*c)*b)*a)   "tail-to-head, left associative"
+
+Implementation
+
+Prolog has not Haskell-like typing, so we have less headache trying
+to juggle the arrows but are left guessing and with scant compiler support:
+
+% foldr(+List,+Start,+Pred,-Out)
+% with "Pred" the *name* of a predicate (not the predicate) taking three values:
+% Pred(+Item,+Line,-NextLine)
+%
+% Geometrically:
+%
+%  NextLine--<--Pred/3--<--Line
+%                 | 
+%               Item
+
+foldr([],Start,_,Start).
+foldr([L|Ls],Start,Pred,Out) :-
+   foldr(Ls,Start,Pred,OutMid),
+   call(Pred,L,OutMid,Out).
+
+:- begin_tests(foldr).
+
+add(Item,Line,NextLine)   :- NextLine is Item+Line.
+mult(Item,Line,NextLine)  :- NextLine is Item*Line.
+build(Item,Line,NextLine) :- NextLine = '[|]'(Item,Line). 
+join(Item,Line,NextLine)  :- (Line \= [])
+                             -> with_output_to(string(NextLine),format("~w,~w",[Item,Line]))
+                             ;  with_output_to(string(NextLine),format("~w",[Item])).
+
+test(foldr_add)   :- foldr([1,2,3,4,5],  0, plunit_foldr:add   ,Out), Out=15.
+test(foldr_mult)  :- foldr([1,2,3,4,5],  1, plunit_foldr:mult  ,Out), Out=120.
+test(foldr_build) :- foldr([1,2,3,4,5], [], plunit_foldr:build ,Out), Out=[1,2,3,4,5].
+test(foldr_join)  :- foldr([1,2,3,4,5], [], plunit_foldr:join  ,Out), Out="1,2,3,4,5".
+
+:- end_tests(foldr).
+
+rt :- run_tests(foldr).
+
+(LINEAR) FOLDL
+==============
+
+Again, the list backbone of earlier:
+
+      +---+---+---+---[]
+      |   |   |   | 
+      a   b   c   d
+
+Reducing it (folding) according to "foldl" means:
+
+RECURSE DOWN THE LIST BACKBONE COMPUTING, HIT THE END, THEN COME UP (SHALLOWEST FIRST EVALUATION)
+
+SUBJECT TO TAIL-CALL OPTIMIZATION, the "come up" can be replace by a "jump up" and 
+stack frames may even be compressed into a single stack frame, transforming iteration
+into recursion. In Prolog, there must be no choicepoints for that to work.
+
+    starter-->--f-->--f-->--f-->--f-->--Out
+                |     |     |     | 
+                a     b     c     d
+
+If the function f is given the arguments in this way:
+
+- node item as first argument
+- result of previous computation as second argument
+
+then
+
+  Out = f(d,f(c,f(b,f(a,starter)))) 
+
+  or in infix operator notation:
+
+  Out = d*(c*(b*(a*starter)))   "tail-to-head, right associative"
+
+If the function f is given the arguments in this way:
+
+- result of previous computation as first argument
+- node item as second argument
+
+then
+
+  Out = f(f(f(f(starter,a),b),c),d)  
+
+  or in infix operator notation:
+
+  Out = ((((starter*a)*b)*c)*d)  "head-to-tail, left associative"
+
+Implementation
+
+% foldl(+List,+Start,+Pred,-Out)
+% with "Pred" the *name* of a predicate (not the predicate) taking three values:
+% Pred(+Item,+PrevLine,-NextLine)
+%
+% Geometrically:
+%
+%  PrevLine-->--Pred/3-->--NextLine
+%                 | 
+%               Item
+
+foldl([],End,_,End).
+foldl([L|Ls],PrevLine,Predicate,Out) :-
+   call(Predicate,L,PrevLine,NextLine),
+   foldl(Ls,NextLine,Predicate,Out).
+
+:- begin_tests(foldl).
+
+add(Item,PrevLine,NextLine)   :- NextLine is Item+PrevLine.
+mult(Item,PrevLine,NextLine)  :- NextLine is Item*PrevLine.
+build(Item,PrevLine,NextLine) :- NextLine = '[|]'(Item,PrevLine). 
+join(Item,PrevLine,NextLine)  :- (PrevLine \= [])
+                             -> with_output_to(string(NextLine),format("~w,~w",[Item,PrevLine]))
+                             ;  with_output_to(string(NextLine),format("~w",[Item])).
+
+test(foldl_add)   :- foldl([1,2,3,4,5],  0, plunit_foldl:add   ,Out), Out=15.
+test(foldl_mult)  :- foldl([1,2,3,4,5],  1, plunit_foldl:mult  ,Out), Out=120.
+test(foldl_build) :- foldl([1,2,3,4,5], [], plunit_foldl:build ,Out), Out=[5,4,3,2,1].
+test(foldl_join)  :- foldl([1,2,3,4,5], [], plunit_foldl:join  ,Out), Out="5,4,3,2,1".
+
+:- end_tests(foldl).
+
+rt :- run_tests(foldl).
+
+
+
+
