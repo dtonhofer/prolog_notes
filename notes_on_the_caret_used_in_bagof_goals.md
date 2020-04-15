@@ -9,8 +9,10 @@ Personally, I consider the semantics of `^` to be a failure, because it _looks_ 
 were an "existential quantification" and is even described as such sometimes (for 
 example: [GNU Prolog](http://www.gprolog.org/manual/gprolog.html#sec114), 
 [SWI-Prolog library(yall)](http://eu.swi-prolog.org/pldoc/man?section=yall)) 
-but it actually is **NOT**. **Avoid this misfeature**, write a separate predicate to 
-be called by `setof/3` and `bagof/3` instead. An ISO Prolog-2, if it ever happens,
+but it actually is **NOT**.
+
+It's better to **avoid this misfeature**, and write a separate predicate to 
+be called by `setof/3` and `bagof/3` instead. And ISO Prolog-2, if it ever happens,
 should really clean this up.
 
 **We start with an overview ASCII Image:**
