@@ -1,7 +1,9 @@
 # Write a linear `foldl` with `maplist/4`
 
 A [linear `foldl`](https://en.wikipedia.org/wiki/Fold_(higher-order_function)) can be easily built
-with [`maplist/4`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/4). Here is how.
+with [`maplist/4`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/4) if one doesn't want to use the one which comes with [library(apply)](https://www.swi-prolog.org/pldoc/man?predicate=foldl/4).
+
+Here is how.
 
 What does `linear foldl` do?
 
@@ -86,20 +88,23 @@ Then the result will appear in `_R` if the called goal unifies every triple as `
 
 Use "head-to-tail, left associative" calling convention.
 
+This matches what the [foldl/4](https://www.swi-prolog.org/pldoc/doc_for?object=foldl/4) from [library(apply)](https://www.swi-prolog.org/pldoc/man?section=apply) expects and does, so we can immediately extend the test cases
+to test that predicates's behaviour too.
+
 ```logtalk
 % ===
 % linear foldl via maplist/4
 % ===
 
-foldl_maplist([],Starter,_,Starter) :- !.
+foldl_maplist(_,[],StarterIsNowOut,StarterIsNowOut) :- !.
 
-foldl_maplist(List,Starter,Predicate,Out) :-
+foldl_maplist(Predicate,List,Starter,Out) :-
    length(List,Len),                    % Len >= 1
    succ(OtherLen,Len),                  % OtherLen <- Len-1
    length(OtherList,OtherLen),          % create a list of fresh variables
    List1 = [Starter|OtherList],         % List of length Len, fresh variables expect Starter item
    append(OtherList,[Out],List2),       % List of length Len, fresh variables, last item is Out
-   maplist(Predicate,List,List1,List2).
+   maplist(Predicate,List,List1,List2). % Call maplist/4 which constructs goals like Predicate(i1,i2,i3) and calls them
 
 % ===
 % Implementations for some folding-f's of interest
@@ -112,7 +117,7 @@ foldl_maplist(List,Starter,Predicate,Out) :-
 foldy_add(Item,PrevLine,NextLine)   :- NextLine is Item+PrevLine.
 foldy_mult(Item,PrevLine,NextLine)  :- NextLine is Item*PrevLine.
 foldy_build(Item,PrevLine,NextLine) :- NextLine = '[|]'(Item,PrevLine).  % '[|]' is SWI-Prolog specific
-foldy_join(Item,PrevLine,NextLine)  :- (PrevLine \= [])
+foldy_join(Item,PrevLine,NextLine)  :- (PrevLine \= "")
                                        -> with_output_to(string(NextLine),format("~w,~w",[Item,PrevLine]))
                                        ;  with_output_to(string(NextLine),format("~w",[Item])).
 
@@ -120,23 +125,42 @@ foldy_join(Item,PrevLine,NextLine)  :- (PrevLine \= [])
 % Unit tests
 % ===
 
-:- begin_tests(foldl_maplist).
+:- begin_tests(foldl).
 
-test(foldl_add)   :- foldl_maplist([1,2,3,4,5],  0, foldy_add   ,Out), Out=15.
-test(foldl_mult)  :- foldl_maplist([1,2,3,4,5],  1, foldy_mult  ,Out), Out=120.
-test(foldl_build) :- foldl_maplist([1,2,3,4,5], [], foldy_build ,Out), Out=[5,4,3,2,1].
-test(foldl_join)  :- foldl_maplist([1,2,3,4,5], [], foldy_join  ,Out), Out="5,4,3,2,1".
+% Testing our fold_maplist/4
 
-:- end_tests(foldl_maplist).
+test(maplist_foldl_add)   :- foldl_maplist(foldy_add   , [1,2,3,4,5],  0 , Out), Out=15.
+test(maplist_foldl_mult)  :- foldl_maplist(foldy_mult  , [1,2,3,4,5],  1 , Out), Out=120.
+test(maplist_foldl_build) :- foldl_maplist(foldy_build , [1,2,3,4,5], [] , Out), Out=[5,4,3,2,1].
+test(maplist_foldl_join)  :- foldl_maplist(foldy_join  , [1,2,3,4,5], "" , Out), Out="5,4,3,2,1".
 
-rt :- run_tests(foldl_maplist).
+test(maplist_foldl_add_empty_list)   :- foldl_maplist(foldy_add   , [],  0 , Out), Out=0.
+test(maplist_foldl_mult_empty_list)  :- foldl_maplist(foldy_mult  , [],  1 , Out), Out=1.
+test(maplist_foldl_build_empty_list) :- foldl_maplist(foldy_build , [], [] , Out), Out=[].
+test(maplist_foldl_join_empty_list)  :- foldl_maplist(foldy_join  , [], "" , Out), Out="".
+
+% Compare with the results of foldl/4 from "library(apply)"
+
+test(lib_foldl_add)   :- foldl(foldy_add   , [1,2,3,4,5] ,  0 , Out), Out=15.
+test(lib_foldl_mult)  :- foldl(foldy_mult  , [1,2,3,4,5] ,  1 , Out), Out=120.
+test(lib_foldl_build) :- foldl(foldy_build , [1,2,3,4,5] , [] , Out), Out=[5,4,3,2,1].
+test(lib_foldl_join)  :- foldl(foldy_join  , [1,2,3,4,5] , "" , Out), Out="5,4,3,2,1".
+
+test(lib_foldl_add_empty_list)   :- foldl(foldy_add   , [],  0 , Out), Out=0.
+test(lib_foldl_mult_empty_list)  :- foldl(foldy_mult  , [],  1 , Out), Out=1.
+test(lib_foldl_build_empty_list) :- foldl(foldy_build , [], [] , Out), Out=[].
+test(lib_foldl_join_empty_list)  :- foldl(foldy_join  , [], "" , Out), Out="".
+
+:- end_tests(foldl).
+
+rt :- run_tests(foldl).
 ```
 
 Running the test:
 
 ```
 ?- rt.
-% PL-Unit: foldl_maplist .... done
-% All 4 tests passed
+% PL-Unit: foldl ................ done
+% All 16 tests passed
 true.
 ```
