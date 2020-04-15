@@ -1,9 +1,16 @@
 # Write a linear `foldl` with `maplist/4`
 
-A [linear `foldl`](https://en.wikipedia.org/wiki/Fold_(higher-order_function)) can be easily built
-with [`maplist/4`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/4) if one doesn't want to use the one which comes with [library(apply)](https://www.swi-prolog.org/pldoc/man?predicate=foldl/4). 
+A linear `foldl` can be easily built
+with [`maplist/4`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/4) -- if one doesn't want to use the one which comes with [library(apply)](https://www.swi-prolog.org/pldoc/man?predicate=foldl/4). 
 
-Here is how.
+This discussion is based on SWI-Prolog 8.1.x
+
+See also:
+
+- [Wikipedia entry for "linear folds"](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Linear_folds)
+- ['Catamorphism'/Prolog entry at rosettacode.org](http://rosettacode.org/wiki/Catamorphism#Prolog)
+
+## About
 
 What does `linear foldl` do?
 
