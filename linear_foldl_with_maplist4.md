@@ -1,7 +1,7 @@
 # Write a linear `foldl` with `maplist/4`
 
 A [linear `foldl`](https://en.wikipedia.org/wiki/Fold_(higher-order_function)) can be easily built
-with [`maplist/4`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/4) if one doesn't want to use the one which comes with [library(apply)](https://www.swi-prolog.org/pldoc/man?predicate=foldl/4).
+with [`maplist/4`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/4) if one doesn't want to use the one which comes with [library(apply)](https://www.swi-prolog.org/pldoc/man?predicate=foldl/4). 
 
 Here is how.
 
@@ -89,7 +89,7 @@ Then the result will appear in `_R` if the called goal unifies every triple as `
 Use "head-to-tail, left associative" calling convention.
 
 This matches what the [foldl/4](https://www.swi-prolog.org/pldoc/doc_for?object=foldl/4) from [library(apply)](https://www.swi-prolog.org/pldoc/man?section=apply) expects and does, so we can immediately extend the test cases
-to test that predicates's behaviour too.
+to test that predicates's behaviour too. Note that `foldl/4` is doing the standard thing: recurse over the input list and call `apply` at each node: [source code](https://eu.swi-prolog.org/pldoc/doc/_SWI_/library/apply.pl?show=src#foldl/4).
 
 ```logtalk
 % ===
