@@ -1,4 +1,4 @@
-# Behaviour of the caret `^` in `setof/3` and `bagof/3`. 
+# Behaviour of the caret `^` in `setof/3` and `bagof/3` goal expressions.
 
 This is based on a [lengthy note](https://stackoverflow.com/questions/19931801/what-is-the-prolog-operator) I made at
 Stack Overflow.
@@ -74,7 +74,7 @@ search(2,w,b,h).
 
 
 % ===
-% HATTY EXPRESSIONS ("CLOSED EXPRESSIONS")
+% CARET-USING EXPRESSIONS ("CLOSED EXPRESSIONS")
 % ===
 
 % If P and R do not appear anywhere else than in the goal expression.
@@ -93,7 +93,7 @@ get_closed_set_indirect(Set) :- setof( [X,Y] , indirect_search(X,Y) , Set).
 get_closed_bag_indirect(Bag) :- bagof( [X,Y] , indirect_search(X,Y) , Bag).
 
 % ===
-% NONHATTY EXPRESSIONS ("OPEN EXPRESSIONS")
+% CARET-LESS EXPRESSIONS ("OPEN EXPRESSIONS")
 % ===
 
 get_open_set(Set,P,R) :- setof( [X,Y] , search(P,R,X,Y) , Set).
@@ -103,7 +103,7 @@ get_open_bag(Bag,P,R) :- bagof( [X,Y] , search(P,R,X,Y) , Bag).
 % TESTING
 % ===
 
-:- begin_tests(hat_operator).
+:- begin_tests(caret).
 
 test(clo_set)     :- get_closed_set(Set),
                      format("Closed Set:\n  ~q\n",[Set]),
@@ -127,9 +127,9 @@ test(opn_set)     :- bagof(solution(Set,P,R), get_open_set(Set,P,R), OuterBag),
 test(opn_bag)     :- bagof(solution(Bag,P,R), get_open_bag(Bag,P,R), OuterBag),
                      format("Bag for get_open_bag/3:\n  ~q\n",[OuterBag]).
 
-:- end_tests(hat_operator).
+:- end_tests(caret).
 
-rt :- run_tests(hat_operator).
+rt :- run_tests(caret).
 ```
 
 When we run `rt`, nothing unexpected occurs, we are like Fonzi with existential quantifiers:
@@ -175,7 +175,7 @@ If you enter the following, Prolog correctly warns about "singleton variables P,
 get_open_set(Set) :- setof([X,Y],search(P,R,X,Y),Set).
 ```
 
-## Hats outside of setof/3 or bagof/3
+## Carets outside of setof/3 or bagof/3
 
 This is accepted and could be given a meaning, but Prolog will be looking for procedure `^/2` on call and say that _"^/2 can only appear as the 2nd argument of setof/3 and bagof/3"_. Okay.
 
@@ -233,7 +233,9 @@ get_closed_set_weird_2e(Set) :-
 
 ## Free variable over which to range used elsewhere in clause: Problematic!
 
-This is entirely expected behaviour, but a casual reading of `setof([X,Y], ...` would lead one to think that `[X,Y]` are free variables over which `setof/3` ranges. This is not the case: `[X,Y]` is just a template and `X` and `Y` are actually clause-wide variables, which can be constrained elsewhere:
+This is entirely expected behaviour, but a casual reading of `setof([X,Y], ...` would lead one to think that
+`[X,Y]` are free variables over which `setof/3` ranges. This is not the case: `[X,Y]` is just a 
+template and `X` and `Y` are actually clause-wide variables, which can be constrained elsewhere:
 
 ```  
 get_closed_set_weird_2(Set,X) :- 
