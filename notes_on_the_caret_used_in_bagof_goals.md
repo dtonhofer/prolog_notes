@@ -1,7 +1,7 @@
 # Behaviour of the caret `^` in `setof/3` and `bagof/3` goal expressions.
 
-This is based on a [lengthy note](https://stackoverflow.com/questions/19931801/what-is-the-prolog-operator) I made at
-Stack Overflow.
+- This is based on a lengthy note I made at Stack Overflow for [What is the Prolog operator `^` (“caret”)?](https://stackoverflow.com/questions/19931801/what-is-the-prolog-operator)
+- See also ["existential qualifier in prolog, using setof / bagof"](https://stackoverflow.com/questions/1986751/existential-qualifier-in-prolog-using-setof-bagof).
 
 **Upfront note**:
 
