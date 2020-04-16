@@ -184,3 +184,52 @@ rt :- run_tests(foldl).
 
 
 
+One can actually use maplist/4 to implement foldr:
+
+                                         
+   List2: Take the input list        a   b   c   d   e   f
+   List1: And a second input list   st  _1  _2  _3  _4  _5  with st the starter and _i fresh variables, named
+   List3: And the "output" list     _1  _2  _3  _4  _5  _R  This is actually List1, shifted by 1, with _R appended
+
+   Then the result will appear in _6 if the Predicate at any time unifies 
+   Arg3 = f(Arg1,Arg2) 
+
+   We can get a at the final entry using nth0
+
+Use "head-to-tail, left associative"
+
+maplist demands that all lists be the same length or it fails, so...
+
+foldl_maplist([],Starter,_,Starter)       :- !.
+foldl_maplist(List,Starter,Predicate,Out) :-  
+   length(List,Len),              % Len >= 1
+   succ(OtherLen,Len),            % OtherLen <- Len-1
+   length(OtherList,OtherLen),    % create a list of fresh variables
+   List1 = [Starter|OtherList],   % List of length Len, fresh variables expect Starter item
+   append(OtherList,[Out],List2), % List of length Len, fresh variables, last item is Out 
+   maplist(Predicate,List,List1,List2).
+
+foldy_add(Item,PrevLine,NextLine)   :- NextLine is Item+PrevLine.
+foldy_mult(Item,PrevLine,NextLine)  :- NextLine is Item*PrevLine.
+foldy_build(Item,PrevLine,NextLine) :- NextLine = '[|]'(Item,PrevLine). 
+foldy_join(Item,PrevLine,NextLine)  :- (PrevLine \= [])
+                                       -> with_output_to(string(NextLine),format("~w,~w",[Item,PrevLine]))
+                                       ;  with_output_to(string(NextLine),format("~w",[Item])).
+
+
+:- begin_tests(foldl_maplist).
+
+test(foldl_add)   :- foldl_maplist([1,2,3,4,5],  0, foldy_add   ,Out), Out=15.
+test(foldl_mult)  :- foldl_maplist([1,2,3,4,5],  1, foldy_mult  ,Out), Out=120.
+test(foldl_build) :- foldl_maplist([1,2,3,4,5], [], foldy_build ,Out), Out=[5,4,3,2,1].
+test(foldl_join)  :- foldl_maplist([1,2,3,4,5], [], foldy_join  ,Out), Out="5,4,3,2,1".
+
+:- end_tests(foldl_maplist).
+
+rt :- run_tests(foldl_maplist).
+
+
+
+  
+
+
