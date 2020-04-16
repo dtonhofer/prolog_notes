@@ -1,9 +1,9 @@
+% Based on:
 % https://stackoverflow.com/questions/60582295/find-mutual-element-in-different-facts-in-swi-prolog
+% and also
+% https://stackoverflow.com/questions/60604700/prolog-to-sql-any-way-to-improve-sql-code-for-unit-tests-and-fix-an-edge-case-e
 
-% actors_appearing_in_movies(MoviesIn,ActorsOut)
-%
 % This is too complex.
-%
 
 starsin(a,bob).
 starsin(c,bob).
