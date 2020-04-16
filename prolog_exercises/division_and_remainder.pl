@@ -77,7 +77,6 @@ test :-
   % arithmetic functions. Value depends on the C compiler used.
 
   current_prolog_flag(integer_rounding_function,Irf),
-  format("Current rounding mode: ~w\n", Irf),   
 
   % Create a list of integers
 
@@ -88,6 +87,7 @@ test :-
   
   maplist([X]>>div_with_mod(X,3),InputList),
   nl,
+  format("With current_prolog_flag(integer_rounding_function,F), F=~w\n", Irf),
   maplist([X]>>intdiv_with_rem(X,3),InputList).
 
 
