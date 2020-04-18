@@ -1,6 +1,8 @@
-% ===
+% 2345678901234567890123456789012345678901234567890123456789012345678901234567
+% ============================================================================
 % 2019-08-05
-% ===
+% https://github.com/dtonhofer/prolog_notes
+% ----------------------------------------------------------------------------
 % This is free and unencumbered software released into the public domain.
 % 
 % Anyone is free to copy, modify, publish, use, compile, sell, or
@@ -9,9 +11,9 @@
 % means.
 % 
 % For more information, please refer to <http://unlicense.org/>
-% ===
+% ============================================================================
 % References
-% - - - - - -
+% ----------
 %
 % Torsten Sillke has collected a onster page of references:
 %
@@ -43,7 +45,7 @@
 %   https://stackoverflow.com/questions/1144207/bridge-crossing-puzzle
 %
 % Description
-% - - - - - -
+% -----------
 %
 % ”U2” has a concert that starts in 17 minutes and they must all
 % cross a bridge to get there. They stand on the same side of the
@@ -76,10 +78,7 @@
 % minutes to develop (compiled and ran on the 1st try though).
 % Another guy solved it in three minutes. A group of 50, at Motorola,
 % couldn’t figure it out at all.
-% ===
-
-% ----8<----8<----8<----8<----8<----8<----8<----8<----8<----
-
+% ============================================================================
 % This program took about 2h to write. I'm not ready for Microsoft.
 % 
 % Run with 
@@ -113,6 +112,7 @@
 % Whether the ATeam is on the wrong or target side of the bridge depends on the history length.
 % The BTeam is on the other side of the bridge and has no flashlight.
 % The Clock indicates time at that state.
+% ============================================================================
 
 solve(HistoryOut) :- 
     explore([state([bono,edge,adam,larry],[],0)],HistoryOut).

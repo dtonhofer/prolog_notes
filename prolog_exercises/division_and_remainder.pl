@@ -1,20 +1,8 @@
-% ===
-% Try out the arithmetic function pairs
-%
-% div , mod  
-%
-% - https://eu.swi-prolog.org/pldoc/doc_for?object=f((mod)/2)
-% - https://eu.swi-prolog.org/pldoc/doc_for?object=f((div)/2)
-% - https://eu.swi-prolog.org/pldoc/doc_for?object=divmod/4
-%
-% //  , rem 
-%
-% - https://eu.swi-prolog.org/pldoc/doc_for?object=f((//)/2)
-% - https://eu.swi-prolog.org/pldoc/doc_for?object=f((rem)/2)
-%
-% ---
-% Runs on: SWI Prolog 8.1 with library(yall)
-% ---
+% 2345678901234567890123456789012345678901234567890123456789012345678901234567
+% ============================================================================
+% 2020-04-XX
+% https://github.com/dtonhofer/prolog_notes
+% ----------------------------------------------------------------------------
 % This is free and unencumbered software released into the public domain.
 % 
 % Anyone is free to copy, modify, publish, use, compile, sell, or
@@ -23,15 +11,33 @@
 % means.
 % 
 % For more information, please refer to <http://unlicense.org/>
-% ---
+% ============================================================================
+% Runs on: SWI Prolog 8.1 
+% with library(yall) for the Lambda Expression in line
+% maplist([X]>>div_with_mod(X,3),InputList),
+% ============================================================================
+% Try out the arithmetic function pairs:
+%
+% "div" and "mod" 
+%
+% - https://eu.swi-prolog.org/pldoc/doc_for?object=f((mod)/2)
+% - https://eu.swi-prolog.org/pldoc/doc_for?object=f((div)/2)
+% - https://eu.swi-prolog.org/pldoc/doc_for?object=divmod/4
+%
+% "//" and "rem"
+%
+% - https://eu.swi-prolog.org/pldoc/doc_for?object=f((//)/2)
+% - https://eu.swi-prolog.org/pldoc/doc_for?object=f((rem)/2)
+%
 % See also 
+% --------
 %
 % Predicate "current_prolog_flag": 
 %  https://eu.swi-prolog.org/pldoc/doc_for?object=current_prolog_flag/2
 %
 % Library "yall":
 %  https://eu.swi-prolog.org/pldoc/man?section=yall
-% ===
+% ============================================================================
 
 /* Generated output
 

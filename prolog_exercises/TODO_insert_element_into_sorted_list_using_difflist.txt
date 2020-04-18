@@ -1,0 +1,196 @@
+% ===
+% Insertion into a list using a "difference list"
+% ===
+% Difference list explainer: 
+%
+% Frank Pfenning - "Difference Lists"
+%
+% https://www.cs.cmu.edu/~fp/courses/lp/lectures/11-diff.pdf
+%
+% "Difference List" wiki entry at SWI-Prolog discourse site:
+%
+% https://swi-prolog.discourse.group/t/difference-list/959
+%
+% TDOD: There should be a simple diagram to show that tthis works
+% through two things:
+% ALIASING
+% TRAPDOORING
+%
+% At https://www.metalevel.at/prolog/dcg Markus Trisk writes:
+%
+% "We are not talking about—as the name may suggest — a special kind of list.
+% The additional arguments are completely ordinary lists. It is their 
+% differences that matter especially in such cases. 
+% ===
+
+% ---
+% Instead of calling format, call qformat/2, which calls format/2 in case
+% you want tprintouts or does nothing in case you want silence.
+% ---
+
+qformat(Fmt,Args) :- true.
+
+% ---
+% Main call
+% Insert an element Element (an integer >= 0) into list ListIn (a list of integers >= 0,
+% already sorted ascendingly, yielding ListOut (if ListOut is given, this
+% becomes a check). Duplicates are suppressed.
+% ---
+% Mode indications according to https://www.swi-prolog.org/pldoc/man?section=preddesc
+% ---
+
+insert(Element,ListIn,ListOut) :-
+   ListOut=S,                         % Aliasing. T is the difflist "Suffix", a freshvar, unless ListOut is bound.
+   DL=[-1|S]-S,                       % Construct a difflist. -1 is a guard, smaller than anything.
+   insert_help(Element,ListIn,DL).
+
+% ---
+% Contract checking.
+% This out to be surprisingly difficult, because unlike for functional programming, one is 
+% unsure in which direction the information flows at any call (in,out,bidirectionally,are
+% we constructing or checking?).
+% Also, there is no good built-in support for creating error messages.
+% ---
+
+intro_contract(Element,ListIn,ListOut) :-   
+   integer(Element), Element >= 0,
+   is_list(ListIn),
+   nonvar(ListOut) -> is_list(ListOut).
+
+% ---
+% Test whether a "Flag" is set to a "Val", making sure no
+% accidential unification or constraining happens
+%
+% Begins with "test_" because absolutely nothing happens and 
+% the only thing that interests us is whether the predicate fails or
+% not at the current state of the computation.
+%
+% ?- flag_set_and_unified(true,true).
+% true.
+% ?- flag_set_and_unified(true,false).
+% false.
+% ?- flag_set_and_unified(true,X).
+% false.
+% ?- flag_set_and_unified(X,true).
+% false.
+% ---
+
+test_flag_set_and_unified(Flag,Val) :- 
+   var(Flag) -> false ; var(Val) -> false ; \+ \+ (Flag = Val).
+
+% ---
+% Test whether a List consists of integers that are >= 0 and also
+% sorted ascending and unique.
+% 
+% Always succeeds, but Resukt is set to the atom 'false' if a
+% problem is found, otherwise it is the atom 'true'.
+%
+% A message will then be in "Message".
+%
+% list_of_asc_ints(List,-Message,-Result).
+% ---
+
+list_of_asc_ints([],_,true).
+list_of_asc_ints([L],M,R)    :- list_of_asc_ints_help([L],_,0,M,R),!.   % RED CUT
+list_of_asc_ints([L|Ls],M,R) :- list_of_asc_ints_help([L],_,0,M,R).
+
+% ---
+% Helper predicate
+% list_of_asc_ints_help(+List,+PrevItem,+Position,-Message,-Result).
+% ---
+
+list_of_asc_ints([],_,M,R)    :- list_of_asc_ints_help([L],_,0,M,R),!.   % RED CUT
+
+
+list_of_vars_or_integers([L1,L2|L],_) :- integer(L), L>=0, L1<L2.
+
+list_of_vars_or_integers([L|Ls],Err) :- integer(L), L>=0, list_of_vars_or_integers(Ls,Err).
+list_of_vars_or_integers([L|Ls],Err) :- list_of_vars_or_integers(Ls,Err).
+
+
+
+
+list_of_vars_or_integers([],_,_,_,true).
+list_of_vars_or_integers([L],PrevL,Pos,Msg,ErrFlag) :- 
+   mustbe_integer(L,Pos,Msg,ErrFlag),
+   ErrFlag
+   
+list_of_vars_or_integers([L1,L2],Pos,Msg,ErrFlag) :- mustbe_integer(L,Pos,Msg,ErrFlag).
+
+list_of_vars_or_integers([L1,L2|Ls],Pos,Msg,Err) :- 
+   mustbe_integer(L1,Pos,Msg,Err).
+   
+% This is pretty primitive.
+% There must be a whole policy of formatting error messages and give "type information".
+% mustbe_integer(+L,+Pos,-Msg,-ErrFlag).
+
+mustbe_integer(L,_,_,true) :- integer(L), 0=<L, !.  % RED CUT
+mustbe_integer(L,Pos,Msg,false) :- 
+   \+integer(L)
+   ->
+   with_output_to(string(Msg),format("Not an integer (~q) at positoin ~q\n",[L,Pos]))
+   ;
+   L<0
+   ->
+   with_output_to(string(Msg),format("Integer ~q < 0 at position ~q\n",[L,Pos]))
+   ;
+   with_output_to(string(Msg),format("Something weird (~q) at position ~q\n",[L,Pos])).
+   
+                                        
+
+
+
+outro_contract(Element,ListIn,ListOut) :-
+
+% ---
+% Helper predicate
+% ---
+
+insert_help(E,[L|Ls],DL) :-
+    E>L,
+    qformat("Go right: ~q into ~q, difflist = ~q\n",[E,[L|Ls],DL]),
+    !,
+    DL=C-I,                     % Destructure Difflist into Chain and Ion (could be done in clause head)
+    I=[L|NewI],                 % Constrain the Ion; this tacks L onto the Chain and creates a new Ion    
+    insert_help(E,Ls,C-NewI).   % Continue with longer Chain and new Ion
+    
+insert_help(X,[X|Ls],DL) :-     % Unification of Element and Head of List; both are the X
+    qformat("Exists: ~q in ~q, difflist = ~q\n",[X,[X|Ls],DL]),
+    !,    
+    DL=C-I,                     % Destructure Difflist into Chain and Ion (could be done in clause head)
+    I=[X|Ls].                   % "De-ionize" and we are done!
+
+insert_help(E,[L|Ls],DL) :-
+    E<L,
+    qformat("Insert-before: ~q into ~q, difflist = ~q\n",[E,[L|Ls],DL]),
+    !,
+    DL=C-I,                     % Destructure Difflist into Chain and Ion (could be done in clause head)
+    I=[E,L|Ls].                 % "De-ionize" and we are done!
+
+insert_help(E,[],DT) :-
+    qformat("Insert ~q at end, difflist = ~q\n",[E,DT]),
+    !,    
+    DL=C-I,                     % Destructure Difflist into Chain and Ion (could be done in clause head)
+    I=[E].                      % "De-ionize" and we are done!
+
+% ---
+% Unit tests
+% ---
+
+:-begin_tests(inserting).
+
+% The "R" are not directly inserted into the insert/3 calls because in that case, the
+% predicate "compares" instead of building.
+
+test(1) :- insert(10,[],R),          R=[10].
+test(2) :- insert(11,[2,3,5,7],R),   R=[2,3,5,7,11].
+test(3) :- insert(2,[3,5,7,11],R),   R=[2,3,5,7,11].
+test(4) :- insert(3,[2,3,5,7,11],R), R=[2,3,5,7,11].
+test(5) :- insert(3,[2,5,7,11],R),   R=[2,3,5,7,11].
+test(6) :- insert(7,[2,3,5,11],R),   R=[2,3,5,7,11].
+test(7) :- insert(2,[],R),           R=[2].
+
+:-end_tests(insert_with_append).
+
+rt :- run_tests(insert_with_append).
+

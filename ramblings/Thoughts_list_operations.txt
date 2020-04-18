@@ -1,0 +1,63 @@
+List operations
+---------------
+
+On lists of numbers
+Or ordered lists
+Or ordered sets (ordered lists without duplicates)
+
+Inserting an element
+--------------------
+
+Insert an element
+- based on its value. The list must be sorted as this implies the correct position
+- by giving the index into the list
+
++ in both cases, "eliminate or keep duplicates"?
++ if "keep duplicates", insert in front of or after a duplicate run?
+
+Checking for an element
+--------------------
+
+Member and memberchk.
+Checking could be accompanied by splintering of the list.
+
+Finding an element
+--------------------
+
+By index: nth0, nth1
+  Extension: vectorial nth0 : extract multiple elements at once
+By "value": one can determine the position of an element by value
+What do you do with the list? One could consider returning the "remainder" 
+(that is "selectchk")
+or the list front and list back (this is "splintering") of the list
+
+Removal of an element
+---------------------
+
+By value (if it exists)
+By index
+Giving a new list
+Or just the list fron/back
+Extension: Vectorial removal - Remove multiples by value; Remove multiples by index
+
+Replacing an element
+--------------------
+
+Extension: Vectorial replace - replace many elements at the same time.
+
+Adding/Removing in front
+------------------------
+
+In Perl: shift/unshift
+
+Adding/Removing at the back
+------------------------
+
+In Perl: push/pop
+
+General operation: Splice
+-------------------------
+
+Removing/Adding "splices" from/into the list
+
+
