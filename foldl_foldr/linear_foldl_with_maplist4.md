@@ -1,13 +1,13 @@
-# Write a linear `foldl` with `maplist/4`
+# Write a linear "foldl" with `maplist/4`
 
-A linear `foldl` can be easily built
+A linear "foldl" can be easily built
 with [`maplist/4`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/4) -- if one doesn't want to use the one which comes with [library(apply)](https://www.swi-prolog.org/pldoc/man?predicate=foldl/4). 
 
 This discussion is based on SWI-Prolog 8.1.x
 
 See also:
 
-- [Wikipedia entry for "linear folds"](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Linear_folds)
+- [Wikipedia entry for "linear folds"](https://en.wikipedia.org/wiki/Fold_%28higher-order_function%29#Linear_folds)
 - ['Catamorphism'/Prolog entry at rosettacode.org](http://rosettacode.org/wiki/Catamorphism#Prolog)
 
 ## About
@@ -17,9 +17,9 @@ What does `linear foldl` do?
 Take the following "list backbone", which is the structure underlying the list representation `[a,b,c,d]`:
 
 ```
-+---+---+---+---[]    <-- list backbone, terminating in the empty list
++---+---+---+---[]    <-- list backbone/spine, terminating in the empty list
 |   |   |   |
-a   b   c   d         <-- list items
+a   b   c   d         <-- list items/entries/elements/members
 ```
 
 (The termination as empty list is SWI-Prolog specific, other implementation may have NULL/nil instead)
@@ -31,11 +31,11 @@ Folding this list (aka. reducing, accumulating) according to "foldl" means:
 - ... when you hit the end
 - ... come back up from recursion (or output the value; in any case, no further computation needed).
 
-It could be called "Shallowest First Evaluation.".
+It could be called "Shallowest First Reduction.".
 
-`foldl` is subject to call call optimization. The "come up from recursion" can be replaced by a "jump up" and
-stack frames may even be collapsed into a single stack frame, transforming recursion into iteration. In Prolog,
-there must be no choice-points for that to work, which should be the case here.
+`foldl` is subject to [tail call optimization](https://en.wikipedia.org/wiki/Tail_call). The "come up from recursion" 
+can be replaced by a "jump up" and stack frames may even be collapsed into a single stack frame, transforming
+recursion into iteration. In Prolog, there must be no choice-points for that to work, which should be the case here!
 
 `f` is iteratively computing the final output `Out` from two values at each list backbone node, starting with a 
 specifiable starter value:
@@ -43,7 +43,7 @@ specifiable starter value:
 - the previous running value
 - the current list item
 
-like this:
+like this, in a pseudo "data flow notation":
 
 ```
 starter-->--f-->--f-->--f-->--f-->--Out
