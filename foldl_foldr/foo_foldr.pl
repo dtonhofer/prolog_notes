@@ -49,13 +49,14 @@ test(foldr_mult)   :- foo_foldr(foldy_mult   , [1,2,3,4,5],  1 , Out), Out=120.
 test(foldr_build)  :- foo_foldr(foldy_build  , [1,2,3,4,5], [] , Out), Out=[1,2,3,4,5].
 test(foldr_squadd) :- foo_foldr(foldy_squadd , [1,2,3,4,5],  0 , Out), Out=507425426245. % need GMP library here
 test(foldr_join)   :- foo_foldr(foldy_join   , [1,2,3,4,5], "" , Out), Out="1,2,3,4,5".
-test(foldr_expr)   :- foo_foldr(foldy_expr(*) , [1,2,3,4,5],  1 , Out), Out=1*(2*(3*(4*(5*1)))).
+test(foldr_expr)   :- foo_foldr(foldy_expr(*) , [1,2,3,4,5], 1 , Out), Out=1*(2*(3*(4*(5*1)))).
 
-test(foldr_add_empty)    :- foo_foldr(foldy_add    , [],  0 , Out), Out=0.
-test(foldr_mult_empty)   :- foo_foldr(foldy_mult   , [],  1 , Out), Out=1.
-test(foldr_build_empty)  :- foo_foldr(foldy_build  , [], [] , Out), Out=[].
-test(foldr_squadd_empty) :- foo_foldr(foldy_squadd , [],  0 , Out), Out=0.
-test(foldr_join_empty)   :- foo_foldr(foldy_join   , [], "" , Out), Out="".
+test(foldr_add_empty)    :- foo_foldr(foldy_add     , [],  0 , Out), Out=0.
+test(foldr_mult_empty)   :- foo_foldr(foldy_mult    , [],  1 , Out), Out=1.
+test(foldr_build_empty)  :- foo_foldr(foldy_build   , [], [] , Out), Out=[].
+test(foldr_squadd_empty) :- foo_foldr(foldy_squadd  , [],  0 , Out), Out=0.
+test(foldr_join_empty)   :- foo_foldr(foldy_join    , [], "" , Out), Out="".
+test(foldr_expr_empty)   :- foo_foldr(foldy_expr(*) , [],  1 , Out), Out=1.
 
 % library(apply) has no "foldr" so no comparison tests!
 
