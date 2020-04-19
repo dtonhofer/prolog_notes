@@ -3,21 +3,33 @@
 
 A really simple exercise!
 
-[`library(apply)`](https://www.swi-prolog.org/pldoc/man?section=apply) already has a
-[`foldl`](https://www.swi-prolog.org/pldoc/doc_for?object=foldl/4). The
-[implementation](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/apply.pl?show=src#foldl/4)
-of that is more less the same as the one given here.
-
-Start with interesting functions (expressed as predicates) which might be called by a _foldl_ or _foldr_.
-
-[foldy.pl](foldy.pl)
+## Preliminaries
 
 I always confuse _foldl_ and _foldr_, so here is a way to remember:
 
 - _foldl_ implements the "Laughable recursion", subject to tail-call optimization.
 - _foldr_ implements the "Real recursion", not subject to tail-call optimization.
 
-## The implementation of _foldl_, called `foo_foldl/4`
+[`library(apply)`](https://www.swi-prolog.org/pldoc/man?section=apply) already has a
+[`foldl`](https://www.swi-prolog.org/pldoc/doc_for?object=foldl/4). The
+[implementation](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/apply.pl?show=src#foldl/4)
+of that is more less the same as the one given here. It uses [`apply/2`](https://www.swi-prolog.org/pldoc/man?section=apply
+) instead of [`call/_`](https://www.swi-prolog.org/pldoc/doc_for?object=call/2) as done below. No matter. (Except that `apply/2` is marked _deprecated_; I still like it more).
+
+**Further reading:**
+
+- [Wikipedia entry for "linear folds"](https://en.wikipedia.org/wiki/Fold_%28higher-order_function%29#Linear_folds)
+- ['Catamorphism'/Prolog entry at rosettacode.org](http://rosettacode.org/wiki/Catamorphism#Prolog)
+
+## Functions to be used in tests
+
+Start with interesting functions (expressed as predicates) which might be called by a _foldl_ or _foldr_.
+
+Interesting functions to be passed to `call/_` inside the _folds_:  [foldy.pl](foldy.pl)
+
+## About linear _foldl_
+
+### The implementation of _foldl_, called `foo_foldl/4`
 
 ```logtalk
 foo_foldl(_,[],ThreadEnd,ThreadEnd) :- !. % GREEN CUT
@@ -29,7 +41,7 @@ foo_foldl(Foldy,[Item|Ls],ThreadIn,ThreadOut) :-
 
 In this file, complete with Unit Tests based on `foldy.pl`: [foo_foldl.pl](foo_foldl.pl)
 
-Run tests:
+**Run tests:**
 
 ```
 ?- [foldy],[foo_foldl].
@@ -41,7 +53,7 @@ true.
 true.
 ```
 
-## An alternative implementation of linear _foldl_ based on `maplist/5`, called `foldl_maplist/4`.
+### An alternative implementation of linear _foldl_ based on `maplist/4`, called `foldl_maplist/4`.
 
 ```logtalk
 foldl_maplist(_,[],Starter,Starter) :- !. % GREEN CUT
@@ -57,7 +69,7 @@ foldl_maplist(Foldy,List,Starter,Out) :-
 
 In this file, complete with Unit Tests based on `foldy.pl`: [foldl_maplist.pl](foldl_maplist.pl)
 
-Run tests:
+**Run tests:**
 
 ```
 ?- [foldy],[foldl_maplist].
@@ -157,7 +169,9 @@ foo_foldr(Foldy,[Item|Ls],ThreadIn,ThreadOut) :-
 
 In this file, complete with Unit Tests based on `foldy.pl`: [foo_foldr.pl](foo_foldr.pl)
 
-Run tests:
+Note that for some reason, there is no `foldr/4` in `library(apply)` of SWI Prolog, so comparison tests are not made.
+
+**Run tests:**
 
 ```
 ?- [foldy],[foo_foldr].
