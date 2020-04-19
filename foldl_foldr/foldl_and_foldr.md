@@ -10,7 +10,7 @@ of that is more less the same as the one given here.
 
 Start with interesting functions (expressed as predicates) which might be called by a _foldl_ or _foldr_.
 
-[foldy.pl](prolog_notes/fold_foldr/foldy.pl)
+[foldy.pl](foldy.pl)
 
 I always confuse _foldl_ and _foldr_, so here is a way to remember:
 
@@ -19,7 +19,7 @@ I always confuse _foldl_ and _foldr_, so here is a way to remember:
 
 ## The implementation of _foldl_, called `foo_foldl/4`
 
-In this file, complete with Unit Tests: [foo_foldl.pl](prolog_notes/fold_foldr/foo_foldl.pl)
+In this file, complete with Unit Tests: [foo_foldl.pl](foo_foldl.pl)
 
 ```
 [foldy],[foo_foldl]
@@ -28,7 +28,7 @@ rt.
 
 ## The implementation of _foldr_, called `foo_foldr/4`:
 
-In this file, complete with Unit Tests: [foo_foldr.pl](prolog_notes/fold_foldr/foo_foldr.pl)
+In this file, complete with Unit Tests: [foo_foldr.pl](foo_foldr.pl)
 
 ```
 [foldy],[foo_foldr]
@@ -37,7 +37,7 @@ rt.
 
 ## An alternative implementation of _foldl_ based on `maplist/5`, called `foldl_maplist/4`.
 
-In this file, complete with Unit Tests: [foldl_maplist.pl](prolog_notes/fold_foldr/foldl_maplist.pl)
+In this file, complete with Unit Tests: [foldl_maplist.pl](foldl_maplist.pl)
 
 ```
 [foldy],[foldl_maplist]
