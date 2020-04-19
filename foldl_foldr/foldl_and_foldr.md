@@ -19,28 +19,77 @@ I always confuse _foldl_ and _foldr_, so here is a way to remember:
 
 ## The implementation of _foldl_, called `foo_foldl/4`
 
-In this file, complete with Unit Tests: [foo_foldl.pl](foo_foldl.pl)
+```logtalk
+foo_foldl(_,[],ThreadEnd,ThreadEnd) :- !. % GREEN CUT
+
+foo_foldl(Foldy,[Item|Ls],ThreadIn,ThreadOut) :-
+   call(Foldy,Item,ThreadIn,Intermed),
+   foo_foldl(Foldy,Ls,Intermed,ThreadOut).
+```
+
+In this file, complete with Unit Tests based on `foldy.pl`: [foo_foldl.pl](foo_foldl.pl)
+
+Run tests:
 
 ```
-[foldy],[foo_foldl]
-rt.
+?- [foldy],[foo_foldl].
+true.
+
+?- rt.
+% PL-Unit: foo_foldl ........................ done
+% All 24 tests passed
+true.
 ```
 
 ## The implementation of _foldr_, called `foo_foldr/4`:
 
-In this file, complete with Unit Tests: [foo_foldr.pl](foo_foldr.pl)
+```logtalk
+foo_foldr(_,[],ThreadEnd,ThreadEnd) :- !. % GREEN CUT
+
+foo_foldr(Foldy,[Item|Ls],ThreadIn,ThreadOut) :-
+   foo_foldr(Foldy,Ls,ThreadIn,Intermed),
+   call(Foldy,Item,Intermed,ThreadOut).
+```
+
+In this file, complete with Unit Tests based on `foldy.pl`: [foo_foldr.pl](foo_foldr.pl)
+
+Run tests:
 
 ```
-[foldy],[foo_foldr]
-rt.
+?- [foldy],[foo_foldr].
+true.
+
+?- rt.
+% PL-Unit: foo_foldr ............ done
+% All 12 tests passed
+true.
 ```
 
 ## An alternative implementation of _foldl_ based on `maplist/5`, called `foldl_maplist/4`.
 
-In this file, complete with Unit Tests: [foldl_maplist.pl](foldl_maplist.pl)
+```logtalk
+foldl_maplist(_,[],Starter,Starter) :- !. % GREEN CUT
+
+foldl_maplist(Foldy,List,Starter,Out) :-
+   length(List,Len),                    % Len >= 1
+   succ(OtherLen,Len),                  % OtherLen <- Len-1
+   length(OtherList,OtherLen),          % create a list of fresh variables
+   List1 = [Starter|OtherList],         % List of length Len, fresh variables expect Starter item
+   append(OtherList,[Out],List2),       % List of length Len, fresh variables, last item is Out
+   maplist(Foldy,List,List1,List2).     % Call maplist/4 which constructs goals like Foldy(i1,i2,i3) and calls them
+```
+
+In this file, complete with Unit Tests based on `foldy.pl`: [foldl_maplist.pl](foldl_maplist.pl)
+
+Run tests:
 
 ```
-[foldy],[foldl_maplist]
-rt.
+?- [foldy],[foldl_maplist].
+true.
+
+?- rt.
+% PL-Unit: foldl_maplist ........................ done
+% All 24 tests passed
+true.
 ```
 
