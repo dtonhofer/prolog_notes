@@ -7,8 +7,8 @@ A really simple exercise!
 
 I always confuse _foldl_ and _foldr_, so here is a way to remember:
 
-- _foldl_ implements the "Laughable recursion", subject to tail-call optimization.
-- _foldr_ implements the "Real recursion", not subject to tail-call optimization.
+- _foldl_ ("fold left") implements the **"Laughable Recursion"**, subject to tail-call optimization.
+- _foldr_ ("fold right") implements the **"Real Recursion"**, not subject to tail-call optimization.
 
 [`library(apply)`](https://www.swi-prolog.org/pldoc/man?section=apply) already has a
 [`foldl`](https://www.swi-prolog.org/pldoc/doc_for?object=foldl/4). The
@@ -29,6 +29,74 @@ Interesting functions to be passed to `call/_` inside the _folds_:  [foldy.pl](f
 
 ## About linear _foldl_
 
+Consider this list:
+
+```
++---+---+---+---[]    <-- list backbone/spine, composed of nodes, terminating in the empty list
+|   |   |   |
+a   b   c   d         <-- list items/entries/elements/members
+```
+
+Folding this list (aka. reducing, accumulating) according to _foldl_ means:
+
+- Recurse down the list backbone, and in each new frame:
+   1. Perform computation according to a two-place function _f_, which generates a new value from the local list item and a value passed down from the higher frame. A _starter value_ is passed to the first frame in the recursion chain.
+   2. Perform a recursive call with this new value as parameter.
+- When you hit the end of the list, you are done: Come back up from recursion with value passed to the last frame as a final result.
+
+Like this, in a "data flow notation":
+
+```
+starter value -->--f-->--f-->--f-->--f-->-- Out
+                   |     |     |     | 
+                   a     b     c     d
+```
+
+It could be called _Shallowest First Reduction._
+
+_foldl_ is amenable to [tail-call optimization](https://en.wikipedia.org/wiki/Tail_call): the process of "coming up from recursion" can be replaced by a single "jump up to the stack frame of the first recursive call". The stack frame chain can even be compressed into a single frame, by doing a variable renaming and looping instead of a recursive call. 
+
+As a special case, if the starter value is `[]` and the function applied
+is _cons_, i.e. list construction, _foldl_ reverses (not "mirrors"; for that more dimensions are needed) the list
+(as long as the argument are given to the `f` function in the right order). This transformation does not destroy information: there is a bijective mapping between the input structure and the output structure.
+
+```
++---+---+---+---[]            +---+---+---+---[] 
+|   |   |   |          >>     |   |   |   |
+a   b   c   d                 d   c   b   a
+```
+
+There are two ways to call _f_: either 
+
+- _f(recursive_value,item)_  or 
+- _f(item,recursive_value)_ 
+
+It doesn't really matter, one just needs to be consistent.
+
+If _f_ is called as _f(item,recursive_value)_, then:
+
+```
+Out = f(d,f(c,f(b,f(a,starter))))
+```
+
+or in infix operator notation "tail-to-head, right associative":
+
+```
+Out = d*(c*(b*(a*starter)))   
+```
+
+If the function _f_ is called as _f(recursive_value,item)_ instead, then:
+
+```
+Out = f(f(f(f(starter,a),b),c),d)
+```
+
+or in infix operator notation "head-to-tail, left associative":
+
+```
+Out = ((((starter*a)*b)*c)*d)  
+```
+
 ### The implementation of _foldl_, called `foo_foldl/4`
 
 ```logtalk
@@ -39,7 +107,7 @@ foo_foldl(Foldy,[Item|Ls],ThreadIn,ThreadOut) :-
    foo_foldl(Foldy,Ls,Intermed,ThreadOut).
 ```
 
-In this file, complete with Unit Tests based on `foldy.pl`: [foo_foldl.pl](foo_foldl.pl)
+It's in this file, complete with Unit Tests based on `foldy.pl`: [foo_foldl.pl](foo_foldl.pl)
 
 **Run tests:**
 
@@ -67,7 +135,7 @@ foldl_maplist(Foldy,List,Starter,Out) :-
    maplist(Foldy,List,List1,List2).     % Call maplist/4 which constructs goals like Foldy(i1,i2,i3) and calls them
 ```
 
-In this file, complete with Unit Tests based on `foldy.pl`: [foldl_maplist.pl](foldl_maplist.pl)
+It's in this file, complete with Unit Tests based on `foldy.pl`: [foldl_maplist.pl](foldl_maplist.pl)
 
 **Run tests:**
 
@@ -83,7 +151,7 @@ true.
 
 ## About linear _foldr_
 
-Take this list:
+As previously, consider this list:
 
 ```
 +---+---+---+---[]    <-- list backbone/spine, composed of nodes, terminating in the empty list
@@ -93,47 +161,47 @@ a   b   c   d         <-- list items/entries/elements/members
 
 Folding this list (aka. reducing, accumulating) according to _foldr_ means:
 
-- Recurse down the the list backbone
-- ... when you hit the end
-- ... come back up from recursion, and on each node of the list backbone, perform computation according to a two-place function _f_.
+- Recurse down the list backbone, and in each new frame: 
+   - When you hit the end of the list, it begins: Return a _starter value_ (generally passed down the recursion chain unmodified).
+   - Otherwise:
+      1. Perform a recursive call as first action. 
+      2. Having obtained a value from said recursive call, perform computation according to a two-place function _f_, which generates a new value from the local list item and the previously returned value. Return that new value.
+
+- ... 
+
+Like this, in a "data flow notation":
+
+```
+Out --<--f--<--f--<--f--<--f--<-- starter value
+         |     |     |     |
+         a     b     c     d
+```
 
 It could be called _Deepest First Reduction._
 
-_foldr_ is not amenable to tail-call-optimization as it needs to perform computation in the current
+_foldr_ is _not_ amenable to tail-call-optimization because it needs to perform computation in the current
 context/stack-frame/activation record after return from the recursive call.
 
-_f_ computes the final output _Out_ from two values at each list backbone node, starting with a starter value:
-
-- the value returned from the recursive call made in the current stack-frame
-- the current list item
-
-like this, in a pseudo "data flow notation":
-
-```
-Out--<--f--<--f--<--f--<--f--<--starter
-        |     |     |     |
-        a     b     c     d
-```
-
-In particular, if the starter value is `[]` and the function applied
-is _cons_, i.e. list construction, _foldr_ leaves the list passed in as it was 
-(as long as the argument are given to the function in the right order). 
-It is the identity transformation/mapping. 
+As a special case, if the starter value is `[]` and the function applied
+is _cons_, i.e. list construction, _foldr_ leaves the list passed in unmodified 
+(as long as the argument are given to the `f` function in the right order, otherwise it doesn't return a list at all). 
+This is the _identity transformation/mapping_.  Again, this transformation does not destroy information:
+there is a bijective mapping between the input structure and the output structure.
 
 ```
-+---+---+---+---[]    <-- list backbone/spine, composed of nodes, terminating in the empty list
-|   |   |   |
-a   b   c   d      
++---+---+---+---[]            +---+---+---+---[] 
+|   |   |   |          >>     |   |   |   |
+a   b   c   d                 a   b   b   d
 ```
 
-It is also one of the transformations that preserves the information content of the structure (i.e there is a 
-bijection between the input structure and the ouput structure, nothing is lost. Note that, without outside
-sources of information, which don't occur here, nothing can be gained in any case.)
+There are two ways to call _f_: either 
 
-There are two ways to call _f_: either _f(recursive_value,item)_  or _f(item,recursive_value)_. It doesn't
-really matter, one just needs to be consistent.
+- _f(recursive_value,item)_  or 
+- _f(item,recursive_value)_ 
 
-If the function _f_ is called as _f(item,recursive_value)_, then.
+It doesn't really matter, one just needs to be consistent.
+
+If _f_ is called as _f(item,recursive_value)_, then:
 
 ```
 Out = f(a,f(b,f(c,f(d,starter))))
@@ -167,7 +235,7 @@ foo_foldr(Foldy,[Item|Ls],ThreadIn,ThreadOut) :-
    call(Foldy,Item,Intermed,ThreadOut).
 ```
 
-In this file, complete with Unit Tests based on `foldy.pl`: [foo_foldr.pl](foo_foldr.pl)
+It's in this file, complete with Unit Tests based on `foldy.pl`: [foo_foldr.pl](foo_foldr.pl)
 
 Note that for some reason, there is no `foldr/4` in `library(apply)` of SWI Prolog, so comparison tests are not made.
 
@@ -182,6 +250,5 @@ true.
 % All 12 tests passed
 true.
 ```
-
 
 
