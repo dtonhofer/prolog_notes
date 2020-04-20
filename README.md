@@ -35,11 +35,5 @@ Some notes taken while working on Prolog
 - [SWI Prolog strings modes](swi_prolog_string_modes.md): A table inspection the "string modes" of SWI Prolog, i.e. behaviour depending on whether "strings" are lists of integers (classical, ISO-conforming) or the special atomic type `string` (SWi prolog specific).
    -  Link to page aliased to http://bit.ly/2TtLV0H_prolog
  
-## Checking some predicates
-
-- [Testing prolog division and remainder](testing_prolog_division_and_remainder.pl): 
-  Light testing of the _"rem" (remainder) and "//" (integer division)_ 
-  vs _"mod" (modulo) and "div" (floored division)_ [arithmetic functions](https://www.swi-prolog.org/pldoc/man?section=functions)
-   -  Link to page aliased to http://bit.ly/38wQAmS_prolog
 
 
