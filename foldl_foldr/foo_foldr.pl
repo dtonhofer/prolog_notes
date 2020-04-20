@@ -47,7 +47,7 @@ foo_foldr(Foldy,[Item|Ls],ThreadIn,ThreadOut) :-
 test(foldr_add)    :- foo_foldr(foldy_add    , [1,2,3,4,5],  0 , Out), Out=15.
 test(foldr_mult)   :- foo_foldr(foldy_mult   , [1,2,3,4,5],  1 , Out), Out=120.
 test(foldr_build)  :- foo_foldr(foldy_build  , [1,2,3,4,5], [] , Out), Out=[1,2,3,4,5].
-test(foldr_squadd) :- foo_foldr(foldy_squadd , [1,2,3,4,5],  0 , Out), Out=507425426245. % need GMP library here
+test(foldr_squadd) :- foo_foldr(foldy_squadd , [1,2,3,4,5],  0 , Out), Out=507425426245.
 test(foldr_join)   :- foo_foldr(foldy_join   , [1,2,3,4,5], "" , Out), Out="1,2,3,4,5".
 test(foldr_expr)   :- foo_foldr(foldy_expr(*) , [1,2,3,4,5], 1 , Out), Out=1*(2*(3*(4*(5*1)))).
 
