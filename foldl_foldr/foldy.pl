@@ -19,7 +19,7 @@
 % - foldy_add:    Adding all items in the list. Same results are obtained for "foldl" and "foldr"
 %                 because "+" is nicely associative.
 %                 Note that the unit test sets the starter value to the identity element of "+", i.e. 0.
-% - foly_mult:    Multiplying all items in the list. Same results are obtained for "foldl" and "foldr"
+% - foldy_mult:    Multiplying all items in the list. Same results are obtained for "foldl" and "foldr"
 %                 because "*" is nicely associative.
 %                 Note that the unit test sets the starter value to the identity element of "*", i.e. 1.
 % - foldy_squadd: At each node, square the value obtained from the computation, then add the list item.
