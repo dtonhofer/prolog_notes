@@ -167,8 +167,6 @@ Folding this list (aka. reducing, accumulating) according to _foldr_ means:
       1. Perform a recursive call as first action. 
       2. Having obtained a value from said recursive call, perform computation according to a two-place function _f_, which generates a new value from the local list item and the previously returned value. Return that new value.
 
-- ... 
-
 Like this, in a "data flow notation":
 
 ```
