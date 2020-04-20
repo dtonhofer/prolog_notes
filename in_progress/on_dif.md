@@ -1,5 +1,7 @@
 # Based on a note by Peter Ludemann
 
+[Note](https://swi-prolog.discourse.group/t/friday-afternoon-post-a-quick-diagram-of-the-lp-landscape/1976/11?u=dtonhofer)
+
 MU-Prolog and NU-Prolog [both from Melbourne University 1980s], took the position of “delay computing the negation until there’s
 sufficient information for it to be sound.” 
 
