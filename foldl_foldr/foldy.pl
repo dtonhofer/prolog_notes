@@ -41,30 +41,29 @@
 %                 functional programming languages do this in a more consistent way).
 % ===
 
-foldy_len(_Item,ThreadIn,ThreadOut) :-
-   succ(ThreadIn,ThreadOut).
+foldy_len(_Item,In,Out) :-
+   succ(In,Out).
 
-foldy_add(Item,ThreadIn,ThreadOut) :-
-   ThreadOut #= Item+ThreadIn.
+foldy_add(Item,In,Out) :-
+   Out #= Item+In.
 
-foldy_mult(Item,ThreadIn,ThreadOut) :-
-   ThreadOut #= Item*ThreadIn.
+foldy_mult(Item,In,Out) :-
+   Out #= Item*In.
 
-foldy_squadd(Item,ThreadIn,ThreadOut) :-
-   ThreadOut #= Item+(ThreadIn^2).
+foldy_squadd(Item,In,Out) :-
+   Out #= Item+(In^2).
 
 % '[|]' is SWI-Prolog specific, replace by '.' as consbox constructor in other Prologs
 
-foldy_build(Item,ThreadIn,ThreadOut) :-
-   ThreadOut = '[|]'(Item,ThreadIn).
+foldy_build(Item,In,Out) :-
+   Out = '[|]'(Item,In).
 
-foldy_join(Item,ThreadIn,ThreadOut) :-
-   (ThreadIn \= "")
-   -> with_output_to(string(ThreadOut),format("~w,~w",[Item,ThreadIn]))
-   ;  with_output_to(string(ThreadOut),format("~w",[Item])).
+foldy_join(Item,In,Out) :-
+   (In \= "")
+   -> with_output_to(string(Out),format("~w,~w",[Item,In]))
+   ;  with_output_to(string(Out),format("~w",[Item])).
 
 % '=..' ("univ") constructs a term from a list of functor and arguments
 
-foldy_expr(Functor,Item,ThreadIn,ThreadOut) :-
-   ThreadOut =.. [Functor,Item,ThreadIn].
-
+foldy_expr(Functor,Item,In,Out) :-
+   Out =.. [Functor,Item,In].
