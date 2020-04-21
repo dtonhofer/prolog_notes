@@ -33,6 +33,12 @@ pointing forwards or backwards). You can _foldl_-ify a _foldr_ but at the cost o
 start or the end (like calling `reverse/2`) or by moving the stack for _foldr_ (which can be optimized away in
 _foldl_) into an ancillary data structure, i.e. the accumulator becomes more complex and of size O(n). 
 
+An example of emulating a _foldr_ with a _foldl_ for integer arithemtic calculations, using CLP(FD): 
+
+- Code: [foo_foldx.pl](foo_foldx.pl)
+- Image [foo_foldx.png](foo_foldx.png)
+- Graphml: [foo_foldx.graphml](foo_foldx.graphml)
+
 **Further reading:**
 
 - [Wikipedia entry for "linear folds"](https://en.wikipedia.org/wiki/Fold_%28higher-order_function%29#Linear_folds)
