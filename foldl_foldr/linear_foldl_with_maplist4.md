@@ -98,18 +98,6 @@ Use "head-to-tail, left associative" calling convention.
 This matches what the [foldl/4](https://www.swi-prolog.org/pldoc/doc_for?object=foldl/4) from [library(apply)](https://www.swi-prolog.org/pldoc/man?section=apply) expects and does, so we can immediately extend the test cases
 to test that predicates's behaviour too. Note that `foldl/4` is doing the standard thing: recurse over the input list and call `apply` at each node: [source code](https://eu.swi-prolog.org/pldoc/doc/_SWI_/library/apply.pl?show=src#foldl/4).
 
-- The functions of interest which can be applied by a fold are here: [foldy.pl](foldl_foldr/foldy.pl)
-- The code with the unit tests is here: [maplist_foldl.pl](foldl_foldr/maplist_foldl.pl)
-
-Loading the code and running the tests:
-
-```
-?- [foldy],[maplist_foldl].
-true.
-
-?- rt.
-% PL-Unit: maplist_foldl .............. done
-% All 14 tests passed
-true.
-```
+- The functions of interest which can be applied by a fold are here: [foldy.pl](foldy.pl)
+- The code with the unit tests is here: [maplist_foldl.pl](maplist_foldl.pl)
 
