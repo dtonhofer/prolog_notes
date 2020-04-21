@@ -41,7 +41,7 @@
 %                 functional programming languages do this in a more consistent way).
 % ===
 
-foldy_len(Item,ThreadIn,ThreadOut) :-
+foldy_len(_Item,ThreadIn,ThreadOut) :-
    succ(ThreadIn,ThreadOut).
 
 foldy_add(Item,ThreadIn,ThreadOut) :-

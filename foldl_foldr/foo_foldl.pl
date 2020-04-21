@@ -17,27 +17,29 @@
 % linear foldl
 % ("foldl" is the "Laughably recursive fold": subject to tail call optimization)
 % ===
-% foo_foldl(+Foldy,+List,+ThreadIn,?ThreadOut)
-% ---
+% foo_foldl(+Foldy,+List,+Acc,?Result)
+%
 % Foldy   : Name of the predicate to call at each node of the list. That predicate takes:
 %             - the node's item as first argument (called "Item" in the code);
-%             - the result of the series of function application so far
-%               (called "Intermed" in the code);
-%             - the result of the function application will be unified with the third argument
-%               (called "ThreadOut" in the code).
+%             - the value obtained by the series of function application so far
+%               (called "AccDown" for "accumulator, downwards" in the code);
+%             - and the result of the function application will be unified with the third argument
+%               (called "Result" in the code).
 % List      : List to traverse.
-% ThreadIn  : The value being threaded in and folded through "Foldy" while moving to the
-%             end of the recursion and the list. Initially the starter value. Actually an
-%             "accumulator".
-% ThreadOut : The result of the "foldl process" will be unified with this argument at the
-%             end of recursion and the list.
+% Acc       : Accumulator. The value being threaded in and out of "Foldy" and exchanged 
+%             with more updated values as we move towards the end of recursion. Initially
+%             the "starter value".
+% Result    : The final value of the Accumulator will be unified with this argument at the
+%             end of recursion.
 % ===
 
-foo_foldl(_,[],ThreadEnd,ThreadEnd) :- !. % GREEN CUT
+foo_foldl(Foldy,[Item|Items],AccDown,Result) :-  % case of nonempty list
+   !,                                            % GREEN CUT for determinism
+   call(Foldy,Item,AccDown,AccDownNext),
+   foo_foldl(Foldy,Items,AccDownNext,Result).
 
-foo_foldl(Foldy,[Item|Ls],ThreadIn,ThreadOut) :-
-   call(Foldy,Item,ThreadIn,Intermed),
-   foo_foldl(Foldy,Ls,Intermed,ThreadOut).
+foo_foldl(_,[],AccDown,Result) :-                % empty list: bounce AccDown "upwards" into Result
+   AccDown=Result.                               % unification not in head for clarity
 
 % ===
 % Unit tests
@@ -46,36 +48,58 @@ foo_foldl(Foldy,[Item|Ls],ThreadIn,ThreadOut) :-
 
 :- begin_tests(foo_foldl).
 
-test(foldl_add)    :- foo_foldl(foldy_add     , [1,2,3,4,5],  0 , Out), Out=15.
-test(foldl_mult)   :- foo_foldl(foldy_mult    , [1,2,3,4,5],  1 , Out), Out=120.
-test(foldl_build)  :- foo_foldl(foldy_build   , [1,2,3,4,5], [] , Out), Out=[5,4,3,2,1].
-test(foldl_squadd) :- foo_foldl(foldy_squadd  , [1,2,3,4,5],  0 , Out), Out=21909.
-test(foldl_join)   :- foo_foldl(foldy_join    , [1,2,3,4,5], "" , Out), Out="5,4,3,2,1".
-test(foldl_expr)   :- foo_foldl(foldy_expr(*) , [1,2,3,4,5],  1 , Out), Out=5*(4*(3*(2*(1*1)))).
+in([1,2,3,4,5]).
 
-test(foldl_add_empty)    :- foo_foldl(foldy_add     , [],  0 , Out), Out=0.
-test(foldl_mult_empty)   :- foo_foldl(foldy_mult    , [],  1 , Out), Out=1.
-test(foldl_build_empty)  :- foo_foldl(foldy_build   , [], [] , Out), Out=[].
-test(foldl_squadd_empty) :- foo_foldl(foldy_squadd  , [],  0 , Out), Out=0.
-test(foldl_join_empty)   :- foo_foldl(foldy_join    , [], "" , Out), Out="".
-test(foldl_expr_empty)   :- foo_foldl(foldy_expr(*) , [],  1 , Out), Out=1.
+ffl(Foldy,List,Starter,Result) :- foo_foldl(Foldy,List,Starter,Result).
+ffa(Foldy,List,Starter,Result) :- foldl(Foldy,List,Starter,Result). % from library(apply)
+
+test(foo_foldl_len)    :- in(L),ffl(foldy_len     , L ,  0 , R), R=5.
+test(foo_foldl_add)    :- in(L),ffl(foldy_add     , L,   0 , R), R=15.
+test(foo_foldl_mult)   :- in(L),ffl(foldy_mult    , L,   1 , R), R=120.
+test(foo_foldl_build)  :- in(L),ffl(foldy_build   , L,  [] , R), R=[5,4,3,2,1].
+test(foo_foldl_squadd) :- in(L),ffl(foldy_squadd  , L,   0 , R), R=21909.
+test(foo_foldl_join)   :- in(L),ffl(foldy_join    , L,  "" , R), R="5,4,3,2,1".
+test(foo_foldl_expr)   :- in(L),ffl(foldy_expr(*) , L,   1 , R), R=5*(4*(3*(2*(1*1)))).
+
+test(foo_foldl_len_empty)    :- ffl(foldy_len     , [],  0 , R), R=0.
+test(foo_foldl_add_empty)    :- ffl(foldy_add     , [],  0 , R), R=0.
+test(foo_foldl_mult_empty)   :- ffl(foldy_mult    , [],  1 , R), R=1.
+test(foo_foldl_build_empty)  :- ffl(foldy_build   , [], [] , R), R=[].
+test(foo_foldl_squadd_empty) :- ffl(foldy_squadd  , [],  0 , R), R=0.
+test(foo_foldl_join_empty)   :- ffl(foldy_join    , [], "" , R), R="".
+test(foo_foldl_expr_empty)   :- ffl(foldy_expr(*) , [],  1 , R), R=1.
 
 % Compare with the results of foldl/4 from "library(apply)": SAME!
 
-test(lib_foldl_add)    :- foldl(foldy_add     , [1,2,3,4,5] ,  0 , Out), Out=15.
-test(lib_foldl_mult)   :- foldl(foldy_mult    , [1,2,3,4,5] ,  1 , Out), Out=120.
-test(lib_foldl_build)  :- foldl(foldy_build   , [1,2,3,4,5] , [] , Out), Out=[5,4,3,2,1].
-test(lib_foldl_squadd) :- foldl(foldy_squadd  , [1,2,3,4,5] ,  0 , Out), Out=21909.
-test(lib_foldl_join)   :- foldl(foldy_join    , [1,2,3,4,5] , "" , Out), Out="5,4,3,2,1".
-test(lib_foldl_expr)   :- foldl(foldy_expr(*) , [1,2,3,4,5] ,  1 , Out), Out=5*(4*(3*(2*(1*1)))).
+test(lib_foldl_len)    :- in(L),ffa(foldy_len     , L ,  0 , R), R=5.
+test(lib_foldl_add)    :- in(L),ffa(foldy_add     , L ,  0 , R), R=15.
+test(lib_foldl_mult)   :- in(L),ffa(foldy_mult    , L ,  1 , R), R=120.
+test(lib_foldl_build)  :- in(L),ffa(foldy_build   , L , [] , R), R=[5,4,3,2,1].
+test(lib_foldl_squadd) :- in(L),ffa(foldy_squadd  , L ,  0 , R), R=21909.
+test(lib_foldl_join)   :- in(L),ffa(foldy_join    , L , "" , R), R="5,4,3,2,1".
+test(lib_foldl_expr)   :- in(L),ffa(foldy_expr(*) , L ,  1 , R), R=5*(4*(3*(2*(1*1)))).
 
-test(lib_foldl_add_empty)    :- foldl(foldy_add     , [] ,  0 , Out), Out=0.
-test(lib_foldl_mult_empty)   :- foldl(foldy_mult    , [] ,  1 , Out), Out=1.
-test(lib_foldl_build_empty)  :- foldl(foldy_build   , [] , [] , Out), Out=[].
-test(lib_foldl_squadd_empty) :- foldl(foldy_squadd  , [] ,  0 , Out), Out=0.
-test(lib_foldl_join_empty)   :- foldl(foldy_join    , [] , "" , Out), Out="".
-test(lib_foldl_expr_empty)   :- foldl(foldy_expr(*) , [] ,  1 , Out), Out=1.
+test(lib_foldl_len_empty)    :- ffa(foldy_len     , [] ,  0 , R), R=0.
+test(lib_foldl_add_empty)    :- ffa(foldy_add     , [] ,  0 , R), R=0.
+test(lib_foldl_mult_empty)   :- ffa(foldy_mult    , [] ,  1 , R), R=1.
+test(lib_foldl_build_empty)  :- ffa(foldy_build   , [] , [] , R), R=[].
+test(lib_foldl_squadd_empty) :- ffa(foldy_squadd  , [] ,  0 , R), R=0.
+test(lib_foldl_join_empty)   :- ffa(foldy_join    , [] , "" , R), R="".
+test(lib_foldl_expr_empty)   :- ffa(foldy_expr(*) , [] ,  1 , R), R=1.
 
 :- end_tests(foo_foldl).
 
 rt :- run_tests(foo_foldl).
+
+/* RUN IT
+
+?- [foldy],[foo_foldl].
+true.
+
+?- rt.
+% PL-Unit: foo_foldl ............................ done
+% All 28 tests passed
+true.
+
+*/
+

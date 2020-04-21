@@ -10,7 +10,12 @@ And also:
 
 - Linear _foldl_ using `maplist/4`: 
    - Explainer: [linear_foldl_with_maplist4.md](linear_foldl_with_maplist4.md)
-   - Implementation (with unit tests). [foldl_maplist.pl](foldl_maplist.pl)
+   - Implementation (with unit tests). [maplist_foldl.pl](maplist_foldl.pl)
+
+- Linear _foldl_ using DCGs:
+   - Implementation (with unit tests). [dcg_foldl.pl](dcg_foldl.pl)
+
+
 
 
 

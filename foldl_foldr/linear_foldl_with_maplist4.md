@@ -98,76 +98,18 @@ Use "head-to-tail, left associative" calling convention.
 This matches what the [foldl/4](https://www.swi-prolog.org/pldoc/doc_for?object=foldl/4) from [library(apply)](https://www.swi-prolog.org/pldoc/man?section=apply) expects and does, so we can immediately extend the test cases
 to test that predicates's behaviour too. Note that `foldl/4` is doing the standard thing: recurse over the input list and call `apply` at each node: [source code](https://eu.swi-prolog.org/pldoc/doc/_SWI_/library/apply.pl?show=src#foldl/4).
 
-```logtalk
-% ===
-% linear foldl via maplist/4
-% ===
+- The functions of interest which can be applied by a fold are here: [foldy.pl](foldl_foldr/foldy.pl)
+- The code with the unit tests is here: [maplist_foldl.pl](foldl_foldr/maplist_foldl.pl)
 
-foldl_maplist(_,[],StarterIsNowOut,StarterIsNowOut) :- !.
-
-foldl_maplist(Predicate,List,Starter,Out) :-
-   length(List,Len),                    % Len >= 1
-   succ(OtherLen,Len),                  % OtherLen <- Len-1
-   length(OtherList,OtherLen),          % create a list of fresh variables
-   List1 = [Starter|OtherList],         % List of length Len, fresh variables expect Starter item
-   append(OtherList,[Out],List2),       % List of length Len, fresh variables, last item is Out
-   maplist(Predicate,List,List1,List2). % Call maplist/4 which constructs goals like Predicate(i1,i2,i3) and calls them
-
-% ===
-% Implementations for some folding-f's of interest
-% - Adding all item in the list.
-% - Multiplying all item in the list.
-% - Building a new list from the items (foldl causes the list to be reversed in that case)
-% - Building a string joined with ',' from the items
-% ===
-
-foldy_add(Item,PrevLine,NextLine)   :- NextLine is Item+PrevLine.
-foldy_mult(Item,PrevLine,NextLine)  :- NextLine is Item*PrevLine.
-foldy_build(Item,PrevLine,NextLine) :- NextLine = '[|]'(Item,PrevLine).  % '[|]' is SWI-Prolog specific
-foldy_join(Item,PrevLine,NextLine)  :- (PrevLine \= "")
-                                       -> with_output_to(string(NextLine),format("~w,~w",[Item,PrevLine]))
-                                       ;  with_output_to(string(NextLine),format("~w",[Item])).
-
-% ===
-% Unit tests
-% ===
-
-:- begin_tests(foldl).
-
-% Testing our fold_maplist/4
-
-test(maplist_foldl_add)   :- foldl_maplist(foldy_add   , [1,2,3,4,5],  0 , Out), Out=15.
-test(maplist_foldl_mult)  :- foldl_maplist(foldy_mult  , [1,2,3,4,5],  1 , Out), Out=120.
-test(maplist_foldl_build) :- foldl_maplist(foldy_build , [1,2,3,4,5], [] , Out), Out=[5,4,3,2,1].
-test(maplist_foldl_join)  :- foldl_maplist(foldy_join  , [1,2,3,4,5], "" , Out), Out="5,4,3,2,1".
-
-test(maplist_foldl_add_empty_list)   :- foldl_maplist(foldy_add   , [],  0 , Out), Out=0.
-test(maplist_foldl_mult_empty_list)  :- foldl_maplist(foldy_mult  , [],  1 , Out), Out=1.
-test(maplist_foldl_build_empty_list) :- foldl_maplist(foldy_build , [], [] , Out), Out=[].
-test(maplist_foldl_join_empty_list)  :- foldl_maplist(foldy_join  , [], "" , Out), Out="".
-
-% Compare with the results of foldl/4 from "library(apply)"
-
-test(lib_foldl_add)   :- foldl(foldy_add   , [1,2,3,4,5] ,  0 , Out), Out=15.
-test(lib_foldl_mult)  :- foldl(foldy_mult  , [1,2,3,4,5] ,  1 , Out), Out=120.
-test(lib_foldl_build) :- foldl(foldy_build , [1,2,3,4,5] , [] , Out), Out=[5,4,3,2,1].
-test(lib_foldl_join)  :- foldl(foldy_join  , [1,2,3,4,5] , "" , Out), Out="5,4,3,2,1".
-
-test(lib_foldl_add_empty_list)   :- foldl(foldy_add   , [],  0 , Out), Out=0.
-test(lib_foldl_mult_empty_list)  :- foldl(foldy_mult  , [],  1 , Out), Out=1.
-test(lib_foldl_build_empty_list) :- foldl(foldy_build , [], [] , Out), Out=[].
-test(lib_foldl_join_empty_list)  :- foldl(foldy_join  , [], "" , Out), Out="".
-
-:- end_tests(foldl).
-
-rt :- run_tests(foldl).
-```
-
-Running the test:
+Loading the code and running the tests:
 
 ```
+?- [foldy],[maplist_foldl].
+true.
+
 ?- rt.
-% PL-Unit: foldl ................ done
-% All 16 tests passed
+% PL-Unit: maplist_foldl .............. done
+% All 14 tests passed
 true.
 ```
+

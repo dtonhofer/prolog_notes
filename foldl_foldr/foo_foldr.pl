@@ -17,25 +17,29 @@
 % linear foldr
 % ("foldr" is the "Really recursive fold": not subject to tail call optimization)
 % ===
-% foo_foldr(+Foldy,+List,+ThreadIn,?ThreadOut)
+% foo_foldr(+Foldy,+List,+Acc,?Result)
 % ---
 % Foldy     : Name of the predicate to call at each node of the list. That predicate takes:
 %             - the node's item as first argument (called "Item" in the code);
 %             - the result from the returning recursion as second argument
-%               (called "Intermed" in the code);
-%             - the result of the function application will be unified with the third argument
-%               (called "ThreadOut" in the code).
+%               (called "AccUpPrev" for "accumulator, upwards" in the code);
+%             - and the result of the function application will be unified with the third argument
+%               (called "AccUp" in the code; that value will inform the next call of Foldy.
 % List      : List to traverse.
-% ThreadIn  : The value being threaded in unmodified to the end of the recursion.
-%             Initially the starter value.
-% ThreadOut : The result of the "foldr process" will be unified with this argument.
+% Starter   : The value being threaded in unmodified to the end of the recursion. The initial
+%             value of the Accumulator will be unified with this argument at the end of
+%             recursion and the start of return-from-recursion.
+% AccUp     : Accumulator. The value being threaded in and out of "Foldy" and exchanged 
+%             with more updated values as we return from recursion. Initially the "starter value".
 % ===
 
-foo_foldr(_,[],ThreadEnd,ThreadEnd) :- !. % GREEN CUT
+foo_foldr(Foldy,[Item|Items],Starter,AccUp) :-    % case of nonempty list
+   !,                                             % GREEN CUT for determinism
+   foo_foldr(Foldy,Items,Starter,AccUpPrev),
+   call(Foldy,Item,AccUpPrev,AccUp).
 
-foo_foldr(Foldy,[Item|Ls],ThreadIn,ThreadOut) :-
-   foo_foldr(Foldy,Ls,ThreadIn,Intermed),
-   call(Foldy,Item,Intermed,ThreadOut).
+foo_foldr(_,[],Starter,AccUp) :-                  % empty list: bounce Starter "upwards" into AccUp
+   AccUp=Starter.                                 % unification not in head for clarity
 
 % ===
 % Unit tests
@@ -44,22 +48,41 @@ foo_foldr(Foldy,[Item|Ls],ThreadIn,ThreadOut) :-
 
 :- begin_tests(foo_foldr).
 
-test(foldr_add)    :- foo_foldr(foldy_add    , [1,2,3,4,5],  0 , Out), Out=15.
-test(foldr_mult)   :- foo_foldr(foldy_mult   , [1,2,3,4,5],  1 , Out), Out=120.
-test(foldr_build)  :- foo_foldr(foldy_build  , [1,2,3,4,5], [] , Out), Out=[1,2,3,4,5].
-test(foldr_squadd) :- foo_foldr(foldy_squadd , [1,2,3,4,5],  0 , Out), Out=507425426245.
-test(foldr_join)   :- foo_foldr(foldy_join   , [1,2,3,4,5], "" , Out), Out="1,2,3,4,5".
-test(foldr_expr)   :- foo_foldr(foldy_expr(*) , [1,2,3,4,5], 1 , Out), Out=1*(2*(3*(4*(5*1)))).
+in([1,2,3,4,5]).
 
-test(foldr_add_empty)    :- foo_foldr(foldy_add     , [],  0 , Out), Out=0.
-test(foldr_mult_empty)   :- foo_foldr(foldy_mult    , [],  1 , Out), Out=1.
-test(foldr_build_empty)  :- foo_foldr(foldy_build   , [], [] , Out), Out=[].
-test(foldr_squadd_empty) :- foo_foldr(foldy_squadd  , [],  0 , Out), Out=0.
-test(foldr_join_empty)   :- foo_foldr(foldy_join    , [], "" , Out), Out="".
-test(foldr_expr_empty)   :- foo_foldr(foldy_expr(*) , [],  1 , Out), Out=1.
+ffr(Foldy,List,Starter,AccUp) :- foo_foldr(Foldy,List,Starter,AccUp).
+
+test(foo_foldr_len)    :- in(L),ffr(foldy_len     , L ,  0 , R), R=5.
+test(foo_foldr_add)    :- in(L),ffr(foldy_add     , L ,  0 , R), R=15.
+test(foo_foldr_mult)   :- in(L),ffr(foldy_mult    , L ,  1 , R), R=120.
+test(foo_foldr_build)  :- in(L),ffr(foldy_build   , L , [] , R), R=[1,2,3,4,5].
+test(foo_foldr_squadd) :- in(L),ffr(foldy_squadd  , L ,  0 , R), R=507425426245.
+test(foo_foldr_join)   :- in(L),ffr(foldy_join    , L , "" , R), R="1,2,3,4,5".
+test(foo_foldr_expr)   :- in(L),ffr(foldy_expr(*) , L ,  1 , R), R=1*(2*(3*(4*(5*1)))).
+
+test(foo_foldr_len_empty)    :- ffr(foldy_len     , [],  0 , R), R=0.
+test(foo_foldr_add_empty)    :- ffr(foldy_add     , [],  0 , R), R=0.
+test(foo_foldr_mult_empty)   :- ffr(foldy_mult    , [],  1 , R), R=1.
+test(foo_foldr_build_empty)  :- ffr(foldy_build   , [], [] , R), R=[].
+test(foo_foldr_squadd_empty) :- ffr(foldy_squadd  , [],  0 , R), R=0.
+test(foo_foldr_join_empty)   :- ffr(foldy_join    , [], "" , R), R="".
+test(foo_foldr_expr_empty)   :- ffr(foldy_expr(*) , [],  1 , R), R=1.
 
 % library(apply) has no "foldr" so no comparison tests!
 
 :- end_tests(foo_foldr).
 
 rt :- run_tests(foo_foldr).
+
+/* RUN IT
+
+?- [foldy],[foo_foldr].
+true.
+
+?- rt.
+% PL-Unit: foo_foldr .............. done
+% All 14 tests passed
+true.
+
+*/
+

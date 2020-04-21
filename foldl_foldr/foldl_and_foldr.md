@@ -10,11 +10,27 @@ I always confuse _foldl_ and _foldr_, so here is a way to remember:
 - _foldl_ ("fold left") implements the **"Laughable Recursion"**, subject to tail-call optimization.
 - _foldr_ ("fold right") implements the **"Real Recursion"**, not subject to tail-call optimization.
 
+Note that "left recursion" has nothing to do with the "left" of _foldl_. In fact, the one
+doing "left recursion" in the sense of "immediately recursing" is _foldr_.
+
 [`library(apply)`](https://www.swi-prolog.org/pldoc/man?section=apply) already has a
 [`foldl`](https://www.swi-prolog.org/pldoc/doc_for?object=foldl/4). The
 [implementation](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/apply.pl?show=src#foldl/4)
 of that is more less the same as the one given here. It uses [`apply/2`](https://www.swi-prolog.org/pldoc/man?section=apply
-) instead of [`call/_`](https://www.swi-prolog.org/pldoc/doc_for?object=call/2) as done below. No matter. (Except that `apply/2` is marked _deprecated_; I still like it more).
+) instead of [`call/_`](https://www.swi-prolog.org/pldoc/doc_for?object=call/2) as done below. No matter. 
+(Except that `apply/2` is marked _deprecated_).
+
+In [this post](http://swi-prolog.996271.n3.nabble.com/foldr-td10802.html) Richard O'Keefe writes:
+
+> In strict functional languages, one tends to prefer _foldl_;
+> in lazy functional languages, one tends to prefer _foldr_.
+> Like the text said, [_scanlist_ (now _foldl_) and _cumlist_ (now _scanl_)](https://sicstus.sics.se/sicstus/docs/4.3.0/html/sicstus/lib_002dlists.html)
+> were inspired by APL; there was no _foldr_ analogue in APL to imitate.
+
+But _foldr_ and _foldl_ are not freely interchangeable. You can _foldl_-ify a _foldr_
+but at the cost of additional processing at the start or the end (like calling `reverse/2`)
+or by moving the stack for _foldr_ (which can be optimized away in _foldl_) into an
+ancillary data structure, i.e. the accumulator becomes more (much) complex and of size O(n). 
 
 **Further reading:**
 
@@ -25,7 +41,7 @@ of that is more less the same as the one given here. It uses [`apply/2`](https:/
 
 Start with interesting functions (expressed as predicates) which might be called by a _foldl_ or _foldr_.
 
-Interesting functions to be passed to `call/_` inside the _folds_:  [foldy.pl](foldy.pl)
+Interesting functions to be passed to `call/_` inside the _folds_:  [foldy.pl](foldy.pl).
 
 ## About linear _foldl_
 
@@ -99,86 +115,37 @@ Out = ((((starter*a)*b)*c)*d)
 
 ### The implementation of _foldl_, called `foo_foldl/4`
 
-- `Foldy` is the name of the predicate that shall be called at each node as `Foldy(Iten,ThreadIn,Intermed)`, a stand-in for _f_.
-- `ThreadIn` is an accumulator going "down":
-   - At each stack frame, the preceding value is passed in through `ThreadIn`,
-   - a new value `Intermed` is computed from that,
-   - and that value is passed to the next recursive call in place of the previous `ThreadIn` (hence, "variable renaming").
-- `ThreadOut` is the communication channel coming "up": The final value will eventually be unified with `ThreadOut`. As `ThreadOut` is really a reference to a global term container (as is the case for all Prolog variables), the result of the unification will be available to the caller of the recursion chain, immediately. No further copying is needed,
+- `Foldy` is the name of the predicate that shall be called at each node as `Foldy(Item,Acc,AccNext)`, a stand-in for _f_.
+- `Acc` is an accumulator going "down":
+   - At each stack frame, the preceding value is passed in through `Acc`,
+   - a new value `AccNext` is computed from that,
+   - and that value is passed to the next recursive call in place of the previous `Acc` 
+     (this would be a "variable renaming" if it were a loop).
+- `Result` is the communication channel coming "up": The final accumulator value will eventually be unified with
+  `Result`. As `Result` is really a reference to a global term container (as is the case for all Prolog variables), the 
+   result of the unification will be available to the caller of the recursion chain, immediately. No further copying is needed.
 
 ```logtalk
-foo_foldl(_,[],ThreadEnd,ThreadEnd) :- !. % GREEN CUT
+foo_foldl(Foldy,[Item|Items],Acc,Result) :-    % case of nonempty list
+   !,                                          % GREEN CUT for determinism
+   call(Foldy,Item,Acc,AccNext),
+   foo_foldl(Foldy,Items,AccNext,Result).
 
-foo_foldl(Foldy,[Item|Ls],ThreadIn,ThreadOut) :-
-   call(Foldy,Item,ThreadIn,Intermed),
-   foo_foldl(Foldy,Ls,Intermed,ThreadOut).
+foo_foldl(_,[],Acc,Result) :-                  % case of empty list
+   Acc=Result.                                 % unification not in head for clarity
 ```
 
-It's in this file, complete with Unit Tests based on `foldy.pl`: [foo_foldl.pl](foo_foldl.pl)
-
-**Run tests:**
-
-```
-?- [foldy],[foo_foldl].
-true.
-
-?- rt.
-% PL-Unit: foo_foldl ........................ done
-% All 24 tests passed
-true.
-```
+It's in [foo_foldl.pl](foo_foldl.pl), complete with Unit Tests based on [foldy.pl](foldy.pl).
 
 ### An alternative implementation of linear _foldl_ based on DCGs
 
 DCGs are made for traversing lists front-to-back, computing things as they go. Parsing is one of the applications: in that case, the list is a list of tokens. The processed list is not explicit, one just pops items off it using the `[Item]` line. The end of the list is reached when the only fitting DCG rule is the one with `--> []`.
 
-```logtalk
-% Wrap the call to DCG processing
+It's in [dcg_foldl.pl](dcg_foldl.pl), complete with Unit Tests based on [foldy.pl](foldy.pl).
 
-dcg_foldl(Foldy,List,Starter,Result) :-
-   phrase(recognizer(Foldy,Starter,Result),List).
+### An alternative implementation of linear _foldl_ based on `maplist/4`
 
-% Whenever there is an "Item" in the list, first call Foldy, then recurse.
-
-recognizer(Foldy,ThreadIn,ThreadOut) --> 
-   [Item],
-   !,                                         % GREEN CUT
-   { call(Foldy,Item,ThreadIn,Intermed) },     
-   recognizer(Foldy,Intermed,ThreadOut).
-
-% When there is nothing in the list, "bounce the accumulator" by unifying
-% "ThreadIn" with "ThreadOut", i.e. with "Result"
-
-recognizer(_Foldy,ThreadEnd,ThreadEnd) --> [].
-```
-
-### An alternative implementation of linear _foldl_ based on `maplist/4`, called `maplist_foldl/4`.
-
-```logtalk
-maplist_foldl(_,[],Starter,Starter) :- !. % GREEN CUT
-
-maplist_foldl(Foldy,List,Starter,Out) :-
-   length(List,Len),                    % Len >= 1
-   succ(OtherLen,Len),                  % OtherLen <- Len-1
-   length(OtherList,OtherLen),          % create a list of fresh variables
-   List1 = [Starter|OtherList],         % List of length Len, fresh variables expect Starter item
-   append(OtherList,[Out],List2),       % List of length Len, fresh variables, last item is Out
-   maplist(Foldy,List,List1,List2).     % Call maplist/4 which constructs goals like Foldy(i1,i2,i3) and calls them
-```
-
-It's in this file, complete with Unit Tests based on `foldy.pl`: [foldl_maplist.pl](foldl_maplist.pl)
-
-**Run tests:**
-
-```
-?- [foldy],[maplist_foldl].
-true.
-
-?- rt.
-% PL-Unit: maplist_foldl ........................ done
-% All 24 tests passed
-true.
-```
+It's in [maplist.pl_foldl](maplist_foldl.pl), complete with Unit Tests based on [foldy](foldy.pl).
 
 ## About linear _foldr_
 
@@ -257,27 +224,17 @@ Out = ((((starter*d)*c)*b)*a)
 ### The implementation of linear _foldr_, called `foo_foldr/4`:
 
 ```logtalk
-foo_foldr(_,[],ThreadEnd,ThreadEnd) :- !. % GREEN CUT
 
-foo_foldr(Foldy,[Item|Ls],ThreadIn,ThreadOut) :-
-   foo_foldr(Foldy,Ls,ThreadIn,Intermed),
-   call(Foldy,Item,Intermed,ThreadOut).
+foo_foldr(Foldy,[Item|Items],Starter,AccUp) :-    % case of nonempty list
+   !,                                             % GREEN CUT for determinism
+   foo_foldr(Foldy,Items,Starter,AccUpPrev),
+   call(Foldy,Item,AccUpPrev,AccUp).
+
+foo_foldr(_,[],Starter,AccUp) :-                  % empty list: bounce Starter "upwards" into AccUp
+   AccUp=Starter.                                 % unification not in head for clarity
 ```
 
-It's in this file, complete with Unit Tests based on `foldy.pl`: [foo_foldr.pl](foo_foldr.pl)
+It's in [foo_foldr.pl](foo_foldr.pl), complete with Unit Tests based on [foldy.pl](foldy.pl).
 
 Note that for some reason, there is no `foldr/4` in `library(apply)` of SWI Prolog, so comparison tests are not made.
-
-**Run tests:**
-
-```
-?- [foldy],[foo_foldr].
-true.
-
-?- rt.
-% PL-Unit: foo_foldr ............ done
-% All 12 tests passed
-true.
-```
-
 
