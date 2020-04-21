@@ -99,6 +99,13 @@ Out = ((((starter*a)*b)*c)*d)
 
 ### The implementation of _foldl_, called `foo_foldl/4`
 
+- `Foldy` is the name of the predicate that shall be called at each node as `Foldy(Iten,ThreadIn,Intermed)`, a stand-in for _f_.
+- `ThreadIn` is an accumulator going "down":
+   - At each stack frame, the preceding value is passed in through `ThreadIn`,
+   - a new value `Intermed` is computed from that,
+   - and that value is passed to the next recursive call in place of the previous `ThreadIn` (hence, "variable renaming").
+- `ThreadOut` is the communication channel coming "up": The final value will eventually be unified with `ThreadOut`. As `ThreadOut` is really a reference to a global term container (as is the case for all Prolog variables), the result of the unification will be available to the caller of the recursion chain, immediately. No further copying is needed,
+
 ```logtalk
 foo_foldl(_,[],ThreadEnd,ThreadEnd) :- !. % GREEN CUT
 
@@ -121,12 +128,36 @@ true.
 true.
 ```
 
-### An alternative implementation of linear _foldl_ based on `maplist/4`, called `foldl_maplist/4`.
+### An alternative implementation of linear _foldl_ based on DCGs
+
+DCGs are made for traversing lists front-to-back, computing things as they go. Parsing is one of the applications: in that case, the list is a list of tokens. The processed list is not explicit, one just pops items off it using the `[Item]` line. The end of the list is reached when the only fitting DCG rule is the one with `--> []`.
 
 ```logtalk
-foldl_maplist(_,[],Starter,Starter) :- !. % GREEN CUT
+% Wrap the call to DCG processing
 
-foldl_maplist(Foldy,List,Starter,Out) :-
+dcg_foldl(Foldy,List,Starter,Result) :-
+   phrase(recognizer(Foldy,Starter,Result),List).
+
+% Whenever there is an "Item" in the list, first call Foldy, then recurse.
+
+recognizer(Foldy,ThreadIn,ThreadOut) --> 
+   [Item],
+   !,                                         % GREEN CUT
+   { call(Foldy,Item,ThreadIn,Intermed) },     
+   recognizer(Foldy,Intermed,ThreadOut).
+
+% When there is nothing in the list, "bounce the accumulator" by unifying
+% "ThreadIn" with "ThreadOut", i.e. with "Result"
+
+recognizer(_Foldy,ThreadEnd,ThreadEnd) --> [].
+```
+
+### An alternative implementation of linear _foldl_ based on `maplist/4`, called `maplist_foldl/4`.
+
+```logtalk
+maplist_foldl(_,[],Starter,Starter) :- !. % GREEN CUT
+
+maplist_foldl(Foldy,List,Starter,Out) :-
    length(List,Len),                    % Len >= 1
    succ(OtherLen,Len),                  % OtherLen <- Len-1
    length(OtherList,OtherLen),          % create a list of fresh variables
@@ -140,11 +171,11 @@ It's in this file, complete with Unit Tests based on `foldy.pl`: [foldl_maplist.
 **Run tests:**
 
 ```
-?- [foldy],[foldl_maplist].
+?- [foldy],[maplist_foldl].
 true.
 
 ?- rt.
-% PL-Unit: foldl_maplist ........................ done
+% PL-Unit: maplist_foldl ........................ done
 % All 24 tests passed
 true.
 ```
