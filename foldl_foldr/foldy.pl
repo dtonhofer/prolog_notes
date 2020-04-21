@@ -13,9 +13,12 @@
 % For more information, please refer to <http://unlicense.org/>
 % ============================================================================
 
+:- use_module(library(clpfd)). % We are using #= instead of the raw "is".
+
 % ===
 % Implementations for some folding-f's of interest.
 %
+% - foldy_len:    Compute the length of the list by incrementing a counter.
 % - foldy_add:    Adding all items in the list. Same results are obtained for "foldl" and "foldr"
 %                 because "+" is nicely associative.
 %                 Note that the unit test sets the starter value to the identity element of "+", i.e. 0.
@@ -38,14 +41,17 @@
 %                 functional programming languages do this in a more consistent way).
 % ===
 
+foldy_len(Item,ThreadIn,ThreadOut) :-
+   succ(ThreadIn,ThreadOut).
+
 foldy_add(Item,ThreadIn,ThreadOut) :-
-   ThreadOut is Item+ThreadIn.
+   ThreadOut #= Item+ThreadIn.
 
 foldy_mult(Item,ThreadIn,ThreadOut) :-
-   ThreadOut is Item*ThreadIn.
+   ThreadOut #= Item*ThreadIn.
 
 foldy_squadd(Item,ThreadIn,ThreadOut) :-
-   ThreadOut is Item+(ThreadIn^2).
+   ThreadOut #= Item+(ThreadIn^2).
 
 % '[|]' is SWI-Prolog specific, replace by '.' as consbox constructor in other Prologs
 
