@@ -88,8 +88,6 @@ There are two ways to call _f_: either
 - _f(recursive_value,item)_  or 
 - _f(item,recursive_value)_ 
 
-It doesn't really matter, one just needs to be consistent.
-
 If _f_ is called as _f(item,recursive_value)_, then:
 
 ```
@@ -113,6 +111,8 @@ or in infix operator notation "head-to-tail, left associative":
 ```
 Out = ((((starter*a)*b)*c)*d)  
 ```
+
+This seems to be the appropriate way of calling it. Then _foldl_ becomes "the natural way of reducing a list in case of left-associative operators" (but watch out of that operator is non-commutative).
 
 ### The implementation of _foldl_, called `foo_foldl/4`
 
@@ -196,8 +196,6 @@ There are two ways to call _f_: either
 - _f(recursive_value,item)_  or 
 - _f(item,recursive_value)_ 
 
-It doesn't really matter, one just needs to be consistent.
-
 If _f_ is called as _f(item,recursive_value)_, then:
 
 ```
@@ -209,6 +207,8 @@ or in infix operator notation "head-to-tail, right associative":
 ```
 Out = a*(b*(c*(d*starter)))   
 ```
+
+This seems to be the appropriate way of calling it. Then _foldr_ becomes "the natural way of reducing a list in case of right-associative operators" (but watch out of that operator is non-commutative).
 
 If the function _f_ is called as _f(item,recursive_value)_ instead, then:
 
