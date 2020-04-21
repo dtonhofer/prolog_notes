@@ -27,10 +27,11 @@ In [this post](http://swi-prolog.996271.n3.nabble.com/foldr-td10802.html) Richar
 > Like the text said, [_scanlist_ (now _foldl_) and _cumlist_ (now _scanl_)](https://sicstus.sics.se/sicstus/docs/4.3.0/html/sicstus/lib_002dlists.html)
 > were inspired by APL; there was no _foldr_ analogue in APL to imitate.
 
-But _foldr_ and _foldl_ are not freely interchangeable. You can _foldl_-ify a _foldr_
-but at the cost of additional processing at the start or the end (like calling `reverse/2`)
-or by moving the stack for _foldr_ (which can be optimized away in _foldl_) into an
-ancillary data structure, i.e. the accumulator becomes more (much) complex and of size O(n). 
+But _foldr_ and _foldl_ are not freely interchangeable unless list reversal is cheap (that _could_ be done with an
+appropriate data structure: a doubly-linked ringlist with a global flag saying whether the F pointer is currently
+pointing forwards or backwards). You can _foldl_-ify a _foldr_ but at the cost of additional processing at the 
+start or the end (like calling `reverse/2`) or by moving the stack for _foldr_ (which can be optimized away in
+_foldl_) into an ancillary data structure, i.e. the accumulator becomes more complex and of size O(n). 
 
 **Further reading:**
 
