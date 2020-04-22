@@ -31,11 +31,11 @@ do :-
 DiffList = [[]|T]-T
 ```
 
-[![Initial construction]](01A.png)
+![Initial construction](01A.png)
 
 Resulting variable binding
 
-[![Initial construction]](01B.png)
+![Initial construction](01B.png)
 
 
 
