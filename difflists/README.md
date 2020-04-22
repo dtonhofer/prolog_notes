@@ -137,13 +137,21 @@ Construct new difflist according to our `H-T` convention.
 
 ### Close the difflist inside `close_difflist/2`
 
-![Just about to unify](05A.png)
+To close the list and create a "real list", unify the "ion" with `[]`.
 
-![Just about to unify](05B.png)
+![Just about to close the list](05A.png)
 
-![Just about to unify](05C.png)
+This leaves us with a "real list", correctly terminated and all.
 
-![Just about to unify](05D.png)
+![Real list](05B.png)
+
+Finally get rid of the first dummy element by deconstructing the list reachable by `H`.
+
+![Drop first element](05C.png)
+
+This leaves us just with the correctly constructed list in `Result`, which is what we want.
+
+![All done](05D.png)
 
 
 
