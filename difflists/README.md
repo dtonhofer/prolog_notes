@@ -60,7 +60,7 @@ Resulting variable binding
 
 ![Initial construction](01B.png)
 
-### Append an item in `append_item/3`
+### Append first item inside `append_item/3`
 
 Just about to unify `T` and `[Item|NewT]`.
 
@@ -76,7 +76,7 @@ Construct new difflist according to our `H-T` convention.
 
 ![Construct new difflist](02C.png)
 
-### Redux: Append an item in `append_item/3`
+### Append second item inside `append_item/3`
 
 Just about to unify `T` and `[Item|NewT]`.
 
@@ -92,7 +92,7 @@ Construct new difflist according to our `H-T` convention.
 
 ![Construct new difflist](03C.png)
 
-### Redux: Append an item in `append_item/3`
+### Redux: Append third item inside `append_item/3`
 
 Just about to unify `T` and `[Item|NewT]`.
 
