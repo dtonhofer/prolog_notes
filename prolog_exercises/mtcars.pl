@@ -68,5 +68,23 @@ mtcars_raw('Ferrari Dino'        , 19.7 , 6 , 145.0 , 175 , 3.62 , 2.770 , 15.50
 mtcars_raw('Maserati Bora'       , 15.0 , 8 , 301.0 , 335 , 3.54 , 3.570 , 14.60 , 0 , 1 , 5 , 8).
 mtcars_raw('Volvo 142E'          , 21.4 , 4 , 121.0 , 109 , 4.11 , 2.780 , 18.60 , 1 , 1 , 4 , 2).
 
-mtcars(L) :- mtcars_raw(Name,Mpg,Cyl,Disp,Hp,Drat,Wt,Qsec,Vs,Am,Gear,Carb),
-             L=[name(Name),mpg(Mpg),cyl(Cyl),disp(Disp),hp(Hp),drat(Drat),wt(Wt),qsec(Qsec),vs(Vs),am(Am),gear(Gear),carb(Carb)].
+mtcars(L) :-
+   mtcars_raw(Name,Mpg,Cyl,Disp,Hp,Drat,Wt,Qsec,Vs,Am,Gear,Carb),
+   L=[name(Name), mpg(Mpg),   cyl(Cyl),   disp(Disp),
+      hp(Hp),     drat(Drat), wt(Wt),     qsec(Qsec),
+      vs(Vs),     am(Am),     gear(Gear), carb(Carb)].
+                
+mtcars_desc(L) :-
+   L=[name("Name"),
+      mpg("Miles/(US) gallon"),
+      cyl("Number of cylinders"),
+      disp("Displacement (cu.in.)"),
+      hp("Gross horsepower"),
+      drat("Rear axle ratio"),
+      wt("Weight (1000 lbs)"),
+      qsec("1/4 mile time"),
+      vs("V/S"),
+      am("Transmission (0 = automatic, 1 = manual)"),
+      gear("Number of forward gears"),
+      carb("Number of carburetors")].
+      
