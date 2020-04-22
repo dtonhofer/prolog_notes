@@ -13,15 +13,19 @@ and the "back part" (the part that can be reached from the "tail variable") of a
 - Front and back? (maybe)
 - Chain and Ion? (I like this, the difflist is like a free radical with an ion at the end)
 
+What's action called?
+
+- If a difflist is regarded as a queue ... append/remove?
+- And "close" to create the real list?
+- Push and Pop are often used at the front of a list, so do not seem appropriate.
+- In Perl, there is "shift and unshift" and "pop and push". But the shift/unshift happens at the front of an array, whereas the "pop and push" happens at the back.
+
 ## Constructing a list by appending to it via a Difference List
 
 In Prolog, it is always cheap to prepend an item to a list (also called "pushing an item onto a list" if it is regarded
 as a stack.  
 
 However, in order to append efficiently, you need the difference list.
-
-(For Perl aficionados, the corresponding verb is "unshift (an item)" because "pop" and "push" happen at Perl (array and list) ends, 
-while "shift" and "unshift" happen at the front).
 
 Consider this program, in which the unifications have been made more explicit than is usually the case in Prolog:
 
