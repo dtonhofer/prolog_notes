@@ -14,18 +14,41 @@ However, in order to append efficiently, you need the difference list.
 (For Perl aficionados, the corresponding verb is "unshift (an item)" because "pop" and "push" happen at Perl (array and list) ends, 
 while "shift" and "unshift" happen at the front).
 
+Consider this program, in which the unifications have been made more explicit than is usually the case in Prolog:
+
+```logtalk
+do(Data,Result) :- 
+   DiffList = [[]|T]-T,               % Construct initial difflist, 
+                                      % with an arbitrary first dummy item, here []
+                                      % and arbitrarily represented by a single term H-T
+                                      % (one could use two terms (separate args) instead).
+   append_all(Data,DiffList,Result).  % Let's go!
+
+append_all([],DLin,Result) :-
+   DLin=H-T,                          % Destructure difflist term.
+   T=[],                              % This "closes" the difflist and creates a real list.
+   H=[_|Result].                      % Destructure the now real list, dropping the first dummy item.
+
+append_all([Item|Items],DLin,Result) :-
+   append_item(Item,DLin,DLmed),
+   append_all(Items,DLmed,Result).
+
+append_item(Item,DLin,DLout) :-
+   DLin=H-T,                          % Destructure difflist term.
+   T=[Item|NewT],                     % Constrain the tail to a new unconstrained tail with one more item.
+   DLout=H-NewT.                      % Construct a new difflist using our H-T convention.
+
+% Test this!
+
+:- begin_tests(do).
+test(a) :- do([1,2,3],R), R=[1,2,3].
+:- end_tests(do).
+
+rt :- run_tests(do).
+```
 
 
-do :- 
-   Data = [1,2,3,4],         % Arbitrary data to be appended.
-   DiffList = [[]|T]-T,      % Construct initial difflist, 
-                             % with an arbitrary first item []
-                             % and arbitrarily represented by a single term
-                             % (one could use two terms instead)
-
-
-
-### Construct initial difference list
+### Construct initial difference list in `do/2`
 
 ```
 DiffList = [[]|T]-T
@@ -36,6 +59,22 @@ DiffList = [[]|T]-T
 Resulting variable binding
 
 ![Initial construction](01B.png)
+
+### Append an item in `append_item/3`
+
+Just about to unify `T` and `[Item|NewT]`.
+
+![Just about to unify](02A.png)
+
+After unification, the unconstrained-tail-list rooted at `H` has become longer by `Item` (in effect, the list has been constrained
+some more ... but it still has an unconstrained tail).
+
+![After unification](02B.png)
+
+Construct new difflist according to our `H-T` convention.
+`DLout` combines the unconstrained-tail-list rooted at `H` and the new unconstrained tail `NewT`.
+
+![Construct new difflist](02C.png)
 
 
 
