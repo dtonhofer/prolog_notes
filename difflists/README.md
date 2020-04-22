@@ -76,6 +76,22 @@ Construct new difflist according to our `H-T` convention.
 
 ![Construct new difflist](02C.png)
 
+### Redux: Append an item in `append_item/3`
+
+Just about to unify `T` and `[Item|NewT]`.
+
+![Just about to unify](03A.png)
+
+After unification, the unconstrained-tail-list rooted at `H` has become longer by `Item` (in effect, the list has been constrained
+some more ... but it still has an unconstrained tail).
+
+![After unification](03B.png)
+
+Construct new difflist according to our `H-T` convention.
+`DLout` combines the unconstrained-tail-list rooted at `H` and the new unconstrained tail `NewT`.
+
+![Construct new difflist](03C.png)
+
 
 
 
