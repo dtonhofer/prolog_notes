@@ -4,6 +4,12 @@
 - ["Difference Lists" by Frank Pfenning](https://www.cs.cmu.edu/~fp/courses/lp/lectures/11-diff.pdf) (PDF)
 - [Applying "Difference Lists" to DCGs by Markus Triska](https://www.metalevel.at/prolog/dcg). "Difference Lists" are called "List Differences" here: _In the literature, you will also encounter the term "difference list". However, this terminology is misleading: We are not talking about—as the name may suggest—a special kind of list. The additional arguments are completely ordinary lists. It is their differences that matter especially in such cases._
 
+"Difflist as a queue" is actually very illustrative of the "list difference" idea:
+
+- Items are appended at the front of the tail, the variable of the tail "wanders rightwards"
+- Items are dropped off the front of the head, the variable of the head "wanders rightwards"
+- What is actually in the difflist is alwasy the list difference ... what is between tail var and head var.      
+
 ## Naming
 
 What do you call the "front part" (the part that can be reached from the "head variable")
@@ -13,24 +19,38 @@ and the "back part" (the part that can be reached from the "tail variable") of a
 - Front and back? (maybe)
 - Chain and Ion? (I like this, the difflist is like a free radical with an ion at the end)
 
+How do you call the variables?
+
+- headvar and tailvar?
+
+In all explanations, there is a smearing between the concepts of the "variable name" and "what the variable refers to". How to make this clear?
+
+What's *action* called?
+
+- If a difflist is regarded as a queue ... append/remove?
+- And "close" to create the real list?
+- Push and Pop are often used at the front of a list, so do not seem appropriate.
+- In Perl, there is "shift and unshift" and "pop and push". But the shift/unshift happens at the front of an array, whereas the "pop and push" happens at the back.
+
+## Special cases
+
+- The empty difflist, same as the initial difflist. Both head and tail variables name the same fresh variable.
+
 ## Constructing a list by appending to it via a Difference List
 
-In Prolog, it is always cheap to prepend an item to a list (also called "pushing an item onto a list" if it is regarded
+In Prolog, it is cheap to prepend an item to a list (also called "pushing an item onto a list" if it is regarded
 as a stack.  
 
 However, in order to append efficiently, you need the difference list.
-
-(For Perl aficionados, the corresponding verb is "unshift (an item)" because "pop" and "push" happen at Perl (array and list) ends, 
-while "shift" and "unshift" happen at the front).
 
 Consider this program, in which the unifications have been made more explicit than is usually the case in Prolog:
 
 ```logtalk
 do(Data,Result) :- 
-   DiffList = [[]|T]-T,               % Construct initial difflist, 
-                                      % with an arbitrary first dummy item, here []
-                                      % and arbitrarily represented by a single term H-T
-                                      % (one could use two terms (separate args) instead).
+   DiffList = F-F,                    % Construct initial difflist where headvar H and tailvar T
+                                      % designate the same fresh variable F.                
+                                      % - Arbitrarily represented by a single term H-T.
+                                      % - One could use two terms (and separate args) instead.
    append_all(Data,DiffList,Result).  % Let's go!
 
 % ---
@@ -51,7 +71,7 @@ append_all([Item|Items],DLin,Result) :-
 close_difflist(DLin,Result) :-        
    DLin=H-T,                          % Destructure difflist term.
    T=[],                              % This "closes" the difflist and creates a real list.
-   H=[_|Result].                      % Destructure the now real list, dropping the first dummy item.
+   Result=H.                          % Done!
 
 % ---
 % Append an item to the difflist
@@ -76,6 +96,8 @@ We can graphically illustrate what happens. We just need the following concepts,
 ![Concepts](Concepts.png)
 
 ### Construct initial difference list in `do/2`
+
+ATTENTION: The images below illustrate the previous version of the above program, which used a dummy list entry at construction time, which is not necessary at all! To be fixed.
 
 ```
 DiffList = [[]|T]-T
