@@ -6,6 +6,7 @@ _Work in progress_
 
 - Some predicates are SWI-Prolog specific.
 - Most of the text comes directly from the [SWI Prolog manual](https://www.swi-prolog.org/pldoc/doc_for?object=manual).
+- There is one I missed: [library(debug): Print debug messages and test assertions](https://www.swi-prolog.org/pldoc/man?section=debug).
 
 # TL;DR
 
