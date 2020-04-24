@@ -364,7 +364,7 @@ Consider what happens here: The above is equivalent to the query:
 ?- L=[I0,I1,I2], member(I0,[0,1]), member(I1,[0,1]), member(I2,[0,1]).
 ```
 
-The predicate calls inside `maplist/2` acre actually chained into a conjunction and, not called in turn. And the 
+The predicate calls inside `maplist/2` are chained into a conjunction and, not called in turn. And the 
 choicepoints are left open.
 
 
