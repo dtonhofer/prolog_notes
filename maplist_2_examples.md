@@ -29,7 +29,7 @@ The description for [`maplist/2`](https://eu.swi-prolog.org/pldoc/doc_for?object
 > gain performance as well as to make the predicate deterministic under normal circumstances.
 
 That actually sounds like a `for` loop (or a Perl [`foreach`](https://perldoc.perl.org/perlsyn.html#Foreach-Loops)). 
-If you are using a functional programming language already, you know what this is. If you are using Java, 
+If you are using a functional programming language already, you know all about the ["map" function, which takes a function](https://en.wikipedia.org/wiki/Map_%28higher-order_function%29). If you are using Java, 
 this corresponds to [`java.util.stream.Streams.map`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#map-java.util.function.Function-) (See also this DZone article: [Java 8 Map, Filter, and Collect Examples](https://dzone.com/articles/how-to-use-map-filter-collect-of-stream-in-java-8)).
 
 It's all about calling a predicate (or a more complex goal) for each element of a list. An elements may be fresh variables, partially or fully ground. The list must be of **known length**, as there is no way to have the called predicate or goal tell `maplist/2` that it should stop going through the list: returning `false` will cause `maplist/2` to fail, and variable bindings built up during its run will be rolled back (but what happens if you `maplist/2` a [lazy list](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/lazy_lists.pl)?)
