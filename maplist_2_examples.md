@@ -372,7 +372,7 @@ choicepoints are left open.
 
 This code regenerates the list passed to `maplist/2` by re-constructing said list in the variable given by the first argument of the predicate passed to `maplist/2`. This variable gets updated step-by-step.
 
-````
+```logtalk
 % "Append" Elem to the "List with dangling tail" "Conses" by going down the chain
 % until the dangling tail is found, then setting it to another consbox containing
 % Elem in head position
@@ -399,9 +399,9 @@ listify(Conses) :-
    Conses = [_|BackOfList], 
    format("Conses is not var but ~w\n",Conses),
    listify(BackOfList).
-````  
+```
  
-```` 
+```logtalk
 ?- maplist(consify(Conses),[1,2,3,4,X,Y,Z]), 
    listify(Conses).
    
@@ -414,7 +414,7 @@ Conses is not var but [_26272,_26278|_26954]
 Conses is not var but [_26278|_26954]
 Conses is var and will now be constrained to be []. The end!
 Conses = [1, 2, 3, 4, X, Y, Z] ;
-```` 
+```
 
 - It is somewhat similar to what one would do with a difference list. However, there is no way heree to append to the difference list pass the difference list to the next call for the next append. 
 - The above looks like the self-modifying code of logic programming, the state of the computation has direct influence on the predicate values; there should probably be some special syntax to highlight this.
