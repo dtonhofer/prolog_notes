@@ -1,6 +1,6 @@
 # Notes on `library(aggregate)`
 
-IN PROGRESS
+**IN PROGRESS**
 
 See: [`library(aggregate)`](https://www.swi-prolog.org/pldoc/man?section=aggregate).
 
@@ -10,25 +10,13 @@ It saves you from having to write your own `min`,`max`, etc. aggregators that "w
 
 On the other hand, you can always transform a list into a backtrackable predicate, and a backtrackable predicate into a list, but at the cost of CPU and RAM.
 
-For testing, some data can be obtain by using the "mtcars" dataset which comes with R, suitable written in Prolog: [mtcars.pl](mtcars.pl).
+For testing, I shall use the "mtcars" dataset which comes with R, suitable written in Prolog:
 
-Load it into Prolog!
+   - [mtcars.pl](mtcars.pl), [raw text](https://raw.githubusercontent.com/dtonhofer/prolog_notes/master/library_aggregate/mtcars.pl)
+   
+Also, helper predicates
 
-Helper predicates in mtcars_help.pl
-
-```logtalk
-% Backtrackable predicates that get certain values for each car.
-% In relational theory, these are projections (but they keep the duplicates)
-
-car_name_mpg(Name,Mpg) :- mtcars(L),memberchk(name(Name),L),memberchk(mpg(Mpg),L).
-car_name_cyl(Name,Cyl) :- mtcars(L),memberchk(name(Name),L),memberchk(cyl(Cyl),L).
-car_cyl_mpg(Cyl,Mpg)   :- mtcars(L),memberchk(mpg(Mpg),L),memberchk(cyl(Cyl),L).
-
-% Examine the result of the aggregate predicates, which have varying type
-
-unpump(X) :- is_list(X),!,length(X,LL),format("Result: a list of length ~w\n",LL).
-unpump(X) :- number(X),!,format("Result: the value ~w\n",X).
-```
+   - [mtcars_help.pl](mtcars_help.pl), [raw text](https://raw.githubusercontent.com/dtonhofer/prolog_notes/master/library_aggregate/mtcars_help.pl)
 
 Load them all
 
@@ -99,7 +87,7 @@ false.
 
 % Duh?
 
-```
+``
 
        
 
