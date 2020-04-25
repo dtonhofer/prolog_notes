@@ -101,6 +101,8 @@ Note that the goal given to `maplist/2` cannot be complex. Syntax restriction!
 ERROR: Unknown procedure: (',')/3
 ```
 
+### How about a little λ?
+
 A much smoother syntax would be given by a [_lambda expression_](https://en.wikipedia.org/wiki/Lambda_calculus#Lambda_terms)
 explicitly showing the "argument attach point", as in:
 
@@ -132,7 +134,9 @@ verify(3 > 3)
 false.
 ```
 
-Something similar to λ-adorned notation can be had by using the following:
+### Can we have that?
+
+Yes! Something quite similar to λ-adorned notation can be had by using the following:
 
 - [`library(yall)`](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/yall.pl) which comes from the `Logtalk`
   language (see the [description in the Logtalk manual](https://logtalk.org/manuals/userman/predicates.html#lambda-expressions)).
@@ -143,9 +147,9 @@ or alternatively:
 
 We will be using `library(yall)` here.
 
-### Library `yall` can help you all with lambda notation!
+### Library `yall` can help you all with λ notation!
 
-With `library(yall)` notation we can do a one-liner, creating an anonymous predicate of one 
+With `library(yall)` notation we can write a one-liner, creating an anonymous predicate of one 
 variable `I`, which calls `verify/2` with the position of the argument evident and exchangeable:
 
 ```logtalk
