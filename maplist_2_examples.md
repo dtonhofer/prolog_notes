@@ -302,7 +302,9 @@ But that's not really what happens. What actually happens is:
 ?- verify(1),verify(2),verify(3),verify(4).
 ```
 
-This is a conjunction of predicates. If any of the predicates has choicepoints open, we can backtrack over them. 
+This is a conjunction of predicates. 
+
+**If any of the predicates has choicepoints open, we can backtrack over them.**
 
 A short-circuiting test loop is given by Prolog's [`forall/2`](https://www.swi-prolog.org/pldoc/doc_for?object=forall/2):
 
