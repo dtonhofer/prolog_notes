@@ -349,7 +349,7 @@ maplist( [N-C]>>(member(N-X,L),format("~w ",[N-C-X])) , L).
 false.
 ```
 
-## Generating lists
+### Generating lists
 
 For example, to unify `L` with successively larger lists of 1s:
 
