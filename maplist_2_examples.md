@@ -10,7 +10,7 @@ from [library(apply)](https://eu.swi-prolog.org/pldoc/man?section=apply). `libra
 
 We use [SWI-Prolog](https://www.swi-prolog.org/) throughout. However, `maplist/N`, while not in the [ISO standard](https://en.wikipedia.org/wiki/Prolog#ISO_Prolog), at least [not yet](http://www.complang.tuwien.ac.at/ulrich/iso-prolog/prologue), is a common predicate ([GNU Prolog](http://gprolog.org/manual/gprolog.html#sec223), [SICStus Prolog](https://sicstus.sics.se/sicstus/docs/4.3.0/html/sicstus/lib_002dlists.html)). Other Prologs _should_ work the same. 
 
-At some point, we also use the [`library(yall)`](https://www.swi-prolog.org/pldoc/man?section=yall) lambda notation imported from [Logtalk](https://logtalk.org/). This _is_ rather specific to SWI-Prolog)
+At some point, we also use the [`library(yall)`](https://www.swi-prolog.org/pldoc/man?section=yall) lambda notation imported from [Logtalk](https://logtalk.org/). This _is_ rather specific to SWI-Prolog.
 
 In order for lists to be printed fully instead of being partly elided with ellipses ("`|...`") you may have
 to first call:
