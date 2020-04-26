@@ -1,7 +1,7 @@
 # Examples for the Prolog predicate `maplist/2` (as run with SWI-Prolog)
 
-- This page can also be accessed as  http://bit.ly/2IrNfuG_prolog
 - For examples about `maplist/3`, see [this page](maplist_3_examples.md)
+- For examples about `maplist/4`, see [this page](maplist_4_examples.md)
 
 ## Introduction
 
