@@ -59,5 +59,6 @@ sollist([1,2,1,2,3,2,4]).
 go :- keylist(LK),vallist(LV),sort_them(LK,LV,LO),sollist(LO).
 ```
 
-Also take a look at [`library(pairs)`](https://www.swi-prolog.org/pldoc/man?section=pairs) for operations on key-value lists.
+- Also take a look at [`library(pairs)`](https://www.swi-prolog.org/pldoc/man?section=pairs) for operations on key-value lists.
+- Some test code for the SWI-Prolog sorting predicates is [here](https://github.com/dtonhofer/prolog_notes/blob/master/sorting/test_sort_predicates.pl)
 
