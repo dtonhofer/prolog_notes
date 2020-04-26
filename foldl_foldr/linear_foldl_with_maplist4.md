@@ -96,8 +96,11 @@ Then the result will appear in `_R` if the called goal unifies every triple as `
 Use "head-to-tail, left associative" calling convention.
 
 This matches what the [foldl/4](https://www.swi-prolog.org/pldoc/doc_for?object=foldl/4) from [library(apply)](https://www.swi-prolog.org/pldoc/man?section=apply) expects and does, so we can immediately extend the test cases
-to test that predicates's behaviour too. Note that `foldl/4` is doing the standard thing: recurse over the input list and call `apply` at each node: [source code](https://eu.swi-prolog.org/pldoc/doc/_SWI_/library/apply.pl?show=src#foldl/4).
+to test that predicates's behaviour too. Note that `foldl/4` is doing the standard thing: recurse over the input list and call `apply` at each node. The SWI-Prolog source code for that predicate is [here](https://eu.swi-prolog.org/pldoc/doc/_SWI_/library/apply.pl?show=src#foldl/4).
 
-- The functions of interest which can be applied by a fold are here: [foldy.pl](foldy.pl)
-- The code with the unit tests is here: [maplist_foldl.pl](maplist_foldl.pl)
+**Our implementation**
+
+- The implementation and the unit tests: [maplist_foldl.pl](maplist_foldl.pl)
+- Some functions of interest which can be applied by a fold, used in unit tests: [foldy.pl](foldy.pl)
+
 
