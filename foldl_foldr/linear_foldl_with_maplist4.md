@@ -1,7 +1,7 @@
 # Write a linear "foldl" with `maplist/4`
 
 A linear "foldl" can be easily built
-with [`maplist/4`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/4) -- if one doesn't want to use the one which comes with [library(apply)](https://www.swi-prolog.org/pldoc/man?predicate=foldl/4). 
+with [`maplist/4`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/4) -- if one doesn't want to use the [`foldl/4`](https://www.swi-prolog.org/pldoc/doc_for?object=foldl/4) one which comes with [library(apply)](https://www.swi-prolog.org/pldoc/man?predicate=foldl/4). 
 
 This discussion is based on SWI-Prolog 8.1.x
 
