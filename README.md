@@ -11,14 +11,14 @@ Some notes taken while working on Prolog
 
 ## Pages in this repository
 
-### On `maplist/2` and `maplist/3`
+### On `maplist/N`
 
-- [`maplist/2` examples](maplist_2_examples.md):
-  Examples for [`maplist/2` from SWI Prolog](https://www.swi-prolog.org/pldoc/man?predicate=maplist%2f2)
-   - Link to page aliased to http://bit.ly/2IrNfuG_prolog
-- [`maplist/3` examples](maplist_3_examples.md): 
-  Examples for [`maplist/3` from SWI Prolog](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/3)
-   -  Link to page aliased to http://bit.ly/2In2NQj_prolog
+- [maplist_2_examples.md](maplist/maplist_2_examples.md): Examples and major explainer for [`maplist/2`](https://www.swi-prolog.org/pldoc/man?predicate=maplist%2f2)
+   - Link to page aliased to https://bit.ly/2S9EWJe_prolog
+- [maplist_3_examples.md](maplist/maplist_3_examples.md): Examples for [`maplist/3`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/3)
+   -  Link to page aliased to https://bit.ly/2KCDpao_prolog
+- [maplist_4_examples.md](maplist/maplist_4_examples.md): Examples for [`maplist/4`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/4)
+   -  Link to page aliased to https://bit.ly/2x8Ml4f_prolog
 
 ## On printing and formatting
 
