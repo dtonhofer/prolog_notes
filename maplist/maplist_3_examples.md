@@ -1,11 +1,11 @@
-# Examples for the Prolog predicate `maplist/3` (as run with SWI-Prolog)
+# Examples for the Prolog predicate `maplist/3` 
 
 - For examples about `maplist/2`, see [this page](maplist_2_examples.md)
 - For examples about `maplist/4`, see [this page](maplist_4_examples.md)
 
 ## About
 
-A few examples for the predicate [`maplist/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/3) 
+Here we list a few examples for the predicate [`maplist/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/3) 
 from [library(apply)](https://eu.swi-prolog.org/pldoc/man?section=apply) as run with SWI-Prolog.
 
 `library(apply)`: _"This module defines meta-predicates that apply a predicate on all members of a list."_
@@ -17,7 +17,7 @@ to first call:
 ?- set_prolog_flag(answer_write_options,[max_depth(0)]).
 ````
 
-## Intro
+The notes regarding lambda-notation provided by [`library(yall)`](https://www.swi-prolog.org/pldoc/man?section=yall) on the page for [`maplist/2`](maplist_2_examples.md) stay relevant.
 
 The description for [`maplist/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/3) says:
 
@@ -25,124 +25,44 @@ The description for [`maplist/3`](https://eu.swi-prolog.org/pldoc/doc_for?object
 >
 > _"As maplist/2, operating on pairs of elements from two lists."_
 
-## The two lists are fully grounded
+So you have two lists, _List1_ and _List2_, and `maplist/2` will call the _Goal_ for pairwise associations of list items:
 
-The two maps given to `maplist/3` can be fully grounded (i.e. fully constrained), which is the first thing one
-would think of when one is used to functional or imperative programming:
+```
+   List1             [L1A, L1B, L1C, L1D, ...  
+   List2             [L2A, L2B, L2C, L2D, ...  
+                        
+   Goal called for   (L1A,L2A), (L1B,L2B), (L1C,L2C), (L1D,L2D), ...
+```
 
-````
-myprint(X,Y) :- format("~w\n",[(X,Y)]).
-?- maplist(myprint,[0,1,2,3],[a,b,c,d]).
-0,a
-1,b
-2,c
-3,d
+`Goal` must either be;
+
+- a predicate taking two arguments more than indicated on last position: `foo` to 
+  be called as `foo(L1,L2)`, `foo(x)` to be called as `foo(x,L1,L2)`, `foo(x,y)` to be called as `foo(x,y,L1,L2)` etc.
+- a lambda expression taking two arguments if one uses `library(yall)`: `[L1,L2]>>foo(L1,L2)`
+
+Additionally:
+
+- both lists must be the same length (or one of the list must be unconstrained, i.e. be open-ended or simply a fresh variable)
+- `Goal` must succeed at every location.
+
+```logtalk
+% all is fine
+
+?- maplist([X,Y]>>(true),[1,2],[1,4]).
 true.
-````
 
-Instead of creating a separate predicate `myprint/2`, one can use the "lambda notation" of
-[library(yall)](https://www.swi-prolog.org/pldoc/man?section=yall) to create a one-liner.
-A  call to `myprint/2` is replaced by a call to an "anonymous predicate" written in-line:
+% unequal length means trouble
 
-````
-?- maplist([X,Y]>>format("~w\n",[(X,Y)]),[0,1,2,3],[a,b,c,d]).
-0,a
-1,b
-2,c
-3,d
-true.
-````
+?- maplist([X,Y]>>(true),[1,2],[1]).
+false.
 
-## One of the lists is unconstrained
+% so does a failing goal
 
-If we leave the third argument (that is to say, the second _list_ argument) of `maplist/3` unconstrained, 
-we can make `maplist/3` work in the same way as the 
-[`map`](https://en.wikipedia.org/wiki/Map_(higher-order_function)) operation
-available in functional or imperative programming languages.
+?- maplist([X,Y]>>(false),[1,2],[1,4]).
+false.
+```
 
-Create a list of integers 0..10, then apply a function to each member.
-
-(
-In the following code, instead of typing the list in, you can also create the "input list" using `bagof/3`.:
-
-````
-?- bagof(X,between(0,10,X),In),
-   maplist([X,Y]>>(X is Y/2),Out,In).
-   
-In = [0,1,2,3,4,5,6,7,8,9,10],
-Out = [0,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5].
-````
-)
-
-### The second list is constrained by `maplist/3`
-
-Second list argument is the result of applying, a function to the first list argument, member-by-member:
-
-````
-?- maplist([X,Y]>>(Y is 2*X),
-           [0,1,2,3,4,5,6,7,8,9,10],
-	   Out).
-
-Out = [0,2,4,6,8,10,12,14,16,18,20].
-````
-
-Note that `Out` is not even constrained to be a list at call time.
-
-### The first list is constrained by `maplist/3`
-
-First list argument is the result of applying, a function to the second list argument, member-by-member: 
-
-````
-?- maplist([X,Y]>>(X is Y/2),
-           Out,
-	   [0,1,2,3,4,5,6,7,8,9,10]).
-
-Out = [0,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5].
-````
-
-### Both lists are constrained symmetrically by `maplist/3`
-
-With the [`#=`](https://eu.swi-prolog.org/pldoc/doc_for?object=%23%3D%20/%202) constraint
-predicate of the library for "Constraint Logic Programming over Finite Domains", you can work "symmetrically":
-
-````
-:- use_module(library(clpfd)).
-
-?- maplist([X,Y]>>(X #= Y-1),
-           [0,S1,2],
-	   [S0,1,3]).
-
-S1 = 0,
-S0 = 1.
-````
-
-## Notes 
-
-Of course we have the usual possibilities of unification. Here with side effects:
-
-````
-?- maplist([X,Y]>>((Y is 2*X),
-           format("~w\n",[(X,Y)])),
-	   [0,1,2,3,4,5,6,7,8,9,10],
-	   [0,2,A,6,8,10,12|R]).
-	   
-0,0
-1,2
-2,4
-3,6
-4,8
-5,10
-6,12
-7,14
-8,16
-9,18
-10,20
-A = 4,
-R = [14,16,18,20].
-````
-
-Unification, must succeed. This is not transactional, side-effects will be run before unification failure
-hits:
+Side-effects will occur before failure hits. It's not transactional:
 
 ````
 ?- maplist([X,Y]>>((Y is 2*X),
@@ -156,61 +76,227 @@ hits:
 false.
 ````
 
-If have a complex function that you want to call on the pairs of list members and need to have it "partly specified"
-at call time by `maplist/3`, you can "partly-construct" the term of the predicate call that will be issued by `maplist/3`: 
+The standard application is the one corresponding to the [`map`](https://en.wikipedia.org/wiki/Map_(higher-order_function)) operation available in functional or imperative programming languages: Apply a function to the list items in _List1_, and bind them to the list items in _List2_. Or the reverse. Or check the function results against already bound list items. 
 
-Here we want to call `verify/3` on 
+## Form of the two passed lists
 
-- 6
-- the i-th member of the first list
-- the i-th member of the second list
+Let's distinguish a few cases:
 
-```
-verify(A,B,C) :- format("Received A = ~w, B = ~w, C = ~w\n",[A,B,C]).
+### Both lists are of known length
 
-?- maplist(verify(6), 
-           [a,b,c,d,e,f],
-	   [X,Y,Z,x,y,z]).
-	   
-Received A = 6, B = a, C = _8442
-Received A = 6, B = b, C = _8448
-Received A = 6, B = c, C = _8454
-Received A = 6, B = d, C = x
-Received A = 6, B = e, C = y
-Received A = 6, B = f, C = z
+The two list given to `maplist/3` can be of known length:
+
+````
+myprint(X,Y) :- format("~w\n",[[X,Y]]).
+?- maplist(myprint,[0,1,2,3],[a,b,c,d]).
+[0,a]
+[1,b]
+[2,c]
+[3,d]
 true.
-```
+````
 
-This works for unconstrained variables (here, `K`) as well:
+The same as above, but instead of creating a helper predicate `myprint/2`, we use lambda notation to create a one-liner.
+A  call to `myprint/2` is replaced by a call to an "anonymous predicate":
 
-```
- ?- maplist(verify(K),
-            [a,b,c,d,e,f],
-	    [X,Y,Z,x,y,z]).
-	    
-Received A = _8402, B = a, C = _8442
-Received A = _8402, B = b, C = _8448
-Received A = _8402, B = c, C = _8454
-Received A = _8402, B = d, C = x
-Received A = _8402, B = e, C = y
-Received A = _8402, B = f, C = z
+````
+?- maplist([X,Y]>>format("~w\n",[[X,Y]]),[0,1,2,3],[a,b,c,d]).
+[0,a]
+[1,b]
+[2,c]
+[3,d]
 true.
+````
+
+Check that a relation holds between the pairwise list elements:
+
+````
+?- maplist([X,Y]>>(Y is X*X),[0,1,2,3],[0,1,4,9]).
+true.
+````
+
+The lists may contain fresh variables. We 
+use [`#=`](https://eu.swi-prolog.org/pldoc/doc_for?object=%23%3D%20/%202) constraint predicate to make things interesting:
+
+````
+?- use_module(library(clpfd)). % load constraint statisfaction over finite domains
+
+?- maplist([X,Y]>>(Y#=X*X),[0,1,2,3],[A,B,C,D]).
+A = 0,
+B = 1,
+C = 4,
+D = 9.
+
+?- maplist([X,Y]>>(Y#=X*X),[0,1,C,D],[A,B,4,9]).
+A = 0,
+B = 1,
+C in -2\/2,
+D in -3\/3.
+
+% a simpler relation between between the pairs (I1,I2) than (I2 = I1²) is (I1 = I2-1):
+
+?- maplist([X,Y]>>(X#=Y-1), [0,A,2], [B,1,3]).
+A = 0,
+B = 1.
+
+% alternatively
+
+?- maplist([X,Y]>>succ(X,Y), [0,A,2], [B,1,3]).
+A = 0,
+B = 1.
+
+% or lambda-less (and hard to read)
+
+?- maplist(succ, [0,A,2], [B,1,3]).
+A = 0,
+B = 1.
+````
+
+Nothing surprising here.
+
+### One of the lists is of unknown length
+
+Create a list of 11 integers 0..10, then use `maplist/3` to apply a function to this `List1`. If the other list was a fresh variable (so not even known to be a list), it is set to a list of length equal to the length of `List1`:
+
+```logtalk
+?- use_module(library(clpfd)). % load constraint statisfaction over finite domains
+
+?- bagof(X,between(0,5,X),In), maplist([X,Y]>>(Y #= X*X*X),In,Out).
+In = [0, 1, 2, 3, 4, 5],
+Out = [0, 1, 8, 27, 64, 125].
+
+?- AntiIn=[0, 1, 8, 27, 64, 125], maplist([X,Y]>>(Y #= X*X*X),AntiOut,AntiIn).
+AntiIn = [0, 1, 8, 27, 64, 125],
+AntiOut = [0, 1, 2, 3, 4, 5].
 ```
 
-Use `library(yall)` to move values around:
+### Both of the lists are of unknown length
 
+Without CLP(FD), the predicate called by `maplist/3` errors out rapidly:
+
+```logtalk
+?- maplist([X,Y]>>(Y is X*X*X),L1,L2).
+L1 = L2, L2 = [] ;
+ERROR: Arguments are not sufficiently instantiated
+ERROR: In:
+ERROR:   [14] _3238 is _3250*_3252*_3246
 ```
-?- maplist([Arg1,Arg2]>>verify(Arg1,6,Arg2),
-           [a,b,c,d,e,f],
-	   [X,Y,Z,x,y,z]).
-	   
-Received A = a, B = 6, C = _18906
-Received A = b, B = 6, C = _18912
-Received A = c, B = 6, C = _18918
-Received A = d, B = 6, C = x
-Received A = e, B = 6, C = y
-Received A = f, B = 6, C = z
+
+With CLP(FD), `maplist/3` succeeds with longer and longer lists, where constraints exist between variables.
+
+```logtalk
+?- use_module(library(clpfd)). % load constraint statisfaction over finite domains
+
+?- maplist([X,Y]>>(Y #= X*X*X),L1,L2).
+L1 = L2, L2 = [] ;
+L1 = [_11220],
+L2 = [_11238],
+_11220^3#=_11238 ;
+L1 = [_13490, _13496],
+L2 = [_13514, _13520],
+_13490^3#=_13514,
+_13496^3#=_13520 ;
+L1 = [_16044, _16050, _16056],
+L2 = [_16074, _16080, _16086],
+_16044^3#=_16074,
+_16050^3#=_16080,
+_16056^3#=_16086 
+...
 ```
+
+This is of some interest. We can tell `maplist/3` to stop by misusing `maplist/4`, giving a fixed length list as
+"dummy argument":
+
+```logtalk
+?- use_module(library(clpfd)). % load constraint statisfaction over finite domains
+
+?- maplist([X,Y,_]>>(Y #= X*X*X),L1,L2,[_,_,_,_]).  % give me 4
+L1 = [_22422, _22428, _22434, _22440],
+L2 = [_22458, _22464, _22470, _22476],
+_22422^3#=_22458,
+_22428^3#=_22464,
+_22434^3#=_22470,
+_22440^3#=_22476.
+
+% Now use those constraints: setting item 1 of L1 to 2 immediately reflects as a 2^3 in L2:
+
+?- maplist([X,Y,_]>>(Y #= X*X*X),L1,L2,[_,_,_,_]),nth0(1,L1,2).
+L1 = [_26834, 2, _26846, _26852],
+L2 = [_26870, 8, _26882, _26888],
+_26834^3#=_26870,
+_26846^3#=_26882,
+_26852^3#=_26888.
+```
+ 
+### One of the lists is a "difference list" prefix, and the other of known length
+
+A difference list prefix is a structure which starts off like a list, but whose tail ends in a fresh variable.
+`maplist/3` will adjust the prefix' length and close the list with a `[]`, behaving like a [Caterpillar D7](https://en.wikipedia.org/wiki/Caterpillar_D7):
+
+```logtalk
+?- use_module(library(clpfd)). % load constraint statisfaction over finite domains
+
+% The difference list with an unconstrained tail end:
+
+?- DiffList=[1,8,27|T]-T, DiffList=Prefix-_.
+DiffList = [1, 8, 27|T]-T,
+Prefix = [1, 8, 27|T].
+
+% Using its prefix in maplist/3 constrains the prefix to be a real list, and thus constrains the
+% tail likewise
+
+?- DiffList=[1,8,27|T]-T, DiffList=Prefix-_, maplist([X,Y]>>(Y #= X*X*X),[1,2,3,4,5],Prefix).
+DiffList = [1, 8, 27, 64, 125]-[64, 125],
+T = [64, 125],
+Prefix = [1, 8, 27, 64, 125].
+
+% Compute the same as above, but with List1 taking up the x³ values, which is done by reversing
+% the argument order to the lambda expression
+
+?- DiffList=[1,8,27|T]-T, DiffList=Prefix-_, maplist([Y,X]>>(Y #= X*X*X),Prefix,[1,2,3,4,5]).
+DiffList = [1, 8, 27, 64, 125]-[64, 125],
+T = [64, 125],
+Prefix = [1, 8, 27, 64, 125].
+```
+
+### Both lists are "difference list" prefixes
+
+Maplist generates possible solutions with longer and longer lists on backtracking:
+
+```logtalk
+?- use_module(library(clpfd)). % load constraint statisfaction over finite domains
+
+?- DiffList1=[1,2,3|T1]-T1, DiffList1=Prefix1-_,
+   DiffList2=[1,8,27|T2]-T2, DiffList2=Prefix2-_,
+   maplist([X,Y]>>(Y #= X*X*X),Prefix1,Prefix2).
+   
+DiffList1 = [1, 2, 3]-[], 
+T1 = T2, T2 = [], 
+Prefix1 = [1, 2, 3], 
+DiffList2 = [1, 8, 27]-[], Prefix2 = [1, 8, 27] ;
+
+DiffList1 = [1, 2, 3, _3136]-[_3136], 
+T1 = [_3136], Prefix1 = [1, 2, 3, _3136], 
+DiffList2 = [1, 8, 27, _3202]-[_3202],
+T2 = [_3202], Prefix2 = [1, 8, 27, _3202], _3136^3#=_3202 ;
+...
+```
+
+### How about cyclic lists?
+
+(TODO if I know more)
+
+### How about lazy lists?
+
+(TODO if I know more)
+
+## maplist_relax/3
+
+TODO: Write a maplist that can deal with lists of differing length, and stops with success after as many list pairs as possible have been processed. 
+
+Similarly, maplist_relax/3 should not fail in it entirety if the goal fails, but just stop processing. 
+
+(In that case, what happens on backtracking?)
 
 ## Software Archeology:
 
