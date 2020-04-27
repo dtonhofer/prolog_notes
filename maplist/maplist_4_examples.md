@@ -1,7 +1,7 @@
 # Examples for the Prolog predicate `maplist/4` (as run with SWI-Prolog)
 
-- For examples about `maplist/2`, see [this page](maplist_2_examples.md)
-- For examples about `maplist/3`, see [this page](maplist_3_examples.md)
+- For examples about `maplist/2` (1 goal, 1 iterable), see [this page](maplist_2_examples.md)
+- For examples about `maplist/3` (1 goal, 2 iterables),  see [this page](maplist_3_examples.md)
 
 ## About
 
@@ -34,7 +34,38 @@ This is rather pointless, but why not:
 - [Explainer](https://github.com/dtonhofer/prolog_notes/blob/master/foldl_foldr/linear_foldl_with_maplist4.md)
 - [Code](https://github.com/dtonhofer/prolog_notes/blob/master/foldl_foldr/maplist_foldl.pl)
 
-### Assembling/Disassembling a key-value list for sorting
+### Arbitrary packing and unpacking using the same goal
+
+As long as the packing operation is reversible (i.e. there is a bijective relationship between the pair (List1,List2) and List3), you can pack/unpack with the same goal:
+
+```
+List 1 ---+                                               +---> List 1
+          |     Packing                   Unpacking       |
+          +-----> via ------> List 3 ------> via    ------+
+          |     maplist/4                 maplist/4       |
+List 2 ---+                                               +---> List 2
+```
+
+For example:
+
+```logtalk
+pack(X,Y,f(X,Y)).
+```
+
+Then:
+
+```logtalk
+?- maplist(pack,[1,2,3,4],[a,b,c,d],L3).
+L3 = [f(1, a), f(2, b), f(3, c), f(4, d)].
+
+?- maplist(pack,L1,L2,[f(1, a), f(2, b), f(3, c), f(4, d)]).
+L1 = [1, 2, 3, 4],
+L2 = [a, b, c, d].
+```
+
+### Assembling/Disassembling a key-value list (list of pairs) for sorting
+
+The above applies in particular to this common operation, where the "pair", a term with arity 2 and functor `-` (as in `-(K,V)` more conveniently written `K-V`) is used:
 
 ```logtalk
 % The little predicate that assembles and disassembles a single Key-Value pair.
