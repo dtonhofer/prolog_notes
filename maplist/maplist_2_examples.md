@@ -4,7 +4,7 @@
 - For examples about `maplist/3` (1 goal, 2 lists to verify) see [this page](maplist_3_examples.md)
 - For examples about `maplist/4` (1 goal, 3 lists to relate) see [this page](maplist_4_examples.md)
 
-## Introduction
+## About
 
 Here we list a few examples for the predicate [`maplist/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/2) 
 from [library(apply)](https://eu.swi-prolog.org/pldoc/man?section=apply) as run with SWI-Prolog.
