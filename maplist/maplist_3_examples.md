@@ -1,7 +1,8 @@
 # Examples for the Prolog predicate `maplist/3` 
 
-- For examples about `maplist/2`, see [this page](maplist_2_examples.md)
-- For examples about `maplist/4`, see [this page](maplist_4_examples.md)
+- Here: `maplist/3` (1 goal, 2 list to relate) 
+- For examples about `maplist/2` (1 goal, 1 list to verify) see [this page](maplist_2_examples.md)
+- For examples about `maplist/4` (1 goal, 3 lists to relate) see [this page](maplist_4_examples.md)
 
 ## About
 
@@ -23,9 +24,9 @@ The description for [`maplist/3`](https://eu.swi-prolog.org/pldoc/doc_for?object
 
 > `maplist(:Goal, ?List1, ?List2)`
 >
-> _"As maplist/2, operating on pairs of elements from two lists."_
+> _As maplist/2, operating on pairs of elements from two lists._
 
-So you have two lists, _List1_ and _List2_, and `maplist/2` will call the _Goal_ for pairwise associations of list items:
+Thus you have two lists, _List1_ and _List2_, and `maplist/3` will call the _Goal_ for pairwise associations of list items:
 
 ```
    List1             [L1A, L1B, L1C, L1D, ...  
