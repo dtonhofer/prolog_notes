@@ -291,7 +291,40 @@ T2 = [_3202], Prefix2 = [1, 8, 27, _3202], _3136^3#=_3202 ;
 
 (TODO if I know more)
 
-## maplist_relax/3
+## Other applications of `maplist/2`
+
+Other specific applications are listed here, if I can think of any or encounter any:
+
+### Verifying the contract of predicates
+
+As for `maplist/2`, `maplist/3` can be used to check that the caller respects the predicate's
+[contract](https://en.wikipedia.org/wiki/Design_by_contract) . Here is a simple check to make sure
+two lists have the same length. If one of the lists is a fresh variable, it 
+is constrained to a new list with as many fresh variables as are in the other:
+
+```logtalk
+some_predicate(L1, L2) :-
+   ((var(L1),var(L2)) -> fail; true),
+   maplist([_,_]>>true,L1,L2),
+   format("Contract fulfilled on entry!").
+```
+
+And so:
+
+```logtalk
+?- some_predicate(L1,L2).
+false.
+
+?- some_predicate(L1,[1,2,3]).
+Contract fulfilled on entry!
+L1 = [_17306, _20144, _20222].
+
+?- some_predicate([a,b,c],[1,2,3]).
+Contract fulfilled on entry!
+true.
+```
+
+## TODO: maplist_relax/3
 
 TODO: Write a maplist that can deal with lists of differing length, and stops with success after as many list pairs as possible have been processed. 
 
@@ -299,7 +332,7 @@ Similarly, maplist_relax/3 should not fail in it entirety if the goal fails, but
 
 (In that case, what happens on backtracking?)
 
-## Software Archeology:
+## Some Software Archeology:
 
 SWI Prolog's source for [apply.pl](https://github.com/SWI-Prolog/swipl-devel/blob/master/library/apply.pl) 
 gives the following implementation:
