@@ -1,6 +1,7 @@
-# Examples for the Prolog predicate `maplist/2` (as run with SWI-Prolog)
+# Examples for the Prolog predicate `maplist/2`
 
-- For examples about `maplist/3` (1 goal, 2 lists to relate) see [this page](maplist_3_examples.md)
+- Here: `maplist/2` (1 goal, 1 list to verify)
+- For examples about `maplist/3` (1 goal, 2 lists to verify) see [this page](maplist_3_examples.md)
 - For examples about `maplist/4` (1 goal, 3 lists to relate) see [this page](maplist_4_examples.md)
 
 ## Introduction
@@ -277,7 +278,7 @@ L = [66, 19, 7, 30, 42, 75].
 L = [61, 15, 82, 74, 83, 31].
 ```
 
-### Testing list items
+### Testing individual list items
 
 As the called predicate naturally succeeds or fails, we are effectively performing an conjunctive _test_ on all list items. 
 
@@ -325,7 +326,7 @@ for my $item (@list) {
 if ($allok) { ... }
 ```
 
-But that's not really what happens. What actually happens is:
+But that's **not really what happens**. What actually happens is:
 
 ```logtalk
 ?- verify(1),verify(2),verify(3),verify(4).
