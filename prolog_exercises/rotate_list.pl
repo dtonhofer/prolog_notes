@@ -13,9 +13,19 @@
 % For more information, please refer to <http://unlicense.org/>
 % ============================================================================
 % Inspired by a discussion on
-% http://computer-programming-forum.com/55-prolog/358ecf5f07f2de46.htm
+%   http://computer-programming-forum.com/55-prolog/358ecf5f07f2de46.htm
 % although the solution below, which uses two difference lists and
 % a single scan of the original list (an no append/3), was not proposed.
+%
+% Furthermore, from
+%   https://stackoverflow.com/questions/10255703/how-to-rotate-lists-in-prolog
+% When you just want to rotate by 1 position:
+%   rotatelist([H|T], R) :- append(T, [H], R).
+% Works both ways:
+%   ?- rotatelist([a,b,c],R).
+%   R = [b, c, a].
+%   ?- once(rotatelist(R,[a,b,c])).
+%   R = [c, a, b].
 % ============================================================================
 % rotate_list(+List,+N,?Rotated).
 %
