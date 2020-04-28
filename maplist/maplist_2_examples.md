@@ -1,37 +1,63 @@
 # Examples for the Prolog predicate `maplist/2` (as run with SWI-Prolog)
 
-- For examples about `maplist/3` (1 goal, 2 iterables) see [this page](maplist_3_examples.md)
-- For examples about `maplist/4` (1 goal, 3 iterables) see [this page](maplist_4_examples.md)
+- For examples about `maplist/3` (1 goal, 2 lists to relate) see [this page](maplist_3_examples.md)
+- For examples about `maplist/4` (1 goal, 3 lists to relate) see [this page](maplist_4_examples.md)
 
 ## Introduction
 
-This page presents a few examples for the predicate [`maplist/2`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/2) 
-from [library(apply)](https://eu.swi-prolog.org/pldoc/man?section=apply). `library(apply)` _"defines meta-predicates that apply a predicate on all members of a list."_
+Here we list a few examples for the predicate [`maplist/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/2) 
+from [library(apply)](https://eu.swi-prolog.org/pldoc/man?section=apply) as run with SWI-Prolog.
+
+`library(apply)`: _"This module defines meta-predicates that apply a predicate on all members of a list."_
+
+In order for lists to be printed fully instead of elided at their end with ellipses ("`|...`") you may have
+to first call:
+
+````
+?- set_prolog_flag(answer_write_options,[max_depth(0)]).
+````
 
 We use [SWI-Prolog](https://www.swi-prolog.org/) throughout. However, `maplist/N`, while not in the [ISO standard](https://en.wikipedia.org/wiki/Prolog#ISO_Prolog), at least [not yet](http://www.complang.tuwien.ac.at/ulrich/iso-prolog/prologue), is a common predicate ([GNU Prolog](http://gprolog.org/manual/gprolog.html#sec223), [SICStus Prolog](https://sicstus.sics.se/sicstus/docs/4.3.0/html/sicstus/lib_002dlists.html), [ECLiPSe](https://eclipseclp.org/doc/bips/lib/lists/index.html)). Other Prologs _should_ work the same. 
 
 At some point, we also use the [`library(yall)`](https://www.swi-prolog.org/pldoc/man?section=yall) lambda notation imported from [Logtalk](https://logtalk.org/). This _is_ rather specific to SWI-Prolog.
 
-In order for lists to be printed fully instead of being partly elided with ellipses ("`|...`") you may have
-to first call:
-
-```logtalk
-?- set_prolog_flag(answer_write_options,[max_depth(0)]).
-```
-
-## About `maplist/2`
-
 The description for [`maplist/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/2) says:
 
 > `maplist(:Goal, ?List)`
 >
-> True if Goal can successfully be applied on all elements of List. Arguments are reordered to 
-> gain performance as well as to make the predicate deterministic under normal circumstances.
+> _True if Goal can successfully be applied on all elements of List. Arguments are reordered to 
+> gain performance as well as to make the predicate deterministic under normal circumstances._
 
-If you are using a functional programming language already, you know all about the ["map" function, which takes a function](https://en.wikipedia.org/wiki/Map_%28higher-order_function%29). If you are using Java, 
+Thus you have a single list, _List_, and `maplist/2` will call the _Goal_ for each list item (but apparently, 
+possibly out-of-order, or possibly concurrently). `maplist/2` will also stop processing and fail at the first
+failed call of `Goal`.
+
+Easy to understand:
+
+```
+   List             [LA, LB, LC, LD, ...  
+                        
+   Goal called for  LA, LB, LC, LD, ...
+```
+
+This will allow us to avoid writing failure-driven loops or explicit recursion.
+
+If you are using a functional programming language, you know all about the ["map" function, which takes a function](https://en.wikipedia.org/wiki/Map_%28higher-order_function%29). If you are using Java, 
 this corresponds to [`java.util.stream.Streams.map`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#map-java.util.function.Function-) (See also this DZone article: [Java 8 Map, Filter, and Collect Examples](https://dzone.com/articles/how-to-use-map-filter-collect-of-stream-in-java-8)). But `maplist/N` additionally brings backtracking into the mix.
 
-It's all about calling a predicate (or a more complex goal) for each item of a list. An item may be fresh variables, partially or fully ground. For `maplist/2`, the list must be of **known length**, as there is no way to have the called predicate or goal tell `maplist/2` that it should stop going through the list: returning `false` from the called predicate will cause `maplist/2` to fail, and variable bindings built up during its run will be rolled back. For `maplist/3` and longer-argumented ` maplist/N`, the lists must all be of the same length although it suffices if the length of all lists can be constrained to be identical by `maplist/N`.
+It's all about calling a predicate (or a more complex goal) for each item/element of a list. The list should be of **known length**, as there is no way to have the called predicate or goal tell `maplist/2` that it should stop going through the list: returning `false` from the called predicate will cause `maplist/2` to fail, and variable bindings built up during its run will be rolled back. For `maplist/3` and longer-argumented ` maplist/N`, the lists must all be of the same length although it suffices if the length of all lists can be constrained to be identical by `maplist/N`.
+
+Here is `maplist/2` with a list of unconstrained length. It will backtrack over possible lengths, never stopping:
+
+```logtalk
+?- maplist([_]>>true,E).
+E = [] ;
+E = [_1468] ;
+E = [_1468, _2312] ;
+E = [_1468, _2312, _3040] ;
+E = [_1468, _2312, _3040, _3768] ;
+...
+```
 
 (...what happens if you `maplist/2` a [lazy list](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/lazy_lists.pl)?)
 
@@ -39,9 +65,9 @@ It's all about calling a predicate (or a more complex goal) for each item of a l
 
 - Markus Triska has a page on [metapredicates](https://www.metalevel.at/prolog/metapredicates), which includes `maplist/N`.
 
-## How to pass parameters to the inner predicate!
+## How to pass parameters to the _Goal_
 
-Consider this predicate, which tests whether an item is less than 5.
+Consider this predicate, which tests whether a list item is less than 5.
 
 In standard Prolog notation:
 
@@ -197,6 +223,9 @@ L3 = [max(1, 3)=3, max(3, 3)=3, max(5, 1)=5, max(2, 0)=2, max(1, 1)=1].
 
 ## Possible applications of `maplist/2`
 
+Some of these applications may not work if `maplist/2` can call the predicate on the list elements in
+arbitrary order. To be clarified.
+
 ### Writing list items (partially or fully ground) out to some data sink
 
 Evidently a non-logic side-effect.
@@ -348,6 +377,64 @@ maplist( [N-C]>>(member(N-X,L),format("~w ",[N-C-X])) , L).
             2-c-c 3-d-d  L = [1-a, 2-b, 2-c, 3-d] ;
 false.
 ```
+
+### Verifying the contract of predicates
+
+Suppose your predicate has as [contract](https://en.wikipedia.org/wiki/Design_by_contract) that it only accepts list of 
+integers >= 0.
+
+(This is fraught with annoying edge cases... there really should be a declarative minilanguage for this; something like
+[Hamcrest for Erlang](https://github.com/hyperthunk/hamcrest-erlang))
+
+```Logtalk
+% this will fail if List is not a list of integers, but succeed with `List=[]` if `List` is a fresh variable
+  
+my_predicate(List) :-
+   maplist([X]>>(integer(X),X>=0),List).
+   do_work(List).
+
+% you also allow List to be a fresh variable itself
+
+my_predicate(List) :-
+   (var(List) -> true ; maplist([X]>>(integer(X),X>=0),List)).
+   do_work(List).
+   
+% you also allow List to contain fresh variables
+
+my_predicate(List) :-
+   (var(List) -> true ; maplist( [X]>> (var(X) -> true; integer(X),X>=0 ) ,List)).
+   do_work(List).
+```
+
+If you would rather throw instead of failing (When to throw, when to fail? Prolog guidelines 
+[don't say anything](https://arxiv.org/abs/0911.2899), standard Prolog predicates are unsure/inconsistent,
+and IMHO, it is up to the caller to demand a throw or a failure in any case using flags, 
+but that's for another time entirely). See also
+[Exception Handling](https://www.swi-prolog.org/pldoc/man?section=exception):
+
+```Logtalk
+ayyylmao(Msg,Args) :-
+   % Msg is a "format/2" format string, Args a list of arguments.
+   % List of arguments must *exactly* match the placeholders or you will get an Exception!
+   % In a prod system, one would shield against further errors by catching any error that happens here!
+   with_output_to(string(Buf),format(Msg,Args)),
+   throw(Buf).
+
+my_predicate(List) :-
+   ((var(List) -> true ; maplist( [X]>> (var(X) -> true; integer(X),X>=0 ) ,List)) 
+   -> true
+   ; ayyylmao("You dun goofed, this list has problems: ~q",[List])),
+   do_work(List).
+```
+
+Then:
+
+```Logtalk
+?- my_predicate([a,b,c]).
+ERROR: Unhandled exception: "You dun goofed, this list has problems: [a,b,c]"
+```
+
+Okay, this is getting a bit off the mark.
 
 ### Generating lists
 
