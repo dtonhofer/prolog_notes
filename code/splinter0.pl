@@ -14,10 +14,16 @@
 % ============================================================================
 
 % ============================================================================
-% "Splinter, 0-based"
+% "Splinter a List by index, 0-based"
 %
-% splinter0(+List, +N, ?Prefix, ?Element, ?Suffix)
-% splinter0(?List, ?N, +Prefix, +Element, +Suffix)
+%   splinter0(+List, +N, ?Prefix, ?Element, ?Suffix)
+%   splinter0(?List, ?N, +Prefix, +Element, +Suffix)
+%
+% This also gives us for free:
+%
+% "Replace item in a list by index, 0-based"
+%
+%   replace0(+List, +N, ?NewElement, ?OldElement, ?NewList)
 % ============================================================================
 % Given a List and an index N into the list (N from 0 to N-1),
 % splinter a list at position N into:
@@ -79,9 +85,21 @@
 % [0 . 0 . 1] - Not enough info to limit length of list
 % ============================================================================
 
+% ---
+% main entry point
+% ---
+
 splinter0(List, N, Prefix, Element, Suffix) :-
     ground_flags([List, N, Prefix, Element, Suffix], GroundFlags),
     splinter0_dispatch(GroundFlags, List, N, Prefix, Element, Suffix).
+
+% ---
+% splinter0 gives us replace0/5 immediately
+% ---
+
+replace0(List, N, NewItem, OldItem, NewList) :-
+   splinter0(List, N, Prefix, OldItem, Suffix),
+   append([Prefix, [NewItem], Suffix], NewList).
 
 % ---
 % Handle cases depending on what variables are ground/nonground
@@ -124,7 +142,7 @@ splinter0_dispatch([1|_], List, N, Prefix, Element, Suffix) :-
    length(List,L),     % known list, known length
    succ(N_max,L),
    between(0,N_max,N), % generate Ns because "length(Prefix,N)" alone won't stop
-   length(Prefix,N),    % know length, known list of fresh variables
+   length(Prefix,N),   % know length, known list of fresh variables
    append([Prefix,[Element],Suffix],List).
 
 splinter0_dispatch(GFs,_,_,_,_,_) :-
@@ -148,13 +166,19 @@ ground_flags([A|As],[0|Flags]) :- var(A),!,ground_flags(As,Flags).
 ground_flags([],[]).
 
 % ============================================================================
-% Unit tests
+% Unit tests for splinter0
 % ============================================================================
 
 :- begin_tests(splinter0).
 
-longlist([a,b,c,d,e,f,g,h]). % "global variable" longlist
+% ---
+% "global variable" longlist
+% ---
 
+longlist([a,b,c,d,e,f,g,h]).
+
+% ---
+% Testing error conditions
 % ---
 
 % Negative index throws.
@@ -167,6 +191,8 @@ test(empty_list_oob2,[fail])              :- splinter0([],1,_,_,_).
 test(nonempty_list_oob,[fail])            :- splinter0([a,b],2,_,_,_).
 test(too_much_freedom,[throws(_)])        :- splinter0(_List,_N,_Prefix,_Element,_Suffix).
 
+% ---
+% "List and N known"
 % ---
 
 test(list_and_N_known) :-
@@ -183,14 +209,18 @@ list_and_N_known(List,N) :-
    length(Prefix_out,N).
 
 % ---
+% "List and prefix known"
+% ---
 
-test(list_and_prefixlist_known) :-
+test(list_and_prefix_known) :-
    longlist(List),
    Prefix=[a,b,c,d],
    splinter0(List,N,Prefix,Element,Suffix),
    append([Prefix,[Element],Suffix],List),
    length(Prefix,N).
 
+% ---
+% "List and suffix known"
 % ---
 
 test(list_and_suffix_known) :-
@@ -212,14 +242,16 @@ extract_a_suffix(List,SuffixLen,Suffix_out) :-
    append([_,Suffix_out],List).
 
 % ---
+% "prefix and suffix known"
+% ---
 
-test(prefixlist_and_suffix_known) :-
+test(prefix_and_suffix_known) :-
    longlist(List),
    length(List,ListLen),
    succ(N_max,ListLen),
-   foreach(between(0,N_max,N),prefixlist_and_suffix_known(List,N)).
+   foreach(between(0,N_max,N),prefix_and_suffix_known(List,N)).
 
-prefixlist_and_suffix_known(List,N) :-
+prefix_and_suffix_known(List,N) :-
    splinter0(List,N,Prefix_mid,Element_mid,Suffix_mid), % splinter a known list, assumed to work correctly
    splinter0(List_rebuild,N_rebuild,Prefix_mid,Element_mid,Suffix_mid),
    format("Prefix=~w Element=~w Suffix=~w ==> ~w N=~w\n",[Prefix_mid,Element_mid,Suffix_mid,List_rebuild,N_rebuild]),
@@ -228,6 +260,8 @@ prefixlist_and_suffix_known(List,N) :-
    N = N_rebuild.
 
 % ---
+% "suffix and N known"
+% ---
 
 test(suffix_and_N_known) :-
    splinter0(L,3,FL,E,[f,g,h]),
@@ -235,6 +269,8 @@ test(suffix_and_N_known) :-
    FL = [x,y,z],
    L  = [x,y,z,e,f,g,h].
 
+% ---
+% only list known
 % ---
 
 test(only_list_known) :-
@@ -246,5 +282,36 @@ test(only_list_known) :-
 
 :- end_tests(splinter0).
 
-rt :- run_tests(splinter0).
+% ============================================================================
+% Unit tests for replace0
+% ============================================================================
+
+:- begin_tests(replace0).
+
+% ---
+% normal replace
+% ---
+
+test(replace0_0) :- replace0([a,b,c],0,rep(A),A,NewList), A=a, NewList = [rep(a), b, c].
+test(replace0_1) :- replace0([a,b,c],1,rep(B),B,NewList), B=b, NewList = [a, rep(b), c].
+test(replace0_2) :- replace0([a,b,c],2,rep(C),C,NewList), C=c, NewList = [a, b, rep(c)].
+
+% ---
+% testing error conditions
+% ---
+
+% Negative index throws.
+% Positive but out of bounds index causes failure.
+
+test(replace0_fail_0,[fail])               :- replace0([a,b,c],3,_,_,_).
+test(replace0_fail_1,[fail])               :- replace0([],0,_,_,_).
+test(replace0_fail_2,[throws(error(_,_))]) :- replace0([a,b,c],-1,_,_,_).
+
+:- end_tests(replace0).
+
+% ============================================================================
+% Actually run tests
+% ============================================================================
+
+rt :- run_tests(splinter0),run_tests(replace0).
 
