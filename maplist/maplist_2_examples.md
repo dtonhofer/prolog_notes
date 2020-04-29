@@ -9,7 +9,11 @@
 Here we list a few examples for the predicate [`maplist/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/2) 
 from [library(apply)](https://eu.swi-prolog.org/pldoc/man?section=apply) as run with SWI-Prolog.
 
-`library(apply)`: _"This module defines meta-predicates that apply a predicate on all members of a list."_
+> `library(apply)`: This module defines meta-predicates that apply a predicate on all members of a list.
+
+We use [SWI-Prolog](https://www.swi-prolog.org/) throughout. However, `maplist/N`, while not in the [ISO standard](https://en.wikipedia.org/wiki/Prolog#ISO_Prolog), at least [not yet](http://www.complang.tuwien.ac.at/ulrich/iso-prolog/prologue), is a common predicate ([GNU Prolog](http://gprolog.org/manual/gprolog.html#sec223), [SICStus Prolog](https://sicstus.sics.se/sicstus/docs/4.3.0/html/sicstus/lib_002dlists.html), [ECLiPSe](https://eclipseclp.org/doc/bips/lib/lists/index.html)). Other Prologs _should_ work the same. 
+
+We also use the [`library(yall)`](https://www.swi-prolog.org/pldoc/man?section=yall) lambda notation imported from [Logtalk](https://logtalk.org/). This _is_ specific to SWI-Prolog.
 
 In order for lists to be printed fully instead of elided at their end with ellipses ("`|...`") you may have
 to first call:
@@ -18,10 +22,6 @@ to first call:
 ?- set_prolog_flag(answer_write_options,[max_depth(0)]).
 ````
 
-We use [SWI-Prolog](https://www.swi-prolog.org/) throughout. However, `maplist/N`, while not in the [ISO standard](https://en.wikipedia.org/wiki/Prolog#ISO_Prolog), at least [not yet](http://www.complang.tuwien.ac.at/ulrich/iso-prolog/prologue), is a common predicate ([GNU Prolog](http://gprolog.org/manual/gprolog.html#sec223), [SICStus Prolog](https://sicstus.sics.se/sicstus/docs/4.3.0/html/sicstus/lib_002dlists.html), [ECLiPSe](https://eclipseclp.org/doc/bips/lib/lists/index.html)). Other Prologs _should_ work the same. 
-
-At some point, we also use the [`library(yall)`](https://www.swi-prolog.org/pldoc/man?section=yall) lambda notation imported from [Logtalk](https://logtalk.org/). This _is_ rather specific to SWI-Prolog.
-
 The description for [`maplist/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/2) says:
 
 > `maplist(:Goal, ?List)`
@@ -29,29 +29,27 @@ The description for [`maplist/2`](https://eu.swi-prolog.org/pldoc/doc_for?object
 > _True if Goal can successfully be applied on all elements of List. Arguments are reordered to 
 > gain performance as well as to make the predicate deterministic under normal circumstances._
 
-Thus you have a single list, _List_, and `maplist/2` will call the _Goal_ for each list item (but apparently, 
-possibly out-of-order, or possibly concurrently). `maplist/2` will also stop processing and fail at the first
-failed call of `Goal`.
+Thus you have a single list, _List_, and `maplist/2` will call the _Goal_ (which must be a predicate) on each list item. `maplist/2` will fail at the first failed call of _Goal_.
 
-Easy to understand:
+Easy to understand. This will allow us to avoid writing failure-driven loops or explicit recursion, making code cleaner.
 
-```
-   List             [LA, LB, LC, LD, ...  
-                        
-   Goal called for  LA, LB, LC, LD, ...
-```
+If you are using a functional programming language, you know all about the "map" function, which takes another function (a closure) and applies it to a sequence of items, however defined. If you are using Java, this corresponds to [`java.util.stream.Streams.map`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#map-java.util.function.Function-) (See also this DZone article: [Java 8 Map, Filter, and Collect Examples](https://dzone.com/articles/how-to-use-map-filter-collect-of-stream-in-java-8)). 
 
-This will allow us to avoid writing failure-driven loops or explicit recursion.
+Prolog's `maplist/N` additionally bring backtracking over possible solutions of the _Goal_ predicate into the mix.
 
-If you are using a functional programming language, you know all about the ["map" function, which takes a function](https://en.wikipedia.org/wiki/Map_%28higher-order_function%29). If you are using Java, 
-this corresponds to [`java.util.stream.Streams.map`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#map-java.util.function.Function-) (See also this DZone article: [Java 8 Map, Filter, and Collect Examples](https://dzone.com/articles/how-to-use-map-filter-collect-of-stream-in-java-8)). But `maplist/N` additionally brings backtracking into the mix.
+On Wikipedia:
+
+- [map: higher-order function](https://en.wikipedia.org/wiki/Map_(higher-order_function))
+- [map: parallel pattern](https://en.wikipedia.org/wiki/Map_(parallel_pattern)) - Somewhat related in the context of parallel architectures or concurrent processing.
 
 It's all about calling a predicate (or a more complex goal) for each item/element of a list. The list should be of **known length**, as there is no way to have the called predicate or goal tell `maplist/2` that it should stop going through the list: returning `false` from the called predicate will cause `maplist/2` to fail, and variable bindings built up during its run will be rolled back. For `maplist/3` and longer-argumented ` maplist/N`, the lists must all be of the same length although it suffices if the length of all lists can be constrained to be identical by `maplist/N`.
 
 Here is `maplist/2` with a list of unconstrained length. It will backtrack over possible lengths, never stopping:
 
 ```logtalk
-?- maplist([_]>>true,E).
+always_true(_).
+
+?- maplist(always_true,E).
 E = [] ;
 E = [_1468] ;
 E = [_1468, _2312] ;
@@ -66,7 +64,7 @@ E = [_1468, _2312, _3040, _3768] ;
 
 - Markus Triska has a page on [metapredicates](https://www.metalevel.at/prolog/metapredicates), which includes `maplist/N`.
 
-## How to pass parameters to the _Goal_
+## How to pass parameters to _Goal_
 
 Consider this predicate, which tests whether a list item is less than 5.
 
@@ -223,9 +221,6 @@ L3 = [max(1, 3)=3, max(3, 3)=3, max(5, 1)=5, max(2, 0)=2, max(1, 1)=1].
 ```
 
 ## Possible applications of `maplist/2`
-
-Some of these applications may not work if `maplist/2` can call the predicate on the list elements in
-arbitrary order. To be clarified.
 
 ### Writing list items (partially or fully ground) out to some data sink
 
@@ -388,7 +383,8 @@ integers >= 0.
 [Hamcrest for Erlang](https://github.com/hyperthunk/hamcrest-erlang))
 
 ```Logtalk
-% this will fail if List is not a list of integers, but succeed with `List=[]` if `List` is a fresh variable
+% This will fail if List is not a list of integers, but succeed with `List=[]` 
+% if `List` is a fresh variable.
   
 my_predicate(List) :-
    maplist([X]>>(integer(X),X>=0),List).
