@@ -3,6 +3,7 @@
 - ["Difference List" wiki entry](https://swi-prolog.discourse.group/t/difference-list/959) at Prolog Discourse site.
 - ["Difference Lists" by Frank Pfenning](https://www.cs.cmu.edu/~fp/courses/lp/lectures/11-diff.pdf) (PDF)
 - [Applying "Difference Lists" to DCGs by Markus Triska](https://www.metalevel.at/prolog/dcg). "Difference Lists" are called "List Differences" here: _In the literature, you will also encounter the term "difference list". However, this terminology is misleading: We are not talking about—as the name may suggest—a special kind of list. The additional arguments are completely ordinary lists. It is their differences that matter especially in such cases._
+- [Presentation on Difference Lists](https://www.cl.cam.ac.uk/teaching/0809/Prolog/Prolog08ML5R2.pdf) by David Eyers at University of Cambridge, for the [Prolog Course](https://www.cl.cam.ac.uk/teaching/0809/Prolog/).
 
 "Difflist as a queue" is actually very illustrative of the "list difference" idea:
 
@@ -102,6 +103,8 @@ ATTENTION: The images below illustrate the previous version of the above program
 ```
 DiffList = [[]|T]-T
 ```
+
+There is also something missing to handle sharing variables. 
 
 ![Initial construction](01A.png)
 
