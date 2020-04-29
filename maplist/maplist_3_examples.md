@@ -291,9 +291,102 @@ T2 = [_3202], Prefix2 = [1, 8, 27, _3202], _3136^3#=_3202 ;
 
 (TODO if I know more)
 
-## Other applications of `maplist/2`
+## Applications of `maplist/3`
 
-Other specific applications are listed here, if I can think of any or encounter any:
+### Computing a function of 1 variable
+
+This is rather straightforward. Just constrain the elements of the second list to the results of a 
+function applied to items of the first list.
+
+For example, apply the successor predicate [`succ/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=succ/2)
+to relate the pairwise items of two lists. Unlike `X is Y+1`, `succ/2` can be run "forwards" (succwards?) 
+or "backwards" (antisuccwards?)
+
+```logtalk
+% Helper: Use foldl/4 to create a list of integers
+
+create_list_of_integers(Length,Offset,Lout) :- 
+   length(Lout,Length),                % "make sure" that Lout is a list of length "Length"
+   foldl([Item,XCur,XNext]>>(succ(XCur,XNext),Item=XCur),Lout,Offset,_XFinal). 
+```
+
+And so
+
+```logtalk
+% Give only predicate name to maplist
+
+?- create_list_of_integers(6,0,Lin),maplist(succ,Lin,Lout).  % succwards
+Lin = [0, 1, 2, 3, 4, 5],
+Lout = [1, 2, 3, 4, 5, 6].
+
+?- create_list_of_integers(6,1,Lin),maplist(succ,Lout,Lin).  % antisuccwards by reversing list argument order
+Lin = [1, 2, 3, 4, 5, 6],
+Lout = [0, 1, 2, 3, 4, 5].
+
+% Alternatively, use lambda notation from yall; you can then rearrange arguments
+
+?- create_list_of_integers(6,0,Lin),maplist([I,O]>>succ(I,O),Lin,Lout).  % succwards
+Lin = [0, 1, 2, 3, 4, 5],
+Lout = [1, 2, 3, 4, 5, 6].
+
+?- create_list_of_integers(6,1,Lin),maplist([I,O]>>succ(O,I),Lin,Lout). % antisuccwards
+Lin = [1, 2, 3, 4, 5, 6],
+Lout = [0, 1, 2, 3, 4, 5].
+```
+
+Of course, testing of fully grounded lists can be done too:
+
+```logtalk
+?- create_list_of_integers(6,0,Lin),maplist([I,O]>>succ(I,O),Lin,Lout),
+   format("Now I have two fully grounded lists ~q and ~q\n",[Lin,Lout]),
+   maplist([I,O]>>succ(I,O),Lin,Lout),
+   format("Pairwise items of those lists are indeed related by the succ predicate!").
+
+Now I have two fully grounded lists [0,1,2,3,4,5] and [1,2,3,4,5,6]
+Pairwise items of those lists are indeed related by the succ predicate!
+Lin = [0, 1, 2, 3, 4, 5],
+Lout = [1, 2, 3, 4, 5, 6].
+```
+
+### Tagging of list items
+
+A special case of "applying a function to list items" is _tagging_: adoring terms with functions symbols,
+or removing the function symbols. This is done to allow better pattern matching during execution, or
+carry additional information about a given term, e.g. whether it's indeed an integer.
+
+Here is a silly example:
+
+```logtalk
+% This is a "defaulty" representation. There is no way to distinguish the cases by
+% looking at the head if the second argument is fresh. A test must be made in the body.
+% That's slow! Note the `!` to commit to the selected branch. 
+
+tag_it(X,int(X))    :- integer(X),!.
+tag_it(X,string(X)) :- string(X),!.
+tag_it(X,fresh(X))  :- var(X),!.
+tag_it(X,atom(X))   :- atom(X),!.
+tag_it(X,alien(X)).
+
+% Once a term has been tagged, the correct clause for `process/1` can be chosen at once.
+% That's fast!
+
+process(int(X),Y)    :- format("[integer ~q]",[X]), Y is 2*X.
+process(string(X),Y) :- format("[string ~q]",[X]), string_concat(X,X,Y).
+process(fresh(X),Y)  :- format("[fresh variable ~q]",[X]), Y = [X,X].
+process(atom(X),Y)   :- format("[atom ~q]",[X]), atom_concat(X,X,Y).
+process(alien(X),Y)  :- format("[alien ~q]",[X]), with_output_to(string(Y),format("~q~q",[X,X])).
+```
+
+And so:
+
+```logtalk
+% Use maplist to tag them and untag them again
+
+?- maplist(tag_it,[1,2,a,V,f(b,g)],Tagged),maplist(process,Tagged,Untagged).
+[integer 1][integer 2][atom a][fresh variable _6590][alien f(b,g)]
+Tagged = [int(1), int(2), atom(a), fresh(V), alien(f(b, g))],
+Untagged = [2, 4, aa, [V, V], "f(b,g)f(b,g)"].
+```
 
 ### Verifying the contract of predicates
 
