@@ -490,6 +490,12 @@ Consider what happens here: The above is equivalent to the query:
 The predicate calls inside `maplist/2` are chained into a conjunction, **not simply called in turn**. And the 
 choicepoints are left open. As long as all the calls succeed, we can **backtrack through possible solutions.**
 
+In other words, `length(L,3),maplist( [I]>>(member(I,[0,1])) , L).` is a compressed way of writing
+
+```logtalk
+L=[L0,L1,L2],Vs=[0,1],member(L0,Vs),member(L1,Vs),member(L2,Vs).
+```
+
 Similarly, this goal will at first generate a list of only 1s:
 
 ```logtalk
@@ -508,6 +514,12 @@ L = [1, 1, 1, 1, 4] ;
 L = [1, 1, 1, 2, 1] ;
 L = [1, 1, 1, 2, 2] ;
 ...
+```
+
+You could alternatively "unroll" maplist and write:
+
+```logtalk
+L=[L0,L1,L2,L3,L4],Vs=[1,2,3,4],member(L0,Vs),member(L1,Vs),member(L2,Vs),member(L3,Vs),member(L4,Vs).
 ```
 
 ### Computing a value for each item of a list
