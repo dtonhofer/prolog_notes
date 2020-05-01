@@ -168,9 +168,101 @@ A list can take on a number of roles, and these roles can change instruction by 
 - Lists as queues. One "removes" the last list item to remove it, or appends a new list item after the last item item (In Perl, this is called "pop" and "push" - the stack's front is at the end of a list (really, an array)).
 - Lists as maps: Arbitrary Key-Value mappings are realized by storing Key-Value pairs in a list, generally joined into a compound term with the functor `-`. Thus, every item is a `-(K,V)` or more elegantly written, a `K-V`.
 
-- What the list contains: _List Items_ or _List Elements_
+**Structure aliasing**
 
+Prolog allows to specify a pattern for term structure. This is always unification, whereby variables, 
+whether fresh or nonfresh, are bound to terms or subterms of terms, or terms are assembled from other terms:
 
+```
+% Unification means "make sure the LHS and RHS have the same structure / are the same term",
+% but it can be regarded variously
+
+X=1,Y=2,Z=[X,Y].  % Unification works as "assembly/aliasing": Assemble a list from two nonfresh variables
+Z=[X,Y].          % Unification works as "assembly/aliasing": Assemble a list from two fresh variables
+[1,2]=[X,Y].      % Unification works as "dis-assembly": Bind X to 1, Y to 2
+                  % This is also called "destructuring" in languages that pattern match (Erlang, Clojure)
+[1,Y]=[X,2].      % Unification works as "exchange": Bind X to 1, Y to 2
+```
+
+In fact, the LHS is mapped to the structure of the term on the RHS, and the RHS is mapped to the structure of the LHS.
+
+In the above, there is a slight feel of after/before but this becomes more evident when considering calls:
+
+Assembly before calling p or disassembly when Z is really a "returned value".
+
+```
+before(_).
+after(_).
+p(Z) :- ...
+
+?- before([H|T]),p([H|T]),after([H|T]),
+```
+
+Disassembly when calling q or assembly when [H|T] is really a "returned value".
+
+```
+before(_).
+after(_).
+q([H|T]) :- ...
+
+?- before(Z),p(Z),after(Z),
+```
+
+It really depends on whether the information content of the argument of `before/1` and `after/1` increases or
+remains constant as computation progress (ah, an objective criterium).
+
+The word *alias* sounds pretty good. 
+
+**What the list contains**
+
+_List Items_ or _List Elements_, also _List Members_.
+
+**List sides**
+
+_Front_ vs. _Back_: A list is inherently asymmetric. It has a _Front_ side, with the _Tip_ the first element, and
+a _Back_ side, with the _End_ the last element.
+
+The _Tip_ is the `car(L)` in traditional LISP.
+
+```
+Front  [I0,I1,I2,I3,......,I(-3),I(-2),I(-1)]  Back
+        ^                                 ^
+        |__Tip (First Item)               |__End (Last Item)
+```
+
+An empty list has a Front and Back, but no Tip or End.
+
+**How the list is structured**
+
+_Head_ vs. _Tail_
+
+We use _Head_ and _Tail_ when talking about a list aliased by the `|` notation.
+
+```
+[H0,H1,H2 | T ]
+ <------>   ^     A 3-item Head vs a Tail of arbitrary length
+ 
+[H|T]             A One-Item Head (a Tip) vs a Tail of arbitrary length
+```
+
+The _Head_ corresponding to a 1-item Head is the `car(L)` in traditional LISP.
+The _Tail_ corresponding to a 1-item Head is the `cdr(L)` in traditional LISP.
+
+- _Prefix_ vs. _Suffix_ 
+
+We use _Prefix_ and _Suffix_ when talking about item sequences at the _Front_ or _Back_
+
+A subsequence internal to the list is just an "inner sequence".
+
+```
+[I0,I1,I2,I3,......,I(-3),I(-2),I(-1)]   A disjoint Prefix and Suffix
+<---------->        <---------------->  
+   Prefix                 Suffix
+   
+[I0,I1,I2,I3,I4,I5,I6]                   Non-disjoint )overlapping) Prefix and Suffix
+<------------->
+          <--------->  
+```
 
 ## Special cases
 
