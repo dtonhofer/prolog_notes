@@ -5,6 +5,12 @@ Some notes taken while working on Prolog
 
 ![The Logic Programming Landscape](pics/quick_map_of_lp_landscape/quick_map_of_lp_landscape.png)
 
+## A Tradition
+
+![Hiroshige: Shinagawa Station](pics/various/Hiroshige_Shinagawa_Station.jpg)
+
+From [The Fifty-three Stations of the Tōkaidō](https://en.wikipedia.org/wiki/The_Fifty-three_Stations_of_the_T%C5%8Dkaid%C5%8D) by Utagawa Hiroshige, 1832.
+
 ## External Resources
 
 [Extensive list at klaussinani's github account](https://github.com/klaussinani/awesome-prolog#resources)
