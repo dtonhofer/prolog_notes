@@ -323,31 +323,23 @@ test(a) :- do([1,2,3],R), R=[1,2,3].
 rt :- run_tests(do).
 ```
 
-We can graphically illustrate what happens. We just need the following concepts, which are also useful in explaining anything else Prolog does:
-
-![Concepts](Concepts.png)
-
 ### Construct initial difference list in `do/2`
 
-ATTENTION: The images below illustrate the previous version of the above program, which used a dummy list entry at construction time, which is not necessary at all! To be fixed.
-
 ```
-DiffList = [[]|T]-T
+DiffList = F-F
 ```
 
-There is also something missing to handle sharing variables. 
-
-![Initial construction](01A.png)
+![Initial construction](pics/01A.png)
 
 Resulting variable binding
 
-![Initial construction](01B.png)
+![Initial construction](pics/01B.png)
 
 ### Append first item inside `append_to_difflist/3`
 
 Just about to unify `T` and `[Item|NewT]`.
 
-![Just about to unify](02A.png)
+![Just about to unify](pics/02A.png)
 
 After unification, the unconstrained-tail-list rooted at `H` has become longer by `Item` (in effect, the list has been constrained
 some more -- you have uncovered new info about the list -- ... but it still has an unconstrained tail).
