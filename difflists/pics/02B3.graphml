@@ -17,10 +17,10 @@
     <node id="n0">
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.paperType">
-          <y:Geometry height="40.0" width="80.0" x="1175.5" y="255.92968750000006"/>
-          <y:Fill color="#99CCFF" color2="#99CCFF" transparent="false"/>
+          <y:Geometry height="40.0" width="80.0" x="1381.2232014711158" y="909.4893142267686"/>
+          <y:Fill color="#99CCFF" color2="#CC99FF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="FreeMono" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="16.000083923339844" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="11.200057983398438" x="34.39997100830078" y="11.999958038330078">F<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="FreeMono" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="16.000083923339844" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="11.200057983398438" x="34.39997100830078" y="11.999958038330078">H<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -32,11 +32,11 @@
     </node>
     <node id="n1">
       <data key="d6">
-        <y:GenericNode configuration="com.yworks.flowchart.paperType">
-          <y:Geometry height="40.0" width="80.0" x="848.75" y="255.92968750000006"/>
-          <y:Fill color="#99CCFF" color2="#99CCFF" transparent="false"/>
+        <y:GenericNode configuration="com.yworks.flowchart.loopLimit">
+          <y:Geometry height="40.0" width="80.0" x="1473.8852036239682" y="1088.5179600601025"/>
+          <y:Fill color="#C0C0C0" color2="#C0C0C0" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="FreeMono" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="16.000083923339844" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="61.6004638671875" x="9.19976806640625" y="11.999958038330078">DiffList<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="FreeMono" fontSize="20" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="23.999980926513672" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="39.99995422363281" x="20.000022888183594" y="8.000009536743164">[|]<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -48,8 +48,42 @@
     </node>
     <node id="n2">
       <data key="d6">
+        <y:GenericNode configuration="com.yworks.flowchart.paperType">
+          <y:Geometry height="40.0" width="80.0" x="1611.2232014711158" y="909.4893142267686"/>
+          <y:Fill color="#99CCFF" color2="#99CCFF" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="FreeMono" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="16.000083923339844" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="32.80023193359375" x="23.599884033203125" y="11.999958038330078">NewT<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n3">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="57.5" width="70.0" x="1403.8852036239682" y="1167.5466058934364"/>
+          <y:Fill color="#C0C0C0" transparent="false"/>
+          <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="33.0" y="26.75">
+            <y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:Shape type="triangle"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n4">
+      <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.data">
-          <y:Geometry height="40.0" width="80.0" x="1061.375" y="434.95833333333405"/>
+          <y:Geometry height="40.0" width="80.0" x="1625.8938150340866" y="1185.0466058934364"/>
           <y:Fill color="#FFFFFF" color2="#FFFFFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="10" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="27.28125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="66.4755859375" x="6.76220703125" y="6.359375">"Shall
@@ -63,34 +97,10 @@ become list"<y:LabelModel>
         </y:GenericNode>
       </data>
     </node>
-    <node id="n3">
-      <data key="d5"/>
-      <data key="d6">
-        <y:GenericNode configuration="com.yworks.flowchart.annotation">
-          <y:Geometry height="60.0" width="210.0" x="1187.0" y="516.4648437500001"/>
-          <y:Fill hasColor="false" transparent="false"/>
-          <y:BorderStyle color="#000000" type="dashed" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="45.90625" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="189.396484375" x="10.3017578125" y="7.046875">This fresh term is supposed
-to later be constrained to a list
-but we can't specify that.<y:LabelModel>
-              <y:SmartNodeLabelModel distance="4.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
-            </y:ModelParameter>
-          </y:NodeLabel>
-          <y:StyleProperties>
-            <y:Property class="java.lang.Byte" name="com.yworks.flowchart.style.orientation" value="0"/>
-            <y:Property class="java.lang.Byte" name="LAYER_STYLE_PROPERTY_KEY" value="1"/>
-          </y:StyleProperties>
-        </y:GenericNode>
-      </data>
-    </node>
-    <node id="n4">
-      <data key="d5"/>
+    <node id="n5">
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.loopLimit">
-          <y:Geometry height="40.0" width="80.0" x="1061.375" y="325.92968750000006"/>
+          <y:Geometry height="40.0" width="80.0" x="1541.0917429135272" y="995.1595101139242"/>
           <y:Fill color="#C0C0C0" color2="#C0C0C0" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="FreeMono" fontSize="20" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="23.999980926513672" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="15.999984741210938" x="32.00000762939453" y="8.000009536743164">-<y:LabelModel>
@@ -103,14 +113,13 @@ but we can't specify that.<y:LabelModel>
         </y:GenericNode>
       </data>
     </node>
-    <node id="n5">
+    <node id="n6">
       <data key="d6">
-        <y:GenericNode configuration="com.yworks.flowchart.data">
-          <y:Geometry height="40.0" width="80.0" x="848.75" y="325.92968750000006"/>
-          <y:Fill color="#FFFFFF" color2="#FFFFFF" transparent="false"/>
+        <y:GenericNode configuration="com.yworks.flowchart.paperType">
+          <y:Geometry height="40.0" width="80.0" x="1496.2232014711158" y="909.4893142267686"/>
+          <y:Fill color="#99CCFF" color2="#FF9900" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="38.0" y="18.0">
-            <y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="FreeMono" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="16.000083923339844" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="40.00028991699219" x="19.999855041503906" y="11.999958038330078">DLout<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -120,57 +129,7 @@ but we can't specify that.<y:LabelModel>
         </y:GenericNode>
       </data>
     </node>
-    <edge id="e0" source="n2" target="n3">
-      <data key="d9"/>
-      <data key="d10">
-        <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
-            <y:Point x="1101.375" y="546.4648437500001"/>
-          </y:Path>
-          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
-          <y:Arrows source="none" target="none"/>
-          <y:BendStyle smoothed="false"/>
-        </y:PolyLineEdge>
-      </data>
-    </edge>
-    <edge id="e1" source="n4" target="n2">
-      <data key="d9"/>
-      <data key="d10">
-        <y:BezierEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
-            <y:Point x="1043.0" y="409.4648437500001"/>
-          </y:Path>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-        </y:BezierEdge>
-      </data>
-    </edge>
-    <edge id="e2" source="n4" target="n2">
-      <data key="d9"/>
-      <data key="d10">
-        <y:BezierEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
-            <y:Point x="1171.0" y="403.4648437500001"/>
-          </y:Path>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-        </y:BezierEdge>
-      </data>
-    </edge>
-    <edge id="e3" source="n0" target="n2">
-      <data key="d9"/>
-      <data key="d10">
-        <y:BezierEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
-            <y:Point x="1215.5" y="454.95833333333405"/>
-          </y:Path>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-        </y:BezierEdge>
-      </data>
-    </edge>
-    <edge id="e4" source="n1" target="n5">
-      <data key="d9"/>
+    <edge id="e0" source="n1" target="n3">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -178,24 +137,70 @@ but we can't specify that.<y:LabelModel>
           <y:Arrows source="none" target="standard"/>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e1" source="n1" target="n4">
+      <data key="d10">
+        <y:BezierEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+        </y:BezierEdge>
+      </data>
+    </edge>
+    <edge id="e2" source="n2" target="n4">
+      <data key="d10">
+        <y:BezierEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
+            <y:Point x="1641.2232014711158" y="1132.8434808934337"/>
+            <y:Point x="1684.7142088266955" y="1035.5037674919267"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+        </y:BezierEdge>
+      </data>
+    </edge>
+    <edge id="e3" source="n0" target="n1">
+      <data key="d10">
+        <y:BezierEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
+            <y:Point x="1421.2232014711158" y="1108.5179600601025"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+        </y:BezierEdge>
+      </data>
+    </edge>
+    <edge id="e4" source="n5" target="n1">
+      <data key="d9"/>
+      <data key="d10">
+        <y:BezierEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+        </y:BezierEdge>
       </data>
     </edge>
     <edge id="e5" source="n5" target="n4">
       <data key="d9"/>
       <data key="d10">
-        <y:GenericEdge configuration="com.yworks.edge.framed">
+        <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
-          <y:LineStyle color="#000000" type="line" width="3.0"/>
-          <y:Arrows source="standard" target="standard"/>
-          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" rotationAngle="315.0" textColor="#000000" verticalTextPosition="bottom" visible="true" width="39.53125" x="51.07345103698049" y="-20.329319959113164">UNIFY<y:LabelModel>
-              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.5" segment="0"/>
-            </y:ModelParameter>
-            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
-          </y:EdgeLabel>
-        </y:GenericEdge>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+        </y:BezierEdge>
+      </data>
+    </edge>
+    <edge id="e6" source="n6" target="n5">
+      <data key="d9"/>
+      <data key="d10">
+        <y:BezierEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
+            <y:Point x="1536.2232014711158" y="975.4876210979547"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+        </y:BezierEdge>
       </data>
     </edge>
   </graph>

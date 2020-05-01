@@ -52,8 +52,8 @@
           <y:Geometry height="40.0" width="80.0" x="1086.625" y="460.8880208333341"/>
           <y:Fill color="#FFFFFF" color2="#FFFFFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="38.0" y="18.0">
-            <y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="10" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="27.28125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="66.4755859375" x="6.76220703125" y="6.359375">"Shall
+become list"<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -64,29 +64,6 @@
       </data>
     </node>
     <node id="n3">
-      <data key="d5"/>
-      <data key="d6">
-        <y:GenericNode configuration="com.yworks.flowchart.annotation">
-          <y:Geometry height="60.0" width="210.0" x="1212.25" y="542.3945312500002"/>
-          <y:Fill hasColor="false" transparent="false"/>
-          <y:BorderStyle color="#000000" type="dashed" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="45.90625" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="189.396484375" x="10.3017578125" y="7.046875">This fresh term is supposed
-to later be constrained to a list
-but we can't specify that.<y:LabelModel>
-              <y:SmartNodeLabelModel distance="4.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
-            </y:ModelParameter>
-          </y:NodeLabel>
-          <y:StyleProperties>
-            <y:Property class="java.lang.Byte" name="com.yworks.flowchart.style.orientation" value="0"/>
-            <y:Property class="java.lang.Byte" name="LAYER_STYLE_PROPERTY_KEY" value="1"/>
-          </y:StyleProperties>
-        </y:GenericNode>
-      </data>
-    </node>
-    <node id="n4">
       <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.loopLimit">
@@ -103,20 +80,7 @@ but we can't specify that.<y:LabelModel>
         </y:GenericNode>
       </data>
     </node>
-    <edge id="e0" source="n2" target="n3">
-      <data key="d9"/>
-      <data key="d10">
-        <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
-            <y:Point x="1126.625" y="572.3945312500002"/>
-          </y:Path>
-          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
-          <y:Arrows source="none" target="none"/>
-          <y:BendStyle smoothed="false"/>
-        </y:PolyLineEdge>
-      </data>
-    </edge>
-    <edge id="e1" source="n4" target="n2">
+    <edge id="e0" source="n3" target="n2">
       <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
@@ -128,7 +92,7 @@ but we can't specify that.<y:LabelModel>
         </y:BezierEdge>
       </data>
     </edge>
-    <edge id="e2" source="n4" target="n2">
+    <edge id="e1" source="n3" target="n2">
       <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
@@ -140,7 +104,7 @@ but we can't specify that.<y:LabelModel>
         </y:BezierEdge>
       </data>
     </edge>
-    <edge id="e3" source="n0" target="n2">
+    <edge id="e2" source="n0" target="n2">
       <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
@@ -152,7 +116,7 @@ but we can't specify that.<y:LabelModel>
         </y:BezierEdge>
       </data>
     </edge>
-    <edge id="e4" source="n1" target="n4">
+    <edge id="e3" source="n1" target="n3">
       <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
