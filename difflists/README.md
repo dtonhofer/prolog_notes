@@ -331,25 +331,48 @@ DiffList = F-F
 
 ![Initial construction](pics/01A.png)
 
-Resulting variable binding
+Results in
 
 ![Initial construction](pics/01B.png)
 
 ### Append first item inside `append_to_difflist/3`
 
-Just about to unify `T` and `[Item|NewT]`.
+```
+DLin = H-T
+```
 
-![Just about to unify](pics/02A.png)
+![Initial construction](pics/02A.png)
 
-After unification, the unconstrained-tail-list rooted at `H` has become longer by `Item` (in effect, the list has been constrained
-some more -- you have uncovered new info about the list -- ... but it still has an unconstrained tail).
+Results in
 
-![After unification](02B.png)
+![Initial construction](pics/02A2.png)
+
+```
+T=[Item|NewT]
+```
+
+![Initial construction](pics/02B.png)
+
+Results in
+
+![Initial construction](pics/02B2.png)
+
+After unification, the unconstrained-tail-list rooted at `H` has become longer by `Item`
+(in effect, the list has been constrained some more -- you have uncovered new info
+about the list -- ... but it still has an unconstrained tail).
+
+```
+DLout=H-NewT
+```
 
 Construct new difflist according to our `H-T` convention.
 `DLout` combines the unconstrained-tail-list rooted at `H` and the new unconstrained tail `NewT`.
 
-![Construct new difflist](02C.png)
+![Initial construction](pics/02B3.png)
+
+
+
+-------------
 
 ### Append second item inside `append_to_difflist/3`
 
