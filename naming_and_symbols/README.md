@@ -2,11 +2,24 @@
 
 Trying to depict & name the Prolog structures.
 
-To clarify the concepts, I will introduce the following vocabulary and assorted symbols for a pictorial representation. This vocabulary is maybe a bit shifted relative to what is used "normally", but what is used "normally" is sometimes confusing and may hinder clearly expressing what is going on.
+To clarify the concepts, I will introduce the following vocabulary and assorted symbols for a pictorial representation. This vocabulary is maybe a bit shifted relative to what is used "normally" (but not all that much), but what is used "normally" is sometimes confusing and may hinder clearly expressing what is going on.
 
-This is what we have:
+We start with the
 
-## "Variable Name"
+## Overview
+
+We have these "kind of things":
+
+- A shallow subclassing tree for _Term_ blue
+- The _Variable Name_ in green
+- A relationship whereby the _Variable Name_ is connected to certain _Terms_. This is used to explain
+  the concepts of a _Fresh Variable_ or a _Nonfresh Variable_.
+
+![Vocabulary](pics/Vocabulary.png)
+
+## Concepts
+
+### "Variable Name"
 
 A _Variable Name_ is an indirect reference to a _Term_ (i.e. a "name" or a "stand-in"; you are supposed to use a
 dictionary to find the corresponding _Term_). A _Variable Name_ appears in clauses or at the Prolog Toplevel.
@@ -44,7 +57,7 @@ a _Nonfresh Term_. One also talks about a _Constrained Variable_ (my preferred d
 [`nonvar(X)`]8https://www.swi-prolog.org/pldoc/doc_for?object=nonvar/1) yields `true`. 
 Again, `nonvar(X)` should really be `nonfresh(X)`.
 
-## "Fresh Term"
+### "Fresh Term"
 
 A _Fresh Term_ is a term that is as yet unconstrained but can be "refined" or "further constrained" as
 computation proceeds, to be replaced by a _Term_ that is _Not Fresh_, which we call a _Nonfresh Term_ or
@@ -60,7 +73,7 @@ emulated by making the _Term_ a _Compound Term_ (very _Nonfresh_) and putting th
 constraints have to be expressed somewhere into the _Compound Term_; this misses the point a bit and feels like working
 in assembly language. Metainterpreters can help here.
 
-## "Term"
+### "Term"
 
 A _Term_ is some structure managed by the Prolog Processor. The following classes can be distinguished, where
 the _Fresh Term_ is a special case:
@@ -76,7 +89,7 @@ the _Fresh Term_ is a special case:
    Takes the form of an _Atomic Term_ or a _Compound Term_.
 - _Arbitrary Term_: any of the above.
 
-### Regarding "Compound Terms"
+### More on the "Compound Terms"
 
 Every _Compound Term_ tree that is not a _Fresh Term_ leaf has a name, the "functor" (an atom) and N>=0
 child nodes, where N is the arity of the node. You thus can have compound term of 0 arity (which are however not
@@ -88,14 +101,6 @@ and inscribe the functor/arity into the symbol.
 Special case: the functor '[|]' with arity 2 is the root compound term of the list backbones (the list backbone
 must however, be well-formed, i.e. terminate in the empty list eventually; a list is a non-local structure constraint!)
 In Prologs other than SWI-Prolog the list backbone root compound term is the traditional `.`.
-
-## Overview
-
-This gives us the following overview, where the _Term_ subclass tree is in blue, the _Variable Name_, in green,
-enters into a "designates" relationship with certain _Terms_, and _Fresh Variable_ or _Nonfresh Variable_ say
-something about the "designates" relationship that a _Variable Name_ is currently in.
-
-![Vocabulary](pics/Vocabulary.png)
 
 ## Diagrams
 
@@ -141,7 +146,7 @@ terminating the list.
 
 ![Example_Compound_Term_Open_List](pics/Example_Compound_Term_Open_List.png)
 
-## More Naming
+## More Vocabulary
 
 Now we still need a convention for naming parts of a list, be it a real list or an open-ended list.
 
