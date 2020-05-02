@@ -10,8 +10,8 @@ We start with the
 
 We have these "kind of things":
 
-- A shallow subclassing tree for _Term_ blue
-- The _Variable Name_ in green
+- A shallow subclassing tree for the concept of _Term_ in blue;
+- The _Variable Name_ concept in green;
 - A relationship whereby the _Variable Name_ is connected to certain _Terms_. This is used to explain
   the concepts of a _Fresh Variable_ or a _Nonfresh Variable_.
 
