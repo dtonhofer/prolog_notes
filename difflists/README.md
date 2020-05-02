@@ -60,7 +60,7 @@ rt :- run_tests(difflist).
 
 ### Extensive Form, with Debug Output
 
-It is so extensive that is is better in a separate file: [difflist.pl](difflist.pl).
+It is so extensive that is is better in a separate file: [dl.pl](dl.pl).
 
 Running it gives the following output. The integer shows the recursion depth (alternatively, the 
 index of the input list item that is being currently copied). Note that the `dl_append` operation
