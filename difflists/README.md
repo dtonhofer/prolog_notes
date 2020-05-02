@@ -24,60 +24,190 @@ First take a look at this page, which defines the symbols and the vocabulary use
 In Prolog, it is cheap to prepend an item to a list (also called "pushing an item onto a list" if it is regarded
 as a stack.  
 
-However, in order to append efficiently, you need the difference list.
+However, in order to append efficiently, you need the difference list pattern. It is a "pattern" because
+there is real data structure corresponding to a "difference list". Just a set of conventions.
 
-Consider this program, in which the unifications have been made more explicit than is usually the case in Prolog:
+Consider this program, which exercises the difference list pattern, in short form and extensive form complete with
+debugging output:
+
+### (Very) Short Form
+
+```Logtalk
+dl_do(Data,Result) :- 
+   dl_append_all(Data,Result-Result).
+
+dl_append_all([X|Xs],DL) :- 
+   dl_append(X,DL,DLlonger),
+   dl_append_all(Xs,DLlonger).
+   
+% close the difflist
+
+dl_append_all([],_-[]). 
+
+% append a single item to the difflist
+
+dl_append(X,Tip-[X|NewFin],Tip-NewFin). 
+
+% ===
+% Tests
+% ===
+
+:- begin_tests(difflist).
+
+test(one, true(R=[1,2,3])) :- dl_do([1,2,3],R).
+test(two, true(R=[]))      :- dl_do([],R).
+   
+:- end_tests(difflist).
+
+rt :- run_tests(difflist).
+```
+
+### Extensive Form, with Debug Output
+
+#### Debugging output predicates
 
 ```logtalk
-do(Data,Result) :- 
-   DiffList = F-F,                    % Construct initial difflist where headvar H and tailvar T
-                                      % designate the same fresh variable F.                
-                                      % - Arbitrarily represented by a single term H-T.
-                                      % - One could use two terms (and separate args) instead.
-   append_all(Data,DiffList,Result).  % Let's go!
+% ---
+% Printing a difflist via debug/3.
+% We use ∅ to express a "fresh term".
+% ---
+
+express_dl(Depth,Msg,Tip-Fin) :- 
+   ,integer(Depth)
+   ,express2_dl(Tip,Fin,Str)
+   ,debug(dl,"~d: ~s: ~s",[Depth,Msg,Str])
+   .
+
+% ---
+% Express the various cases of Tip-Fin combinations
+% ---
+
+express2_dl(Tip,Fin,Str) :-
+   ,Tip =@= Fin  % "structurally equal"
+   ,var(Fin)     % and this must also be true
+   ,!           
+   ,Str="Empty difflist: ∅"
+   .
+   
+express2_dl(Tip,Fin,Str) :-
+   ,Tip \=@= Fin % "not structurally equal"
+   ,var(Fin)     % and this must also be true
+   ,!
+   ,express_dl_items(Tip,Fin,MoreStr)
+   ,with_output_to(string(Str),format("Nonempty difflist: [~s]",[MoreStr]))
+   .
+   
+express2_dl(Tip,Fin,Str) :-
+   ,is_list(Tip)
+   ,is_list(Fin)
+   ,append(_Prefix,Fin,Tip)
+   ,!
+   ,with_output_to(string(Str),format("Closed difflist: ~q-~q",[Tip,Fin]))
+   .
+
+express2_dl(Tip,Fin,Str) :-   
+   ,with_output_to(string(Str)
+   ,format("Unknown stuff: ~q-~q",[Tip,Fin]))
+   .
+   
+% ---
+% Express the content of a difflist
+% ---
+
+express_dl_items([X|Xs],Fin,Str) :-
+   ,Xs \=@= Fin
+   ,!
+   ,express_dl_items(Xs,Fin,MoreStr)
+   ,with_output_to(string(Str),format("~q,~s",[X,MoreStr]))
+   .
+   
+express_dl_items([X|Xs],Fin,Str) :-
+   ,Xs =@= Fin
+   ,!
+   ,with_output_to(string(Str),format("~q|∅",[X]))
+   .
+```
+
+#### Worker predicates
+
+```logtalk
+% ---
+% Main entry point. Note that the parameter "Dp" (Depth), used 
+% only in debugging is on last place in dl_append_all/3. If it is
+% on first place, the compiler makes the program semideterministic.
+% ---
+
+dl_do(Data,Result) :- 
+   ,DL = I-I                  % Construct an initial difflist based on a single "fresh term".
+                              % The I on the left of "-" is the "open Tip", the other I the "open Fin".
+   ,dl_append_all(Data,DL,0)  % When this returns, "I" has been constrained as follows: all "Data" 
+                              % has been appended and the difflist has been "closed". I is a real List.
+                              % On the other hand, DL is no longer a difflist at all! The quality
+   ,Result = I                % of "difflisty-ness" is quite fleeting! 
+   .
 
 % ---
 % Recurse over input list, appending to difflist
 % ---
 
-append_all([],DLin,Result) :-
-   close_difflist(DLin,Result).
-
-append_all([Item|Items],DLin,Result) :-
-   append_to_difflist(Item,DLin,DLmed),
-   append_all(Items,DLmed,Result).
+dl_append_all([X|Xs],DL,Dp) :- 
+   ,express_dl(Dp,"DL before dl_append", DL)
+   ,dl_append(X,DL,DLlonger)
+   ,express_dl(Dp,"DL after dl_append", DL)
+   ,succ(Dp,Dpp)
+   ,dl_append_all(Xs,DLlonger,Dpp)
+   ,express_dl(Dp,"DL after dl_append_all", DL)
+   .
+   
+dl_append_all([],DL,Dp) :-
+   ,express_dl(Dp,"DL before closing", DL)
+   ,dl_close(DL)
+   ,express_dl(Dp,"DL after closing", DL)
+   .
 
 % ---
-% Close the difflist
+% "Close" the difflist and create a real list. This is simply done by
+% Disassembling DL into "open Tip" and "open Fin", then constraining 
+% the "open Fin" to be []. Can be simplified to: "dl_close(Tip-[])."
 % ---
 
-close_difflist(DLin,Result) :-        
-   DLin=H-T,                          % Destructure difflist term.
-   T=[],                              % This "closes" the difflist and creates a real list.
-   Result=H.                          % Done!
+dl_close(DL) :- 
+   ,DL = _Tip-Fin
+   ,Fin=[]
+   .         
 
 % ---
-% Append an item to the difflist
+% Append a single item.
 % ---
 
-append_to_difflist(Item,DLin,DLout) :-
-   DLin=H-T,                          % Destructure difflist term.
-   T=[Item|NewT],                     % Constrain the tail to a new unconstrained tail with one more item.
-   DLout=H-NewT.                      % Construct a new difflist using our H-T convention.
-
-% Test this!
-
-:- begin_tests(do).
-test(a) :- do([1,2,3],R), R=[1,2,3].
-:- end_tests(do).
-
-rt :- run_tests(do).
+dl_append(X,DL,DLlonger) :-
+   ,DL       = Tip-Fin           % Disassemble DL into "open Tip" and "open Fin"
+   ,Fin      = [X|NewFin]        % Constrain the "open Fin" to be the item with a new "open Fin"
+   ,DLlonger = Tip-NewFin        % Longer difflist has same "open Tip" and the new "open Fin"
+   .
 ```
+
+#### Unit tests
+
+```logtalk
+:- begin_tests(difflist).
+
+test(one, true(R=[1,2,3])) :- dl_do([1,2,3],R).
+test(two, true(R=[]))      :- dl_do([],R).
+   
+:- end_tests(difflist).
+
+rt :- debug(dl),run_tests(difflist).
+```
+
+## Graphing the data structure
+
+**THIS IS STILL CRAP**
 
 ### Construct initial difference list in `do/2`
 
 ```
-DiffList = F-F
+DL = F-F
 ```
 
 ![Initial construction](pics/01A.png)
