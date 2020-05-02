@@ -102,13 +102,18 @@ Special case: the functor '[|]' with arity 2 is the root compound term of the li
 must however, be well-formed, i.e. terminate in the empty list eventually; a list is a non-local structure constraint!)
 In Prologs other than SWI-Prolog the list backbone root compound term is the traditional `.`.
 
+## More on "Difference Lists"
+
+A List Difference or Difference List is an list with the last node of the backbone not ending in `[]` but in a fresh 
+term (plus said a variable to reference that fresh term) We call this an _Unterminated List_ or an _Open List_. If the
+list is properly terminated in `[]`, it is a _Closed List_. Transforming an _Open List_ into a _Closed List_ by 
+constraining the final fresh term to `[]` (or to any other closed list, really) is called _Closing the List_.
+
 ## Diagrams
 
-We can now define a specific symbol for each concept
+We can now define a specific symbol for each concept. We also relax the vocabulary a bit now. 
 
 ![Symbols](pics/Symbols.png)
-
-And thus ... diagrams! We also relax the vocabulary a bit now.
 
 Example of a fresh term that has two names (which "are" thus both fresh variables). This occurs after executing
 
@@ -136,15 +141,21 @@ Example of a compound term tree. This is build by running
 
 ![Example 3](pics/Example_3.png)
 
-Example of a list backbone, having arbitrary terms as list items, and the empty list atom terminating the list. 
-Note that this is a tree structure.
+Example of a list backbone, having arbitrary terms as list items, and the empty list atom terminating the list:
+A _Closed List_. Note that this is a tree structure.
 
 ![Example_Compound_Term_List](pics/Example_Compound_Term_List.png)
 
 Example of a list backbone that is "open-ended" as used in the "difference list" pattern. A fresh term is
-terminating the list. 
+terminating the list. This is a _Open List_ and it is generally written paired with `-` with a fresh variable
+referencing the fresh term:  `[a,b,c,d|U]-U`. One can regard this as representing "the set of lists with the given 
+prefix". 
 
 ![Example_Compound_Term_Open_List](pics/Example_Compound_Term_Open_List.png)
+
+By construction, and asymmetrically, Prolog does not allow one to specify a list that is "open on its front",
+one can only say is that there might be _N_ unknown items, where each item is represented by a fresh term, and
+_N_ is known: `[U0,U1,U2,a,b,c,d]`.
 
 ## More Vocabulary
 
@@ -244,18 +255,22 @@ The _Tail_ corresponding to a 1-item Head is the `cdr(L)` in traditional LISP.
 
 - _Prefix_ vs. _Suffix_ 
 
-We use _Prefix_ and _Suffix_ when talking about item sequences at the _Front_ or _Back_
+We use _Prefix_ and _Suffix_ when talking about item sequences at the _Front_ or _Back_,
 
 A subsequence internal to the list is just an "inner sequence".
 
 ```
-[I0,I1,I2,I3,......,I(-3),I(-2),I(-1)]   A disjoint Prefix and Suffix
+[I0,I1,I2,I3,......,I(-3),I(-2),I(-1)]   Disjoint Prefix and Suffix
 <---------->        <---------------->  
    Prefix                 Suffix
    
-[I0,I1,I2,I3,I4,I5,I6]                   Non-disjoint )overlapping) Prefix and Suffix
+[I0,I1,I2,I3,I4,I5,I6]                   Non-disjoint (overlapping) Prefix and Suffix
 <------------->
           <--------->  
 ```
+
+
+
+
 
 
