@@ -104,10 +104,22 @@ In Prologs other than SWI-Prolog the list backbone root compound term is the tra
 
 ## More on "Difference Lists"
 
-A List Difference or Difference List is an list with the last node of the backbone not ending in `[]` but in a fresh 
-term (plus said a variable to reference that fresh term) We call this an _Unterminated List_ or an _Open List_. If the
+See also: [difflists](../difflists/README.md).
+
+A _List Difference_ or _Difference List_ or _Difflist_ is an list structure with the last node of the backbone not
+ending in `[]` but in a fresh  term (plus said a variable to reference that fresh term). 
+We call this an _Unterminated List_ or an _Open List_. If the
 list is properly terminated in `[]`, it is a _Closed List_. Transforming an _Open List_ into a _Closed List_ by 
 constraining the final fresh term to `[]` (or to any other closed list, really) is called _Closing the List_.
+
+The _Difflist_ is generally represented by a pair of variables `A-B` where `A` references the backbone _Tip_ and
+`B` references the fresh variable one past the backbone _Fin_ (it is a fresh variable referencing the fresh term
+in which the list backbone ends). Both `A` , as a special kind of _Backbone Tip_ and `B` need special names: let's
+use _Open Tip_ and _Open Fin_.
+
+A special case is the empty _Difflist_, which consists of a single fresh term, named alike by the _Open Tip_
+and the _Open Fin_ as `F-F = OTip-OFin`. Note that `OTip` references what would be the empty list if this were
+a closed list. It is definitely not a "normal _Tip_".
 
 ## Diagrams
 
@@ -225,17 +237,29 @@ _List Items_ or _List Elements_, also _List Members_.
 **List sides**
 
 _Front_ vs. _Back_: A list is inherently asymmetric. It has a _Front_ side, with the _Tip_ the first element, and
-a _Back_ side, with the _End_ the last element.
+a _Back_ side, with the _End_ (or _Fin_) the last element.
 
 The _Tip_ is the `car(L)` in traditional LISP.
 
 ```
 Front  [I0,I1,I2,I3,......,I(-3),I(-2),I(-1)]  Back
         ^                                 ^
-        |__Tip (First Item)               |__End (Last Item)
+        |__Tip (First Item)               |__Fin/End (Last Item)
 ```
 
-An empty list has a Front and Back, but no Tip or End.
+One may have to distinguish between the Tip _Item_  and the Tip _Backbone Node_ (similarly, the Fin _Item_ and
+the Fin _Backbone Node_). Specify if this is needed.
+
+Note the magic: 
+
+```
+L = [1,2,3],      % L is a list but also a reference to the Tip backbone node
+L = [H|T],        % H is a reference to the Tip item, and T is a reference to the Tip backbone node of a smaller list
+L = [A,B,C],      % A,B,C are references to list items, and C is a reference to the Fin item
+L = [A,B|C].      % A,B are references to list items and C is a reference to the Fin list
+```
+
+An empty list has a Front and Back, but no Tip or Fin.
 
 **How the list is structured**
 
