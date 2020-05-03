@@ -172,8 +172,6 @@ Results in
 
 ![02B](pics/02B.png)
 
-Then
-
 ```
 Fin = [X|NewFin]
 ```
@@ -184,7 +182,7 @@ Results in
 
 ![02D](pics/02D.png)
 
-A this point, `Tip` and `Fin` do no longer form a difflist (the underlying structure no longer matches
+A this point, `Tip` and `Fin` do no longer form a difference list (the underlying structure no longer matches
 the difflist conventions) but `Tip` and `NewFin` do, so that's what will be retained.
 
 So construct new difflist according to the `Tip-Fin` convention.
@@ -194,11 +192,15 @@ So construct new difflist according to the `Tip-Fin` convention.
 DLlonger = Tip-NewFin
 ```
 
-![02D](pics/02D.png)
+![02E](pics/02E.png)
+
+Or more cleanly
+
+![02F](pics/02F.png)
 
 ### Append second item inside `dl_append/3`
 
-Now we are ready for the next round of appending.
+Now we are ready for a second round of appending.
 
 ![03A](pics/03A.png)
 
