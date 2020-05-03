@@ -106,18 +106,18 @@ In Prologs other than SWI-Prolog the list backbone root compound term is the tra
 
 See also: [difflists](../difflists/README.md).
 
-A _List Difference_ or _Difference List_ or _Difflist_ is an list structure with the last node of the backbone not
-ending in `[]` but in a fresh  term (plus said a variable to reference that fresh term). 
-We call this an _Unterminated List_ or an _Open List_. If the
-list is properly terminated in `[]`, it is a _Closed List_. Transforming an _Open List_ into a _Closed List_ by 
-constraining the final fresh term to `[]` (or to any other closed list, really) is called _Closing the List_.
+The basis of a _List Difference_ or _Difference List_ or _Difflist_ is a list-like structure where the 
+backbone _Fin_ does not reference a `[]` "to its left" but rather a fresh term. We call this structure 
+an _Unterminated List_ or an _Open List_. Transforming an _Open List_ into a _Closed List_ by constraining the
+final fresh term to `[]` (or to any other closed list of length L >= 0) is called _Closing the List_. The structure,
+now properly terminated in `[]`, it is a real list, alternatively called a _Closed List_. 
 
-The _Difflist_ is generally represented by a pair of variables `A-B` where `A` references the backbone _Tip_ and
-`B` references the fresh variable one past the backbone _Fin_ (it is a fresh variable referencing the fresh term
-in which the list backbone ends). Both `A` , as a special kind of _Backbone Tip_ and `B` need special names: let's
-use _Open Tip_ and _Open Fin_.
+The difference list is generally represented by a pair of variables `A-B` where `A` references the backbone _Tip_ and
+`B` references the fresh variable one past the backbone _Fin_ (and thus, `B` it is a fresh variable referencing the
+fresh term in which the list backbone ends). Both `A` , as a special kind of _Backbone Tip_ and `B` need special
+names: let's use _Open Tip_ and _Open Fin_.
 
-A special case is the empty _Difflist_, which consists of a single fresh term, named alike by the _Open Tip_
+A special case is the empty difference list, which consists of a single fresh term, named alike by the _Open Tip_
 and the _Open Fin_ as `F-F = OTip-OFin`. Note that `OTip` references what would be the empty list if this were
 a closed list. It is definitely not a "normal _Tip_".
 
@@ -268,10 +268,13 @@ _Head_ vs. _Tail_
 We use _Head_ and _Tail_ when talking about a list aliased by the `|` notation.
 
 ```
-[H0,H1,H2 | T ]
- <------>   ^     A 3-item Head vs a Tail of arbitrary length
+Front  [H0,H1,H2 | T ]  Back
+        |      |   |
+        <------>   ^    A 3-item Head vs a Tail of arbitrary length
  
-[H|T]             A One-Item Head (a Tip) vs a Tail of arbitrary length
+Front  [ H | T ]        Back
+         |
+        Tip             A One-Item Head (a Tip) vs a Tail of arbitrary length
 ```
 
 The _Head_ corresponding to a 1-item Head is the `car(L)` in traditional LISP.
