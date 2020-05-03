@@ -12,6 +12,7 @@
 %
 % For more information, please refer to <http://unlicense.org/>
 % ============================================================================
+% BUGS: Cyclic list handling is not supported. Infinity beckons!
 
 % ===
 % Length of a difference list written as "Tip-Fin"
