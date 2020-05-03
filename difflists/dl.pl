@@ -13,6 +13,8 @@
 % For more information, please refer to <http://unlicense.org/>
 % ============================================================================
 
+% TODO: Adapt to lessons learned when writing "difflist_length.pl"
+
 % ===
 % Debugging ouptut part
 % ===
@@ -33,14 +35,14 @@ express_dl(Depth,Msg,Tip-Fin) :-
 % ---
 
 express2_dl(Tip,Fin,Str) :-
-    Tip =@= Fin  % "structurally equal"
+    Tip == Fin   % "equivalent"
    ,var(Fin)     % and this must also be true
    ,!           
    ,Str="Empty difflist: ∅"
    .
    
 express2_dl(Tip,Fin,Str) :-
-    Tip \=@= Fin % "not structurally equal"
+    Tip \== Fin  % "not equivalent"
    ,var(Fin)     % and this must also be true
    ,!
    ,express_dl_items(Tip,Fin,MoreStr)
@@ -65,14 +67,14 @@ express2_dl(Tip,Fin,Str) :-
 % ---
 
 express_dl_items([X|Xs],Fin,Str) :-
-    Xs \=@= Fin
+    Xs \== Fin
    ,!
    ,express_dl_items(Xs,Fin,MoreStr)
    ,with_output_to(string(Str),format("~q,~s",[X,MoreStr]))
    .
    
 express_dl_items([X|Xs],Fin,Str) :-
-    Xs =@= Fin
+    Xs == Fin
    ,!
    ,with_output_to(string(Str),format("~q|∅",[X]))
    .
