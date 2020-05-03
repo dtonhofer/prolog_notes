@@ -156,7 +156,7 @@ DL = I-I
 
 ![01A](pics/01A.png)
 
-Results in
+...results in
 
 ![01B](pics/01B.png)
 
@@ -168,7 +168,7 @@ DL = Tip-Fin
 
 ![02A](pics/02A.png)
 
-Results in
+...results in
 
 ![02B](pics/02B.png)
 
@@ -178,12 +178,12 @@ Fin = [X|NewFin]
 
 ![02C](pics/02C.png)
 
-Results in
+...results in
 
 ![02D](pics/02D.png)
 
-A this point, `Tip` and `Fin` do no longer form a difference list (the underlying structure no longer matches
-the difflist conventions) but `Tip` and `NewFin` do, so that's what will be retained.
+A this point, `Tip` and `Fin`, and thus `DL`, no longer form a difference list (the underlying structure no
+longer matches the difflist conventions) but `Tip` and `NewFin` do, so that's what will be retained.
 
 So construct new difflist according to the `Tip-Fin` convention.
 `DLlonger` combines the open list rooted at `Tip` and the open fin at `NewFin`.
@@ -194,7 +194,7 @@ DLlonger = Tip-NewFin
 
 ![02E](pics/02E.png)
 
-Or more cleanly
+...or more cleanly
 
 ![02F](pics/02F.png)
 
@@ -202,17 +202,15 @@ Or more cleanly
 
 Now we are ready for a second round of appending.
 
-![03A](pics/03A.png)
-
 ```
 DL = Tip-Fin
 ```
 
-gives
+![03A](pics/03A.png)
+
+...results in
 
 ![03B](pics/03B.png)
-
-Then the unification
 
 ```
 Fin = [X|NewFin]
@@ -220,12 +218,12 @@ Fin = [X|NewFin]
 
 ![03C](pics/03C.png)
 
-gives
+...results in
 
 ![03D](pics/03D.png)
 
-This destroys the "difflistyness" of `DL`. Now plant `DLlonger` on top as new 
-structure following the difflist conventions
+This destroys the "difflistyness" of `DL`. Now plant a `DLlonger` on top as the new 
+structure following the difflist conventions:
 
 ```
 DLlonger = Tip-NewFin
@@ -233,7 +231,7 @@ DLlonger = Tip-NewFin
 
 ![03E](pics/03E.png)
 
-Or more cleanly
+...or more cleanly
 
 ![03F](pics/03F.png)
 
@@ -243,17 +241,15 @@ Ready for the next round!
 
 And again
 
-![04A](pics/04A.png)
-
 ```
 DL = Tip-Fin
 ```
 
-gives
+![04A](pics/04A.png)
+
+...results in
 
 ![04B](pics/04B.png)
-
-Then the unification
 
 ```
 Fin = [X|NewFin]
@@ -261,12 +257,12 @@ Fin = [X|NewFin]
 
 ![04C](pics/04C.png)
 
-gives
+...results in
 
 ![04D](pics/04D.png)
 
-This destroys the "difflistyness" of `DL`. Now plant `DLlonger` on top as new 
-structure following the difflist conventions
+This destroys the "difflistyness" of `DL`. Now plant a `DLlonger` on top as the new 
+structure following the difflist conventions:
 
 ```
 DLlonger = Tip-NewFin
@@ -274,7 +270,7 @@ DLlonger = Tip-NewFin
 
 ![04E](pics/04E.png)
 
-Or more cleanly
+...or more cleanly
 
 ![04F](pics/04F.png)
 
@@ -292,11 +288,9 @@ DL = _Tip-Fin
 
 ![05A](pics/05A.png)
 
-Gives
+...results in
 
 ![05B](pics/05B.png)
-
-and
 
 ```
 Fin=[]
