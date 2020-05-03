@@ -148,3 +148,23 @@ test(two, true(R=[]))      :- dl_do([],R).
 :- end_tests(difflist).
 
 rt :- debug(dl),run_tests(difflist).
+
+%%%%
+% Running rt/0
+%
+% ?- rt.
+% PL-Unit: difflist 
+% 0: DL before dl_append: Empty difflist: ∅
+% 0: DL after dl_append: Unknown stuff: [1|_2716]-[1|_2716]
+% 1: DL before dl_append: Nonempty difflist: [1|∅]
+% 1: DL after dl_append: Unknown stuff: [1,2|_3096]-[2|_3096]
+% 2: DL before dl_append: Nonempty difflist: [1,2|∅]
+% 2: DL after dl_append: Unknown stuff: [1,2,3|_3518]-[3|_3518]
+% 3: DL before closing: Nonempty difflist: [1,2,3|∅]
+% 3: DL after closing: Closed difflist: [1,2,3]-[]
+% 2: DL after dl_append_all: Closed difflist: [1,2,3]-[3]
+% 1: DL after dl_append_all: Closed difflist: [1,2,3]-[2,3]
+% 0: DL after dl_append_all: Closed difflist: [1,2,3]-[1,2,3]
+% 0: DL before closing: Empty difflist: ∅
+% 0: DL after closing: Closed difflist: []-[]
+% All 2 tests passed
