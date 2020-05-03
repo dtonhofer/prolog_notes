@@ -14,6 +14,7 @@
 % ============================================================================
 
 % TODO: Adapt to lessons learned when writing "difflist_length.pl"
+% TODO: Moved the list-printing code to a separate file
 
 % ===
 % Debugging ouptut part
