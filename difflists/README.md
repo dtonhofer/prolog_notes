@@ -29,24 +29,29 @@ debugging output:
 ### (Very) Short Form
 
 ```Logtalk
-dl_do(Data,Result) :- 
-   dl_append_all(Data,Result-Result).
+% Starter. predicate. "Data" is a list to append to a difference list,
+% "Result" is the result of the appending, and is supposed to be
+% equal to Data after the call. But one cannot call "dl_do(Data,Data)"
+% that would seize up the computation.
+
+dl_do(Data,Result) :- dl_append_all(Data,Result-Result).
+
+% The recursion. The first clause appends aother iten "X" from "Data",
+% the second "closes" the difference list when the end of "Data" has been
+% reached.
 
 dl_append_all([X|Xs],DL) :- 
    dl_append(X,DL,DLlonger),
    dl_append_all(Xs,DLlonger).
    
-% close the difflist
-
 dl_append_all([],_-[]). 
 
-% append a single item to the difflist
+% Appending a single item to the difflist can be done in a single fact
+% using assembling/disassembling.
 
 dl_append(X,Tip-[X|NewFin],Tip-NewFin). 
 
-% ===
-% Tests
-% ===
+% Unit tests
 
 :- begin_tests(difflist).
 
@@ -90,8 +95,6 @@ true.
 ``` 
 
 ## Graphing the data structure
-
-**THIS IS STILL CRAP**
 
 ### Construct initial difference list in `do/2`
 
