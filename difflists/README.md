@@ -68,7 +68,8 @@ Front  [I0,I1,I2,I3,......,I(-3),I(-2),I(-1)]  Back
 
 The basis of a _List Difference_ or _Difference List_ or _Difflist_ is a list-like structure where the 
 backbone _Fin_ does not reference a `[]` "to its left" but rather a fresh term. We call this structure 
-an _Unterminated List_ or an _Open List_. Transforming an _Open List_ into a _Closed List_ by constraining the
+an _Unterminated List_ or an _Open List_ (also called a _Partial List_). Transforming an _Open List_ into 
+a _Closed List_ by constraining the
 final fresh term to `[]` (or to any other closed list of length L >= 0) is called _Closing the List_. The structure,
 now properly terminated in `[]`, it is a real list, alternatively called a _Closed List_. 
 
