@@ -18,7 +18,7 @@
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.loopLimit">
           <y:Geometry height="40.0" width="80.0" x="758.041666666667" y="223.3020833333385"/>
-          <y:Fill color="#C0C0C0" color2="#C0C0C0" transparent="false"/>
+          <y:Fill color="#C0C0C0" color2="#FFFF99" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="FreeMono" fontSize="20" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="23.999980926513672" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="39.99995422363281" x="20.000022888183594" y="8.000009536743164">[|]<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
