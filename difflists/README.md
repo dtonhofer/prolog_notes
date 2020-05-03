@@ -15,6 +15,17 @@ as a stack.
 However, in order to append efficiently, you need the difference list pattern. It is a "pattern" because
 there is real data structure corresponding to a "difference list". Just a set of conventions.
 
+### Note on monotonicty 
+
+Note that the "difflistyness" of a term is not a monotonic property. If you had a predicate `is_difflist/1`,
+then querying `is_difflist(X)` on the same `X` as computation proceeds may give you `true`, `true`, `true`,
+`true`, `false`. The response may change from `true` to `false`, but once it's `false`, it stays `false`. At
+which time you know this is no longer about pure logic and that you are actually asking `is_unconstrained_enough_to_be_difflist_at_this_point/1`.
+
+Compare with `is_list/1` which may do the converse as computation proceeds: `false`, `false`, `false`, `true` (or
+even better `unknown`, `unknown`, `unknown`, `true`, but Prolog has no `unknown` in spite of being all constructivist)
+which should be properly named `is_constrained_enough_to_be_list_at_this_point/1`.
+
 ## Naming and Graphing
 
 First take a look at this page, which defines the symbols and the vocabulary used below: [Naming and Symbols](../naming_and_symbols/README.md).
