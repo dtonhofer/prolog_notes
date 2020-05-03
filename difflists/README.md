@@ -26,6 +26,17 @@ Compare with `is_list/1` which may do the converse as computation proceeds: `fal
 even better `unknown`, `unknown`, `unknown`, `true`, but Prolog has no `unknown` in spite of being all constructivist)
 which should be properly named `is_constrained_enough_to_be_list_at_this_point/1`.
 
+### Note on length
+
+This code:
+
+[difflist_length.pl](difflist_length.pl)
+
+...computes the "length" of a difflist (number of items on the backbone between _Tip_ and _Fin_).
+If the difflist turns out to be a closed list, it computes thelength of the closed list (i.e.
+[`length/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=length/2)). If the difflist does not follow difflist
+structure conventions, it throws `domain_error(difference_list(ExplainerAtom),DL)`.
+
 ## Naming and Graphing
 
 First take a look at this page, which defines the symbols and the vocabulary used below: [Naming and Symbols](../naming_and_symbols/README.md).
