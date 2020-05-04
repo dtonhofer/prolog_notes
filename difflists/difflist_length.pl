@@ -12,9 +12,26 @@
 %
 % For more information, please refer to <http://unlicense.org/>
 % ============================================================================
-% BUGS: Cyclic list handling is not supported. Infinity beckons!
-
+% BUGS: 
+% Cyclic list handling is not supported. Infinity beckons!
+% ===
+% EVIL IDEA abusing Exception handling:
+%
+% An evil idea on how to find the length simpler:
+% The length_dl/2 calls a predciate length_dl_nasty/2 that:
+%  1) Closes the difflist, making it a standard list
+%  2) Gets the length using standard length/2 (this misses some
+%     cases where the difflist is malformed though)
+%  3) Throws an exception with the result!
+%     (throw is basically like failing a predicate, just with
+%      transportable info and arbitrary rollback up the AND-OR
+%      call tree)
+% length_dl/2 catches the Exception and extracts the length value.
+% The difflist is now magically back in its previous state (open) (I think). 
+% dl_length can thus set the length. Done! Would it work? I have to try this.
+% ============================================================================
 % The full difflists explainer: https://bit.ly/2WmphYy_prolog
+% ============================================================================
 
 % ===
 % Length of a difference list written as "Tip-Fin"
