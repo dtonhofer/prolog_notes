@@ -14,6 +14,8 @@
 % ============================================================================
 % BUGS: Cyclic list handling is not supported. Infinity beckons!
 
+% The full difflists explainer: https://bit.ly/2WmphYy_prolog
+
 % ===
 % Length of a difference list written as "Tip-Fin"
 % ===
