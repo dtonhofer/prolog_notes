@@ -12,8 +12,10 @@
 %
 % For more information, please refer to <http://unlicense.org/>
 % ============================================================================
-% BUGS: 
-% Cyclic list handling is not supported. Infinity beckons!
+% VERSION: Tue  5 May 10:19:19 CEST 2020
+%
+% BUGS:
+% - Cyclic list handling is not supported. Infinity beckons!
 % ===
 % EVIL IDEA abusing Exception handling:
 %
@@ -27,29 +29,29 @@
 %      transportable info and arbitrary rollback up the AND-OR
 %      call tree)
 % length_dl/2 catches the Exception and extracts the length value.
-% The difflist is now magically back in its previous state (open) (I think). 
+% The difflist is now magically back in its previous state (open) (I think).
 % dl_length can thus set the length. Done! Would it work? I have to try this.
 % ============================================================================
 % The full difflists explainer: https://bit.ly/2WmphYy_prolog
 % ============================================================================
 
 % ===
-%  Relate the difference list written as the compound term "Tip-Fin" and its "Length"
+% Relate a difference list (written as the compound term "Tip-Fin") and its "Length"
 % ===
 
-length_dl(DL,Length) :-    
-    DL==Tip-Fin    % structure of DL must the compond term Tip-Fin
-   ,!
-   ,length2_dl(Tip,Fin,Length).
+length_dl(DL,Length) :-
+   contract_length_dl(DL),
+   DL=Tip-Fin,
+   length2_dl(Tip,Fin,Length).
 
-% This is the fallback claus throwing an exception if the compound term 
-% is not as expected. This includes DL being a fresh variable.
+% Fallback clause throwing an exception if the compound term is not as expected.
+% This includes DL being a fresh variable.
 
-length_dl(DL,_) :- 
-   DL\==Tip-Fin    % structure of DL is sth other than the compond term Tip-Fin
-   ,!
-   ,throw(domain_error(difference_list(root_compound_term),DL)).
-        
+contract_length_dl(DL) :-
+   (nonvar(DL),DL=_Tip-_Fin)
+   -> true
+   ;  throw(domain_error(difference_list(root_compound_term),DL)).
+
 % ---
 % Express the various cases of Tip-Fin combinations
 % ---
@@ -71,7 +73,7 @@ length2_dl(Tip,Fin,Len) :-
    ,Tip \== Fin  % Both must not be "equivalent" (sharing variables are equivalent!)
    ,!
    % walk through open list, this is also verifies that the backbone is good; pass Tip-Fin for throwing
-   ,length_dl_walk(Tip,Fin,0,Len,Tip-Fin) 
+   ,length_dl_walk(Tip,Fin,0,Len,Tip-Fin)
    .
 
 % An already-closed difference list (i.e. a real list)
@@ -88,7 +90,7 @@ length2_dl(Tip,Fin,Len) :-
 
 length2_dl(Tip,Fin,_) :-
    throw(domain_error(difference_list(overall_structure),Tip-Fin)).
-   
+
 % ---
 % Iterate over open list. We know that var(Fin)!
 % ---
@@ -99,7 +101,7 @@ length_dl_walk([_|Xs],Fin,Len,LenFinal,DL) :-
    ,succ(Len,LenPlus)
    ,length_dl_walk(Xs,Fin,LenPlus,LenFinal,DL)
    .
-   
+
 length_dl_walk([_|Xs],Fin,Len,LenFinal,_DL) :-
     var(Xs)    % the end of the backbone of the open list!
    ,Xs == Fin  % double-check the structure (and not using unification!)
@@ -113,39 +115,39 @@ length_dl_walk([_|Xs],Fin,_Len,_LenFinal,DL) :-
    ,!
    ,throw(domain_error(difference_list(backbone_fin_mismatch),DL))
    .
-   
+
 % ===
 % Unit testing part
 % ===
 
 :- begin_tests(difflist_length).
 
-test(not_difflist, throws(domain_error(difference_list(_),_Culprit))) :- 
+test(not_difflist, throws(domain_error(difference_list(_),_Culprit))) :-
    length_dl(not_difflist_but_some_atom,_).
 
-test(empty_closed_list, true(R=0)) :- 
+test(empty_closed_list, true(R=0)) :-
    DL=F-F,F=[],length_dl(DL,R).
-   
-test(nonempty_closed_list, true(R=3)) :- 
+
+test(nonempty_closed_list, true(R=3)) :-
    DL=[1,2,3|F]-F,F=[],length_dl(DL,R).
-   
-test(empty_difflist, true(R=0)) :- 
+
+test(empty_difflist, true(R=0)) :-
    DL=F-F,length_dl(DL,R).
-   
-test(nonempty_difflist_1, true(R=3)) :- 
+
+test(nonempty_difflist_1, true(R=3)) :-
    DL=[1,2,3|F]-F,length_dl(DL,R).
-   
-test(nonempty_difflist_2, true(R=4)) :- 
+
+test(nonempty_difflist_2, true(R=4)) :-
    % append 4 to difflist [1,2,3|_], test difflist
    DL=[1,2,3|F]-F,DL=Tip-Fin,Fin=[4|FinNew],DLnew=Tip-FinNew,length_dl(DLnew,R).
 
-test(nonempty_difflist_3, true(R=6)) :- 
+test(nonempty_difflist_3, true(R=6)) :-
    % append 4,5,6 to difflist [1,2,3|_], test difflist
    DL=[1,2,3|F]-F,DL=Tip-Fin,Fin=[4,5,6|FinNew],DLnew=Tip-FinNew,length_dl(DLnew,R).
 
 test(not_a_difflist_0, throws(domain_error(difference_list(_),_Culprit))) :-
    length_dl(_X-_Y,_).
-   
+
 test(not_a_difflist_1, throws(domain_error(difference_list(_),_Culprit))) :-
    % append 4 to difflist [1,2,3|_], test the ex-difflist instead of the new difflist
    DL=[1,2,3|F]-F,DL=Tip-Fin,Fin=[4|FinNew],_DLnew=Tip-FinNew,length_dl(DL,_).
@@ -153,7 +155,8 @@ test(not_a_difflist_1, throws(domain_error(difference_list(_),_Culprit))) :-
 test(not_a_difflist_2, throws(domain_error(difference_list(_),_Culprit))) :-
    % append 4 to difflist [1,2,3|_], but wrongly, using some X as new Fin
    DL=[1,2,3|F]-F,DL=Tip-Fin,Fin=[4|_FinNew],DLnew=Tip-_X,length_dl(DLnew,_).
-   
+
 :- end_tests(difflist_length).
 
 rt :- run_tests(difflist_length).
+
