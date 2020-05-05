@@ -38,7 +38,7 @@
 % ===
 
 length_dl(DL,Length) :-    
-   DL==Tip-Fin, % structure of DL must the compond term Tip-Fin
+    DL==Tip-Fin    % structure of DL must the compond term Tip-Fin
    ,!
    ,length2_dl(Tip,Fin,Length).
 
@@ -46,7 +46,7 @@ length_dl(DL,Length) :-
 % is not as expected. This includes DL being a fresh variable.
 
 length_dl(DL,_) :- 
-   DL\==Tip-Fin, % structure of DL is sth other than the compond term Tip-Fin
+   DL\==Tip-Fin    % structure of DL is sth other than the compond term Tip-Fin
    ,!
    ,throw(domain_error(difference_list(root_compound_term),DL)).
         
