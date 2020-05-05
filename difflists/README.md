@@ -32,10 +32,19 @@ This code:
 
 [difflist_length.pl](difflist_length.pl)
 
-...computes the "length" of a difflist (number of items on the backbone between _Tip_ and _Fin_).
-If the difflist turns out to be a closed list, it computes thelength of the closed list (i.e.
-[`length/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=length/2)). If the difflist does not follow difflist
-structure conventions, it throws `domain_error(difference_list(ExplainerAtom),DL)`.
+defines predicate `length_dl/3`, which relates a _Tip-Fin_ difflist with its length (which is the number of items on
+the backbone between _Tip_ and _Fin_). If the difflist turns out to be a proper/closed list, it computes the length of
+the closed list (i.e. behaves as [`length/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=length/2)). If the difflist 
+does not follow difflist structure conventions, it throws `domain_error`.
+
+This code:
+
+[difflist_length_sly.pl](difflist_length_sly.pl) _Just an experiment_
+
+defines predicate `length_dl_sly/2`, which also relates a _Tip-Fin_ difflist with its length, but suing an inner predicate
+which slyly first closes the list, employs the standard `length/2` to determine the length of the now closed list, then
+throws an exception to both roll back to the non-closed difflist state and get the length value out of the state
+that is being erased. It doesn't detect all cases of badly formed difflists though. 
 
 ## Naming and Graphing
 

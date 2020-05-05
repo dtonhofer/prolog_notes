@@ -12,27 +12,12 @@
 %
 % For more information, please refer to <http://unlicense.org/>
 % ============================================================================
-% VERSION:   Tue  5 May 11:49:33 CEST 2020
+% VERSION:   Tue  5 May 12:09:46 CEST 2020
 % BUGS:      Cyclic list handling is not supported. Infinity beckons!
 % RUNS ON:   SWI Prolog 8.1.24
 % PREDICATE: length_dl/3
 % UNIT TEST: Run predicate "rt/0"
 % DOCS:      The full difflist explainer: https://bit.ly/2WmphYy_prolog
-% ============================================================================
-% EVIL IDEA abusing Exception handling:
-%
-% An evil idea on how to find the length simpler:
-% The length_dl/2 calls a predciate length_dl_nasty/2 that:
-%  1) Closes the difflist, making it a standard list
-%  2) Gets the length using standard length/2 (this misses some
-%     cases where the difflist is malformed though)
-%  3) Throws an exception with the result!
-%     (throw is basically like failing a predicate, just with
-%      transportable info and arbitrary rollback up the AND-OR
-%      call tree)
-% length_dl/2 catches the Exception and extracts the length value.
-% The difflist is now magically back in its previous state (open) (I think).
-% dl_length can thus set the length. Done! Would it work? I have to try this.
 % ============================================================================
 
 % ===
@@ -147,7 +132,7 @@ test(nonempty_difflist_1, true([R,W]==[3,open])) :-
    DL=[1,2,3|F]-F,
    length_dl(DL,R,W).
 
-test(nonempty_difflist_2, true([R,W]=[4,open])) :-
+test(nonempty_difflist_2, true([R,W]==[4,open])) :-
    % append 4 to difflist [1,2,3|_], test difflist
    DL=[1,2,3|F]-F,
    DL=Tip-Fin,
@@ -155,7 +140,7 @@ test(nonempty_difflist_2, true([R,W]=[4,open])) :-
    DLnew=Tip-FinNew,
    length_dl(DLnew,R,W).
 
-test(nonempty_difflist_3, true([R,W]=[6,open])) :-
+test(nonempty_difflist_3, true([R,W]==[6,open])) :-
    % append 4,5,6 to difflist [1,2,3|_], test difflist
    DL=[1,2,3|F]-F,
    DL=Tip-Fin,
@@ -185,3 +170,4 @@ test(not_a_difflist_2, throws(domain_error(difference_list(_),_Culprit))) :-
 :- end_tests(length_dl).
 
 rt :- run_tests(length_dl).
+
