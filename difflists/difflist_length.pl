@@ -34,19 +34,22 @@
 % ============================================================================
 
 % ===
-% Length of a difference list written as "Tip-Fin"
+%  Relate the difference list written as the compound term "Tip-Fin" and its "Length"
 % ===
 
-length_dl(DL,Length) :-
-    DL=Tip-Fin
+length_dl(DL,Length) :-    
+   DL==Tip-Fin, % structure of DL must the compond term Tip-Fin
    ,!
    ,length2_dl(Tip,Fin,Length).
-   
+
+% This is the fallback claus throwing an exception if the compound term 
+% is not as expected. This includes DL being a fresh variable.
+
 length_dl(DL,_) :- 
-    DL\=_Tip-_Fin
+   DL\==Tip-Fin, % structure of DL is sth other than the compond term Tip-Fin
    ,!
    ,throw(domain_error(difference_list(root_compound_term),DL)).
-   
+        
 % ---
 % Express the various cases of Tip-Fin combinations
 % ---
@@ -117,8 +120,8 @@ length_dl_walk([_|Xs],Fin,_Len,_LenFinal,DL) :-
 
 :- begin_tests(difflist_length).
 
-test(whatever, throws(domain_error(difference_list(_),_Culprit))) :- 
-   length_dl(foo,_).
+test(not_difflist, throws(domain_error(difference_list(_),_Culprit))) :- 
+   length_dl(not_difflist_but_some_atom,_).
 
 test(empty_closed_list, true(R=0)) :- 
    DL=F-F,F=[],length_dl(DL,R).
