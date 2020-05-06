@@ -48,10 +48,18 @@ replace0(+List, +N, ?NewElement, ?OldElement, ?NewList)
 
 ## `rotate_list/3`
 
-Rotate a list "leftwards" or "rightwards".   
+Rotate a list "leftwards" or "rightwards" by N positions.
+
+Initially based on [`append/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=append/2) (but no longer).
 
 ```
 rotate_list(+List,+N,?Rotated).
+```
+
+```
+N=0 : no rotation
+N>0 : Rotate "leftwards": move a prefix of (N mod Length) list items to the back of the list to form the result
+N<0 : Rotate "rightwards": move a suffix of (abs(N) mod Length) list items to the back of the list to form the result (however, this is done completely the same way as for the case N>0) 
 ```
 
 - Code: [`rotate_list.pl`](rotate_list.pl)
