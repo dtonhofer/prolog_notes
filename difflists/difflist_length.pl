@@ -13,7 +13,11 @@
 % For more information, please refer to <http://unlicense.org/>
 % ============================================================================
 % VERSION:   Tue  5 May 12:09:46 CEST 2020
-% BUGS:      Cyclic list handling is not supported. Infinity beckons!
+% BUGS:      1) Cyclic list handling is not supported. Infinity beckons!
+%            2) length_dl([1,2,3]-X, Length, What) returns false but 
+%               should throw.
+%            3) length_dl(Difflist, Length) should generate increasing
+%               longer valid difflists
 % RUNS ON:   SWI Prolog 8.1.24
 % PREDICATE: length_dl/3
 % UNIT TEST: Run predicate "rt/0"
