@@ -1,6 +1,6 @@
 # Relevant predicates for generating output in Prolog (by order of importance)
 
-(This page can also be accessed through http://bit.ly/38wQAmS_prolog)
+(This page can also be accessed through https://bit.ly/2WefaGe_prolog)
 
 _Work in progress_
 
