@@ -10,7 +10,7 @@ _Work in progress_
 
 # TL;DR
 
-![TL;DR Diagram](pics/printing_tldr/printing_tldr.png).
+![TL;DR Diagram](output_formatting_pics/tldr.png).
 
 ## Formatted write: "format family"
 
