@@ -5,6 +5,7 @@
 - ["Difference List" wiki entry](https://swi-prolog.discourse.group/t/difference-list/959) at Prolog Discourse site.
 - ["Difference Lists" by Frank Pfenning](https://www.cs.cmu.edu/~fp/courses/lp/lectures/11-diff.pdf) (PDF)
 - [Applying "Difference Lists" to DCGs by Markus Triska](https://www.metalevel.at/prolog/dcg). "Difference Lists" are called "List Differences" here: _In the literature, you will also encounter the term "difference list". However, this terminology is misleading: We are not talking about—as the name may suggest—a special kind of list. The additional arguments are completely ordinary lists. It is their differences that matter especially in such cases._
+   - A corresponding presentation on Youtube: https://youtu.be/6egAF4-HVzw
 - [Presentation on Difference Lists](https://www.cl.cam.ac.uk/teaching/0809/Prolog/Prolog08ML5R2.pdf) by David Eyers at University of Cambridge, for the [Prolog Course](https://www.cl.cam.ac.uk/teaching/0809/Prolog/).
 
 ## About 
@@ -90,6 +91,15 @@ names: let's use _Open Tip_ and _Open Fin_.
 A special case is the empty difference list, which consists of a single fresh term, named alike by the _Open Tip_
 and the _Open Fin_ as `F-F = OTip-OFin`. Note that `OTip` references what would be the empty list if this were
 a closed list. It is definitely not a "normal _Tip_".
+
+Markus Triska says: 
+
+> When working with list differences, you may be tempted to pass around each pair as a single argument, 
+> for example as compound terms like `Ls0-Ls1` or `Ls0/Ls1`. However, this is not advisable, primarily 
+> because you will likely run into conflicts with other predicates and DCG expansions, and secondarily
+> because it incurs performance overhead for constructing, decomposing and managing these compound terms.
+
+I will still use the pair notation here.
 
 ## Difference List as Queue
 
