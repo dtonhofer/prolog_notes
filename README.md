@@ -28,7 +28,7 @@ Some predicates which may be of general use can be found in the [Code grabbag](c
 - [`rotate_list/3`](code/rotate_list.pl): Rotate a list left or right.
 - [`vector_replace0/4`](code/vector_replace0.pl): Replace in a list on multiple positions, by index.
 
-### Notes on SWI-Prolog
+### Notes on Prolog & SWI-Prolog
 
 These are notes on specific subjects taken while working with Prolog in general and SWI-Prolog in particular.
 
@@ -37,6 +37,10 @@ These are notes on specific subjects taken while working with Prolog in general 
 - [Predicates for printing & formatting](swipl_notes/output_formatting.md)
 - [SWI-Prolog string modes](swipl_notes/swipl_string_modes.md)
 
+And also
+
+- [`foldl` and `foldr`](foldl_foldr/)
+
 ### Notes on `maplist/N`
 
 Questions on `maplist/N` are recurrent (not only on Stack Overflow), so these page collecte notes & examples:
@@ -44,5 +48,6 @@ Questions on `maplist/N` are recurrent (not only on Stack Overflow), so these pa
 - [maplist_2_examples.md](maplist/maplist_2_examples.md): Examples and major explainer for [`maplist/2`](https://www.swi-prolog.org/pldoc/man?predicate=maplist%2f2)
 - [maplist_3_examples.md](maplist/maplist_3_examples.md): Examples for [`maplist/3`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/3)
 - [maplist_4_examples.md](maplist/maplist_4_examples.md): Examples for [`maplist/4`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/4)
+
 
 
