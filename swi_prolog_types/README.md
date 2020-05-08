@@ -10,4 +10,4 @@ an ocean liner).
 - [PNG file](swi_prolog_types.png). Awkward to use. 4205 x 3055, 8-bit/color RGB.
 - [SVG file](swi_prolog_types.svg). **Best**. Can be visualized in a browser.
 
-For a description of SWI-Prolog datataypes, see this SWI-Prolog wiki entry: [SWI-Prolog datatypes](https://eu.swi-prolog.org/datatypes.txt)
+For a description see this SWI-Prolog wiki entry: [SWI-Prolog datatypes](https://eu.swi-prolog.org/datatypes.txt)
