@@ -29,7 +29,7 @@ Some predicates which may be of general use can be found in the [Code grabbag](b
 
 ### Notes on SWI-Prolog
 
-- [Loading a library (the lynx library int this case)](swipl_notes/loading_lynx_library.md)
+- [Loading a library (the lynx library in this case)](swipl_notes/loading_lynx_library.md)
 - [Use of the caret ^ in` bagof/3`, `setof/3`](swipl_notes/notes_on_the_caret_used_in_bagof_goals.md)
 - [Predicates for printing & formatting](swipl_notes/output_formatting.md)
 - [SWI-Prolog string modes](swipl_notes/swipl_string_modes.md)
