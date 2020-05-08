@@ -39,6 +39,10 @@ These are notes on specific subjects taken while working with Prolog in general 
 
 And also
 
+- [Tree of Types of SWI-Prolog](swi_prolog_types)
+
+And also
+
 - [`foldl` and `foldr`](foldl_foldr/)
 
 ### Notes on `maplist/N`
