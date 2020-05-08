@@ -19,7 +19,7 @@ From [The Fifty-three Stations of the Tōkaidō](https://en.wikipedia.org/wiki/T
 
 ### Code grabbag
 
-Some predicates which may be of general use can be found in the [Code grabbag](blob/master/code/README.md)
+Some predicates which may be of general use can be found in the [Code grabbag](code/README.md)
 
 - [`vector_nth0/3`](code/vector_nth0.pl): Retrieve in a list on multiple positions, by index.
 - [`splinter0/5`](code/splinter0.pl): Break a list into three parts based on index.
