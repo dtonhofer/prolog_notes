@@ -45,6 +45,14 @@ And also
 
 - [`foldl` and `foldr`](foldl_foldr/)
 
+And also, being often confused by Prolog naming and concepts, my way to name & graphically represent terms
+
+- [Names and Symbols](names_and_symbols/)
+
+And also, an amazingly large explainer on difference lists (or list differences). With illustrations.
+
+- [Difference Lists](difflists/)
+
 ### Notes on `maplist/N`
 
 Questions on `maplist/N` are recurrent (not only on Stack Overflow), so these page collecte notes & examples:
