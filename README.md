@@ -29,18 +29,19 @@ Some predicates which may be of general use can be found in the [Code grabbag](c
 
 ### Notes on SWI-Prolog
 
+These are notes on specific subjects taken while working with Prolog in general and SWI-Prolog in particular.
+
 - [Loading a library (the lynx library in this case)](swipl_notes/loading_lynx_library.md)
 - [Use of the caret ^ in` bagof/3`, `setof/3`](swipl_notes/notes_on_the_caret_used_in_bagof_goals.md)
 - [Predicates for printing & formatting](swipl_notes/output_formatting.md)
 - [SWI-Prolog string modes](swipl_notes/swipl_string_modes.md)
 
-### On `maplist/N`
+### Notes on `maplist/N`
+
+Questions on `maplist/N` are recurrent (not only on Stack Overflow), so these page collecte notes & examples:
 
 - [maplist_2_examples.md](maplist/maplist_2_examples.md): Examples and major explainer for [`maplist/2`](https://www.swi-prolog.org/pldoc/man?predicate=maplist%2f2)
-   - Link to page aliased to https://bit.ly/2S9EWJe_prolog
 - [maplist_3_examples.md](maplist/maplist_3_examples.md): Examples for [`maplist/3`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/3)
-   -  Link to page aliased to https://bit.ly/2KCDpao_prolog
 - [maplist_4_examples.md](maplist/maplist_4_examples.md): Examples for [`maplist/4`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/4)
-   -  Link to page aliased to https://bit.ly/2x8Ml4f_prolog
 
 
