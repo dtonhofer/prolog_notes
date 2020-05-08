@@ -41,10 +41,10 @@ And also
 
 - [Tree of Types of SWI-Prolog](swi_prolog_types)
 
-And also
+And also: Linear `foldl` and `foldr` in Prolog
 
-- [`foldl` and `foldr`](foldl_foldr/)
-
+- [`foldl` and `foldr`](foldl_foldr/), Explainer and code
+   
 And also, being often confused by Prolog naming and concepts, my way to name & graphically represent terms
 
 - [Naming and Symbols](naming_and_symbols/)
@@ -52,8 +52,8 @@ And also, being often confused by Prolog naming and concepts, my way to name & g
 And also, an amazingly large explainer on difference lists (or list differences). With illustrations.
 
 - [Difference Lists](difflists/)
-   - [difflist_length.pl](difflist_length.pl). Compute the "length of a difflist"
-   - [difflist_length_sly.pl](difflist_length_sly.pl). Compute the "length of a difflist" using exceptions
+   - [difflist_length.pl](difflists/difflist_length.pl). Determine the "length of a difflist"
+   - [difflist_length_sly.pl](difflists/difflist_length_sly.pl). Determine the "length of a difflist" using exceptions!
    
 ### Notes on `maplist/N`
 
