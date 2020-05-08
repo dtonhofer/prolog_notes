@@ -47,7 +47,7 @@ And also
 
 And also, being often confused by Prolog naming and concepts, my way to name & graphically represent terms
 
-- [Names and Symbols](names_and_symbols/)
+- [Naming and Symbols](naming_and_symbols/)
 
 And also, an amazingly large explainer on difference lists (or list differences). With illustrations.
 
