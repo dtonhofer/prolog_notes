@@ -11,3 +11,5 @@ an ocean liner).
 - [SVG file](swi_prolog_types.svg). **Best**. Can be visualized in a browser.
 
 For a description see this SWI-Prolog wiki entry: [SWI-Prolog datatypes](https://eu.swi-prolog.org/datatypes.txt)
+
+For the type-testing predicates see this SWI-Prolog manual page: [Verify Type of a Term](https://eu.swi-prolog.org/pldoc/man?section=typetest)
