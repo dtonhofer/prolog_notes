@@ -17,6 +17,23 @@ From [The Fifty-three Stations of the Tōkaidō](https://en.wikipedia.org/wiki/T
 
 ## Pages in this repository
 
+### Code grabbag
+
+Some predicates which may be of general use can be found in the [Code grabbag](blob/master/code/README.md)
+
+- [`vector_nth0/3`](https://github.com/dtonhofer/prolog_notes/blob/master/code/vector_nth0.pl): Retrieve in a list on multiple positions, by index.
+- [`splinter0/5`](https://github.com/dtonhofer/prolog_notes/blob/master/code/splinter0.pl): Break a list into three parts based on index.
+- [`replace0/5`](https://github.com/dtonhofer/prolog_notes/blob/master/code/splinter0.pl): Replace in a list based on index.
+- [`rotate_list/3`](https://github.com/dtonhofer/prolog_notes/blob/master/code/rotate_list.pl): Rotate a list left or right.
+- [`vector_replace0/4`](https://github.com/dtonhofer/prolog_notes/blob/master/code/vector_replace0.pl): Replace in a list on multiple positions, by index.
+
+### Notes on SWI-Prolog
+
+- [Loading a library](blob/master/swipl_notes/loading_lynx_library.md)
+- [Use of the caret ^ in` bagof/3`, `setof/3`](blob/master/swipl_notes/notes_on_the_caret_used_in_bagof_goals.md)
+- [Predicates for printing & formatting](prolog_notes/blob/master/swipl_notes/output_formatting.md)
+- [SWI-Prolog string modes](blob/master/swipl_notes/swipl_string_modes.md)
+
 ### On `maplist/N`
 
 - [maplist_2_examples.md](maplist/maplist_2_examples.md): Examples and major explainer for [`maplist/2`](https://www.swi-prolog.org/pldoc/man?predicate=maplist%2f2)
@@ -25,21 +42,5 @@ From [The Fifty-three Stations of the Tōkaidō](https://en.wikipedia.org/wiki/T
    -  Link to page aliased to https://bit.ly/2KCDpao_prolog
 - [maplist_4_examples.md](maplist/maplist_4_examples.md): Examples for [`maplist/4`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/4)
    -  Link to page aliased to https://bit.ly/2x8Ml4f_prolog
-
-## On printing and formatting
-
-- [Prolog printing and formatting](prolog_output_formatting.md): Relevant predicates for generating output in Prolog (by order of importance, `format/2` and all that jazz)
-   -  Link to page aliased to http://bit.ly/2PSrqJ8_prolog
-
-## Overview of comparison predicates
-
-- [Overview of comparison predicates](prolog_comparison_predicates/prolog_comparison_predicates.md), work in progress
-   - Link to page aliased to https://bit.ly/2Jk4e2o_prolog
-
-## Esoteric "string mode" flag
-
-- [SWI Prolog strings modes](swi_prolog_string_modes.md): A table inspection the "string modes" of SWI Prolog, i.e. behaviour depending on whether "strings" are lists of integers (classical, ISO-conforming) or the special atomic type `string` (SWi prolog specific).
-   -  Link to page aliased to http://bit.ly/2TtLV0H_prolog
- 
 
 
