@@ -52,7 +52,9 @@ And also, being often confused by Prolog naming and concepts, my way to name & g
 And also, an amazingly large explainer on difference lists (or list differences). With illustrations.
 
 - [Difference Lists](difflists/)
-
+   - [difflist_length.pl](difflist_length.pl). Compute the "length of a difflist"
+   - [difflist_length_sly.pl](difflist_length_sly.pl). Compute the "length of a difflist" using exceptions
+   
 ### Notes on `maplist/N`
 
 Questions on `maplist/N` are recurrent (not only on Stack Overflow), so these page collecte notes & examples:
