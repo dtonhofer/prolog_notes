@@ -13,7 +13,8 @@ From [The Fifty-three Stations of the Tōkaidō](https://en.wikipedia.org/wiki/T
 
 ## External Resources
 
-[Extensive list at klaussinani's github account](https://github.com/klaussinani/awesome-prolog#resources)
+- [The first page of the SWI-Prolog manual has a large comment with pointers to resources](https://eu.swi-prolog.org/pldoc/doc_for?object=manual)
+- [Extensive list at klaussinani's github account](https://github.com/klaussinani/awesome-prolog#resources)
 
 ## Pages in this repository
 
