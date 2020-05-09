@@ -16,11 +16,14 @@ From [The Fifty-three Stations of the Tōkaidō](https://en.wikipedia.org/wiki/T
 - [The first page of the SWI-Prolog manual has a large comment with pointers to resources](https://eu.swi-prolog.org/pldoc/doc_for?object=manual)
 - [Extensive list at klaussinani's github account](https://github.com/klaussinani/awesome-prolog#resources)
 
-## Documentation
+## Paper
 
 - 2009-11 [Coding Guidelines for Prolog](https://arxiv.org/abs/0911.2899) (Michael A. Covington, Roberto Bagnara, Richard A. O'Keefe, Jan Wielemaker, Simon Price)
 - 2019-09 [Prolog Coding Guidelines: Status and Tool Support](https://arxiv.org/abs/1909.08230v1) (Falco Nogatz, Philipp Körner, Seastuan Krings, ICLP 2019
 
+## Packages of Interest
+
+- https://github.com/shonfeder/tokenize - "A modest tokenization library for SWI-Prolog, seeking a balance between simplicity and flexibility."
 
 ## Pages in this repository
 
