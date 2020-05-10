@@ -42,33 +42,25 @@ Some predicates which may be of general use can be found in the [Code grabbag](c
 
 ### Notes on Prolog & SWI-Prolog
 
-These are notes on specific subjects taken while working with Prolog in general and SWI-Prolog in particular.
-
-- [Loading a library (the lynx library in this case)](swipl_notes/loading_lynx_library.md)
-- [Use of the caret ^ in` bagof/3`, `setof/3`](swipl_notes/notes_on_the_caret_used_in_bagof_goals.md)
-- [Predicates for printing & formatting](swipl_notes/output_formatting.md)
-- [SWI-Prolog string modes](swipl_notes/swipl_string_modes.md)
-
-And also
+#### SWI-Prolog's tree of datatypes
 
 - [Tree of Types of SWI-Prolog](swi_prolog_types)
-
-And also: Linear `foldl` and `foldr` in Prolog
-
-- [`foldl` and `foldr`](foldl_foldr/), Explainer and code
    
-And also, being often confused by Prolog naming and concepts, my way to name & graphically represent terms
+#### Naming and graphing
+
+Being often confused by Prolog naming and concepts, my way to name & graphically represent terms
 
 - [Naming and Symbols](naming_and_symbols/)
 - ![Naming and Symbols](naming_and_symbols/pics/Symbols.png)
 
-And also, an amazingly large explainer on difference lists (or list differences). With illustrations.
+#### Difference List Explainer
+
+An surprisingly large explainer on difference lists (or list differences). With illustrations. Contains code to
+compute the length of a difference list.
 
 - [Difference Lists](difflists/)
-   - [difflist_length.pl](difflists/difflist_length.pl). Determine the "length of a difflist"
-   - [difflist_length_sly.pl](difflists/difflist_length_sly.pl). Determine the "length of a difflist" using exceptions!
    
-### Notes on `maplist/N`
+#### Notes on `maplist/N`
 
 Questions on `maplist/N` are recurrent (not only on Stack Overflow), so these page collecte notes & examples:
 
@@ -76,5 +68,16 @@ Questions on `maplist/N` are recurrent (not only on Stack Overflow), so these pa
 - [maplist_3_examples.md](maplist/maplist_3_examples.md): Examples for [`maplist/3`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/3)
 - [maplist_4_examples.md](maplist/maplist_4_examples.md): Examples for [`maplist/4`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/4)
 
+#### Linear `foldl` and `foldr` in Prolog
 
+- [`foldl` and `foldr`](foldl_foldr/), Explainer and code
+
+#### Various
+
+These are notes on specific subjects taken while working with Prolog in general and SWI-Prolog in particular.
+
+- [Loading a library (the lynx library in this case)](swipl_notes/loading_lynx_library.md)
+- [Use of the caret ^ in` bagof/3`, `setof/3`](swipl_notes/notes_on_the_caret_used_in_bagof_goals.md)
+- [Predicates for printing & formatting](swipl_notes/output_formatting.md)
+- [SWI-Prolog string modes](swipl_notes/swipl_string_modes.md)
 
