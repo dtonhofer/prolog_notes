@@ -27,25 +27,39 @@ Compare with `is_list/1` which may do the converse as computation proceeds: `fal
 even better `unknown`, `unknown`, `unknown`, `true`, but Prolog has no `unknown` in spite of being all constructivist)
 which should be properly named `is_constrained_enough_to_be_list_at_this_point/1`.
 
-### Note on length
+### Note on "length of a difflist"
 
-This code:
+The following code defines predicate `length_dl/3` (and a more extensive `length_dl/5`), which relates a
+difflist structured as `Tip-Fin` with its length (which is the number of items on the backbone between
+`Tip` and `Fin`). Alternatively, if the difflist passed to `length_dl/3` is fresh, a difflist template,
+containing only fresh variables, of successively larger length is generated.
 
-[difflist_length.pl](difflist_length.pl)
+If the passed difflist `Tip-Fin` turns out to be a proper/closed list at `Tip` position and a suffix of
+`Tip` at `Fin` position, the predicate computes the length of the closed list (i.e. behaves as
+[`length/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=length/2)).
 
-defines predicate `length_dl/3`, which relates a _Tip-Fin_ difflist with its length (which is the number of items on
-the backbone between _Tip_ and _Fin_). If the difflist turns out to be a proper/closed list, it computes the length of
-the closed list (i.e. behaves as [`length/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=length/2)). If the difflist 
-does not follow difflist structure conventions, it throws `domain_error`.
+If the difflist does not follow difflist structure conventions, it throws.
 
-This code:
+To try it out, download these files:
 
-[difflist_length_sly.pl](difflist_length_sly.pl) _Just an experiment_
+- [misc.pl](code/misc.pl) - Miscellaneous helper predicates.
+- [length_dl.pl](code/length_dl.pl) - Core predicates `length/3` and `length/5` 
+- [length_dl_tests.pl](code/length_dl_tests.pl) - Unit tests for `length/5` 
 
-defines predicate `length_dl_sly/2`, which also relates a _Tip-Fin_ difflist with its length, but suing an inner predicate
-which slyly first closes the list, employs the standard `length/2` to determine the length of the now closed list, then
-throws an exception to both roll back to the non-closed difflist state and get the length value out of the state
-that is being erased. It doesn't detect all cases of badly formed difflists though. 
+Then:
+
+- load file `length_dl_tests.pl` into SWI Prolog. This includes the two other files. 
+- run predicate `rt/0` to start the unit tests.
+
+Another approach at computing difflist length is given by this code (which is more experimental):
+
+- [length_dl_sly.pl](code/length_dl_sly.pl)
+
+This defines predicate `length_dl_sly/2`, which also relates a `Tip-Fin` difflist with its length, but uses an inner predicate
+which (slyly) first closes the list (i.e. transforms the difflist into a proper list by constraining `Fin` to be `[]` ,
+employs the standard `length/2` to determine the length of the now closed list, and finally throws an exception to both 
+roll back to the non-closed difflist state and get the length value "out of" the state that is being rolled-back. This allows
+one to write simple code! It doesn't detect all cases of badly formed difflists. 
 
 ## Naming and Graphing
 
@@ -155,7 +169,7 @@ rt :- run_tests(difflist).
 
 ### Extensive Form, with Debug Output
 
-It is so extensive that is is better in a separate file: [dl.pl](dl.pl).
+It is so extensive that is is better in a separate file: [difflist_example_code.pl](code/difflist_example_code.pl).
 
 Running it gives the following output. The integer shows the recursion depth (alternatively, the 
 index of the input list item that is being currently copied). Note that the `dl_append` operation
@@ -186,7 +200,7 @@ true.
 
 ## Graphing the data structure
 
-We here use the variable names from the extensive code version, [dl.pl](dl.pl).
+We here use the variable names from the extensive code version, [difflist_example_code.pl](code/difflist_example_code.pl).
 
 We want to append three items to a newly constructed difference list.
 
