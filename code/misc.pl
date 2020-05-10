@@ -12,7 +12,7 @@
 %
 % For more information, please refer to <http://unlicense.org/>
 % ============================================================================
-% VERSION:   Sat  9 May 13:26:47 CEST 2020
+% VERSION: Sun 10 May 12:43:19 CEST 2020
 % ============================================================================
 % Various pieces of code that may be useful
 % ============================================================================
@@ -22,29 +22,40 @@
 % is precise in what it expected and throws an exception if there is a mismatch
 % in argument count or type. This is unfortunate in situations of dynamic code
 % or code lacking coverage. Use this predicate to make format generate "Text"
-% from "Msg" and "Args", catch any exceptions generated and generate some 
+% from "Msg" and "Args", catch any exceptions generated and generate some
 % replacement message instead.
 %
 % textize(+Msg,+Args,-Text)
 % ===
 
-textize(Msg,Args,Text) :-
+textize(Msg,Args,FinalText) :-
    (is_list(Args) -> ListyArgs = Args ; ListyArgs = [Args]),
    catch(
       % happy path
-      with_output_to(string(Text),format(Msg,ListyArgs)),
-      _,
+      with_output_to(string(FinalText),format(Msg,ListyArgs)),
+      _Catch_all_catcher,
       catch(
          % we end up here if format/2 doesn't like what it sees; finagle something!
-         (maplist([X,Buf]>>with_output_to(string(Buf),format("~q",[X])),[Msg|ListyArgs],L),atomic_list_concat(["SPROING!"|L]," & ",Text)),
-         _,
-         "WTF,MAN!")).   
-         
+         (maplist([X,Buf]>>with_output_to(string(Buf),format("~q",[X])),[Msg|ListyArgs],L),
+          atomic_list_concat(["Replacement Msg!"|L]," & ",FinalText)),
+         _Another_catch_all_catcher,
+         throw("Can't happen"))).
+
 % ===
 % This fixes one of my pet peeves of Prolog: var(X) is badly named. It should
 % fresh(X) or freshvar(X), because we are not testing whether X is a variable (we
-% know *that*), but whether it references a fresh 8as yet unconstrained) term!
+% know *that*), but whether it references a fresh (as yet unconstrained) term!
+% fresh/1 and cured/1 sound better to me, they also have same number of characters,
+% so align nicely in source code.
 % ===
 
-fresh(X)    :- var(X).
-nonfresh(X) :- nonvar(X).
+fresh(X) :- var(X).
+cured(X) :- nonvar(X).
+
+% ===
+% Tagging, used in pre-processing arguments before they are used so that
+% the correct clause can be easily matched.
+% ===
+
+fresh_tag(X,fresh(X)) :- var(X),!.
+fresh_tag(X,cured(X)) :- nonvar(X),!.
