@@ -1,4 +1,5 @@
 # prolog_notes
+
 Some notes taken while working on Prolog
 
 ## The Logic Programming Landscape
@@ -20,6 +21,7 @@ From [The Fifty-three Stations of the Tōkaidō](https://en.wikipedia.org/wiki/T
 
 - 2009-11 [Coding Guidelines for Prolog](https://arxiv.org/abs/0911.2899) (Michael A. Covington, Roberto Bagnara, Richard A. O'Keefe, Jan Wielemaker, Simon Price)
 - 2019-09 [Prolog Coding Guidelines: Status and Tool Support](https://arxiv.org/abs/1909.08230v1) (Falco Nogatz, Philipp Körner, Seastuan Krings, ICLP 2019
+- 2020-01 [Drawing Prolog Search Trees. A Manual for Teachers and Students of Logic Programming](https://arxiv.org/abs/2001.08133v1) (Johan Bos)
 
 ## Packages of Interest
 
@@ -57,6 +59,7 @@ And also: Linear `foldl` and `foldr` in Prolog
 And also, being often confused by Prolog naming and concepts, my way to name & graphically represent terms
 
 - [Naming and Symbols](naming_and_symbols/)
+- ![Naming and Symbols](naming_and_symbols/pics/Symbols.png)
 
 And also, an amazingly large explainer on difference lists (or list differences). With illustrations.
 
