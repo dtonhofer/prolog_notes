@@ -13,8 +13,14 @@
 % For more information, please refer to <http://unlicense.org/>
 % ============================================================================
 % Unit tests for the predicate relating a difference list (aka list
-% difference, difflist) to its length.
-%% ===========================================================================
+% difference, difflist) to its length, length_dl/5.
+%
+% VERSION:   Sun 10 May 20:19:44 CEST 2020
+% RUNS ON:   SWI Prolog 8.1.24
+% DOCS:      The full difflist explainer:
+%            https://bit.ly/2STX769_prolog
+%            https://bit.ly/2WmphYy_prolog
+% ============================================================================
 
 :- include(length_dl).
 
@@ -35,11 +41,11 @@ test(not_listtype, throws(length_dl(contract_error,listtype(_),_))) :-
 
 test(not_intention, throws(length_dl(contract_error,intention(_),_))) :-
    length_dl(X-X,5,closed,foo).
-   
+
 % ---
 % Trying "already closed" difflists (i.e. plain lists)
 % ---
-   
+
 test(empty_closed_list, true([Length,Listtype]==[0,closed])) :-
    DL=X-X,
    X=[],
@@ -91,21 +97,21 @@ test(intention_bad_guess_4, throws(length_dl(consistency_error,_,_))) :-
    length_dl([1,2,3]-[],_,_,verify).
 
 % ---
-% Templating: the difflist is fresh and is set to a difflist either of a 
+% Templating: the difflist is fresh and is set to a difflist either of a
 % given length, or of increasing length at backtracking
 % ---
 
 test(templatize_difflist_of_length_0) :-
    length_dl(DL,0,open,templatize),
    DL=X-X,fresh(X).
-   
-test(templatize_difflist_of_length_0, nondet) :-   
+
+test(templatize_difflist_of_length_0, nondet) :-
    between(0,9,L),                   % generate increasing L on backtracking
-   assertion(cured(L)),              % evidently          
+   assertion(cured(L)),              % evidently
    length_dl(DL,L,open,templatize),  % generate difflist template of length L
-   assertion(cured(DL)),             % evidently          
-   length_dl(DL,L,open,verify).      % verify difflist template of length L 
-   
+   assertion(cured(DL)),             % evidently
+   length_dl(DL,L,open,verify).      % verify difflist template of length L
+
 % ---
 % Analyzing: (Verifying/Determining) open difflists: the difflist is nonfresh/cured
 % and its length and its type are determined
@@ -161,7 +167,7 @@ test(not_a_difflist_3, throws(length_dl(structure_error,_,_))) :-
 
 test(not_a_difflist_4, throws(length_dl(structure_error,_,_))) :-
    length_dl([1,2,3|_X]-_Y,_,_,_).
-   
+
 test(not_a_difflist_5, throws(length_dl(structure_error,_,_))) :-
    length_dl([1,2,3|_X]-[],_,_,_).
 
@@ -176,7 +182,7 @@ test(not_a_difflist_8, throws(length_dl(structure_error,_,_))) :-
 
 test(not_a_difflist_9, throws(length_dl(structure_error,_,_))) :-
    length_dl([1,2,3|X]-[1,2|X],_,_,_).
-   
+
 :- end_tests(length_dl).
 
 rt :- run_tests(length_dl).

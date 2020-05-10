@@ -16,7 +16,7 @@ If the passed difflist `Tip-Fin` turns out to be a proper/closed list at `Tip` p
 
 If the difflist does not follow difflist structure conventions, it throws.
 
-To try it out, download these files (one zip file: [length_dl.pl](length_dl.pl))
+To try it out, download these files (one zip file: [length_dl.zip](length_dl.zip))
 
 - [misc.pl](misc.pl) - Miscellaneous helper predicates.
 - [length_dl.pl](length_dl.pl) - Core predicates `length/3` and `length/5` 

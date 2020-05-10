@@ -16,13 +16,13 @@
 % ============================================================================
 % Various pieces of code that may be useful
 % ============================================================================
-    
+
 % ===
 % format/2 (https://eu.swi-prolog.org/pldoc/doc_for?object=format/2)
 % is precise in what it expected and throws an exception if there is a mismatch
 % in argument count or type. This is unfortunate in situations of dynamic code
 % or code lacking coverage. Use this predicate to make format generate "Text"
-% from "Msg" and "Args", catch any exceptions generated and generate some 
+% from "Msg" and "Args", catch any exceptions generated and generate some
 % replacement message instead.
 %
 % textize(+Msg,+Args,-Text)
@@ -40,7 +40,7 @@ textize(Msg,Args,FinalText) :-
           atomic_list_concat(["Replacement Msg!"|L]," & ",FinalText)),
          _Another_catch_all_catcher,
          throw("Can't happen"))).
-         
+
 % ===
 % This fixes one of my pet peeves of Prolog: var(X) is badly named. It should
 % fresh(X) or freshvar(X), because we are not testing whether X is a variable (we
