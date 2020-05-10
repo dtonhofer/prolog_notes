@@ -31,7 +31,7 @@ Then:
 
 Another approach at computing difflist length is given by this code (which is more experimental):
 
-- [length_dl_sly.pl](code/length_dl_sly.pl)
+- [length_dl_sly.pl](length_dl_sly.pl)
 
 This defines predicate `length_dl_sly/2`, which also relates a `Tip-Fin` difflist with its length, but uses 
 an inner predicate which first closes the list (i.e. transforms the difflist into a proper list by constraining
