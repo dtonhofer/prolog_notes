@@ -1,7 +1,5 @@
 # SWI Prolog strings modes: How is something enclosed by double quotes `"` interpreted?
 
-- This page is also reachable via http://bit.ly/2TtLV0H_prolog
-
 ## Intro
 
 This is an SWI-Prolog specific extension to ISO-conforming Prolog: 

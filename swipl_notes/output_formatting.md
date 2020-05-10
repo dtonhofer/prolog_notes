@@ -1,7 +1,5 @@
 # Relevant predicates for generating output in Prolog (by order of importance)
 
-(This page can also be accessed through http://bit.ly/38wQAmS_prolog)
-
 _Work in progress_
 
 - Some predicates are SWI-Prolog specific.

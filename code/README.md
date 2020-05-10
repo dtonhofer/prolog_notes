@@ -36,7 +36,7 @@ vector_nth0(_9584,[a,b,c,b,e,c,g],[b,c,a]) --> [1,2,0],[a,b,c,b,e,c,g],[b,c,a];
                                                [3,5,0],[a,b,c,b,e,c,g],[b,c,a]
 ```
 
-## `splinter0/5` and `replace0/5`
+## `splinter0/5`
 
 - Code: [`splinter0.pl`](splinter0.pl)
 - Short link: https://bit.ly/3ekBSU3_prolog
@@ -67,15 +67,26 @@ splinter0(List, N, Front, Element, Back) :-
    append(Front,[Element|Back],List).
 ```
 
-but once starts to consider all the cases depending on arguments being `var(X)`/`nonvar(X)`, it becomes a bit more involved.
+but once starts to consider all the cases depending on arguments being `var(X)`/`nonvar(X)`, it becomes a
+bit more involved.
+
+ ## `replace0/5`
 
 One can immediately build a replace-by-index from `splinter0/5`:
 
 ```
-replace0(+List, +N, ?NewElement, ?OldElement, ?NewList)
+replace0(List, N, NewItem, OldItem, NewList) :-
+   splinter0(List, N, Prefix, OldItem, Suffix),
+   append([Prefix, [NewItem], Suffix], NewList).
 ```
 
-It's in the same file.
+The predicate 
+
+```
+replace0(+List, +N, ?NewItem, ?OldItem, ?NewList)
+```
+
+is in the same file [`splinter0.pl`](splinter0.pl). 
 
 ## `rotate_list/3`
 
@@ -94,14 +105,28 @@ rotate_list(+List,+N,?Rotated).
 - N>0 : Rotate "leftwards": move a prefix of (N mod Length) list items to the back of the list to form the result
 - N<0 : Rotate "rightwards": move a suffix of (abs(N) mod Length) list items to the back of the list to form the result (however, this is done completely the same way as for the case N>0) 
 
+Examples:
+
+```
+rotate_list([1,2,3],-1,R) ---> R=[3,1,2].
+rotate_list([1,2,3],+0,R) ---> R=[1,2,3].
+rotate_list([1,2,3],+1,R) ---> R=[2,3,1].
+```
+
 ## `vector_replace0/4`
 
 - Code: [`vector_replace0.pl`](vector_replace0.pl)
-- Short link: https://bit.ly/3aGYhIk_prolog
-
+- Short link: https://bit.ly/35F3zTE_prolog
 A "vectorized" replace-by-index using `maplist/4`, `foldl/4` and
 `library(assoc)` (association lists via AVL trees).
 
 ```
 vector_replace0(ListIn,ReplacePairs,ListOut,ReplacedPairs)
+```
+
+Examples:
+
+```
+vector_replace0([a,b,c,d],[3-y,1-x],LO,RPs)         ---> LO=[a,x,c,y], RPs=[1-b,3-d].
+vector_replace0([a,b,c,d],[0-e,1-f,2-g,3-h],LO,RPs) ---> LO=[e,f,g,h], RPs=[0-a,1-b,2-c,3-d].
 ```
