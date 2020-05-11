@@ -17,6 +17,7 @@ From [The Fifty-three Stations of the Tōkaidō](https://en.wikipedia.org/wiki/T
 - [The first page of the SWI-Prolog manual has a large comment with pointers to resources](https://eu.swi-prolog.org/pldoc/doc_for?object=manual) ... sometimes I add something to that comment.
 - [Extensive list at klaussinani's github account](https://github.com/klaussinani/awesome-prolog#resources)
 - [The Prolog Syntax Highlighting file for KDE](https://cgit.kde.org/syntax-highlighting.git/tree/data/syntax/prolog.xml) (as used by the [Kate editor](https://docs.kde.org/trunk5/en/applications/katepart/highlight.html))
+- [Bug Hunting Toolbox Wiki Page at SWI-Prolog Discourse Site](https://swi-prolog.discourse.group/t/bug-hunting-toolbox/710)
 
 ### "The Power of Prolog" on YouTube
 
@@ -58,6 +59,7 @@ A selection:
 - 2009-11 [Coding Guidelines for Prolog](https://arxiv.org/abs/0911.2899) (Michael A. Covington, Roberto Bagnara, Richard A. O'Keefe, Jan Wielemaker, Simon Price)
 - 2015-10 [The Inductive Constraint Programming Loop](https://arxiv.org/abs/1510.03317) (
 Christian Bessiere, Luc De Raedt, Tias Guns, Lars Kotthoff, Mirco Nanni, Siegfried Nijssen, Barry O'Sullivan, Anastasia Paparrizou, Dino Pedreschi, Helmut Simonis). Appears in modified form in _IEEE Intelligent Systems_, September/October 2017.
+- 2016-07 [Indexing `dif/2`](https://arxiv.org/abs/1607.01590v1) (Ulrich Neumerkel, Stefan Kral)
 - 2017-09 [plspec – A Specification Language for Prolog Data](https://www.krin.gs/publication/koerner-plspec-declare17/koerner-plspec-declare17.pdf) (Philipp Körner, Sebastian Krings, _DECLARE 2017_)
 - 2019-09 [Prolog Coding Guidelines: Status and Tool Support](https://arxiv.org/abs/1909.08230v1) (Falco Nogatz, Philipp Körner, Seastuan Krings, ICLP 2019
 - 2020-01 [Drawing Prolog Search Trees. A Manual for Teachers and Students of Logic Programming](https://arxiv.org/abs/2001.08133v1) (Johan Bos)
