@@ -28,6 +28,7 @@ From [The Fifty-three Stations of the Tōkaidō](https://en.wikipedia.org/wiki/T
 - 2009-11 [Coding Guidelines for Prolog](https://arxiv.org/abs/0911.2899) (Michael A. Covington, Roberto Bagnara, Richard A. O'Keefe, Jan Wielemaker, Simon Price)
 - 2015-10 [The Inductive Constraint Programming Loop](https://arxiv.org/abs/1510.03317) (
 Christian Bessiere, Luc De Raedt, Tias Guns, Lars Kotthoff, Mirco Nanni, Siegfried Nijssen, Barry O'Sullivan, Anastasia Paparrizou, Dino Pedreschi, Helmut Simonis). Appears in modified form in _IEEE Intelligent Systems_, September/October 2017.
+- 2017-09 [plspec – A Specification Language for Prolog Data](https://www.krin.gs/publication/koerner-plspec-declare17/koerner-plspec-declare17.pdf) (Philipp Körner, Sebastian Krings, _DECLARE 2017_)
 - 2019-09 [Prolog Coding Guidelines: Status and Tool Support](https://arxiv.org/abs/1909.08230v1) (Falco Nogatz, Philipp Körner, Seastuan Krings, ICLP 2019
 - 2020-01 [Drawing Prolog Search Trees. A Manual for Teachers and Students of Logic Programming](https://arxiv.org/abs/2001.08133v1) (Johan Bos)
 
