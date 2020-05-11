@@ -14,15 +14,40 @@ From [The Fifty-three Stations of the Tōkaidō](https://en.wikipedia.org/wiki/T
 
 ## External Resources
 
-- [The first page of the SWI-Prolog manual has a large comment with pointers to resources](https://eu.swi-prolog.org/pldoc/doc_for?object=manual)
+- [The first page of the SWI-Prolog manual has a large comment with pointers to resources](https://eu.swi-prolog.org/pldoc/doc_for?object=manual) ... sometimes I add something to that comment.
 - [Extensive list at klaussinani's github account](https://github.com/klaussinani/awesome-prolog#resources)
+- [The Prolog Syntax Highlighting file for KDE](https://cgit.kde.org/syntax-highlighting.git/tree/data/syntax/prolog.xml) (as used by the [Kate editor](https://docs.kde.org/trunk5/en/applications/katepart/highlight.html))
 
-### YouTube
+### "The Power of Prolog" on YouTube
 
-- [Sparrows on Eagles: Delegate your work to Prolog!](https://www.youtube.com/watch?v=vdabv9EkYrY) (22 Mar 2020)
-- [Clean vs. Defaulty Representations in Prolog](https://www.youtube.com/watch?v=KJ8uZiWpomg) (10 May 2020)
+[https://www.youtube.com/channel/UCFFeNyzCEQDS4KCecugmotg](Home)
 
-## Papers of Interest
+A selection:
+
+- Logical Foundations of Prolog
+  - [Logic](https://www.youtube.com/watch?v=nlTZQ0FF2Eo) (6 Mar 2019)
+  - [Predicate Logic](https://www.youtube.com/watch?v=PCO3lzGfU90) (24 Jul 2019)
+  - [Horn Clauses](https://www.youtube.com/watch?v=hgw59_HBU2A) (21 Oct 2019)
+- Prolog Applications
+  - [Collatz Conjecture in Prolog](https://www.youtube.com/watch?v=XTrLbfl-Ag0) (12 Nov 2018)
+  - [Sudoku in Prolog](https://www.youtube.com/watch?v=5KUdEZTu06o) (16 Feb 2019)
+  - [N-Queens in Prolog](https://www.youtube.com/watch?v=l_tbL9RjFdo) (14 Mar 2019)
+  - [School Timetabling with Prolog](https://www.youtube.com/watch?v=uKvS62avplE) (2 Jan 2020)
+- Prolog Style and Technique
+  - [Clean vs. Defaulty Representations in Prolog](https://www.youtube.com/watch?v=KJ8uZiWpomg) (10 May 2020)
+  - [Representing Strings in Prolog](https://www.youtube.com/watch?v=plvBFNi0cVw) (10 Feb 2020)
+  - [Sparrows on Eagles: Delegate your work to Prolog!](https://www.youtube.com/watch?v=vdabv9EkYrY) (22 Mar 2020)
+- Prolog Language: Synatx and Semantics
+  - [Prolog Lists](https://www.youtube.com/watch?v=9JzwUnMSCdA) (16 Jul 2019)
+  - [Prolog Integer Arithmetic](https://www.youtube.com/watch?v=sHo6-hk21L8) (16 Jul 2019)
+  - [Meta-Predicates in Prolog](https://www.youtube.com/watch?v=-nlI33r-P70) (11 Feb 2019)
+  - [List differences in Prolog](https://www.youtube.com/watch?v=6egAF4-HVzw) (12 May 2019)
+- Prolog Development Environment
+  - [Prolog development with GNU Emacs](https://www.youtube.com/watch?v=WdWOKbTX-i4) (24 Mar 2014)
+  - [ediprolog: Emacs Does Interactive Prolog](https://www.youtube.com/watch?v=jMg8sY2R930) (15 Jul 2019)
+  - [Debugging Prolog Code](https://www.youtube.com/watch?v=4IWruicMd4c) (22 Jul 2019)
+  
+### Papers of Interest
 
 - 1991-01 [Applying Techniques to Skeletons](https://www.researchgate.net/publication/220986744_Applying_Techniques_to_Skeletons) (Leon Sterling, Marc Kirschenbaum)
 - 1995-XX [Higher-order logic programming in Prolog](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.34.9690) (Lee Naish)
@@ -37,7 +62,7 @@ Christian Bessiere, Luc De Raedt, Tias Guns, Lars Kotthoff, Mirco Nanni, Siegfri
 - 2019-09 [Prolog Coding Guidelines: Status and Tool Support](https://arxiv.org/abs/1909.08230v1) (Falco Nogatz, Philipp Körner, Seastuan Krings, ICLP 2019
 - 2020-01 [Drawing Prolog Search Trees. A Manual for Teachers and Students of Logic Programming](https://arxiv.org/abs/2001.08133v1) (Johan Bos)
 
-## Packages of Interest
+### Packages of Interest
 
 - https://github.com/shonfeder/tokenize - "A modest tokenization library for SWI-Prolog, seeking a balance between simplicity and flexibility."
 
