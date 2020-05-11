@@ -20,7 +20,7 @@ From [The Fifty-three Stations of the Tōkaidō](https://en.wikipedia.org/wiki/T
 
 ### "The Power of Prolog" on YouTube
 
-[https://www.youtube.com/channel/UCFFeNyzCEQDS4KCecugmotg](Home)
+[https://www.youtube.com/channel/UCFFeNyzCEQDS4KCecugmotg](https://www.youtube.com/channel/UCFFeNyzCEQDS4KCecugmotg)
 
 A selection:
 
