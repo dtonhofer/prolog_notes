@@ -19,6 +19,8 @@ From [The Fifty-three Stations of the Tōkaidō](https://en.wikipedia.org/wiki/T
 
 ## Papers of Interest
 
+- 1991-01 [Applying Techniques to Skeletons](https://www.researchgate.net/publication/220986744_Applying_Techniques_to_Skeletons) (Leon Sterling, Marc Kirschenbaum)
+- 1995-XX [Higher-order logic programming in Prolog](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.34.9690) (Lee Naish)
 - 1991-02 [A type system for logic programs](https://www.sciencedirect.com/science/article/pii/074310669180002U) (Eyal Yardeni, Ehud Shapiro. In: _The Journal of Logic Programming_ Volume 10, Issue 2)
 - 1991-XX [Uniform Proofs as a Foundation for Logic Programming](http://www.lix.polytechnique.fr/~dale/papers/apal91.pdf) (Dale Miller, Gopalan Nadathur, Frank Pfenning, Andre Scedrov) --- the Lambda-Prolog way
 - 2003-10 [The Essence of Strategic Programming](https://www.researchgate.net/publication/277289331_The_Essence_of_Strategic_Programming) (Ralf Lämmel, Eelco Visser, Joost Visser) --- generic programming with the use of strategies
