@@ -17,6 +17,11 @@ From [The Fifty-three Stations of the Tōkaidō](https://en.wikipedia.org/wiki/T
 - [The first page of the SWI-Prolog manual has a large comment with pointers to resources](https://eu.swi-prolog.org/pldoc/doc_for?object=manual)
 - [Extensive list at klaussinani's github account](https://github.com/klaussinani/awesome-prolog#resources)
 
+### YouTube
+
+- [Sparrows on Eagles: Delegate your work to Prolog!](https://www.youtube.com/watch?v=vdabv9EkYrY) (22 Mar 2020)
+- [Clean vs. Defaulty Representations in Prolog](https://www.youtube.com/watch?v=KJ8uZiWpomg) (10 May 2020)
+
 ## Papers of Interest
 
 - 1991-01 [Applying Techniques to Skeletons](https://www.researchgate.net/publication/220986744_Applying_Techniques_to_Skeletons) (Leon Sterling, Marc Kirschenbaum)
