@@ -1,7 +1,8 @@
 # Examples for the Prolog predicate `maplist/3` 
 
-- Here: `maplist/3` (1 goal, 2 list to relate) 
+
 - For examples about `maplist/2` (1 goal, 1 list to verify) see [this page](maplist_2_examples.md)
+- On this page: `maplist/3` (1 goal, 2 lists to relate) 
 - For examples about `maplist/4` (1 goal, 3 lists to relate) see [this page](maplist_4_examples.md)
 
 ## About
