@@ -21,6 +21,7 @@ For the type-testing predicates see this SWI-Prolog manual page: [Verify Type of
 
 ## Terms can appear in Roles
 
+- Role of a Skeleton. These are terms whose arguments are all different variables. Created by `functor/3`. 
 - Role of a Predicate
   - Predicate of various arities, arity 0 is allowed! (as in `foo :- bar.`)
   - Role of a predicate with arguments partially filled-in: This is called a "Closure" (not quite the same as a "Closure" of functional programming)
