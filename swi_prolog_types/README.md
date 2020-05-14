@@ -38,27 +38,13 @@ For the type-testing predicates see this SWI-Prolog manual page: [Verify Type of
 
 What roles do compound terms of arity 0 take on (which are not atoms, compare `a` and `a()`)?
 
-Compare:
+## Taking apart the term
 
-```
-?- compound_name_arity(X,f,0).
-X = f().
+Résumé:
 
-?- compound_name_arity(f(),F,A).
-F = f,
-A = 0.
+![Disassembling Prolog Terms](dissasembling_compound_terms.png)
 
-?- compound_name_arity(f,F,A).
-ERROR: Type error: `compound' expected, found `f' (an atom)
-ERROR: In:
-ERROR:   [10] compound_name_arity(f,_14344,_14346)
-ERROR:    [9] <user>
-?- 
-```
-
-## Taking apart the compound term
-
-### Not a compound term
+### Not a compound term, but atomic
 
 ```
 ?- atomic(foo).
