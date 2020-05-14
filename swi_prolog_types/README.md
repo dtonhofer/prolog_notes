@@ -31,9 +31,9 @@ For the type-testing predicates see this SWI-Prolog manual page: [Verify Type of
   - These appear on the right side of the `is/2^ predicate.
   - Constants are atoms.
   - Functions are compound terms of arity >= 1. 
-  - Might be of interest to have extension to allow functions other-than-arithmetic and in other places than on the right side of `is/2`, while not going fully "logic-functional" as for the [Curry]8https://en.wikipedia.org/wiki/Curry_%28programming_language%29) language.
+  - Might be of interest to have extension to allow functions other-than-arithmetic and in other places than on the right side of `is/2`, while not going fully "logic-functional" as for the [Curry](https://en.wikipedia.org/wiki/Curry_%28programming_language%29) language.
 - Role of an arbitrary tree structure
-- Role of Lambda Expressions. Lambda Expressions are used to "wra around" other predicates to make meta-calling convenient. See: https://www.swi-prolog.org/pldoc/man?section=yall
+- Role of Lambda Expressions. Lambda Expressions are used to "wra around" other predicates to make meta-calling convenient. See: [`library(yall)`](https://www.swi-prolog.org/pldoc/man?section=yall)
    - "Lambda Prolog" Lambda expressions are something else...
 
 What roles do compound terms of arity 0 take on (which are not atoms, compare `a` and `a()`)?
