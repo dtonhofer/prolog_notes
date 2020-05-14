@@ -21,6 +21,7 @@ For the type-testing predicates see this SWI-Prolog manual page: [Verify Type of
 
 ## Terms can appear in Roles
 
+- Role of a Skeleton. These are terms whose arguments are all different variables. Created by `functor/3`. 
 - Role of a Predicate
   - Predicate of various arities, arity 0 is allowed! (as in `foo :- bar.`)
   - Role of a predicate with arguments partially filled-in: This is called a "Closure" (not quite the same as a "Closure" of functional programming)
@@ -31,85 +32,16 @@ For the type-testing predicates see this SWI-Prolog manual page: [Verify Type of
   - These appear on the right side of the `is/2^ predicate.
   - Constants are atoms.
   - Functions are compound terms of arity >= 1. 
-  - Might be of interest to have extension to allow functions other-than-arithmetic and in other places than on the right side of `is/2`, while not going fully "logic-functional" as for the [Curry]8https://en.wikipedia.org/wiki/Curry_%28programming_language%29) language.
+  - Might be of interest to have extension to allow functions other-than-arithmetic and in other places than on the right side of `is/2`, while not going fully "logic-functional" as for the [Curry](https://en.wikipedia.org/wiki/Curry_%28programming_language%29) language.
 - Role of an arbitrary tree structure
-- Role of Lambda Expressions. Lambda Expressions are used to "wra around" other predicates to make meta-calling convenient. See: https://www.swi-prolog.org/pldoc/man?section=yall
+- Role of Lambda Expressions. Lambda Expressions are used to "wra around" other predicates to make meta-calling convenient. See: [`library(yall)`](https://www.swi-prolog.org/pldoc/man?section=yall)
    - "Lambda Prolog" Lambda expressions are something else...
 
 What roles do compound terms of arity 0 take on (which are not atoms, compare `a` and `a()`)?
 
-## Taking apart the term
+## Disassembling the term
 
 Résumé:
 
-![Disassembling Prolog Terms](dissasembling_compound_terms.png)
+![Disassembling Terms](disassembling_terms/disassembling_terms.png)
 
-### Not a compound term, but atomic
-
-```
-?- atomic(foo).
-true.
-```
-
-```
-?- compound_name_arity(foo,F,A).
-ERROR: Type error: `compound' expected, found `foo' (an atom)
-```
-
-```
-?- functor(foo,F,A).
-F = foo,
-A = 0.
-```
-
-```
-?- foo =.. L.
-L = [foo].
-```
-
-### Arity 0
-
-```
-?- atomic(foo()).
-false.
-```
-
-```
-?- compound_name_arity(foo(),F,A).
-F = foo,
-A = 0.
-```
-
-```
-?- functor(foo(),F,A).
-ERROR: Domain error: `compound_non_zero_arity' expected, found `foo()'
-```
-
-```
-?- foo() =.. L.
-ERROR: Domain error: `compound_non_zero_arity' expected, found `foo()'
-```
-
-### Arity >0
-
-```
-?- atomic(foo(1)).
-false.
-```
-
-```
-?- compound_name_arity(foo(1),F,A).
-F = foo,
-A = 1.
-```
-
-```
-?- functor(foo(1),F,A).
-F = foo,
-A = 1.
-```
-
-```
-?- foo(1) =.. L.
-L = [foo, 1].
-```
