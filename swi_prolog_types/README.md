@@ -42,5 +42,5 @@ What roles do compound terms of arity 0 take on (which are not atoms, compare `a
 
 Résumé:
 
-![Disassembling Terms](disassembling_terms.png)
+![Disassembling Terms](disassembling_terms/disassembling_terms.png)
 
