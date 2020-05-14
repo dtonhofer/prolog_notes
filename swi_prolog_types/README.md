@@ -38,78 +38,9 @@ For the type-testing predicates see this SWI-Prolog manual page: [Verify Type of
 
 What roles do compound terms of arity 0 take on (which are not atoms, compare `a` and `a()`)?
 
-## Taking apart the term
+## Disassembling the term
 
 Résumé:
 
-![Disassembling Prolog Terms](dissasembling_compound_terms.png)
+![Disassembling Terms](disassembling_terms.png)
 
-### Not a compound term, but atomic
-
-```
-?- atomic(foo).
-true.
-```
-
-```
-?- compound_name_arity(foo,F,A).
-ERROR: Type error: `compound' expected, found `foo' (an atom)
-```
-
-```
-?- functor(foo,F,A).
-F = foo,
-A = 0.
-```
-
-```
-?- foo =.. L.
-L = [foo].
-```
-
-### Arity 0
-
-```
-?- atomic(foo()).
-false.
-```
-
-```
-?- compound_name_arity(foo(),F,A).
-F = foo,
-A = 0.
-```
-
-```
-?- functor(foo(),F,A).
-ERROR: Domain error: `compound_non_zero_arity' expected, found `foo()'
-```
-
-```
-?- foo() =.. L.
-ERROR: Domain error: `compound_non_zero_arity' expected, found `foo()'
-```
-
-### Arity >0
-
-```
-?- atomic(foo(1)).
-false.
-```
-
-```
-?- compound_name_arity(foo(1),F,A).
-F = foo,
-A = 1.
-```
-
-```
-?- functor(foo(1),F,A).
-F = foo,
-A = 1.
-```
-
-```
-?- foo(1) =.. L.
-L = [foo, 1].
-```
