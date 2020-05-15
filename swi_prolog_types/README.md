@@ -18,46 +18,59 @@ For the type-testing predicates see this SWI-Prolog manual page: [Verify Type of
 
 - There is a question on Stack Overflow about this: [What are the data types in Prolog?](https://stackoverflow.com/questions/12038009/what-are-the-data-types-in-prolog)
 - [Logtalk](https://logtalk.org/) has actual datatypes and OO-style message handlers. This is achieved by setting up Prolog Modules around terms, which have the characteristics of objects (Prolog need a proper hierarchical Module system pronto though)
-- The type tests seems to be non-logical but they are if one considers them to have a hidden additional argument: A term representing the "current computational state" of the system. That view probably doesn't hel much.
+- The type tests seems to be non-logical but they are if one considers them to have a hidden additional argument: A term representing the "current computational state" of the system. That view probably doesn't help much.
+- The type tests also look like a vestige of something out of [Modal Logic](https://plato.stanford.edu/entries/logic-modal/)
 
 ### Better type tests
 
-- [Type tests in Prolog](https://www.youtube.com/watch?v=ZIv0G4b1xBQ) (3 Apr 2019) on Youtube by Markus Triska.
+[Type tests in Prolog](https://www.youtube.com/watch?v=ZIv0G4b1xBQ) (3 Apr 2019) on Youtube by Markus Triska.
 
-Presents `atom_si/1`, `integer_si/1`,  `list_si/1`  which make more sense than the current type test predicates: instead of failing silently, they throw a `type_error` if the argument is not sufficently instantiated. 
+The above presents predicates `atom_si/1`, `integer_si/1`,  `list_si/1`  which make more sense than the current type test predicates. Instead of failing silently on fresh variables, they throw a `type_error`.
 
-Unfortunately no such predicates exist in SWI-Prolog (or do they). May have to write a little library.
+Also introduced are `must_be/2` and `can_be/2` which test whether the computational state allows one to assert that some term is of some type (and will stay that way) or whether there still is the possibility that some term is of some type (even though that may change)
 
-There is also `must_be/2` and `can_be/2` which test whether the computational state allows one to assert that some term is of some type (and will stay that way) or whether there still is the possibility that some term is of some type (even though that may change)
+Indeed, what should `atom(_)` do?
 
-In SWI Prolog there is a [`must_be/2`](https://www.swi-prolog.org/pldoc/doc_for?object=must_be/2) in [`library(error)`](https://www.swi-prolog.org/pldoc/man?section=error).
+- Say "I don't know!" is a possibility. Prolog is based on classical logic though, so there is no space for that. The nearest to "I don't know" is throwing an error.
+- Freeze until more is known about `_`. But there won't be more info on `_`, ever.
+- Start generating possible atoms. Although atoms are enumerable, there are still infinitely many of them.
+- Generate a _template_ that can only be instantiated to an atom. That would be a "typed fresh term". Such a concept does not exist, but something rather near to it can be observed when you do `length(L,3)`: You get a template for things that fulfill `length(L,3)`, namely a list of 3 fresh variables (but the list _contents_ is not further templated)
+- Fail silently? That's illogical, but that's what happens.
 
-Some test code to illustrate predicates in that library is certainly needed.
+In SWI Prolog there is a [`must_be/2`](https://www.swi-prolog.org/pldoc/doc_for?object=must_be/2) in [`library(error)`](https://www.swi-prolog.org/pldoc/man?section=error). But where is `can_be/2`?
 
 See also:
 
+- https://www.quora.com/If-prolog-were-being-invented-today-with-no-concern-for-backward-compatibility-or-the-existing-standardization-how-would-it-differ-from-standard-prolog?share=1 where Markus Triska writes:
+
+> Currently, we have to slowly move to better type tests, using `must_be/2`, `can_be/2`, `atom_si/1` etc. It will
+> take many years to propagate these predicates to application programmers, an errand that could have easily
+> been avoided.
+
 - https://stackoverflow.com/questions/27306453/safer-type-tests-in-prolog
-- https://www.quora.com/If-prolog-were-being-invented-today-with-no-concern-for-backward-compatibility-or-the-existing-standardization-how-would-it-differ-from-standard-prolog?share=1
 
-## Terms can appear in Roles
+## Terms can appear with various Roles
 
-- Role of a Skeleton. These are terms whose arguments are all different variables. Created by `functor/3`. 
-- Role of a Predicate
-  - Predicate of various arities, arity 0 is allowed! (as in `foo :- bar.`)
-  - Role of a predicate with arguments partially filled-in: This is called a "Closure" (not quite the same as a "Closure" of functional programming)
-- Role of a Goal, used in Meta-calling.
-  - Simple goal: A predicate name and the parameters which which it shall be called 8as in `p(X,Y,12,"Hello")`. 
-  - Complex Goal: May be a conjunction, disjunction, implication, may even include cuts.
-- Role of an (Arithmetic) Function 
+- **Role of a Skeleton**. These are terms whose arguments are all different variables. Created by `functor/3`. 
+- **Role of a Predicate**
+  - Predicates of various arities, arity 0 is allowed! (as in `foo :- bar.`)    
+- **Role of a Goal**, as argument to meta-predicates which call the Goal
+  - **Simple Goal**: A predicate name and the parameters which which it shall be called. As in `p(X,Y,12,"Hello")`. 
+  - **Complex Goal**: May be a conjunction, disjunction, implication, may even include cuts.
+  - **Closures**: Predicates with arguments partially filled-in (filling them in from the left only): This is not
+    quite the same as a "closure" of functional programming. For example, if you have 
+    predicate `foo/5`, a corresponding closure might be `foo(1,2)`: a term indicating the name of the predicate
+    and its two leftmost arguments, which have to be completed to 5 arguments before a clal can be issued.  
+  - **Lambda Expressions**: Lambda Expressions are used to "wrap around" other predicates to make
+    meta-calling convenient. See: [`library(yall)`](https://www.swi-prolog.org/pldoc/man?section=yall)
+    - "Lambda Prolog" Lambda expressions are something else...  
+- **Role of an (Arithmetic) Function** 
   - These appear on the right side of the `is/2^ predicate.
   - Constants are atoms.
   - Functions are compound terms of arity >= 1. 
-  - Might be of interest to have extension to allow functions other-than-arithmetic and in other places than on the right side of `is/2`, while not going fully "logic-functional" as for the [Curry](https://en.wikipedia.org/wiki/Curry_%28programming_language%29) language.
-- Role of an arbitrary tree structure
-- Role of Lambda Expressions. Lambda Expressions are used to "wra around" other predicates to make meta-calling convenient. See: [`library(yall)`](https://www.swi-prolog.org/pldoc/man?section=yall)
-   - "Lambda Prolog" Lambda expressions are something else...
-
-What roles do compound terms of arity 0 take on (which are not atoms, compare `a` and `a()`)?
+  - Might be of interest to have extension to allow functions other-than-arithmetic and in other places than
+    on the right side of `is/2`.
+- **Role of arbitrary data** in the form of a tree or list structure. Cyclic terms allow directed, single-rooted graphs.
 
 ## Disassembling the term
 
