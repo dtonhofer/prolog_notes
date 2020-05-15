@@ -31,8 +31,12 @@ A selection:
   - [Horn Clauses](https://www.youtube.com/watch?v=hgw59_HBU2A) (21 Oct 2019)
 - Prolog Applications
   - [Collatz Conjecture in Prolog](https://www.youtube.com/watch?v=XTrLbfl-Ag0) (12 Nov 2018)
-  - [Sudoku in Prolog](https://www.youtube.com/watch?v=5KUdEZTu06o) (16 Feb 2019)
+  - [Knights and Knaves in Prolog](https://www.youtube.com/watch?v=oEAa2pQKqQU) (6 Jan 2019)
+  - [Map Colouring in Prolog](https://www.youtube.com/watch?v=6XD7vBbywMc) (29 Jan 2019)
+  - [Sudoku in Prolog](https://www.youtube.com/watch?v=5KUdEZTu06o) (16 Feb 2019)    
   - [N-Queens in Prolog](https://www.youtube.com/watch?v=l_tbL9RjFdo) (14 Mar 2019)
+  - [Bitcoinolog: Reason about Bitcoin addresses with Prolog](https://www.youtube.com/watch?v=HDJ8E8g2zeg) (25 March 2019)
+  - [Term Rewriting with Prolog](https://www.youtube.com/watch?v=b2Px7cu2a68) (23 Aug 2019) 
   - [School Timetabling with Prolog](https://www.youtube.com/watch?v=uKvS62avplE) (2 Jan 2020)
 - Prolog Style and Technique
   - [Clean vs. Defaulty Representations in Prolog](https://www.youtube.com/watch?v=KJ8uZiWpomg) (10 May 2020)
