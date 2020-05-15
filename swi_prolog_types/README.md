@@ -68,53 +68,42 @@ inst_err_catcher(error(instantiation_error,_)).
 :- begin_tests(must_be).
 
 % ---
-% Old school
+% Old school testing for atom-icity
+% Silently fails on fresh variable (instead of throwing).
 % ---
 
-% An atom: Success.
-
-test(oldschool_yes) :-
-   atom(foo).
-
-% Not an atom: Failure
-
-test(oldschool_no, fail) :-
-   atom(1/137).
-
-% Should be "I don't know", but (silently) fails
-
-test(oldschool_unknown, fail) :-
-   atom(_).
+test(oldschool_yes)           :- atom(foo).
+test(oldschool_no, fail)      :- atom(1/137).
+test(oldschool_unknown, fail) :- atom(_).
 
 % ---
-% New school
+% must_be/2: Likes to throw too much.
+% Test "must_be_no" had better fail instead of throwing.
 % ---
 
-% An atom: Success.
+test(must_be_yes)                :- must_be(atom,foo).
+test(must_be_no, throws(C))      :- type_err_catcher(C), must_be(atom,1/137).
+test(must_be_unknown, throws(C)) :- inst_err_catcher(C), must_be(atom,_).
 
-test(newschool_yes) :-
-   must_be(atom,foo).
-
-% Not an atom: Throws type_error (instead of failing)
-
-test(newschool_no, throws(C)) :-
-   type_err_catcher(C),
-   must_be(atom,1/137).
-
-% "I don't know": Throws instantiation_error (close enough)
-
-test(newschool_unknown, throws(C)) :-
-  inst_err_catcher(C),
-  must_be(atom,_).
-
-% ---
-% must_be/2 doesn't run backwards
-% Would be of interest to generate applicable types on backtracking!
-% ---
+% doesn't run backwards either
 
 test(must_be_fwd_only, throws(C)) :-
    inst_err_catcher(C),
-   bagof(X, must_be(X,8), _Types).
+   bagof(X, must_be(X,foo), _Types).
+
+% ---
+% is_of_type/2: Behaves old-school-ish
+% ---
+
+test(is_of_type_yes)           :- is_of_type(atom,foo).
+test(is_of_type_no, fail)      :- is_of_type(atom,1/137).
+test(is_of_type_unknown, fail) :- is_of_type(atom,_).
+
+% doesn't run backwards
+
+test(is_of_type_fwd_only, throws(C)) :-
+   inst_err_catcher(C),
+   bagof(X, is_of_type(X,foo), _Types).
 
 :- end_tests(must_be).
 
