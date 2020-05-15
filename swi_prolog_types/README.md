@@ -49,9 +49,13 @@ See also:
 > take many years to propagate these predicates to application programmers, an errand that could have easily
 > been avoided.
 
+- https://stackoverflow.com/questions/24017420/which-meanings-of-type-are-used-in-the-standard
+
 - https://stackoverflow.com/questions/27306453/safer-type-tests-in-prolog
 
 The arity-1 predicates `atom_si/1`, `integer_si/1`,  `list_si/1` etc. are proposed instead of arity-2 predicates like `has_type/2`, `must_be/2` etc.
+
+- https://swi-prolog.discourse.group/t/must-be-2-and-is-of-type-2-types/1539
 
 An example of for [`must_be/2`](https://www.swi-prolog.org/pldoc/doc_for?object=must_be/2)
 
