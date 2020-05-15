@@ -19,11 +19,9 @@ From [The Fifty-three Stations of the Tōkaidō](https://en.wikipedia.org/wiki/T
 - [The **Prolog Syntax Highlighting** file for KDE](https://cgit.kde.org/syntax-highlighting.git/tree/data/syntax/prolog.xml) (by Torsten Eichstädt), as used in the [Kate editor](https://docs.kde.org/trunk5/en/applications/katepart/highlight.html)
 - [Bug Hunting Toolbox Wiki Page at SWI-Prolog Discourse Site](https://swi-prolog.discourse.group/t/bug-hunting-toolbox/710)
 
-### "The Power of Prolog" on YouTube
+### "The Power of Prolog" my Markus Triska on YouTube
 
 [https://www.youtube.com/channel/UCFFeNyzCEQDS4KCecugmotg](https://www.youtube.com/channel/UCFFeNyzCEQDS4KCecugmotg)
-
-A selection:
 
 - Logical Foundations of Prolog
   - [Logic](https://www.youtube.com/watch?v=nlTZQ0FF2Eo) (6 Mar 2019)
@@ -39,13 +37,23 @@ A selection:
   - [Term Rewriting with Prolog](https://www.youtube.com/watch?v=b2Px7cu2a68) (23 Aug 2019) 
   - [School Timetabling with Prolog](https://www.youtube.com/watch?v=uKvS62avplE) (2 Jan 2020)
 - Prolog Style and Technique
+  - [Naming Prolog Predicates](https://www.youtube.com/watch?v=Uska9DgJEoo) (23 Sep 2019)
+  - [Reading Prolog Code](https://www.youtube.com/watch?v=fQUVWo209WA) (31 Jan 2020)
   - [Clean vs. Defaulty Representations in Prolog](https://www.youtube.com/watch?v=KJ8uZiWpomg) (10 May 2020)
+  - [Argument Indexing in Prolog](https://www.youtube.com/watch?v=FZLofckPu4A) (11 Dec 2019)
   - [Representing Strings in Prolog](https://www.youtube.com/watch?v=plvBFNi0cVw) (10 Feb 2020)
   - [Sparrows on Eagles: Delegate your work to Prolog!](https://www.youtube.com/watch?v=vdabv9EkYrY) (22 Mar 2020)
 - Prolog Language: Synatx and Semantics
+  - [Prolog Terms](https://www.youtube.com/watch?v=TUjQqvCTwjQ) (9 Jul 2019)
   - [Prolog Lists](https://www.youtube.com/watch?v=9JzwUnMSCdA) (16 Jul 2019)
+  - [Prolog Operators](https://www.youtube.com/watch?v=DepPPfDVSpw) (20 Dec 2018)
+  - [Clauses, Rules and Facts](https://www.youtube.com/watch?v=x_APqarir-k) (18 Jan 2019)
+  - [Prolog Predicates](https://www.youtube.com/watch?v=GlWI9PBZD2Y) (25 Jan 2019)
+  - [Prolog Queries and Answers](https://www.youtube.com/watch?v=UmGih8xOrJ4) (20 Jun 2019) 
   - [Prolog Integer Arithmetic](https://www.youtube.com/watch?v=sHo6-hk21L8) (16 Jul 2019)
   - [Meta-Predicates in Prolog](https://www.youtube.com/watch?v=-nlI33r-P70) (11 Feb 2019)
+  - [Prolog Conformity Testing](https://www.youtube.com/watch?v=Ko_IrwN9yAM) (31 Mar 2019)
+  - [Type tests in Prolog](https://www.youtube.com/watch?v=ZIv0G4b1xBQ) (3 Apr 2019)
   - [List differences in Prolog](https://www.youtube.com/watch?v=6egAF4-HVzw) (12 May 2019)
 - Prolog Development Environment
   - [Prolog development with GNU Emacs](https://www.youtube.com/watch?v=WdWOKbTX-i4) (24 Mar 2014)
