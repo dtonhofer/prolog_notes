@@ -16,9 +16,28 @@ For the type-testing predicates see this SWI-Prolog manual page: [Verify Type of
 
 ## Notes
 
-- [Type tests in Prolog](https://www.youtube.com/watch?v=ZIv0G4b1xBQ) (3 Apr 2019) on Youtube.
 - There is a question on Stack Overflow about this: [What are the data types in Prolog?](https://stackoverflow.com/questions/12038009/what-are-the-data-types-in-prolog)
 - [Logtalk](https://logtalk.org/) has actual datatypes and OO-style message handlers. This is achieved by setting up Prolog Modules around terms, which have the characteristics of objects (Prolog need a proper hierarchical Module system pronto though)
+- The type tests seems to be non-logical but they are if one considers them to have a hidden additional argument: A term representing the "current computational state" of the system. That view probably doesn't hel much.
+
+### Better type tests
+
+- [Type tests in Prolog](https://www.youtube.com/watch?v=ZIv0G4b1xBQ) (3 Apr 2019) on Youtube by Markus Triska.
+
+Presents `atom_si/1`, `integer_si/1`,  `list_si/1`  which make more sense than the current type test predicates: instead of failing silently, they throw a `type_error` if the argument is not sufficently instantiated. 
+
+Unfortunately no such predicates exist in SWI-Prolog (or do they). May have to write a little library.
+
+There is also `must_be/2` and `can_be/2` which test whether the computational state allows one to assert that some term is of some type (and will stay that way) or whether there still is the possibility that some term is of some type (even though that may change)
+
+In SWI Prolog there is a [`must_be/2`](https://www.swi-prolog.org/pldoc/doc_for?object=must_be/2) in [`library(error)`](https://www.swi-prolog.org/pldoc/man?section=error).
+
+Some test code to illustrate predicates in that library is certainly needed.
+
+See also:
+
+- https://stackoverflow.com/questions/27306453/safer-type-tests-in-prolog
+- https://www.quora.com/If-prolog-were-being-invented-today-with-no-concern-for-backward-compatibility-or-the-existing-standardization-how-would-it-differ-from-standard-prolog?share=1
 
 ## Terms can appear in Roles
 
