@@ -1,7 +1,7 @@
 # Examples for the Prolog predicate `maplist/2`
 
-- Here: `maplist/2` (1 goal, 1 list to verify)
-- For examples about `maplist/3` (1 goal, 2 lists to verify) see [this page](maplist_3_examples.md)
+- On this page: `maplist/2` (1 goal, 1 list to verify or test)
+- For examples about `maplist/3` (1 goal, 2 lists to relate) see [this page](maplist_3_examples.md)
 - For examples about `maplist/4` (1 goal, 3 lists to relate) see [this page](maplist_4_examples.md)
 
 ## About
@@ -555,7 +555,80 @@ S3 = 2.0.
 
 Again, you are better off with `maplist/3` than `maplist/2` for this kind of application.
 
-### Using `maplist/N` inside of `maplist/N`.
+### Imposing constraints among variables
+
+This comes from Markus Triska's video presentation on [Map Coloring using Prolog](https://www.youtube.com/watch?v=6XD7vBbywMc).
+
+Let us use Constraint Logic Programming over Finite Domains (in SWI-Prolog, provided by [`library(clpfd)`](https://eu.swi-prolog.org/pldoc/man?section=clpfd)). The map coloring problem demands that a solution obey the constraint that adjacent colors be different. The operator `#\=` connects terms or variables and imposes an inequality constraint on any solution.
+
+Here is the map to color. Colors are represented by variables `A,B,C,D,E,F`:
+
+```
+ +-----------+---+---+
+ |     A     | E |   |
+ +---+---+---+   |   |
+ |   |   |   |   |   |
+ |   | C |   +---+   |
+ |   +-+-+   |       |
+ |  B  |  D  |   F   |
+ +-----+-----+       |
+ |                   |
+ +-------------------+
+```
+
+The following CLPFD specification corresponds to the map:
+
+```logtalk
+:- use_module(library(clpfd)).
+
+colouring(Cs) :-
+  Cs = [A,B,C,D,E,F],                   % 6 regions and their assigned colors
+  A #\= B, A #\= C, A #\= D, A #\= E,   % inequalities involving A 
+  B #\= C, B #\= D, B #\= F,            % more inequalities involving B
+  C #\= D,                              % more inequalities involving C
+  D #\= E, D #\= F,                     % more inequalities involving D
+  E #\= F.                              % more inequalities involving E
+```
+
+Now Prolog can go to work finding a solution that fulfills all listed inequalities.
+
+This still feels not at all that much different from a generate-and-test method. Now, in order to improve
+readability, you can write the following, using `maplist/2`. Here, I add some `debug/3` statements from
+[`library(debug)`](https://eu.swi-prolog.org/pldoc/man?section=debug) to show that no
+backtracking is going on:
+
+```logtalk
+:- use_module(library(debug)).
+:- use_module(library(clpfd)).
+
+colouring(Cs) :-
+  Cs = [A,B,C,D,E,F],          debug(cs,"one",[]),
+  maplist(#\=(A), [B,C,D,E]),  debug(cs,"two",[]),
+  maplist(#\=(B), [C,D,F]),    debug(cs,"three",[]),
+  C #\= D,                     debug(cs,"four",[]),
+  maplist(#\=(D), [E,F]),      debug(cs,"five",[]),
+  E #\= F,                     debug(cs,"six",[]).
+```
+
+We can now ask things like:
+
+```
+?- debug(cs),colouring(Cs),Cs ins 1..3,label(Cs).
+% one
+% two
+% three
+% four
+% five
+% six
+false.
+```
+
+So we set up the inequalities using `maplist/2`, then ask for a solution. No backtracking occurs, at least
+not on-stage. This is very different from a generate-and-test approach. "Setting up inequalities" must mean
+creating some datastructure behind-the-scenes. Where do these inequalities "live" you ask? They
+are [attributes attached to variables](https://eu.swi-prolog.org/pldoc/man?section=attvar).
+
+### Going multilevel: Using `maplist/N` inside of `maplist/N`.
 
 If you want to test a list of lists, with the condition that every sublist has the same length, you can use `maplist/N` inside of `maplist/N`:
 
