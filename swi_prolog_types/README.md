@@ -25,7 +25,7 @@ For the type-testing predicates see this SWI-Prolog manual page: [Verify Type of
 
 [Type tests in Prolog](https://www.youtube.com/watch?v=ZIv0G4b1xBQ) (3 Apr 2019) on Youtube by Markus Triska.
 
-The above presents predicates `atom_si/1`, `integer_si/1`,  `list_si/1`  which make more sense than the current type test predicates. Instead of failing silently on fresh variables, they throw a `type_error`.
+The above presents predicates `atom_si/1`, `integer_si/1`,  `list_si/1`  (`si` standing for "sufficiently instantiated") which make more sense than the current type test predicates. Instead of failing silently on fresh variables, they throw a `type_error`.
 
 Also introduced are `must_be/2` and `can_be/2` which test whether the computational state allows one to assert that some term is of some type (and will stay that way) or whether there still is the possibility that some term is of some type (even though that may change)
 
@@ -37,7 +37,9 @@ Indeed, what should `atom(_)` do?
 - Generate a _template_ that can only be instantiated to an atom. That would be a "typed fresh term". Such a concept does not exist, but something rather near to it can be observed when you do `length(L,3)`: You get a template for things that fulfill `length(L,3)`, namely a list of 3 fresh variables (but the list _contents_ is not further templated)
 - Fail silently? That's illogical, but that's what happens.
 
-In SWI Prolog there is a [`must_be/2`](https://www.swi-prolog.org/pldoc/doc_for?object=must_be/2) in [`library(error)`](https://www.swi-prolog.org/pldoc/man?section=error). But where is `can_be/2`?
+In SWI Prolog there is a [`must_be/2`](https://www.swi-prolog.org/pldoc/doc_for?object=must_be/2) in [`library(error)`](https://www.swi-prolog.org/pldoc/man?section=error). (But where is `can_be/2`?) 
+
+However, that predicate is not satisfying. Although it throws if it has to work on a fresh variable, it also throws if the answer should simply be "no". 
 
 See also:
 
@@ -48,6 +50,72 @@ See also:
 > been avoided.
 
 - https://stackoverflow.com/questions/27306453/safer-type-tests-in-prolog
+
+The arity-1 predicates `atom_si/1`, `integer_si/1`,  `list_si/1` etc. are proposed instead of arity-2 predicates like `has_type/2`, `must_be/2` etc.
+
+An example of for [`must_be/2`](https://www.swi-prolog.org/pldoc/doc_for?object=must_be/2)
+
+```
+% Define catcher terms here for legibility!
+
+type_err_catcher(error(type_error,_)).
+inst_err_catcher(error(instantiation_error,_)).
+
+:- begin_tests(must_be).
+
+% ---
+% Old school
+% ---
+
+% An atom: Success.
+
+test(oldschool_yes) :-
+   atom(foo).
+
+% Not an atom: Failure
+
+test(oldschool_no, fail) :-
+   atom(1/137).
+
+% Should be "I don't know", but (silently) fails
+
+test(oldschool_unknown, fail) :-
+   atom(_).
+
+% ---
+% New school
+% ---
+
+% An atom: Success.
+
+test(newschool_yes) :-
+   must_be(atom,foo).
+
+% Not an atom: Throws type_error (instead of failing)
+
+test(newschool_no, throws(C)) :-
+   type_err_catcher(C),
+   must_be(atom,1/137).
+
+% "I don't know": Throws instantiation_error (close enough)
+
+test(newschool_unknown, throws(C)) :-
+  inst_err_catcher(C),
+  must_be(atom,_).
+
+% ---
+% must_be/2 doesn't run backwards
+% Would be of interest to generate applicable types on backtracking!
+% ---
+
+test(must_be_fwd_only, throws(C)) :-
+   inst_err_catcher(C),
+   bagof(X, must_be(X,8), _Types).
+
+:- end_tests(must_be).
+
+rt :- run_tests(must_be).
+```
 
 ## Terms can appear with various Roles
 
