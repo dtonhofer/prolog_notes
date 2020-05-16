@@ -141,6 +141,8 @@ Résumé:
 
 ## On Type testing
 
+See this '92 paper collection: https://mitpress.mit.edu/books/types-logic-programming
+
 [Covington et al.](https://arxiv.org/abs/0911.2899) says on page 30:
 
 > Develop your own ad hoc run-time type and mode checking system. Many problems during development (especially if the program is large and/or there are several developers involved) are caused by passing incorrect arguments. Even if the documentation is there to explain, for each predicate, which arguments are expected on entry and on successful exit, they can be, and all too often they are, overlooked or ignored. Moreover, when a “wrong” argument is passed, erratic behavior can manifest itself far from where the mistake was made (and of course, following Murphy’s laws, at the most inconvenient time).
