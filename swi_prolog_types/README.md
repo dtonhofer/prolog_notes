@@ -139,3 +139,16 @@ Résumé:
 
 ![Disassembling Terms](disassembling_terms/disassembling_terms.png)
 
+## On Type testing
+
+[Covington et al.](https://arxiv.org/abs/0911.2899) says on page 30:
+
+> Develop your own ad hoc run-time type and mode checking system. Many problems during development (especially if the program is large and/or there are several developers involved) are caused by passing incorrect arguments. Even if the documentation is there to explain, for each predicate, which arguments are expected on entry and on successful exit, they can be, and all too often they are, overlooked or ignored. Moreover, when a “wrong” argument is passed, erratic behavior can manifest itself far from where the mistake was made (and of course, following Murphy’s laws, at the most inconvenient time).
+>
+> In order to significantly mitigate such problems, do take the time to write your own predicates for checking the legality of arguments on entry to and on exit from your procedures. In the production version, the goals you added for these checks can be compiled away using goal_expansion/2.
+
+However, there is `plspec`, a "spec" approach similar to the "spec" approach of Clojure.
+
+- Paper: [plspec – A Specification Languagefor Prolog Data](https://www3.hhu.de/stups/downloads/pdf/plspec.pdf)
+- https://github.com/wysiib/plspec
+
