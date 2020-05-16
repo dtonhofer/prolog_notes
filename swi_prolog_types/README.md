@@ -147,8 +147,19 @@ Résumé:
 >
 > In order to significantly mitigate such problems, do take the time to write your own predicates for checking the legality of arguments on entry to and on exit from your procedures. In the production version, the goals you added for these checks can be compiled away using goal_expansion/2.
 
-However, there is `plspec`, a "spec" approach similar to the "spec" approach of Clojure.
+The above is fun, but is not a scalable approach. What does exist? (How is it done in Logtalk? How in Lambda Prolog?)
+
+### plspec
+
+There is `plspec`, a "spec" approach inspired by the "spec" approach of Clojure (Clojure being a Scheme for the JVM that
+has no type checking; although there is "Typed Clojure" it does not seem to be liked or used. Clojure specs provides the possibility to add annotations to perform runtime checks on precondition, postconditions and invariants). 
 
 - Paper: [plspec – A Specification Languagefor Prolog Data](https://www3.hhu.de/stups/downloads/pdf/plspec.pdf)
 - https://github.com/wysiib/plspec
 
+### Typed Prolog
+
+Among others...
+
+- Paper: [Towards Typed Prolog](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.456.7365) _Tom Schrijvers, Vitor Santos Costa, Jan Wielemaker, and Bart Demoen_ (2008)
+- https://eu.swi-prolog.org/pack/list?p=type_check (This probabyl is the corresponding pack, but it is dead) 
