@@ -103,7 +103,7 @@ between(Start,End,Step,Value,Flags) :-
 between_enum(Limit,int(Limit),_,Limit) :- !.  
 
 % ---
-% Case of "positive step" (taggedStep = pos(Step))
+% Case of "positive step" pos(Step) and "integer end" int(End) (not infinite end)
 % ---
 
 % Past end of sequence. Occurs only if the sequence is empty on entry.
@@ -135,7 +135,7 @@ between_enum(Start,int(End),pos(Step),Value) :-
    between_enum(NewStart,int(End),pos(Step),Value).
    
 % ---
-% Case of "negative step" (taggedStep = neg(Step))
+% Case of "negative step" pos(Step) and "integer end" int(End) (not infinite end)
 % ---
                       
  % Past end of sequence. Occurs only if the sequence is empty on entry.
