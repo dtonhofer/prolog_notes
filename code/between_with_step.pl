@@ -95,7 +95,7 @@ between(Start,End,Step,Value,Flags) :-
 
 % ===
 % Helper predicate workhorse. Be as deterministic as possible!
-% between_enum(+Start,+End,+TaggedStep,-Value)
+% between_enum(+Start,+TaggedEnd,+TaggedStep,-Value)
 % ===
 
 % Reached end of Sequence (includes TaggedStep = zero). No backtracking allowed.
