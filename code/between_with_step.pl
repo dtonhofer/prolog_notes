@@ -24,7 +24,7 @@ cleanup_and_tag_end(+(infinite) ,inf).
 cleanup_and_tag_end(minf        ,minf).
 cleanup_and_tag_end(-(inf)      ,minf).
 cleanup_and_tag_end(-(infinite) ,minf).
-cleanup_and_tag_end(X           ,int(X)) :- must_be(integer,X).             
+cleanup_and_tag_end(X           ,int(X)) :- must_be(integer,X).
 
 % ---
 % Cleaning up the value for "step", which is known to be an integer.
@@ -43,14 +43,14 @@ tag_step(X ,neg(X))  :- X<0,!.
 
 check_step(X ,int(X) ,zero,   _) :- !.  % this is allowed (but rare)
 check_step(S ,int(E) ,zero,   _) :- !, throw_domain_error(e05, info{start:S, end:E, step:0}).
-check_step(_ ,inf    ,pos(_), _) :- !.  % this is allowed! 
+check_step(_ ,inf    ,pos(_), _) :- !.  % this is allowed!
 check_step(S ,inf    ,zero,   _) :- !, throw_domain_error(e01, info{start:S, end:inf, step:0}).
 check_step(S ,inf    ,neg(T), _) :- !, throw_domain_error(e01, info{start:S, end:inf, step:T}).
-check_step(_ ,minf   ,neg(_), _) :- !.  % this is allowed! 
+check_step(_ ,minf   ,neg(_), _) :- !.  % this is allowed!
 check_step(S ,minf   ,zero,   _) :- !, throw_domain_error(e02, info{start:S, end:minf, step:0}).
 check_step(S ,minf   ,pos(T), _) :- !, throw_domain_error(e02, info{start:S, end:minf, step:T}).
-check_step(S ,int(E) ,pos(T), F) :- S>E, memberchk(throw_if_empty,F), !, throw_domain_error(e04, info{start:S, end:E, step:T}). 
-check_step(S ,int(E) ,neg(T), F) :- S<E, memberchk(throw_if_empty,F), !, throw_domain_error(e03, info{start:S, end:E, step:T}). 
+check_step(S ,int(E) ,pos(T), F) :- S>E, memberchk(throw_if_empty,F), !, throw_domain_error(e04, info{start:S, end:E, step:T}).
+check_step(S ,int(E) ,neg(T), F) :- S<E, memberchk(throw_if_empty,F), !, throw_domain_error(e03, info{start:S, end:E, step:T}).
 check_step(_ ,int(_), neg(_), _).  % the usual case
 check_step(_ ,int(_), pos(_), _).  % the usual case
 
@@ -59,7 +59,7 @@ check_step(_ ,int(_), pos(_), _).  % the usual case
 % ===
 % between(+Start,+End,+Step,?Value,?Flags)
 % Start: Start of sequence, must denote an integer.
-% End:   End of sequence, must denote an integer. Alternatively, can also be one of: 
+% End:   End of sequence, must denote an integer. Alternatively, can also be one of:
 %        inf, infinite, +(inf), +(infinite)     for +infinity (recommended: inf  )
 %        minf, minfinite, -(inf), -(infinite)   for -infinity (recommended: minf )
 %        It is allowed for Start = End, as long as Step = 0.
@@ -67,7 +67,7 @@ check_step(_ ,int(_), pos(_), _).  % the usual case
 %        Must have the correct sign to reach End from Start.
 %        It is allowed for Step = 0, as long as Start = End.
 %        It is not necessary for Start + K*Step = End (if End is not one of the  infinities).
-%        Sequence enumeration fails as soon as Current "past" End. 
+%        Sequence enumeration fails as soon as Current "past" End.
 % Value: Either a fresh variable that will be set to an integer.
 %        Or denoates an integer which for which the predicate then verifies that it
 %        belongs to the sequence.
@@ -77,7 +77,7 @@ check_step(_ ,int(_), pos(_), _).  % the usual case
 
 between(Start,End,Step,Value) :-
    between(Start,End,Step,Value,[]).
-   
+
 between(Start,End,Step,Value,Flags) :-
    (var(Flags) -> Flags = []; true),        % upgrade Flags to nonvar if needed
    must_be(integer,Step),                   % throws unless Step an integer (sadly no indication in trow WHICH arg is bad)
@@ -86,11 +86,11 @@ between(Start,End,Step,Value,Flags) :-
    tag_step(Step,TaggedStep),               % tag step with pos/1, neg/1, zero/0
    check_step(Start,TaggedEnd,TaggedStep,Flags),  % throws unless End can be reached from Start using Step
    !,                                       % Cut is not needed; remove if determinism of workhorse predicate is ascertained
-   (nonvar(Value)   
+   (nonvar(Value)
     ->                                      % VERIFY mode
     (must_be(integer,Value),                % throws unless Value an integer (sadly no indication in trow WHICH arg is bad)
      0 =:= ((Value-Start) mod Step))        % works correctly with negative Step
-    ;                                       % SEQUENCE ENUMERATION mode    
+    ;                                       % SEQUENCE ENUMERATION mode
     (between_enum(Start,TaggedEnd,TaggedStep,Value))).
 
 % ===
@@ -100,7 +100,7 @@ between(Start,End,Step,Value,Flags) :-
 
 % Reached end of Sequence (includes TaggedStep = zero). No backtracking allowed.
 
-between_enum(Limit,int(Limit),_,Limit) :- !.  
+between_enum(Limit,int(Limit),_,Limit) :- !.
 
 % ---
 % Case of "positive step" pos(Step) and "integer end" int(End) (not infinite end)
@@ -108,44 +108,44 @@ between_enum(Limit,int(Limit),_,Limit) :- !.
 
 % Past end of sequence. Occurs only if the sequence is empty on entry.
 
-between_enum(Start,int(End),pos(_),_) :- 
-   Start > End,!,fail. 
+between_enum(Start,int(End),pos(_),_) :-
+   Start > End,!,fail.
 
 % Last entry in sequence, emit "Start" as "Value" and don't allow backtracking!
 % The test "Start < End" is redundant here.
 
-between_enum(Start,int(End),pos(Step),Start) :- 
-   Start < End, Start+Step >  End, !. 
+between_enum(Start,int(End),pos(Step),Start) :-
+   Start < End, Start+Step >  End, !.
 
 % More entries exist in sequence, emit "Start" as "Value" and DO allow backtracking!
 % The test "Start < End" is redundant here.
 % The test "Start+Step =< End" is redundant here, being the complement of the cut-off preceding clause
 
 between_enum(Start,int(End),pos(Step),Start) :-
-   Start < End, Start+Step =< End.    
+   Start < End, Start+Step =< End.
 
 % Recursive alternative to the above, digging for more values!
 % The test "Start < End" is redundant here.
 % The test "Start+Step =< End" is redundant here
 
 between_enum(Start,int(End),pos(Step),Value) :-
-   Start < End, Start+Step =< End, 
-   NewStart is Start+Step, 
+   Start < End, Start+Step =< End,
+   NewStart is Start+Step,
    %!, % NEEDED TO MAINTAIN DETERMINACY ON LAST VALUE
    between_enum(NewStart,int(End),pos(Step),Value).
-   
+
 % ---
 % Case of "negative step" pos(Step) and "integer end" int(End) (not infinite end)
 % ---
-                      
+
  % Past end of sequence. Occurs only if the sequence is empty on entry.
- 
+
 between_enum(Start,int(End),neg(_),_) :-
    Start < End,!,fail.
 
 % Last entry in sequence, emit "Start" as "Value" and don't allow backtracking!
 % The test "Start > End" is redundant here.
-   
+
 between_enum(Start,int(End),neg(Step),Start) :-
    Start > End, Start+Step <  End, !.
 
@@ -153,27 +153,27 @@ between_enum(Start,int(End),neg(Step),Start) :-
 % The test "Start > End" is redundant here.
 % The test "Start+Step >= End" is redundant here, being the complement of the cut-off preceding clause
 
-between_enum(Start,int(End),neg(Step),Start) :- 
+between_enum(Start,int(End),neg(Step),Start) :-
    Start > End, Start+Step >= End.
 
 % Recursive alternative to the above, digging for more values!
 % The test "Start > End" is redundant here.
 % The test "Start+Step >= End" is redundant here.
-   
-between_enum(Start,int(End),neg(Step),Value) :- 
-   Start > End, Start+Step >= End, 
-   NewStart is Start+Step, 
+
+between_enum(Start,int(End),neg(Step),Value) :-
+   Start > End, Start+Step >= End,
+   NewStart is Start+Step,
    !, % ACTUALLY NOT NEEDED TO MAINTAIN DETERMINACY ON LAST VALUE
    between_enum(NewStart,int(End),neg(Step),Value).
 
 % ---
 % Case of going to "positive infinity"
 % ---
-   
+
 between_enum(Start,inf,pos(_),Start).
 
 between_enum(Start,inf,pos(Step),Value) :-
-   NewStart is Start+Step, 
+   NewStart is Start+Step,
    !,
    between_enum(NewStart,inf,pos(Step),Value).
 
@@ -214,8 +214,8 @@ test(bad_end,   error(instantiation_error,_)) :- between(0,1 , _,_).
 
 test(zero_step, true(Value  = 10))                       :- between(10,10,0,Value).
 test(seq_length_one_step_pos, true(Value  = 10))         :- between(10,10,1,Value).
-test(seq_length_one_step_neg, true(Value  = 10))         :- between(10,10,-1,Value).  
-test(seq_length_one_step_zero, error(domain_error(_,_),_)) :- between(10,11,0,_).  
+test(seq_length_one_step_neg, true(Value  = 10))         :- between(10,10,-1,Value).
+test(seq_length_one_step_zero, error(domain_error(_,_),_)) :- between(10,11,0,_).
 
 test(seq_step_pos_1, all(V = [10,11,12,13,14,15])) :- between(10,15,1,V).
 test(seq_step_pos_2, all(V = [10,12,14]))          :- between(10,15,2,V).
