@@ -131,7 +131,7 @@ between_enum(Start,int(End),pos(Step),Start) :-
 between_enum(Start,int(End),pos(Step),Value) :-
    Start < End, Start+Step =< End, 
    NewStart is Start+Step, 
-   !,
+   %!, % NEEDED TO MAINTAIN DETERMINACY ON LAST VALUE
    between_enum(NewStart,int(End),pos(Step),Value).
    
 % ---
@@ -163,7 +163,7 @@ between_enum(Start,int(End),neg(Step),Start) :-
 between_enum(Start,int(End),neg(Step),Value) :- 
    Start > End, Start+Step >= End, 
    NewStart is Start+Step, 
-   !,
+   !, % ACTUALLY NOT NEEDED TO MAINTAIN DETERMINACY ON LAST VALUE
    between_enum(NewStart,int(End),neg(Step),Value).
 
 % ---
@@ -190,6 +190,8 @@ between_enum(Start,minf,neg(Step),Value) :-
 
 % ===
 % Unit testing between/4 and between/5 (UNDER CONSTRUCTION)
+%
+% Problem: Is there a way to error if the last value for all leaves a choicepoint open?
 % ===
 
 :- begin_tests(between_45).
@@ -215,7 +217,22 @@ test(seq_length_one_step_pos, true(Value  = 10))         :- between(10,10,1,Valu
 test(seq_length_one_step_neg, true(Value  = 10))         :- between(10,10,-1,Value).  
 test(seq_length_one_step_zero, error(domain_error(_,_),_)) :- between(10,11,0,_).  
 
+test(seq_step_pos_1, all(V = [10,11,12,13,14,15])) :- between(10,15,1,V).
+test(seq_step_pos_2, all(V = [10,12,14]))          :- between(10,15,2,V).
+test(seq_step_pos_3, all(V = [10,13]))             :- between(10,15,3,V).
+test(seq_step_pos_4, all(V = [10,14]))             :- between(10,15,4,V).
+test(seq_step_pos_5, all(V = [10,15]))             :- between(10,15,5,V).
+test(seq_step_pos_6, all(V = [10]))                :- between(10,15,6,V).
+test(seq_step_pos_7, all(V = [10]))                :- between(10,15,7,V).
+
+test(seq_step_neg_1, all(V = [10,9,8,7,6,5])) :- between(10,5,-1,V).
+test(seq_step_neg_1, all(V = [10,8,6]))       :- between(10,5,-2,V).
+test(seq_step_neg_2, all(V = [10,7]))         :- between(10,5,-3,V).
+test(seq_step_neg_3, all(V = [10,6]))         :- between(10,5,-4,V).
+test(seq_step_neg_4, all(V = [10,5]))         :- between(10,5,-5,V).
+test(seq_step_neg_5, all(V = [10]))           :- between(10,5,-6,V).
+test(seq_step_neg_6, all(V = [10]))           :- between(10,5,-7,V).
+
 :- end_tests(between_45).
 
 rt :- run_tests(between_45).
- 
