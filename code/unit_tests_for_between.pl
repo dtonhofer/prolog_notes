@@ -14,7 +14,13 @@
 % ============================================================================
 % Unit testing between/3
 % https://eu.swi-prolog.org/pldoc/doc_for?object=between/3
-% To run it, execute predicate rt(X).
+% To run it, execute predicate rt(X):
+%
+% ?- rt(X).
+% PL-Unit: unit_tests_for_between_3 .................... done
+% All 20 tests passed
+% X = unit_tests_for_between_3.
+% ============================================================================
 
 rt(unit_tests_for_between_3) :- run_tests(unit_tests_for_between_3).
 
