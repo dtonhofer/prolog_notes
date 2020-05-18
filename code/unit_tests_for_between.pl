@@ -1,6 +1,24 @@
+% 2345678901234567890123456789012345678901234567890123456789012345678901234567
+% ============================================================================
+% 2020-05-XX
+% https://github.com/dtonhofer/prolog_notes
+% ----------------------------------------------------------------------------
+% This is free and unencumbered software released into the public domain.
+%
+% Anyone is free to copy, modify, publish, use, compile, sell, or
+% distribute this software, either in source code form or as a compiled
+% binary, for any purpose, commercial or non-commercial, and by any
+% means.
+%
+% For more information, please refer to <http://unlicense.org/>
+% ============================================================================
 % Unit testing between/3
+% https://eu.swi-prolog.org/pldoc/doc_for?object=between/3
+% To run it, execute predicate rt(X).
 
-:- begin_tests(between).
+rt(unit_tests_for_between_3) :- run_tests(unit_tests_for_between_3).
+
+:- begin_tests(unit_tests_for_between_3).
 
 % ===
 % Bad order: fails
@@ -53,6 +71,4 @@ test(verify_4, true) :- between(-1,1, 0).
 test(verify_5, fail) :- between(-1,1,  2).
 test(verify_6, fail) :- between(-1,1, -2).
 
-:- end_tests(between).
-
-rt :- run_tests(between).
+:- end_tests(unit_tests_for_between_3).
