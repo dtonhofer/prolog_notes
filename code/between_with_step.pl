@@ -157,13 +157,6 @@ between_enum(pos(_),int(End),End,End) :- !.
 
 % Past end of sequence. Occurs only if the sequence is empty on entry.
 
-between_enum(pos(_),int(End),Start,_) :-
-   Start > End,!,fail.
-
-% Last element in sequence because the next element would be past "End".
-% Emit "Start" as "Value" and don't allow backtracking!
-% The test "Start < End" is redundant here.
-
 between_enum(pos(Step),int(End),Start,Start) :-
    Start < End, Start+Step > End, !.
 
@@ -251,6 +244,8 @@ between_enum(neg(Step),minf,Start,Value) :-
 
 % ===
 % Unit testing between/4 and between/5 (UNDER CONSTRUCTION)
+%
+% Problem: Is there a way to error if the last value for all leaves a choicepoint open?
 % ===
 
 :- begin_tests(between_45).
