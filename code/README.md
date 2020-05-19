@@ -9,7 +9,7 @@ Based on [`nth0/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=nth0/3), this
 of `nth0/3`, which retrieves several entries in one call: 
 
 ```
-vector_nth0(Indexes,List,Items)
+vector_nth0(?Indexes,?List,?Items)
 ```
 
 Example, working forwards:
@@ -42,7 +42,7 @@ vector_nth0(_9584,[a,b,c,b,e,c,g],[b,c,a]) --> [1,2,0],[a,b,c,b,e,c,g],[b,c,a];
 - Short link: https://bit.ly/3ekBSU3_prolog
 
 Based on [`append/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=append/2), predicate `splinter0/5`, 
-which "splinters" a list into a prefix, the element at position N and a suffix:
+"splinters" a list into a prefix, the element at position N and a suffix:
 
 ```
 splinter0(+List, +N, ?Prefix, ?Element, ?Suffix)
@@ -95,8 +95,6 @@ is in the same file [`splinter0.pl`](splinter0.pl).
 
 Rotate a list "leftwards" or "rightwards" by N positions.
 
-Initially based on [`append/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=append/2) (but no longer).
-
 ```
 rotate_list(+List,+N,?Rotated).
 ```
@@ -117,8 +115,9 @@ rotate_list([1,2,3],+1,R) ---> R=[2,3,1].
 
 - Code: [`vector_replace0.pl`](vector_replace0.pl)
 - Short link: https://bit.ly/35F3zTE_prolog
+
 A "vectorized" replace-by-index using `maplist/4`, `foldl/4` and
-`library(assoc)` (association lists via AVL trees).
+`library(assoc)` (association lists using AVL trees).
 
 ```
 vector_replace0(ListIn,ReplacePairs,ListOut,ReplacedPairs)
@@ -130,3 +129,69 @@ Examples:
 vector_replace0([a,b,c,d],[3-y,1-x],LO,RPs)         ---> LO=[a,x,c,y], RPs=[1-b,3-d].
 vector_replace0([a,b,c,d],[0-e,1-f,2-g,3-h],LO,RPs) ---> LO=[e,f,g,h], RPs=[0-a,1-b,2-c,3-d].
 ```
+
+## `between_with_step/4`
+
+- Code: [`between_with_step.pl`](between_with_step.pl)
+- Short link: https://bit.ly/2WFunjY_prolog
+
+An extended [`between/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=between/3) which takes an additional integer step value. It is not based on `between/3`.
+
+```
+between(+Start,+End,+Step,?Value)
+between(+Start,+End,+Step,?Value,?OptionList)
+```
+
+Examples:
+
+```
+?- between(10,20,3,L).
+L = 10 ;
+L = 13 ;
+L = 16 ;
+L = 19.
+
+?- between(10,-10,-3,L).
+L = 10 ;
+L = 7 ;
+L = 4 ;
+L = 1 ;
+L = -2 ;
+L = -5 ;
+L = -8.
+```
+
+`between_with_step/5` additionally takes a list of options. If this list contains `throw_if_empty`, then the predicate will throw a "domain error" if the sequence is empty:
+
+```
+?- between(0,+inf,-1,_,[throw_if_empty]).
+ERROR: Domain error: .... 
+
+?- between(0,+inf,-1,_).
+false.
+```
+
+## `misc.pl` 
+
+Predicates which may or may not be useful.
+
+## `unit_tests_for_between.pl`
+
+- Code: [`unit_tests_for_between.pl`](unit_tests_for_between.pl)
+- Short link: https://bit.ly/3bD7yBC_prolog
+
+Unit testing [`between/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=between/3).
+
+## `unit_tests_for_must_be.pl`
+
+- Code: [`unit_tests_for_must_be.pl`](unit_tests_for_must_be.pl)
+- Short link: https://bit.ly/2Zha7Xy_prolog
+
+Unit testing [`must_be/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=must_be/2).
+
+
+
+
+
+
+
