@@ -22,7 +22,7 @@
 %
 % End:   End of sequence, must denote an integer. Alternatively, can be one of:
 %
-%        inf, infinite, +(inf), +(infinite)   : for +infinity (recommended: -inf  )
+%        inf, infinite, +(inf), +(infinite)   : for +infinity (recommended: -inf )
 %        minf, minfinite, -(inf), -(infinite) : for -infinity (recommended: +inf )
 %
 %        § Unless the sequence is empty or "End" denotes one of the infinities,
@@ -51,6 +51,29 @@
 %          In default mode, the empty sequence is accepted and leads to
 %          immediate predicate failure.
 % ============================================================================
+% Run unit tests:
+% 
+% ?- rt(_).
+% PL-Unit: between_with_step ........................................ done
+% All 80 tests passed
+% ============================================================================
+% Notes
+%
+% - The core of the predicate is straightforward but the preparation is 
+%   laborious.
+% - I try to have the arguments of helper predicates arranged so that the 
+%   compiler can quickly decide which clause to use. This means tagging the
+%   integer arguments (with int/1, pos/1, neg/1) and moving those to the
+%   left (SWI Prolog has a description of its indexing approach here:
+%   https://www.swi-prolog.org/pldoc/man?section=jitindex )
+%   Still keeping the now possibly non-situation-improving cuts in (in fact
+%   they may be useful to naive interpreters?)
+% - I'm completely relying on integer arithmetic to not wrap around or go
+%   out of bounds. We have 64-bit arithmetic augmented by GNU Multiprecision
+%   library - should be generally a good assumption.
+% - Kudos to jburse for noticing that I hadn't checked the bounds in VERIFY
+%   mode. Bugged! But thanks to the unit test, fixed with confidence.
+% ============================================================================
 
 % ===
 % Entry point
@@ -63,14 +86,14 @@ between(Start,End,Step,Value,Options) :-
    (var(Options) -> Options = []; true),                     % Binds Options to empty list if needed
    must_be(integer,Step),                                    % Throws unless Step is an integer (sadly no indication in throw WHICH arg is bad)
    must_be(integer,Start),                                   % Throws unless Start is an integer (sadly no indication in throw WHICH arg is bad)
-   cleanup_and_tag_end(End,TaggedEnd),                       % Throws unless End is an integer or one of the "infinites"; also tag value
+   cleanup_and_tag_end(End,TaggedEnd),                       % Throws unless End is an integer or one of the "infinites"; also tag value with inf/0, minf/0 or int/1
    tag_step(Step,TaggedStep),                                % Tag step with pos/1, neg/1, zero/0
    check_step(TaggedEnd,TaggedStep,Start,Options,_SeqType),  % Empty sequences yield fail; or exception if "throw_if_empty"
-   !,                                                        % Cut is not needed; remove if determinism of the preceding calls has been ascertained
    (nonvar(Value)
     ->                                                       % VERIFY mode
     (must_be(integer,Value),                                 % Throws unless Value an integer (sadly no indication in throw WHICH arg is bad)
-     0 =:= ((Value-Start) mod Step))                         % Works correctly with negative Step
+     bounded_by(TaggedEnd,Start,Value),                      % Make sure that Value is inside the bounds
+     0 =:= ((Value-Start) mod Step))                         % Works correctly with negative Step. Excellent!
     ;                                                        % SEQUENCE ENUMERATION mode
     (between_enum(TaggedStep,TaggedEnd,Start,Value))).       % Help the compiler out by moving the TaggedStep to first position
 
@@ -79,16 +102,38 @@ between(Start,End,Step,Value,Options) :-
 % ===
 
 % ---
-% Better throwing!
-% Domain error: `going_to_plus_infinity_but_step_is_not_strictly_positive' expected, found `info{end:inf,start:0,step: -1}'
+% Better throwing of Domain Error!
 % ---
 
-throw_domain_error(e01,Culprit) :- domain_error(going_to_plus_infinity_but_step_is_not_strictly_positive,Culprit).
-throw_domain_error(e02,Culprit) :- domain_error(going_to_minus_infinity_but_step_is_not_strictly_negative,Culprit).
-throw_domain_error(e03,Culprit) :- domain_error(increasing_from_start_to_end_but_step_is_negative,Culprit). % empty sequence
-throw_domain_error(e04,Culprit) :- domain_error(decreasing_from_start_to_end_but_step_is_positive,Culprit). % empty sequence
-throw_domain_error(e05,Culprit) :- domain_error(changing_from_start_to_end_but_step_is_zero,Culprit).
+exception_code(e01,changing_from_start_to_end_but_step_is_zero).
+exception_code(e02,going_to_plus_infinity_but_step_is_zero).
+exception_code(e03,going_to_plus_infinity_but_step_is_negative).
+exception_code(e04,going_to_minus_infinity_but_step_is_zero).
+exception_code(e05,going_to_minus_infinity_but_step_is_positive).
+exception_code(e06,decreasing_from_start_to_end_but_step_is_positive).
+exception_code(e07,increasing_from_start_to_end_but_step_is_negative).
 
+% PROBLEM: domain_error/2 , the predicate from library(error) to throw and
+% ISO Standard "domain error" expects "domain_error(+Type, +Term)"
+% As in: "domain_error(integer, 12.4)" 
+% ...and does not leave any way to add more information because the ISO
+% standard exception does not have any place for that! 
+% We have three equally bad ways out: 
+% 1) throw our own Exception
+% 2) leave the caller uninformed
+% 3) misuse the parameters of domain_error/2
+% We go for 3)
+
+throw_or_fail_depending_on_option(ExCode,Start,End,Step,Os) :-
+   memberchk(throw_if_empty,Os)
+   ->
+   (exception_code(ExCode,ExLongDesc),
+    domain_error(ExLongDesc, info{start:Start, end:End, step:Step})).
+
+throw_unconditionally(ExCode,Start,End,Step) :-
+   (exception_code(ExCode,ExLongDesc),
+    domain_error(ExLongDesc, info{start:Start, end:End, step:Step})).
+    
 % ---
 % Cleaning up the value for "end".
 % Default behaviour: render "end" matchable by tagging it with int/1; throw unless "end" is an integer.
@@ -115,7 +160,9 @@ tag_step(X ,neg(X))  :- X<0,!.
 
 % ---
 % Checking the value of "step". Fail means the main predicate will fail.
-% Check_step(+TaggedEnd,+TaggedStep,+Start,+Options,?SeqType)
+%
+% check_step(+TaggedEnd,+TaggedStep,+Start,+Options,?SeqType)
+%
 % Note the particular case Start=End with Step=0.
 % Employ red cuts to make this a big "if then ... if then ... else."
 % although the clauses are already arranged for minimal backtracking.
@@ -123,18 +170,29 @@ tag_step(X ,neg(X))  :- X<0,!.
 % it just exists for documentation as it is used nowhere.
 % ---
 
-check_step(int(X) ,zero   ,X ,_  ,empty)    :- !. % rare: going from X to X by step 0
-check_step(int(E) ,zero   ,S ,_  ,_)        :- !, throw_domain_error(e05, info{start:S, end:E, step:0}).
-check_step(inf    ,pos(_) ,_ ,_  ,infinite) :- !.
-check_step(inf    ,zero   ,S ,_  ,_)        :- !, throw_domain_error(e01, info{start:S, end:inf, step:0}).
-check_step(inf    ,neg(T) ,S ,Os ,empty)    :- !, memberchk(throw_if_empty,Os) -> throw_domain_error(e01, info{start:S, end:inf, step:T}) ; fail.
-check_step(minf   ,neg(_) ,_ ,_  ,infinite) :- !.
-check_step(minf   ,zero   ,S ,_  ,_)        :- !, throw_domain_error(e02, info{start:S, end:minf, step:0}).
-check_step(minf   ,pos(T) ,S ,Os ,empty)    :- !, memberchk(throw_if_empty,Os) -> throw_domain_error(e02, info{start:S, end:minf, step:T}) ; fail.
-check_step(int(E) ,pos(T) ,S ,Os ,empty)    :- S>E, !, memberchk(throw_if_empty,Os) -> throw_domain_error(e04, info{start:S, end:E, step:T}) ; fail.
-check_step(int(E) ,neg(T) ,S ,Os ,empty)    :- S<E, !, memberchk(throw_if_empty,Os) -> throw_domain_error(e03, info{start:S, end:E, step:T}) ; fail.
-check_step(int(_) ,neg(_) ,_ ,_  ,_)        :- !. % the usual case; a cut should not be needed here
-check_step(int(_) ,pos(_) ,_ ,_  ,_).             % the usual case
+check_step(int(X)   ,zero      ,X     ,_  ,empty)    :- !. % rare & borderline: going from X to X by step 0
+check_step(int(End) ,zero      ,Start ,_  ,_)        :- !, Start \== End, throw_unconditionally(e01,Start,End,0).
+check_step(inf      ,pos(_)    ,_     ,_  ,infinite) :- !.
+check_step(inf      ,zero      ,Start ,_  ,_)        :- !, throw_unconditionally(e02,Start,inf,0).
+check_step(inf      ,neg(Step) ,Start ,Os ,empty)    :- !, throw_or_fail_depending_on_option(e03,Start,inf,Step,Os).
+check_step(minf     ,neg(_)    ,_     ,_  ,infinite) :- !.
+check_step(minf     ,zero      ,Start ,_  ,_)        :- !, throw_unconditionally(e04,Start,minf,0).
+check_step(minf     ,pos(Step) ,Start ,Os ,empty)    :- !, throw_or_fail_depending_on_option(e05,Start,minf,Step,Os).
+check_step(int(End) ,pos(Step) ,Start ,Os ,empty)    :- Start>End, !, throw_or_fail_depending_on_option(e06,Start,End,Step,Os).
+check_step(int(End) ,neg(Step) ,Start ,Os ,empty)    :- Start<End, !, throw_or_fail_depending_on_option(e07,Start,End,Step,Os).
+check_step(int(_)   ,neg(_)    ,_     ,_  ,usual)    :- !. % the usual case; a cut should not be needed here
+check_step(int(_)   ,pos(_)    ,_     ,_  ,usual).         % the usual case
+
+% ===
+% Helper predicate to perform limit checks in VERIFY mode
+% bounded_by(+TaggedEnd,+Start,+Value)
+% ===
+
+bounded_by(int(End),Start,Value) :- Start == End, !, Value == End.
+bounded_by(int(End),Start,Value) :- Start < End,  !, Start =< Value, Value =< End.
+bounded_by(int(End),Start,Value) :- Start > End,  !, Start >= Value, Value >= End.
+bounded_by(inf,Start,Value)      :- Start =< Value.
+bounded_by(minf,Start,Value)     :- Value =< Start.
 
 % ===
 % Helper predicate workhorse. Be as deterministic as possible!
@@ -242,13 +300,11 @@ between_enum(neg(Step),minf,Start,Value) :-
    !, % Should not be needed as no further case matches
    between_enum(neg(Step),minf,NewStart,Value).
 
-% ===
-% Unit testing between/4 and between/5 (UNDER CONSTRUCTION)
-%
-% Problem: Is there a way to error if the last value for all leaves a choicepoint open?
-% ===
+% ============================================================================
+% Unit testing between/4 and between/5
+% ============================================================================
 
-:- begin_tests(between_45).
+:- begin_tests(between_with_step).
 
 test(bad_step_1  , error(type_error(_,_),_))      :- between(0,1, foo ,_).
 test(bad_step_2  , error(type_error(_,_),_))      :- between(0,1, 0.5 ,_).
@@ -292,7 +348,7 @@ test(seq_len_two_2, all(Value == [-10,-11]))      :- between(-10, -11,  -1,Value
 test(seq_len_two_3, all(Value == [ 10, 20]))      :- between( 10,  20,  10,Value).
 test(seq_len_two_4, all(Value == [-10,-20]))      :- between(-10, -20, -10,Value).
 
-% There is no feature yet to limit all to 6 values say, so we do it ourselves
+% There is no feature yet to limit "all" to 6 values say, so we do it ourselves.
 % Using limit/3 of library(solution_sequences).
 
 test(seq_enum_zero_1, fail) :- bagof(Value, limit(6,between( 10,  20, -2,Value)),_).
@@ -316,7 +372,50 @@ test(seq_enum_inf_6, true(Seq == [-10,-15,-20,-25,-30,-35])) :- bagof(Value, lim
 test(seq_enum_inf_7, true(Seq == [10,17,24,31,38,45]))       :- bagof(Value, limit(6,between( 10,  inf,  7,Value)),Seq).
 test(seq_enum_inf_8, true(Seq == [-10,-17,-24,-31,-38,-45])) :- bagof(Value, limit(6,between(-10, -inf, -7,Value)),Seq).
 
-:- end_tests(between_45).
+% Testing verify mode.
 
-rt :- run_tests(between_45).
+test(verify_inside_1)                                :- between(-10,10,1,  0).
+test(verify_inside_but_at_limit_1)                   :- between(-10,10,1,-10).
+test(verify_inside_but_at_limit_2)                   :- between(-10,10,1,+10).
+test(verify_inside_but_not_in_seq,fail)              :- between(-10,10,3, -6).
+test(verify_outside_lower_limit,fail)                :- between(-10,10,1,-11).
+test(verify_outside_upper_limit,fail)                :- between(-10,10,1,+11).
+test(verify_outside_but_in_seq,fail)                 :- between(-10,10,3, 11).
+test(verify_inside_going_to_plusinfinity)            :- between(-10,+inf,+1,+1000).
+test(verify_inside_going_to_minusinfinity)           :- between(-10,-inf,-1,-1000).
+test(verify_inside_infinity_but_not_in_seq_inc,fail) :- between(-10,+inf,+111,455).
+test(verify_inside_infinity_but_not_in_seq_dec,fail) :- between(-10,-inf,-111,-455).
+test(verify_inside_empty_seq,fail)                   :- between(-10,+10,-1,0).
+test(verify_inside_empty_seq_zero_step,fail)         :- between(10,10,0,0).
+test(verify_outside_empty_seq_zero_step,fail)        :- between(-10,10,100,0).
+
+back_and_forth(Start,End,Step,Limit) :-
+   bagof(Value, limit(Limit,between(Start,End,Step,Value)),Seq),
+   maplist(between(Start,End,Step),Seq).
+   
+% Verify must recognize whatever has been generated
+
+limit(100).
+
+test(back_and_forth_lim_1, true) :- limit(L), back_and_forth( 10,  20,   2, L).
+test(back_and_forth_lim_2, true) :- limit(L), back_and_forth(-10, -20,  -2, L).
+test(back_and_forth_lim_3, true) :- limit(L), back_and_forth( 10,  20,   3, L).
+test(back_and_forth_lim_4, true) :- limit(L), back_and_forth(-10, -20,  -3, L).
+test(back_and_forth_lim_5, true) :- limit(L), back_and_forth( 10,  20,   5, L).
+test(back_and_forth_lim_6, true) :- limit(L), back_and_forth(-10, -20,  -5, L).
+test(back_and_forth_lim_7, true) :- limit(L), back_and_forth( 10,  20,   7, L).
+test(back_and_forth_lim_8, true) :- limit(L), back_and_forth(-10, -20,  -7, L).
+
+test(back_and_forth_inf_1, true) :- limit(L), back_and_forth( 10,  inf,  2, L).
+test(back_and_forth_inf_2, true) :- limit(L), back_and_forth(-10, -inf, -2, L).
+test(back_and_forth_inf_3, true) :- limit(L), back_and_forth( 10,  inf,  3, L).
+test(back_and_forth_inf_4, true) :- limit(L), back_and_forth(-10, -inf, -3, L).
+test(back_and_forth_inf_5, true) :- limit(L), back_and_forth( 10,  inf,  5, L).
+test(back_and_forth_inf_6, true) :- limit(L), back_and_forth(-10, -inf, -5, L).
+test(back_and_forth_inf_7, true) :- limit(L), back_and_forth( 10,  inf,  7, L).
+test(back_and_forth_inf_8, true) :- limit(L), back_and_forth(-10, -inf, -7, L).
+
+:- end_tests(between_with_step).
+
+rt(between_with_step) :- run_tests(between_with_step).
 
