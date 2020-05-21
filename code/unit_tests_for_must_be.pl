@@ -1,28 +1,10 @@
-/*
-
- Markus Triska writes at Quora:
-
- https://www.quora.com/If-prolog-were-being-invented-today-with-no-concern-for-backward-compatibility-or-the-existing-standardization-how-would-it-differ-from-standard-prolog?share=1
-
- "If Prolog were invented today, I think [...] the type-testing predicates
-  like atom/1, integer/1 and compound/1 would (and should) throw instantiation
-  errors if their arguments are not sufficiently instantiated.
-
-  This is also what the original versions of Prolog did. However, DEC 10 Prolog
-  chose to replace instantiation errors by silent failures, and this has been
-  perpetuated in the Edinburgh tradition for type tests including the ISO standard."
-  
- See also:
- 
- https://youtu.be/ZIv0G4b1xBQ?t=123 "Type tests in Prolog"
-
-*/
-
 % ===
-% The unit tests below illustrate the approaches (provided or not)
-% to type testing
+% The unit tests below illustrate the approaches (provided by the system or not) to type testing
 %
-% Run the unit tests with rt(X).
+% See also "Type tests in Prolog": https://youtu.be/ZIv0G4b1xBQ?t=123 by Markus Triska
+%
+% Run the unit tests with: 
+% ?- rt(_).
 % ===
 
 :- begin_tests(type_testing_for_atom).
