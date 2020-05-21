@@ -1,0 +1,104 @@
+## Don't forget the bracy part 
+
+A question that often comes up is due to different behaviour in autoloading/late-compilation and non-autoloading/compilation:
+
+If you forget to add the "bracy part" of a lambda expression in an environment that performs autoloading of library(yall) (i.e. the toplevel), things may work fine:
+
+==
+bracy(L)   :- X=a, maplist({X}/[Y,Z]>>atom_concat(X,Y,Z), [1,2,3,4], L).
+nobracy(L) :- X=a, maplist([Y,Z]>>atom_concat(X,Y,Z), [1,2,3,4], L).     % KINDA FAULTY
+==
+
+At the toplevel, add the above predicates with =[user].= 
+
+==
+?- bracy(L).
+L = [a1, a2, a3, a4].
+
+?- nobracy(L).
+L = [a1, a2, a3, a4].
+==
+
+Both predicates work.
+
+However, if you run them like this or from a file, explicitly loading library(yall) and library(apply) (which apparently triggers compilation)
+
+==
+?- use_module(library(apply)).
+true.
+
+?- use_module(library(yall)).
+true.
+
+?- [user].
+|: bracy(L)   :- X=a, maplist({X}/[Y,Z]>>atom_concat(X,Y,Z), [1,2,3,4], L).
+|: nobracy(L) :- X=a, maplist([Y,Z]>>atom_concat(X,Y,Z), [1,2,3,4], L).
+|: % user://1 compiled 0.01 sec, 5 clauses
+true.
+==
+
+... then the code is more picky and nobracy/1 isn’t working:
+
+==
+?- bracy(X).
+X = [a1, a2, a3, a4].
+
+?- nobracy(X).
+ERROR: Arguments are not sufficiently instantiated
+==
+
+Indeed, when you run nobracy/1 at the toplevel, by the time the lambda expression is interpreted, X is bound and thus no longer a variable (making the use of the {}/1 construct unnecessary).
+
+On the other hand, when nobracy/1 is compiled, there's no information on X other than it's a variable when compiling the lambda expression. Any variable occurring in the lambda expression that's not find in a local lambda parameter must be declared using the {}/1 construct.
+
+You can inspect the code with listing/1 to know more:
+
+In the first case:
+
+==
+?- listing(nobracy).
+nobracy(D) :-
+    A=a,
+    maplist([B, C]>>atom_concat(A, B, C),
+            [1, 2, 3, 4],
+            D).
+
+true.
+==
+
+it still has to be translated, but in the second case:
+
+==
+?- listing(nobracy).
+nobracy(A) :-
+    true,
+    maplist('__aux_yall_c4da103176fa8ec13a605c05ca9dd921fc8acdbf',
+            [1, 2, 3, 4],
+            A).
+
+true.
+
+?- listing('__aux_yall_c4da103176fa8ec13a605c05ca9dd921fc8acdbf').
+'__aux_yall_c4da103176fa8ec13a605c05ca9dd921fc8acdbf'(A, B) :-
+    atom_concat(_, A, B).
+
+true.
+==
+
+Evidently, this is not going to work because atom_concat/3 gets fed a fresh variable on first position.
+
+Morale de l'histoire: **Don't forget the bracy part!!**
+
+## See also
+
+Finally, there is the package
+
+http://eu.swi-prolog.org/pack/file_details/lambda/prolog/lambda.pl
+
+which is another approach at adding lambda expressions to Prolog.
+
+It references
+
+http://www.complang.tuwien.ac.at/ulrich/Prolog-inedit/ISO-Hiord
+
+which is also good to peruse.
