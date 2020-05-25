@@ -27,4 +27,5 @@ TODO:
   > logic programs this is normally called deadlock.
 
 
-
+- [Declarative Diagnosis of Floundering in Prolog](https://arxiv.org/abs/0711.0048) (Lee Naish, 2012, in: _Proceedings of the Thirty-Fifth Australasian Computer Science Conference (ACSC 2012), Melbourne, Australia_)
+- Lee naish has bunch of Good Stuff at the arxiv: [Query](https://arxiv.org/search/?query=lee+naish&searchtype=all&source=header). 
