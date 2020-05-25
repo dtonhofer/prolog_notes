@@ -36,6 +36,8 @@ See also: https://plato.stanford.edu/entries/truth-values/
 
 See also: https://plato.stanford.edu/entries/negation/#LogNeg
 
+Better read: https://arxiv.org/pdf/1305.0141.pdf  Truth versus Informationin Logic Programming
+
 And maybe Prolog could do with Modal Logic ("It is necessary that" and "It is possible that" 
 
 Prolog pretends to work in "classical two-value logic", but there is more going on. Is it important? Maybe not.
