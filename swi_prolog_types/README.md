@@ -21,7 +21,7 @@ otherwise), these are the only one there are.
 
 ## Code
 
-This is Prolog code which follows the datatype tree above to "tag" the elements of a term.
+[This](code/tagging.pl) is Prolog code which follows the datatype tree above to "tag" the elements of a term.
 
 Contains Unit Test code to be run with `rt(_).`.
 
