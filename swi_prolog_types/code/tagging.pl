@@ -99,7 +99,7 @@ dict_functor(F) :- compound_name_arity(_{},F,_Arity).
 % efficiency.
 % ===
 
-% var vs nonvar
+% var vs nonvar (which is really "freshvar vs. anything else"
 
 tag(T,var(T)) :- var(T).
 tag(T,TT)     :- nonvar(T),tag_nonvar(T,TT).
