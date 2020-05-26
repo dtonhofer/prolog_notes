@@ -1,6 +1,6 @@
 # About SWI-Prolog datatypes
 
-## SWI Prolog datatype tree image
+## SWI Prolog datatype decision tree image
 
 An image depicting the built-in "datatypes" one may encounter in SWI Prolog (which are 
 similary to the types of other Prolog). As there is no way to define new datatypes from these
@@ -19,7 +19,52 @@ otherwise), these are the only one there are.
 - [SVG file](swi_prolog_type_tree/swi_prolog_type_tree.svg). **The diagram in SVG format**. Best! 
   Can be visualized in a browser and easily panned & zoomed. **Use this**.
 
-## Code
+### Compound terms of arity 0 vs atoms in predicate roles vs. in function roles
+
+In predicate role, atoms and compound terms of arity 0 are the same:
+
+```
+a   :- write(a1),nl.
+a() :- write(a2),nl.
+
+?- a.
+a1
+true ;
+a2
+true.
+```
+
+```
+b :- c,c().
+c :- write(c),nl.
+
+?- b.
+c
+c
+true.
+```
+
+In arithmetic function role, likewise. They denote constant functions:
+
+```
+?- X is pi.
+X = 3.141592653589793.
+
+?- X is pi().
+X = 3.141592653589793.
+```
+
+But these are not the same syntactic structures:
+
+```
+?- pi == pi().
+false.
+
+?- pi = pi().
+false.
+```
+
+## Code implementing the datatype decision tree
 
 [This](code/tagging.pl) is Prolog code which follows the datatype tree above to "tag" the elements of a term.
 
