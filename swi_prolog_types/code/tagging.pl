@@ -1,5 +1,43 @@
+% 2345678901234567890123456789012345678901234567890123456789012345678901234567
+% ============================================================================
+% 2020-05-XX
+% https://github.com/dtonhofer/prolog_notes
+% ----------------------------------------------------------------------------
+% This is free and unencumbered software released into the public domain.
+%
+% Anyone is free to copy, modify, publish, use, compile, sell, or
+% distribute this software, either in source code form or as a compiled
+% binary, for any purpose, commercial or non-commercial, and by any
+% means.
+%
+% For more information, please refer to <http://unlicense.org/>
+% ============================================================================
+% This program implements the "Prolog data type decision tree" at
+% https://github.com/dtonhofer/prolog_notes/tree/master/swi_prolog_types/swi_prolog_type_tree
+%
+% - Efficiency is of no importance, we just want to implement the tree.
+% - Unknown data types should lead to failure. Use assertion/1 to check conditions
+%   as needed.
+% - Cuts shall not be used. This means (empty) choicepoints stay open on
+%   success. The unit tests are written to check that only one answer is
+%   indeed returned.
+% ============================================================================
+% TODOs
+%
+% Test cyclic structures. How do I stop the descent?
+%
+% test(cyclic_1)     :- R=[1,2|S],S=[3,4|S],tag(S,X).
+%
+% Find out whether the compound is a graph or just a tree. Also test for open list
+%
+% test(graph)        :- R=f(A,B),A=g(X,Y),B=h(Y,X),tag(R,S).
+% ============================================================================
 
-:- use_module(library(clpfd)).
+:- use_module(library(clpfd)).  
+
+% ===
+% Unit tests; run with ?- rt(_).
+% ===
 
 :- begin_tests(tagging).
 
@@ -37,18 +75,6 @@ test(compound_2)   :- mono(tag(p(X,f(b,c))), compound(p, [nongnd], [var(X), comp
 test(compound_3)   :- mono(tag(p(X,[1,2])), compound(p, [nongnd], [var(X), lbox([list, gnd], int(1), lbox([list, gnd], int(2), emptylist))])).
 
 % ---
-% TODOs
-% ---
-
-% Test cyclic structures. How do I stop the descent?
-
-% test(cyclic_1)     :- R=[1,2|S],S=[3,4|S],tag(S,X).
-
-% Find out whether the compound is a graph or just a tree. Also test for open list
-
-% test(graph)        :- R=f(A,B),A=g(X,Y),B=h(Y,X),tag(R,S).
-
-% ---
 % Collect tagging results; there must be only one!
 % ---
 
@@ -56,11 +82,11 @@ mono(Goal,Result) :- bagof(S, call(Goal,S), [Result]).
 
 :- end_tests(tagging).
 
-% ===
-% Run all tests by issuing query ?- rt(_).
-% ===
-
 rt(tagging) :- run_tests(tagging).
+
+% ============================================================================
+% The business end
+% ============================================================================
 
 % ===
 % Obtain the dict functor. (Is there a way to write it down directly?)
@@ -69,8 +95,8 @@ rt(tagging) :- run_tests(tagging).
 dict_functor(F) :- compound_name_arity(_{},F,_Arity).
 
 % ===
-% Tagging a term. Try to do this without cuts.
-% There is no pretense at efficiency.
+% Tagging a term. Try to do this without cuts. There is no pretense at 
+% efficiency.
 % ===
 
 % var vs nonvar
