@@ -64,6 +64,8 @@ false.
 false.
 ```
 
+See the notes on [Compound terms with zero arguments](https://eu.swi-prolog.org/pldoc/man?section=ext-compound-zero)
+
 ## Code implementing the datatype decision tree
 
 [This](code/tagging.pl) is Prolog code which follows the datatype tree above to "tag" the elements of a term.
