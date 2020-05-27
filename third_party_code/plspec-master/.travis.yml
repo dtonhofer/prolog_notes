@@ -1,0 +1,14 @@
+language: objective-c
+
+before_install:
+  - brew update
+  - brew install swi-prolog
+  - brew outdated swi-prolog || brew upgrade swi-prolog
+
+script:
+  - cd plspec
+  - make tests
+
+notifications:
+  email:
+    - isabel.wingen@hhu.de

@@ -1,0 +1,26 @@
+Is it template programming instead of logic programming?
+
+atom(X) - Can you give me a template?
+atom(X) - Is this template acceptable?
+
+a predicate is a template generator!
+
+member(X,L) is true if (iff) X is an element of the list L
+
+?- open("/tmp/xxx",'write',X),ground(X).
+X = <stream>(0x1379cf0).
+
+X --+--> freshvar
+    |
+    +--> nonvar --+--> ground    (totally concrete (within limits, e.g. what is a stream id ground??)
+                  | 
+                  +--> nonground (contains vars)
+                  
+Inside of member:
+
+member(X,L) is true if (iff) X unifies with an element of a list prefix of L
+
+
+member2(X, [X|_]).
+member2(X, [_|Es]) :- member(X, Es).
+

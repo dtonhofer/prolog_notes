@@ -1,0 +1,89 @@
+Prolog is a superposition of two things:
+
+1) Modeling a problem in Clausified FOL
+2) Programming according to a model that resembles Clausified FOL
+
+Problems regarding purity 
+
+1) Are important for 1) - How do they affect the Model? How can the Model be rendered closer to FOL
+2) Are important for 2) - How to express the problem closer to FOL
+
+Query/Goal forms:
+
+Goals are annoted by control constructs
+
+G ::= G,G   (would be better as [G,G]
+      G->G  (this is a control construct)
+      !
+
+Proofs forms:
+
+"Prove a certain sentence in first-order logic, reduced to a form amenable to Resolution + Unification (DNF)" 
+"Prove a certain sentence in first-order logic, reduced to Horn Clauses" 
+  - Forall X ....
+  - Exists X ....  (be constructive)
+  - !Forall X ... ---> Exists X such that !.... (be constructive?)
+  - !Exists X ... ---> Forall X such that !....
+  - In general, there is a chain Forall-Exists-Forall-Exists-Forall-Exists (core)
+  - Higher order logic is not foreseen ("Is there a predicate such that?")
+  - But things like: Forall X: f(X) -> q(X) sure are
+  - Domains may be ill defined
+  - Negation is "strong": It is objectively not the case that
+  - No control constructs: These are just sentences, they don't imply anything about search or evaluation
+
+  
+
+
+
+
+TRUE is generally about the computation ("Yes, I succeeded in computing something (but you have to check)")
+not so often abpout the modeled problem ("There is no solution")
+
+This is especially "evident" in predicates which reify the truth value, i.e. where the truith value
+is not expressed in success or falire but in the final value of a third argument (and this has nice
+consequences regarding program structure)
+
+
+MATH
+
+Problem statement
+
+TRUE   ---> This constraint shall hold over some domain
+FALSE  ---> This constraint must not hold over some domain
+
+Proof Theory
+
+TRUE   ---> The statement is absolutely true (according to some proof procedure)
+FALSE  ---> The statement is absolutely false (according to some proof procedure)
+            NAF semantics are never used
+            
+Prolog
+
+TRUE   ---> A constructive proof was found (the proof tree reached the point where 1 OR and all ANDs are fulfilled)
+            Monotonic: This fact will stay TRUE in the future
+FALSE  ---> No constructive proof was found (the proof tree could not be set up so that...)
+            Default, covering the vast gulfs of the state space 
+            Non-Monotonic: This fact will may change in the future
+            
+Prolog may be used to do: FOL Modeling
+
+TRUE   ---> A constructive solution to the model was found or a query could be successfully verified
+FALSE  ---> No solution to the model was found (or similar significance
+THROW  ---> Weird stuff!
+
+Prolog may be used to do: Computing (on top of which other things than FOL can be modeled, e.g. multi-value logic specific proof procedures, non-logic systems ... )
+
+TRUE   ---> Computation succeeded (but the search for a solution may have failed, check those arguments!!)
+            The fact that info cannot be obtained from FALSE makes this the preferred choice.
+FALSE  ---> Computation failed for some reason of computation and we can't get any info out
+            In any case, rtry something else!
+            Failure-driven loops: Do something again and again
+            Stop criterium: At the end of some structure
+            Else: There is nothing to handle this case!
+            Getting out of proecssing when one doesn't car of getting results out-
+             [Ontological Mystery](https://tvtropes.org/pmwiki/pmwiki.php/Main/OntologicalMystery)
+THROW  ---> DON'T KNOW, NOt ENOUGH DATA etc. etc depends, bad parameters, interaction failed
+            Or getting information out of the FALSE event horizon
+            
+Transporty-False
+ 
