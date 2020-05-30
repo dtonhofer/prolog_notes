@@ -1,0 +1,1 @@
+/usr/local/logic/swipl/lib/swipl/library/jpl.pl
