@@ -1,19 +1,30 @@
-% ===
-% Addition using Peano Numbers
-% 
-% We represent Peano Numbers not using the recursive s() but using a 
-% much more natural way: arrays of 's' with zero mapped to [].
-% This is much more natural for the same reason that using character
-% arrays is much more natural than using Gödelisation. Fancy that!
+% 2345678901234567890123456789012345678901234567890123456789012345678901234567
+% ============================================================================
+% 2020-05-31
+% https://github.com/dtonhofer/prolog_notes
+% ----------------------------------------------------------------------------
+% In the context of
+%
+% https://stackoverflow.com/questions/62088500/how-can-i-write-two-predicates-a-division-and-remainder-in-prolog
+%
+% Addition operation based on Peano Numbers Axioms
 %
 % https://en.wikipedia.org/wiki/Peano_axioms
 %
-% In SWI Prolog, set:
+% We represent Peano Numbers not using the recursive s() but using a much more
+% natural way: arrays of 's' with zero mapped to [].
+%
+% For full printout, in SWI Prolog, set:
 %
 % set_prolog_flag(answer_write_options,[max_depth(100)]).
 % set_prolog_flag(debugger_write_options,[max_depth(100)]).
 %
-% For full printout
+% This program has cause me major problems to get make unification work FOR
+% me, not AGAINST me. I'm still not sure why.
+% ============================================================================
+
+% ===
+% Run tests with ?- rt(_).
 % ===
 
 :- begin_tests(peano).
@@ -48,11 +59,11 @@ test(26,fail)                 :- user_peanoify(1+5=10,quiet).
 rt(peano) :- run_tests(peano).
 
 % ===
-% Something to replace the ugly var(X),nonvar(X)
+% Something to replace (frankly badly named and ugly) "var(X)" and "nonvar(X)"
 % ===
 
-ff(X) :- var(X).     % fresh/unbound variable? 
-ii(X) :- nonvar(X).  % instantiated/filled/bound variable?
+ff(X) :- var(X).     % is X a variable referencing a fresh/unbound/uninstantiated term? (is X a "freshvar"?)
+bb(X) :- nonvar(X).  % is X a variable referencing an nonfresh/bound/instantiated term? (is X a "boundvar"?)
 
 % ===
 % A user test predicate
@@ -76,13 +87,19 @@ ii(X) :- nonvar(X).  % instantiated/filled/bound variable?
 user_peanoify(Expr,ExprPeano,Lookup) :-
    peanoify(Expr,ExprPeano,[],Lookup).
 
-
 % ===
 % WORKHORSE PREDICATE
 % Call with a sum expression with integers and variables.
-% The expression will be refined/verifiedin "Peano Space" so that all the
-% variables are bound and true is emitted if the expression is valid.
+% The expression will be refined/verified in "Peano Space" so that all the
+% variables are bound and the predicate succeeds if the expression is valid.
 % Multiple/Infinite solutions can be generated.
+% After the operations have been performed in Peano space, the resulting
+% completely resolve equality S0 + S1 = S2, where the S* are all Peano
+% numbers and do not contain any "+" operators, is mapped back into number
+% space for display.
+%
+% Instead of "quiet" pass anything else (including an freshvar) to perform
+% debug printing!
 %
 % ?- bagof(Z,user_peanoify(1+3=Z,quiet),Bag).
 % Bag = [4].
@@ -92,20 +109,20 @@ user_peanoify(Expr,ExprPeano,Lookup) :-
 % ===
 
 user_peanoify(Expr,Quiet) :- 
-   (ii(Quiet) -> nodebug(peano) ; debug(peano)),
+   (bb(Quiet) -> nodebug(peano) ; debug(peano)),
    peanoify(Expr,ExprPeano,[],Lookup),
    ExprPeano=(Xp+Yp=Zp),
-   (ii(Quiet) -> true ; 
+   (bb(Quiet) -> true ; 
       (format("Before add : Expr      = ~q\n",[Expr]),
        format("Before add : ExprPeano = ~q\n",[ExprPeano]),
        format("Before add : Lookup    = ~q\n",[Lookup]))),
    peanoadd(Xp,Yp,Zp),
-   (ii(Quiet) -> true ; 
+   (bb(Quiet) -> true ; 
       (format("After add  : Expr      = ~q\n",[Expr]),
        format("After add  : ExprPeano = ~q\n",[ExprPeano]),
        format("After add  : Lookup    = ~q\n",[Lookup]))),
    pull(Lookup),
-   (ii(Quiet) -> true ; 
+   (bb(Quiet) -> true ; 
       (format("After pull : Expr      = ~q\n",[Expr]),
        format("After pull : ExprPeano = ~q\n",[ExprPeano]),
        format("After pull : Lookup    = ~q\n",[Lookup]))).
@@ -115,11 +132,11 @@ user_peanoify(Expr,Quiet) :-
 % ---
 
 peanoify(X,Xp,L,L) :- 
-   ii(X),integer(X),X>=0,!,
+   bb(X),integer(X),X>=0,!,
    length(Xp,X),maplist(=(s),Xp).
 
 % ---
-% Peano-ify an integer addition expression Prolog freshvars
+% Peano-ify an integer addition expression. Handles any freshvars in there.
 % ---
                            
 peanoify(X,Xp,L,L) :- 
@@ -135,7 +152,7 @@ peanoify(X,Xp,Lin,Lout) :-
 % ---
 
 peanoify(A,B,Lin,Lout)  :- 
-   ii(A),A=(X+Y=Z),!,
+   bb(A),A=(X+Y=Z),!,
    peanoify(X,Xp,Lin,L1),
    peanoify(Y,Yp,L1,L2),
    peanoify(Z,Zp,L2,Lout),
@@ -149,7 +166,7 @@ peanoify(A,B,Lin,Lout)  :-
 pull([[_,PeanoTerm]|Ls]) :-
    ff(PeanoTerm),!,pull(Ls).  % Peano Number is still fresh, nothing to pull
 pull([[key(A),PeanoTerm]|Ls]) :-
-   ii(PeanoTerm),!,length(PeanoTerm,A),pull(Ls). % length/2 counts the numbers of "s"
+   bb(PeanoTerm),!,length(PeanoTerm,A),pull(Ls). % length/2 counts the numbers of "s"
 pull([]).
 
 % ---
@@ -171,6 +188,8 @@ nat([]).
 nat([s|A]) :- nat(A).
 
 % ---
+% The core. We do not roll syntactically equivalent calls into one for clarity.
+%
 % peanoadd(X,Y,Z) where X,Y,Z are either Peano numbers or freshvars
 % shall result in all three variables "validly instantiated" to Peano
 % numbers (i.e. the equation is valid according to the axioms for addition
@@ -180,43 +199,48 @@ nat([s|A]) :- nat(A).
 % what's going on.
 % ---
 
-ddd(Text,X,Y,Z) :- catch(ddd_isolate(Text,X,Y,Z),"roll it back",true).
+peanoadd(X,Y,Z) :- bb(X),bb(Y),bb(Z), Y=[]     , ddd("b b:0 b",X,Y,Z) , X=Z.
+peanoadd(X,Y,Z) :- bb(X),bb(Y),bb(Z), Y=[s|Ys] , ddd("b b:N b",X,Y,Z) , Z=[s|Zs],peanoadd(X,Ys,Zs).
+    
+peanoadd(X,Y,Z) :- ff(X),bb(Y),bb(Z), Y=[]     , ddd("f b:0 b",X,Y,Z) , X=Z.
+peanoadd(X,Y,Z) :- ff(X),bb(Y),bb(Z), Y=[s|Ys] , ddd("f b:N b",X,Y,Z) , Z=[s|Zs],peanoadd(X,Ys,Zs).
+    
+peanoadd(X,Y,Z) :- bb(X),ff(Y),bb(Z), Y=[]     , ddd("b f~0 b",X,Y,Z) , X=Z.
+peanoadd(X,Y,Z) :- bb(X),ff(Y),bb(Z), Y=[s|Ys] , ddd("b f~N b",X,Y,Z) , Z=[s|Zs],peanoadd(X,Ys,Zs).
+    
+peanoadd(X,Y,Z) :- bb(X),bb(Y),ff(Z), Y=[]     , ddd("b b:0 f",X,Y,Z) , X=Z.
+peanoadd(X,Y,Z) :- bb(X),bb(Y),ff(Z), Y=[s|Ys] , ddd("b b:N f",X,Y,Z) , Z=[s|Zs],peanoadd(X,Ys,Zs).
 
-% Try to generate a number out of Peano number
+peanoadd(X,Y,Z) :- ff(X),bb(Y),ff(Z), ddd("f b f",X,Y,Z), generate_X_and_test(X,Y,Z).
+peanoadd(X,Y,Z) :- ff(X),ff(Y),bb(Z), ddd("f f b",X,Y,Z), generate_X_and_test(X,Y,Z).                            
+peanoadd(X,Y,Z) :- bb(X),ff(Y),ff(Z), ddd("b f f",X,Y,Z), nat(Y),peanoadd(X,Y,Z). % guess forever over Y
+peanoadd(X,Y,Z) :- ff(X),ff(Y),ff(Z), ddd("f f f",X,Y,Z), nat(Z),peanoadd(X,Y,Z). % guess forever over Z (not over X and Y!)
 
-depeanoify_int(X,Xn) :- X==[],!,Xn=[].
-depeanoify_int(X,Xn) :- ff(X),!,Xn=X.
-depeanoify_int(X,Xn) :- ii(X),X=[s|Xs],ii(Xs),length(X,Xn).
-depeanoify_int(X,Xn) :- ii(X),X=[s|Xs],ff(Xs),Xn=1+Xs.
+% nat(X) always succeeds, but peanoadd(X,Y,Z) may not. Break off once it does because there are
+% no solutions past that and we dn't want to wander off into infinity. The Peano addition axioms
+% do not have a concept of "stopping the search". In fact, they just inductively define a directed
+% graph between syntactic expressions containing s(.), +(.,.), 0, =(.,.) ... WE have to search through
+% this graph to "hit the bottom" or "stop at some point" (I'm not sure this is fully clear in
+% my head, but this graph view is definitely the right one)
 
-% Print, then throw to make sure any accidental bindings to X,Y,Z
+generate_X_and_test(X,Y,Z) :- nat(X),(peanoadd(X,Y,Z) -> true ; (!,false)).
+
+% ---
+% Debug printing. Use \+ \+ to make sure any accidental bindings to X,Y,Z
 % are rolled back. Prolog is extremely dangerous - you print
-% something and then your program no longer works!
+% something and then your program no longer works! It happened! 
+% ---
 
-ddd_isolate(Text,X,Y,Z) :-
+ddd(Text,X,Y,Z) :- \+ \+ ddd_isolated(Text,X,Y,Z).
+
+ddd_isolated(Text,X,Y,Z) :-
    depeanoify_int(X,Xn),
    depeanoify_int(Y,Yn),
    depeanoify_int(Z,Zn),
-   debug(peano,"~s      ~w , ~w , ~w",[Text,Xn,Yn,Zn]),throw("roll it back").
+   debug(peano,"~s      ~w , ~w , ~w",[Text,Xn,Yn,Zn]).
 
-peanoadd(X,Y,Z) :- ii(X),ii(Y),ii(Z), Y=[]     , ddd("i i:0 i",X,Y,Z) , X=Z.
-peanoadd(X,Y,Z) :- ii(X),ii(Y),ii(Z), Y=[s|Ys] , ddd("i i:N i",X,Y,Z) , Z=[s|Zs],peanoadd(X,Ys,Zs).
-    
-peanoadd(X,Y,Z) :- ff(X),ii(Y),ii(Z), Y=[]     , ddd("f i:0 i",X,Y,Z) , X=Z.
-peanoadd(X,Y,Z) :- ff(X),ii(Y),ii(Z), Y=[s|Ys] , ddd("f i:N i",X,Y,Z) , Z=[s|Zs],peanoadd(X,Ys,Zs).
-    
-peanoadd(X,Y,Z) :- ii(X),ff(Y),ii(Z), Y=[]     , ddd("i f~0 i",X,Y,Z) , X=Z.
-peanoadd(X,Y,Z) :- ii(X),ff(Y),ii(Z), Y=[s|Ys] , ddd("i f~N i",X,Y,Z) , Z=[s|Zs],peanoadd(X,Ys,Zs).
-    
-peanoadd(X,Y,Z) :- ii(X),ii(Y),ff(Z), Y=[]     , ddd("i i:0 f",X,Y,Z) , X=Z.
-peanoadd(X,Y,Z) :- ii(X),ii(Y),ff(Z), Y=[s|Ys] , ddd("i i:N f",X,Y,Z) , Z=[s|Zs],peanoadd(X,Ys,Zs).
+depeanoify_int(X,Xn) :- X==[],!,Xn=[].
+depeanoify_int(X,Xn) :- ff(X),!,Xn=X.
+depeanoify_int(X,Xn) :- bb(X),X=[s|Xs],bb(Xs),length(X,Xn).
+depeanoify_int(X,Xn) :- bb(X),X=[s|Xs],ff(Xs),Xn=1+Xs.
 
-peanoadd(X,Y,Z) :- ff(X),ii(Y),ff(Z), ddd("f i f",X,Y,Z), generate_X_and_test(X,Y,Z).
-peanoadd(X,Y,Z) :- ff(X),ff(Y),ii(Z), ddd("f f i",X,Y,Z), generate_X_and_test(X,Y,Z).                            
-peanoadd(X,Y,Z) :- ii(X),ff(Y),ff(Z), ddd("i f f",X,Y,Z), nat(Y),peanoadd(X,Y,Z). % guess forever over Y
-peanoadd(X,Y,Z) :- ff(X),ff(Y),ff(Z), ddd("f f f",X,Y,Z), nat(Z),peanoadd(X,Y,Z). % guess forever over Z (not over X and Y!)
-
-% nat(X) always succeeds, but peanoadd(X,Y,Z) may not. break off once it does because there are
-% no solutions pas that
-
-generate_X_and_test(X,Y,Z) :- nat(X),(peanoadd(X,Y,Z) -> true ; (!,false)).
