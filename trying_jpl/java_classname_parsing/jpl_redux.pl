@@ -88,6 +88,15 @@
 	    [member/2,nth0/3,nth1/3,append/3,flatten/2,select/3]).
 :- autoload(library(shlib),[load_foreign_library/1]).
 
+
+% Parsing facilities have been moved to a separate file
+
+:- use_module(library(jpl_java_name_parsing)).
+
+% Exception-generation facilities have been moved to a separate file
+
+:- use_module(library(jpl_exceptions)).
+
 /** <module> A Java interface for SWI Prolog 7.x
 
 The library(jpl) provides a bidirectional interface to a Java Virtual Machine.
@@ -127,23 +136,24 @@ The library(jpl) provides a bidirectional interface to a Java Virtual Machine.
 % consistent with jpl_call/4 and jpl_get/3.
 
 jpl_new(X, Params, V) :-
+    Pred=jpl_new/3,
     (   var(X)
-    ->  throw(error(instantiation_error,context(jpl_new/3,'1st arg must be bound to a classname, descriptor or object type')))
+    ->  throw_instantiation_error(Pred,ea01)
     ;   jpl_is_type(X)                  % NB only class(_,_) or array(_)
     ->  Type = X
     ;   atom(X)                 % e.g. 'java.lang.String', '[L', 'boolean'
     ->  (   jpl_classname_to_type(X, Type)
         ->  true
-        ;   throw(error(domain_error(classname,X),context(jpl_new/3,'if 1st arg is an atom, it must be a classname or descriptor')))
+        ;   throw_domain_error(Pred,classname,X,ea02)
         )
-    ;   throw(error(type_error(instantiable,X),context(jpl_new/3,'1st arg must be a classname, descriptor or object type')))
+    ;   throw_type_error(Pred,instantiable,X,ea03)
     ),
     jpl_new_1(Type, Params, Vx),
     (   nonvar(V),
         V = {Term}  % yucky way of requesting Term->term conversion
-    ->  (   jni_jref_to_term(Vx, TermX)    % fails if Rx is not a JRef to a org.jpl7.Term
+    ->  (   jni_jref_to_term(Vx, TermX)    % fails if Vx is not a JRef to a org.jpl7.Term
         ->  Term = TermX
-        ;   throw(error(type_error,context(jpl_call/4, 'result is not a org.jpl7.Term instance as required')))
+        ;   throw_type_error(Pred,term,Vx,ea04)
         )
     ;   V = Vx
     ).
@@ -160,12 +170,13 @@ jpl_new(X, Params, V) :-
 % At exit, Vx is bound to a JPL reference to a new, initialised instance of Tx
 
 jpl_new_1(class(Ps,Cs), Params, Vx) :-
+    Pred=jpl_new/3,
     !,                                      % green (see below)
     Tx = class(Ps,Cs),
     (   var(Params)
-    ->  throw(error(instantiation_error,context(jpl_new/3,'2nd arg must be a proper list of valid parameters for a constructor')))
+    ->  throw_instantiation_error(Pred,eb01)
     ;   \+ is_list(Params)
-    ->  throw(error(type_error(list,Params),context(jpl_new/3,'2nd arg must be a proper list of valid parameters for a constructor')))
+    ->  throw_type_error(Pred,list,Params,eb01)
     ;   true
     ),
     length(Params, A),          % the "arity" of the required constructor
@@ -180,16 +191,16 @@ jpl_new_1(class(Ps,Cs), Params, Vx) :-
     (   Z3s == []               % no constructors which require the given qty of parameters?
     ->  jpl_type_to_classname(Tx, Cn),
         (   jpl_call(Cx, isInterface, [], @(true))
-        ->  throw(error(type_error(concrete_class,Cn),context(jpl_new/3,'cannot create instance of an interface')))
-        ;   throw(error(existence_error(constructor,Cn/A),context(jpl_new/3,'no constructor found with the corresponding quantity of parameters')))
+        ->  throw_type_error(Pred,concrete_class,Cn,eb03)
+        ;   throw_existence_error(Pred,constructor,Cn/A,eb04)
         )
     ;   (   catch(
                 jpl_datums_to_types(Params, Taps),  % infer actual parameter types
                 error(type_error(acyclic,Te),context(jpl_datum_to_type/2,Msg)),
-                throw(error(type_error(acyclic,Te),context(jpl_new/3,Msg)))
+                throw_type_error(Pred,acyclic,Te,Msg) % rethrow
             )
         ->  true
-        ;   throw(error(domain_error(list(jpl_datum),Params),context(jpl_new/3,'one or more of the actual parameters is not a valid representation of any Java value or object')))
+        ;   throw_domain_error(Pred,list(jpl_datum),Params,eb05)
         ),
         findall(
             z3(I,MID,Tfps),                 % select constructors to which actual parameters are assignable
@@ -200,32 +211,34 @@ jpl_new_1(class(Ps,Cs), Params, Vx) :-
         ),
         (   Z3sA == []                      % no type-assignable constructors?
         ->  (   Z3s = [_]
-            ->  throw(error(existence_error(constructor,Tx/A),context(jpl_new/3,'the actual parameters are not assignable to the formal parameter types of the only constructor which takes this qty of parameters')))
-            ;   throw(error(type_error(constructor_args,Params),context(jpl_new/3,'the actual parameters are not assignable to the formal parameter types of any of the constructors which take this qty of parameters')))
+            ->  throw_existence_error(Pred,constructor,Tx/A,eb06)
+            ;   throw_type_error(Pred,constructor_args,Params,eb07)
             )
         ;   Z3sA = [z3(I,MID,Tfps)]
         ->  true
         ;   jpl_z3s_to_most_specific_z3(Z3sA, z3(I,MID,Tfps))
         ->  true
-        ;   throw(error(type_error(constructor_params,Params),context(jpl_new/3,'more than one most-specific matching constructor (shouldn''t happen)')))
+        ;   throw_type_error(Pred,constructor_params,Params,eb08)
         )
     ),
     catch(
         jNewObject(Cx, MID, Tfps, Params, Vx),
         error(java_exception(_), 'java.lang.InstantiationException'),
         (   jpl_type_to_classname(Tx, Cn),
-            throw(error(type_error(concrete_class,Cn),context(jpl_new/3,'cannot create instance of an abstract class')))
+            throw_type_error(Pred,concrete_class,Cn,eb09) % Rethrow
         )
     ),
     jpl_cache_type_of_ref(Tx, Vx).          % since we know it
+
 jpl_new_1(array(T), Params, Vx) :-
+    Pred=jpl_new/3,
     !,
     (   var(Params)
-    ->  throw(error(instantiation_error,context(jpl_new/3,'when constructing a new array, 2nd arg must either be a non-negative integer (denoting the required array length) or a proper list of valid element values')))
+    ->  throw_instantiation_error(Pred,ec01)
     ;   integer(Params)         % integer I -> array[0..I-1] of default values
     ->  (   Params >= 0
         ->  Len is Params
-        ;   throw(error(domain_error(array_length,Params),context(jpl_new/3,'when constructing a new array, if the 2nd arg is an integer (denoting the required array length) then it must be non-negative')))
+        ;   throw_domain_error(Pred,array_length,Params,ec02)
         )
     ;   is_list(Params)     % [V1,..VN] -> array[0..N-1] of respective values
     ->  length(Params, Len)
@@ -237,24 +250,24 @@ jpl_new_1(array(T), Params, Vx) :-
     ;   true
     ),
     jpl_cache_type_of_ref(array(T), Vx).   % since we know it
+
 jpl_new_1(T, _Params, _Vx) :-       % doomed attempt to create new primitive type instance (formerly a dubious completist feature :-)
+    Pred=jpl_new/3,
     jpl_primitive_type(T),
     !,
-    throw(error(domain_error(object_type,T),context(jpl_new/3,'cannot construct an instance of a primitive type'))).
+    throw_domain_error(Pred,object_type,T,ed01).
   % (   var(Params)
-  % ->  throw(error(instantiation_error,
-  %                 context(jpl_new/3,
-  %                         'when constructing a new instance of a primitive type, 2nd arg must be bound (to a representation of a suitable value)')))
+  % ->  throw_instantiation_error(Pred,ed02)
   % ;   Params == []
   % ->  jpl_primitive_type_default_value(T, Vx)
   % ;   Params = [Param]
   % ->  jpl_primitive_type_term_to_value(T, Param, Vx)
-  % ;   throw(error(domain_error(constructor_args,Params),
-  %                 context(jpl_new/3,
-  %                         'when constructing a new instance of a primitive type, 2nd arg must either be an empty list (indicating that the default value of that type is required) or a list containing exactly one representation of a suitable value)')))
+  % ;   throw_domain_error(Pred,constructor_args,Params,ed03)
   % ).
+
 jpl_new_1(T, _, _) :-
-    throw(error(domain_error(jpl_type,T),context(jpl_new/3,'1st arg must denote a known or plausible type'))).
+    Pred=jpl_new/3,
+    throw_domain_error(Pred,jpl_type,T,ee01).
 
 
 %! jpl_new_array(+ElementType, +Length, -NewArray) is det
@@ -305,46 +318,48 @@ jpl_new_array(class(Ps,Cs), Len, A) :-
 % or with =|@(void)|= if it has none.
 
 jpl_call(X, Mspec, Params, R) :-
+    Pred=jpl_call/4
+
     (   jpl_object_to_type(X, Type)         % the usual case (goal fails safely if X is var or rubbish)
     ->  Obj = X,
         Kind = instance
     ;   var(X)
-    ->  throw(error(instantiation_error,context(jpl_call/4,'1st arg must be bound to an object, classname, descriptor or type')))
+    ->  throw_instantiation_error(Pred,ef01)
     ;   atom(X)
     ->  (   jpl_classname_to_type(X, Type)     % does this attempt to load the class?
         ->  (   jpl_type_to_class(Type, ClassObj)
             ->  Kind = static
-            ;   throw(error(existence_error(class,X),context(jpl_call/4,'the named class cannot be found')))
+            ;   throw_existence_error(Pred,class,X,ef02)
             )
-        ;   throw(error(type_error(class_name_or_descriptor,X),context(jpl_call/4,'1st arg must be an object, classname, descriptor or type')))
+        ;   throw_type_error(Pred,class_name_or_descriptor,X,ef03)
         )
     ;   X = class(_,_)
     ->  Type = X,
         jpl_type_to_class(Type, ClassObj),
         Kind = static
     ;   X = array(_)
-    ->  throw(error(type_error(object_or_class,X),context(jpl_call/4,'cannot call a static method of an array type, as none exists')))
-    ;   throw(error(domain_error(object_or_class,X),context(jpl_call/4,'1st arg must be an object, classname, descriptor or type')))
+    ->  throw_type_error(Pred,object_or_class,X,ef04)
+    ;   throw_domain_error(Pred,object_or_class,ef03)
     ),
     (   atom(Mspec)                 % the usual case, i.e. a method name
     ->  true
     ;   var(Mspec)
-    ->  throw(error(instantiation_error,context(jpl_call/4,'2nd arg must be an atom naming a public method of the class or object')))
-    ;   throw(error(type_error(method_name,Mspec),context(jpl_call/4,'2nd arg must be an atom naming a public method of the class or object')))
+    ->  throw_instantiation_error(Pred,ef05)
+    ;   throw_type_error(Pred,method_name,Mspec,ef05)
     ),
     (   is_list(Params)
     ->  (   catch(
                 jpl_datums_to_types(Params, Taps),
                 error(type_error(acyclic,Te),context(jpl_datum_to_type/2,Msg)),
-                throw(error(type_error(acyclic,Te),context(jpl_call/4,Msg)))
+                throw_type_error(Pred,acyclic,Te,Msg) % Rethrow
             )
         ->  true
-        ;   throw(error(type_error(method_params,Params),context(jpl_call/4,'not all actual parameters are convertible to Java values or references')))
+        ;   throw_type_error(Pred,method_params,Params,ef06)
         ),
         length(Params, A)
     ;   var(Params)
-    ->  throw(error(instantiation_error,context(jpl_call/4,'3rd arg must be a proper list of actual parameters for the named method')))
-    ;   throw(error(type_error(method_params,Params),context(jpl_call/4,'3rd arg must be a proper list of actual parameters for the named method')))
+    ->  throw_instantiation_error(ef07)
+    ;   throw_type_error(Pred,method_params,Params,ef07)
     ),
     (   Kind == instance
     ->  jpl_call_instance(Type, Obj, Mspec, Params, Taps, A, Rx)
@@ -354,7 +369,7 @@ jpl_call(X, Mspec, Params, R) :-
         R = {Term}  % yucky way of requesting Term->term conversion
     ->  (   jni_jref_to_term(Rx, TermX)    % fails if Rx isn't a JRef to a org.jpl7.Term
         ->  Term = TermX
-        ;   throw(error(type_error,context(jpl_call/4,'result is not a org.jpl7.Term instance as required')))
+        ;   throw_type_error(Pred,ef08)
         )
     ;   R = Rx
     ).
@@ -368,13 +383,14 @@ jpl_call(X, Mspec, Params, R) :-
 % and of which there are Arity, yielding Result.
 
 jpl_call_instance(Type, Obj, Mname, Params, Taps, A, Rx) :-
+    Pred=jpl_call/4,
     findall(                    % get remaining details of all accessible methods of Obj's class (as denoted by Type)
         z5(I,Mods,MID,Tr,Tfps),
         jpl_method_spec(Type, I, Mname, A, Mods, MID, Tr, Tfps),
         Z5s
     ),
     (   Z5s = []
-    ->  throw(error(existence_error(method,Mname/A),context(jpl_call/4,'the class or object has no public methods with the given name and quantity of parameters')))
+    ->  throw_existence_error(Pred,method,Mname/A,eg01)
     ;   findall(
             z5(I,Mods,MID,Tr,Tfps),             % those to which Params is assignable
             (   member(z5(I,Mods,MID,Tr,Tfps), Z5s),
@@ -383,12 +399,12 @@ jpl_call_instance(Type, Obj, Mname, Params, Taps, A, Rx) :-
             Z5sA                                % Params-assignable methods
         ),
         (   Z5sA == []
-        ->  throw(error(type_error(method_params,Params),context(jpl_call/4,'the actual parameters are not assignable to the formal parameters of any of the named methods')))
+        ->  throw_type_error(Pred,method_params,Params,eg02)
         ;   Z5sA = [z5(I,Mods,MID,Tr,Tfps)]
         ->  true                                % exactly one applicable method
         ;   jpl_z5s_to_most_specific_z5(Z5sA, z5(I,Mods,MID,Tr,Tfps))
         ->  true                                % exactly one most-specific applicable method
-        ;   throw(error(existence_error(most_specific_method,Mname/Params),context(jpl_call/4,'more than one most-specific method is found for the actual parameters (this should not happen)')))
+        ;   throw_existence_error(Pred,most_specific_method,Mname/Params,eg03)
         )
     ),
     (   member(static, Mods)                                        % if the chosen method is static
@@ -407,6 +423,7 @@ jpl_call_instance(Type, Obj, Mname, Params, Taps, A, Rx) :-
 % and of which there are Arity, yielding Result.
 
 jpl_call_static(Type, ClassObj, Mname, Params, Taps, A, Rx) :-
+    Pred=jpl_call/4,
     findall(                    % get all accessible static methods of the class denoted by Type and ClassObj
         z5(I,Mods,MID,Tr,Tfps),
         (   jpl_method_spec(Type, I, Mname, A, Mods, MID, Tr, Tfps),
@@ -415,7 +432,7 @@ jpl_call_static(Type, ClassObj, Mname, Params, Taps, A, Rx) :-
         Z5s
     ),
     (   Z5s = []
-    ->  throw(error(existence_error(method,Mname/A),context(jpl_call/4,'the class has no public static methods with the given name and quantity of parameters')))
+    ->  throw_existence_error(Pred,method,Mname/A,eh01)
     ;   findall(
             z5(I,Mods,MID,Tr,Tfps),
             (   member(z5(I,Mods,MID,Tr,Tfps), Z5s),
@@ -424,12 +441,12 @@ jpl_call_static(Type, ClassObj, Mname, Params, Taps, A, Rx) :-
             Z5sA                                % Params-assignable methods
         ),
         (   Z5sA == []
-        ->  throw(error(type_error(method_params,Params),context(jpl_call/4,'the actual parameters are not assignable to the formal parameters of any of the named methods')))
+        ->  throw_type_error(Pred,method_params,Params,eh02)
         ;   Z5sA = [z5(I,Mods,MID,Tr,Tfps)]
         ->  true                % exactly one applicable method
         ;   jpl_z5s_to_most_specific_z5(Z5sA, z5(I,Mods,MID,Tr,Tfps))
         ->  true                % exactly one most-specific applicable method
-        ;   throw(error(existence_error(most_specific_method,Mname/Params),context(jpl_call/4,'more than one most-specific method is found for the actual parameters (this should not happen)')))
+        ;   throw_existence_error(Pred,most_specific_method,Mname/Params,eh03)
         )
     ),
     jpl_call_static_method(Tr, ClassObj, MID, Tfps, Params, Rx).
@@ -519,33 +536,34 @@ jpl_call_static_method(class(_,_), Class, MID, Tfps, Ps, R) :-
 %  ==
 
 jpl_get(X, Fspec, V) :-
+    Pred=jpl_get/3,
     (   jpl_object_to_type(X, Type)
     ->  Obj = X,
         jpl_get_instance(Type, Type, Obj, Fspec, Vx)   % pass Type twice for FAI
     ;   var(X)
-    ->  throw(error(instantiation_error,context(jpl_get/3,'1st arg must be bound to an object, classname, descriptor or type')))
+    ->  throw_instantiation_error(Pred,ei01)
     ;   jpl_is_type(X)          % e.g. class([java,lang],['String']), array(int)
     ->  Type = X,
         (   jpl_type_to_class(Type, ClassObj)
         ->  jpl_get_static(Type, ClassObj, Fspec, Vx)
         ;   jpl_type_to_classname(Type, Classname),
-            throw(error(existence_error(class,Classname),context(jpl_get/3,'the named class cannot be found')))
+            throw_existence_error(Pred,class,Classname,ei02)
         )
     ;   atom(X)
     ->  (   jpl_classname_to_type(X, Type)     % does this attempt to load the class?
         ->  (   jpl_type_to_class(Type, ClassObj)
             ->  jpl_get_static(Type, ClassObj, Fspec, Vx)
-            ;   throw(error(existence_error(class,X),context(jpl_get/3,'the named class cannot be found')))
+            ;   throw_existence_error(Pred,class,X,ei02)
             )
-        ;   throw(error(type_error(class_name_or_descriptor,X),context(jpl_get/3, '1st arg must be an object, classname, descriptor or type')))
+        ;   throw_type_error(Pred,class_name_or_descriptor,X,ei03)
         )
-    ;   throw(error(domain_error(object_or_class,X),context(jpl_get/3,'1st arg must be bound to an object, classname, descriptor or type')))
+    ;   throw_domain_error(Pred,object_or_class,X,ei03)
     ),
     (   nonvar(V),
         V = {Term}  % yucky way of requesting Term->term conversion
     ->  (   jni_jref_to_term(Vx, TermX)    % fails if Rx is not a JRef to a org.jpl7.Term
         ->  Term = TermX
-        ;   throw(error(type_error,context(jpl_call/4,'result is not a org.jpl7.Term instance as required')))
+        ;   throw_type_error(Pred,ei04)
         )
     ;   V = Vx
     ).
@@ -559,11 +577,12 @@ jpl_get(X, Fspec, V) :-
 % value
 
 jpl_get_static(Type, ClassObj, Fname, Vx) :-
+    Pred=jpl_get/3,
     (   atom(Fname)             % assume it's a field name
     ->  true
     ;   var(Fname)
-    ->  throw(error(instantiation_error,context(jpl_get/3,'2nd arg must be bound to an atom naming a public field of the class')))
-    ;   throw(error(type_error(field_name,Fname),context(jpl_get/3,'2nd arg must be an atom naming a public field of the class')))
+    ->  throw_instantiation_error(Pred,ej01)
+    ;   throw_type_error(Pred,field_name,Fname,ej02)
     ),
   % get static fields of the denoted class
     findall(
@@ -574,21 +593,22 @@ jpl_get_static(Type, ClassObj, Fname, Vx) :-
         Z4s
     ),
     (   Z4s = []
-    ->  throw(error(existence_error(field,Fname),context(jpl_get/3,'the class or object has no public static field with the given name')))
+    ->  throw_existence_error(Pred,field,Fname,ej03)
     ;   Z4s = [z4(I,_Mods,FID,Tf)]
     ->  jpl_get_static_field(Tf, ClassObj, FID, Vx)
-    ;   throw(error(existence_error(unique_field,Fname),context(jpl_get/3,'more than one field is found with the given name')))
+    ;   throw_existence_error(Pred,unique_field,Fname,ej04)
     ).
 
 
 %! jpl_get_instance(+Type, +Type, +Object, +FieldSpecifier, -Value) is det
 
 jpl_get_instance(class(_,_), Type, Obj, Fname, Vx) :-
+    Pred=jpl_get/3,
     (   atom(Fname)                 % the usual case
     ->  true
     ;   var(Fname)
-    ->  throw(error(instantiation_error,context(jpl_get/3,'2nd arg must be bound to an atom naming a public field of the class or object')))
-    ;   throw(error(type_error(field_name,Fname),context(jpl_get/3,'2nd arg must be an atom naming a public field of the class or object')))
+    ->  throw_instantiation_error(Pred,ek01)
+    ;   throw_type_error(Pred,field_name,Fname,ek02)
     ),
     findall(
         z4(I,Mods,FID,Tf),
@@ -596,24 +616,26 @@ jpl_get_instance(class(_,_), Type, Obj, Fname, Vx) :-
         Z4s
     ),
     (   Z4s = []
-    ->  throw(error(existence_error(field,Fname),context(jpl_get/3,'the class or object has no public field with the given name')))
+    ->  throw_existence_error(Pred,field,Fname,ek03)
     ;   Z4s = [z4(I,Mods,FID,Tf)]
     ->  (   member(static, Mods)
         ->  jpl_object_to_class(Obj, ClassObj),
             jpl_get_static_field(Tf, ClassObj, FID, Vx)
         ;   jpl_get_instance_field(Tf, Obj, FID, Vx)
         )
-    ;   throw(error(existence_error(unique_field,Fname),context(jpl_get/3,'more than one field is found with the given name')))
+    ;   throw_existence_error(Pred,unique_field,Fname,ek04)
     ).
+
 jpl_get_instance(array(ElementType), _, Array, Fspec, Vx) :-
+    Pred=jpl_get/3
     (   var(Fspec)
-    ->  throw(error(instantiation_error,context(jpl_get/3,'when 1st arg is an array, 2nd arg must be bound to an index, an index range, or ''length''')))
+    ->  throw_instantiation_error(Pred,el01)
     ;   integer(Fspec)
     ->  (   Fspec < 0       % lo bound check
-        ->  throw(error(domain_error(array_index,Fspec),context(jpl_get/3,'when 1st arg is an array, integral 2nd arg must be non-negative')))
+        ->  throw_domain_error(Pred,array_index,Fspec,el02)
         ;   jGetArrayLength(Array, Len),
             Fspec >= Len    % hi bound check
-        ->  throw(error(domain_error(array_index,Fspec),context(jpl_get/3,'when 1st arg is an array, integral 2nd arg must not exceed upper bound of array')))
+        ->  throw_domain_error(Pred,array_index,Fspec,el03)
         ;   jpl_get_array_element(ElementType, Array, Fspec, Vx)
         )
     ;   Fspec = N-M     % NB should we support e.g. 3-2 -> [] ?
@@ -623,21 +645,21 @@ jpl_get_instance(array(ElementType), _, Array, Fspec, Vx) :-
                 M >= N
             ->  jGetArrayLength(Array, Len),
                 (   N >= Len
-                ->  throw(error(domain_error(array_index_range,N-M),context(jpl_get/3,'lower bound of array index range must not exceed upper bound of array')))
+                ->  throw_domain_error(Pred,array_index_range,N-M,el04)
                 ;   M >= Len
-                ->  throw(error(domain_error(array_index_range,N-M),context(jpl_get/3,'upper bound of array index range must not exceed upper bound of array')))
+                ->  throw_domain_error(Pred,array_index_range,N-M,el05)
                 ;   jpl_get_array_elements(ElementType, Array, N, M, Vx)
                 )
-            ;   throw(error(domain_error(array_index_range,N-M),context(jpl_get/3,'array index range must be a non-decreasing pair of non-negative integers')))
+            ;   throw_domain_error(Pred,array_index_range,N-M,el06)
             )
-        ;   throw(error(type_error(array_index_range,N-M),context(jpl_get/3,'array index range must be a non-decreasing pair of non-negative integers')))
+        ;   throw_type_error(Pred,array_index_range,N-M,el06)
         )
     ;   atom(Fspec)
     ->  (   Fspec == length             % special-case for this solitary array "method"
         ->  jGetArrayLength(Array, Vx)
-        ;   throw(error(domain_error(array_field_name,Fspec),context(jpl_get/3,'the array has no public field with the given name')))
+        ;   throw_domain_error(Pred,array_field_name,Fspec,el07)
         )
-    ;   throw(error(type_error(array_lookup_spec,Fspec),context(jpl_get/3,'when 1st arg is an array, 2nd arg must be an index, an index range, or ''length''')))
+    ;   throw_type_error(Pred,array_lookup_spec,Fspec,el08)
     ).
 
 
@@ -798,19 +820,20 @@ jpl_get_static_field(array(_), Array, FieldID, V) :-
 % V must be a suitable value or object.
 
 jpl_set(X, Fspec, V) :-
+    Pred=jpl_set/3,
     (   jpl_object_to_type(X, Type)         % the usual case (test is safe if X is var or rubbish)
     ->  Obj = X,
         catch(
             jpl_set_instance(Type, Type, Obj, Fspec, V),    % first 'Type' is for FAI
             error(type_error(acyclic,Te),context(jpl_datum_to_type/2,Msg)),
-            throw(error(type_error(acyclic,Te),context(jpl_set/3,Msg)))
+            throw_type_error(Pred,acyclic,Te,Msg) % rethrow
         )
     ;   var(X)
-    ->  throw(error(instantiation_error,context(jpl_set/3,'1st arg must be an object, classname, descriptor or type')))
+    ->  throw_instantiation_error(Pred,em01)
     ;   (   atom(X)
         ->  (   jpl_classname_to_type(X, Type)          % it's a classname or descriptor...
             ->  true
-            ;   throw(error(existence_error(class,X),context(jpl_set/3,'the named class cannot be found')))
+            ;   throw_existence_error(Pred,class,X,em02)
             )
         ;   (   X = class(_,_)                          % it's a class type...
             ;   X = array(_)                            % ...or an array type
@@ -820,14 +843,14 @@ jpl_set(X, Fspec, V) :-
         (   jpl_type_to_class(Type, ClassObj)      % ...whose Class object is available
         ->  true
         ;   jpl_type_to_classname(Type, Classname),
-            throw(error(existence_error(class,Classname),context(jpl_set/3,'the class cannot be found')))
+            throw_existence_error(Pred,class,Classname,em03)
         )
     ->  catch(
             jpl_set_static(Type, ClassObj, Fspec, V),
             error(type_error(acyclic,Te),context(jpl_datum_to_type/2,Msg)),
-            throw(error(type_error(acyclic,Te),context(jpl_set/3,Msg)))
+            throw_type_error(Pred,acyclic,Te,Msg) % rethrow
         )
-    ;   throw(error(domain_error(object_or_class,X),context(jpl_set/3,'1st arg must be an object, classname, descriptor or type')))
+    ;   throw_domain_error(Pred,object_or_class,X,em04)
     ).
 
 
@@ -842,11 +865,12 @@ jpl_set(X, Fspec, V) :-
 %   Value should be assignable to the named field, but could be anything, and is validated here
 
 jpl_set_instance(class(_,_), Type, Obj, Fname, V) :-    % a non-array object
+    Pred=jpl_set/3,
     (   atom(Fname)                 % the usual case
     ->  true
     ;   var(Fname)
-    ->  throw(error(instantiation_error,context(jpl_set/3,'2nd arg must be bound to the name of a public, non-final field')))
-    ;   throw(error(type_error(field_name,Fname),context(jpl_set/3,'2nd arg must be the name of a public, non-final field')))
+    ->  throw_instantiation_error(Pred,en01)
+    ;   throw_type_error(Pred,field_name,Fname,en02)
     ),
     findall(
         z4(I,Mods,FID,Tf),
@@ -854,10 +878,10 @@ jpl_set_instance(class(_,_), Type, Obj, Fname, V) :-    % a non-array object
         Z4s
     ),
     (   Z4s = []
-    ->  throw(error(existence_error(field,Fname),context(jpl_set/3,'no public fields of the object have this name')))
+    ->  throw_existence_error(Pred,field,Fname,en03)
     ;   Z4s = [z4(I,Mods,FID,Tf)]
     ->  (   member(final, Mods)
-        ->  throw(error(permission_error(modify,final_field,Fname),context(jpl_set/3,'cannot assign a value to a final field (actually you could but I''ve decided not to let you)')))
+        ->  throw_permission_error(Pred,modify,final_field,Fname,en04)
         ;   jpl_datum_to_type(V, Tv)
         ->  (   jpl_type_fits_type(Tv, Tf)
             ->  (   member(static, Mods)
@@ -866,30 +890,32 @@ jpl_set_instance(class(_,_), Type, Obj, Fname, V) :-    % a non-array object
                 ;   jpl_set_instance_field(Tf, Obj, FID, V)         % oughta be jpl_set_instance_field?
                 )
             ;   jpl_type_to_nicename(Tf, NNf),
-                throw(error(type_error(NNf,V),context(jpl_set/3,'the value is not assignable to the named field of the class')))
+                throw_type_error(Pred,NNf,V,en05)
             )
-        ;   throw(error(type_error(field_value,V),context(jpl_set/3,'3rd arg does not represent any Java value or object')))
+        ;   throw_type_error(Pred,field_value,V,en06)
         )
-    ;   throw(error(existence_error(field,Fname),context(jpl_set/3,'more than one public field of the object has this name (this should not happen)')))   % 'existence'? or some other sort of error maybe?
+    ;   throw_existence_error(Pred,field,Fname,en07)   % 'existence'? or some other sort of error maybe?
     ).
+
 jpl_set_instance(array(Type), _, Obj, Fspec, V) :-
+    Pred=jpl_set/3
     (   is_list(V)                  % a list of array element values
     ->  Vs = V
     ;   var(V)
-    ->  throw(error(instantiation_error,context(jpl_set/3, 'when 1st arg is an array, 3rd arg must be bound to a suitable element value or list of values')))
+    ->  throw_instantiation_error(Pred,eo01)
     ;   Vs = [V]                    % a single array element value
     ),
     length(Vs, Iv),
     (   var(Fspec)
-    ->  throw(error(instantiation_error,context(jpl_set/3,'when 1st arg is an array, 2nd arg must be bound to an index or index range')))
+    ->  throw_instantiation_error(Pred,eo02)
     ;   integer(Fspec)          % single-element assignment
     ->  (   Fspec < 0
-        ->  throw(error(domain_error(array_index,Fspec),context(jpl_set/3,'when 1st arg is an array, an integral 2nd arg must be a non-negative index')))
+        ->  throw_domain_error(Pred,array_index,Fspec,eo03)
         ;   Iv is 1
         ->  N is Fspec
         ;   Iv is 0
-        ->  throw(error(domain_error(array_element(Fspec),Vs),context(jpl_set/3,'no values for array element assignment: needs one')))
-        ;   throw(error(domain_error(array_element(Fspec),Vs),context(jpl_set/3,'too many values for array element assignment: needs one')))
+        ->  throw_domain_error(Pred,array_element(Fspec),Vs,eo04)
+        ;   throw_domain_error(Pred,array_element(Fspec),Vs,eo05)
         )
     ;   Fspec = N-M             % element-sequence assignment
     ->  (   integer(N),
@@ -900,19 +926,19 @@ jpl_set_instance(array(Type), _, Obj, Fspec, V) :-
             ->  (   Size == Iv
                 ->  true
                 ;   Size < Iv
-                ->  throw(error(domain_error(array_elements(N-M),Vs),context(jpl_set/3,'too few values for array range assignment')))
-                ;   throw(error(domain_error(array_elements(N-M),Vs),context(jpl_set/3,'too many values for array range assignment')))
+                ->  throw_domain_error(Pred,array_elements(N-M),Vs,eo06)
+                ;   throw_domain_error(Pred,array_elements(N-M),Vs,eo07)
                 )
-            ;   throw(error(domain_error(array_index_range,N-M),context(jpl_set/3,'array index range must be a non-decreasing pair of non-negative integers')))
+            ;   throw_domain_error(Pred,array_index_range,N-M,eo08)
             )
-        ;   throw(error(type_error(array_index_range,N-M),context(jpl_set/3,'array index range must be a non-decreasing pair of non-negative integers')))
+        ;   throw_type_error(Pred,array_index_range,N-M,eo08)
         )
     ;   atom(Fspec)
     ->  (   Fspec == length
-        ->  throw(error(permission_error(modify,final_field,length),context(jpl_set/3,'cannot assign a value to a final field')))
-        ;   throw(error(existence_error(field,Fspec),context(jpl_set/3,'array has no field with that name')))
+        ->  throw_permission_error(Pred,modify,final_field,length,eo09)
+        ;   throw_existence_error(Pred,field,Fspec,eo10)
         )
-    ;   throw(error(domain_error(array_index,Fspec),context(jpl_set/3,'when 1st arg is an array object, 2nd arg must be a non-negative index or index range')))
+    ;   throw_domain_error(Pred,array_index,Fspec,eo11)
     ),
     jpl_set_array(Type, Obj, N, Iv, Vs).
 
@@ -930,11 +956,12 @@ jpl_set_instance(array(Type), _, Obj, Fspec, V) :-
 % NB this does not yet handle shadowed fields correctly.
 
 jpl_set_static(Type, ClassObj, Fname, V) :-
+    Pred=jpl_set/3,
     (   atom(Fname)                     % the usual case
     ->  true
     ;   var(Fname)
-    ->  throw(error(instantiation_error,context(jpl_set/3,'when 1st arg denotes a class, 2nd arg must be bound to the name of a public, static, non-final field')))
-    ;   throw(error(type_error(field_name,Fname),context(jpl_set/3,'when 1st arg denotes a class, 2nd arg must be the name of a public, static, non-final field')))
+    ->  throw_instantiation_error(Pred,pl_set/3,ep01)
+    ;   throw_type_error(field_name,Fname,ep02)
     ),
     findall(  % get all static fields of the denoted class
         z4(I,Mods,FID,Tf),
@@ -944,19 +971,19 @@ jpl_set_static(Type, ClassObj, Fname, V) :-
         Z4s
     ),
     (   Z4s = []
-    ->  throw(error(existence_error(field,Fname),context(jpl_set/3,'class has no public static fields of this name')))
+    ->  throw_existence_error(Pred,field,Fname,ep03)
     ;   Z4s = [z4(I,Mods,FID,Tf)]       % exactly one synonymous field?
     ->  (   member(final, Mods)
-        ->  throw(error(permission_error(modify,final_field,Fname),context(jpl_set/3,'cannot assign a value to a final field')))
+        ->  throw_permission_error(Pred,modify,final_field,Fname,ep04)
         ;   jpl_datum_to_type(V, Tv)
         ->  (   jpl_type_fits_type(Tv, Tf)
             ->  jpl_set_static_field(Tf, ClassObj, FID, V)
             ;   jpl_type_to_nicename(Tf, NNf),
-                throw(error(type_error(NNf,V),context(jpl_set/3,'the value is not assignable to the named field of the class')))
+                throw_type_error(Pred,NNf,V,ep05)
             )
-        ;   throw(error(type_error(field_value,V),context(jpl_set/3,'3rd arg does not represent any Java value or object')))
+        ;   throw_type_error(Pred,field_value,V,ep06)
         )
-    ;   throw(error(existence_error(field,Fname),context(jpl_set/3,'more than one public static field of the class has this name (this should not happen)(?)')))
+    ;   throw_existence_error(Pred,field,Fname,ep07)
     ).
 
 
@@ -968,12 +995,13 @@ jpl_set_static(Type, ClassObj, Fname, V) :-
 % throws error(type_error(acyclic,_),context(jpl_datum_to_type/2,_))
 
 jpl_set_array(T, A, N, I, Ds) :-
+    Pred=jpl_set/3,
     (   jpl_datums_to_types(Ds, Tds)        % most specialised types of given values
     ->  (   jpl_types_fit_type(Tds, T)      % all assignable to element type?
         ->  true
-        ;   throw(error(type_error(array(T),Ds),context(jpl_set/3,'not all values are assignable to the array element type')))
+        ;   throw_type_error(Pred,array(T),Ds,eq01)
         )
-    ;   throw(error(type_error(array(T),Ds),context(jpl_set/3,'not all values are convertible to Java values or references')))
+    ;   throw_type_error(Pred,array(T),Ds,eq02)
     ),
     (   (   T = class(_,_)
         ;   T = array(_)                    % array elements are objects
@@ -994,7 +1022,9 @@ jpl_set_array(T, A, N, I, Ds) :-
         jpl_set_array_1(Ds, T, 0, Bp),
         jpl_set_elements(T, A, N, I, Bp),
         jni_free_buffer(Bp)
-    ;   throw(error(system_error(array_element_type,T),context(jpl_set/3,'array element type is unknown (this should not happen)')))
+    ;
+        % throw_system_error(Pred,array_element_type,T,eq03)        % a system error with args is not ISO and this is not a system error
+        throw_illegal_state_error(Pred,array_element_type,T,eq03)   % this is not ISO either, but at least it's meaningful
     ).
 
 
@@ -1290,201 +1320,6 @@ jpl_c_lib_path(Path) :-
 
 jpl_java_lib_path(Path) :-
     jpl_call('org.jpl7.JPL', jarPath, [], Path).
-
-
-% jpl_type_alfa(0'$) -->        % presumably not allowed
-%   "$".                        % given the "inner class" syntax?
-
-jpl_type_alfa(0'_) -->
-    "_",
-    !.
-jpl_type_alfa(C) -->
-    [C], { C>=0'a, C=<0'z },
-    !.
-jpl_type_alfa(C) -->
-    [C], { C>=0'A, C=<0'Z }.
-
-
-jpl_type_alfa_num(C) -->
-    jpl_type_alfa(C),
-    !.
-jpl_type_alfa_num(C) -->
-    [C], { C>=0'0, C=<0'9 }.
-
-
-jpl_type_array_classname(array(T)) -->
-    "[", jpl_type_classname_2(T).
-
-
-jpl_type_array_descriptor(array(T)) -->
-    "[", jpl_type_descriptor_1(T).
-
-
-jpl_type_bare_class_descriptor(class(Ps,Cs)) -->
-    jpl_type_slashed_package_parts(Ps), jpl_type_class_parts(Cs).
-
-
-jpl_type_bare_classname(class(Ps,Cs)) -->
-    jpl_type_dotted_package_parts(Ps), jpl_type_class_parts(Cs).
-
-
-jpl_type_class_descriptor(class(Ps,Cs)) -->
-    "L", jpl_type_bare_class_descriptor(class(Ps,Cs)), ";".
-
-
-jpl_type_class_part(N) -->
-    jpl_type_id(N).
-
-
-jpl_type_class_parts([C|Cs]) -->
-    jpl_type_class_part(C), jpl_type_inner_class_parts(Cs).
-
-
-jpl_type_classname_1(T) -->
-    jpl_type_bare_classname(T),
-    !.
-jpl_type_classname_1(T) -->
-    jpl_type_array_classname(T),
-    !.
-jpl_type_classname_1(T) -->
-    jpl_type_primitive(T).
-
-
-jpl_type_classname_2(T) -->
-    jpl_type_delimited_classname(T).
-jpl_type_classname_2(T) -->
-    jpl_type_array_classname(T).
-jpl_type_classname_2(T) -->
-    jpl_type_primitive(T).
-
-
-
-jpl_type_delimited_classname(Class) -->
-    "L", jpl_type_bare_classname(Class), ";".
-
-
-
-jpl_type_descriptor_1(T) -->
-    jpl_type_primitive(T),
-    !.
-jpl_type_descriptor_1(T) -->
-    jpl_type_class_descriptor(T),
-    !.
-jpl_type_descriptor_1(T) -->
-    jpl_type_array_descriptor(T),
-    !.
-jpl_type_descriptor_1(T) -->
-    jpl_type_method_descriptor(T).
-
-
-
-jpl_type_dotted_package_parts([P|Ps]) -->
-    jpl_type_package_part(P), ".", !, jpl_type_dotted_package_parts(Ps).
-jpl_type_dotted_package_parts([]) -->
-    [].
-
-
-
-jpl_type_findclassname(T) -->
-    jpl_type_bare_class_descriptor(T).
-jpl_type_findclassname(T) -->
-    jpl_type_array_descriptor(T).
-
-
-
-jpl_type_id(A) -->
-    { nonvar(A) -> atom_codes(A,[C|Cs]) ; true },
-    jpl_type_alfa(C), jpl_type_id_rest(Cs),
-    { atom_codes(A, [C|Cs]) }.
-
-
-
-jpl_type_id_rest([C|Cs]) -->
-    jpl_type_alfa_num(C), !, jpl_type_id_rest(Cs).
-jpl_type_id_rest([]) -->
-    [].
-
-
-
-jpl_type_id_v2(A) -->                   % inner class name parts (empirically)
-    { nonvar(A) -> atom_codes(A,Cs) ; true },
-    jpl_type_id_rest(Cs),
-    { atom_codes(A, Cs) }.
-
-
-
-jpl_type_inner_class_part(N) -->
-    jpl_type_id_v2(N).
-
-
-
-jpl_type_inner_class_parts([C|Cs]) -->
-    "$", jpl_type_inner_class_part(C), !, jpl_type_inner_class_parts(Cs).
-jpl_type_inner_class_parts([]) -->
-    [].
-
-
-
-jpl_type_method_descriptor(method(Ts,T)) -->
-    "(", jpl_type_method_descriptor_args(Ts), ")", jpl_type_method_descriptor_return(T).
-
-
-
-jpl_type_method_descriptor_args([T|Ts]) -->
-    jpl_type_descriptor_1(T), !, jpl_type_method_descriptor_args(Ts).
-jpl_type_method_descriptor_args([]) -->
-    [].
-
-
-
-jpl_type_method_descriptor_return(T) -->
-    jpl_type_void(T).
-jpl_type_method_descriptor_return(T) -->
-    jpl_type_descriptor_1(T).
-
-
-
-jpl_type_package_part(N) -->
-    jpl_type_id(N).
-
-
-
-jpl_type_primitive(boolean) -->
-    "Z",
-    !.
-jpl_type_primitive(byte) -->
-    "B",
-    !.
-jpl_type_primitive(char) -->
-    "C",
-    !.
-jpl_type_primitive(short) -->
-    "S",
-    !.
-jpl_type_primitive(int) -->
-    "I",
-    !.
-jpl_type_primitive(long) -->
-    "J",
-    !.
-jpl_type_primitive(float) -->
-    "F",
-    !.
-jpl_type_primitive(double) -->
-    "D".
-
-
-
-jpl_type_slashed_package_parts([P|Ps]) -->
-    jpl_type_package_part(P), "/", !, jpl_type_slashed_package_parts(Ps).
-jpl_type_slashed_package_parts([]) -->
-    [].
-
-
-
-jpl_type_void(void) -->
-    "V".
-
 
 
 %! jCallBooleanMethod(+Obj:jref, +MethodID:methodId, +Types:list(type), +Params:list(datum), -Rbool:boolean)
@@ -2633,7 +2468,7 @@ jpl_datum_to_type(D, T) :-
     ;   nonvar(D),
         D = {Term}
     ->  (   cyclic_term(Term)
-        ->  throw(error(type_error(acyclic,Term),context(jpl_datum_to_type/2,'must be acyclic')))
+        ->  throw_type_error(jpl_datum_to_type/2,acyclic,Term,er01)
         ;   atom(Term)
         ->  T = class([org,jpl7],['Atom'])
         ;   integer(Term)
@@ -3068,7 +2903,7 @@ jpl_type_to_class(T, RefA) :-
 	        jpl_assert(jpl_class_tag_type_cache(RefB,T))
 	    ),
 	    RefA = RefB
-    ;   throw(error(instantiation_error,context(jpl_type_to_class/2,'1st arg must be bound to a JPL type')))
+    ;   throw_instantiation_error(jpl_type_to_class/2,es01)
     ).
 
 
@@ -4042,8 +3877,7 @@ check_lib(Name) :-
     ->  env_var_separators(A, Z),
         format(string(Msg), 'Please add directory holding ~w to ~w~w~w',
                [ File, A, EnvVar, Z ]),
-        throw(error(existence_error(library, Name),
-                    context(_, Msg)))
+        throw_existence_error(check_lib/1,library,Name,Msg)
     ;   true
     ).
 

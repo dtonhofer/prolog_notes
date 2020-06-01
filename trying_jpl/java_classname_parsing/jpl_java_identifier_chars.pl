@@ -1,230 +1,13 @@
-:- begin_tests(parsing_java_names).
-
-test(char_1s)      :- codepoint_call('A',java_identifier_start_char).
-test(char_2s,fail) :- codepoint_call('0',java_identifier_start_char).
-test(char_3s,fail) :- codepoint_call('\n',java_identifier_start_char).
-test(char_4s)      :- codepoint_call('$',java_identifier_start_char).
-test(char_5s)      :- codepoint_call('$',java_identifier_start_char).
-test(char_6s)      :- codepoint_call('\u3047',java_identifier_start_char). % Hiragana letter small e
-
-test(char_1p)      :- codepoint_call('A',java_identifier_part_char).
-test(char_2p)      :- codepoint_call('0',java_identifier_part_char).
-test(char_3p,fail) :- codepoint_call('\n',java_identifier_part_char).
-test(char_4p)      :- codepoint_call('$',java_identifier_part_char).
-test(char_5p)      :- codepoint_call('$',java_identifier_part_char).
-test(char_6p)      :- codepoint_call('\u3047',java_identifier_part_char). % Hiragana letter small e
-
-codepoint_call(A,G) :- 
-   atom_codes(A,Codes),
-   (\+ length(Codes,1) -> throw("Length should be 1") ; true),
-   nth0(0,Codes,Code),
-   call(G,Code).
-   
-:- end_tests(parsing_java_names).
-
-rt(parsing_java_names) :- run_tests(parsing_java_names).
-
-/*
+:- module(jpl_java_identifier_chars, 
+   [java_identifier_start_char/1,
+    java_identifier_part_char/1]).
 
 % ===
-% Parse a classname as returned from Class.getName()
-% previously called "jpl_type_classname_1//1"
-% now called jpl_type_entityname//1
-% https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/lang/Class.html#getName()
+% Classify codepoints (i.e. integers) as "Java identifier start/part characters"
 % ===
 
-jpl_type_entityname(T) --> jpl_type_binary_classname(T),!.
-jpl_type_entityname(T) --> jpl_type_array_of_entityname(T),!.
-jpl_type_entityname(T) --> jpl_type_primitive(T),!.
-jpl_type_entityname(T) --> jpl_type_void(T).
-
-% ===
-% The binary classname as specified in The Java™ Language Specification. 
-% ===
-
-jpl_type_binary_classname(class(Ps,Cs)) --> jpl_type_dotted_package_parts(Ps), jpl_type_class_parts(Cs).
-
-
-
-% ===
-% The package name: https://docs.oracle.com/javase/specs/jls/se14/html/jls-7.html#jls-7.4
-% separated by dots
-% ===
-
-jpl_type_dotted_package_parts([P|Ps]) --> jpl_type_java_identifer(P), ".", !, jpl_type_dotted_package_parts(Ps).
-jpl_type_dotted_package_parts([])     --> [].
-
-% ===
-% The Java identifier
-% is composed of identifiers: https://docs.oracle.com/javase/specs/jls/se14/html/jls-3.html#jls-Identifier
-% ===
-
-jpl_type_java_identifier(A)           --> jpl_type_java_identifier_chars(A),
-                                          { \+keyword(A), \+boolean_literal(A), \+null_literal(A) }.
-
-jpl_type_java_identifier_chars(A)     --> { nonvar(A) -> atom_codes(A,[C|Cs]) ; true }, 
-                                          jpl_type_java_letter(C),
-                                          jpl_type_java_letter_or_digits(Cs),
-                                          { atom_codes(A,[C|Cs]) }.
-
-jpl_type_java_letter_or_digits(A)     --> { nonvar(A) -> atom_codes(A,[C|Cs]) ; true }, 
-                                          jpl_type_java_letter_or_digit(C),!
-                                          jpl_type_java_letter_or_digits(C),
-                                          { atom_codes(A,[C|Cs]) }.
-jpl_type_java_letter_or_digits([])    --> [].
- 
-% A "Java letter" is a character for which the method Character.isJavaIdentifierStart(int) returns true.
-% A "Java letter-or-digit" is a character for which the method Character.isJavaIdentifierPart(int) returns true. 
-% The "Java letters" include uppercase and lowercase ASCII Latin letters A-Z (\u0041-\u005a), and a-z (\u0061-\u007a),
-% and, for historical reasons, the ASCII dollar sign ($, or \u0024) and underscore (_, or \u005f). The dollar 
-% sign should be used only in mechanically generated source code or, rarely, to access pre-existing names on
-% legacy systems. The underscore may be used in identifiers formed of two or more characters, but it cannot
-% be used as a one-character identifier due to being a keyword.
-%
-% The "Java digits" include the ASCII digits 0-9 (\u0030-\u0039).
-% 
-% Letters and digits may be drawn from the entire Unicode character set, which supports most writing scripts in 
-% use in the world today, including the large sets for Chinese, Japanese, and Korean. This allows programmers to
-% use identifiers in their programs that are written in their native languages. 
-
-% This is not going to be portable between Prologs that have badly defined character code sets!
-
-jpl_type_java_letter(0'_) --> "_",!.
-jpl_type_java_letter(0'$) --> "$",!.
-jpl_type_java_letter(C)   --> [C], { C>=0'a, C=<0'z },!.  
-jpl_type_java_letter(C)   --> [C], { C>=0'A, C=<0'Z }.
-
-jpl_type_java_letter_or_digit(C) --> jpl_type_java_letter(C),!.
-jpl_type_java_letter_or_digit(C) -_> [C], { C>=0'0, C=<0'9 }.
-
-
-
-
-
-jpl_type_id(A) -->  { nonvar(A) -> atom_codes(A,[C|Cs]) ; true },  jpl_type_alfa(C), jpl_type_id_rest(Cs), { atom_codes(A, [C|Cs]) }.
-
-jpl_type_id_rest([C|Cs]) --> jpl_type_alfa_num(C), !, jpl_type_id_rest(Cs).
-jpl_type_id_rest([])     --> [].
-
-
-
-% ---
-
-jpl_type_class_parts([C|Cs]) -->  jpl_type_class_part(C), jpl_type_inner_class_parts(Cs).
-
-% ---
-
-jpl_type_inner_class_parts([C|Cs]) --> "$", jpl_type_inner_class_part(C), !, jpl_type_inner_class_parts(Cs).
-jpl_type_inner_class_parts([])     --> [].
-
-% ===
-%
-% ===
-
-% ===
-%
-% ===
-
-jpl_type_descriptor_1(T) --> jpl_type_primitive(T),!.
-jpl_type_descriptor_1(T) --> jpl_type_class_descriptor(T),!.
-jpl_type_descriptor_1(T) --> jpl_type_array_descriptor(T),!.
-jpl_type_descriptor_1(T) --> jpl_type_method_descriptor(T).
-
-% ===
-% Parse an array name returned from Class.getName()
-% https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/lang/Class.html#getName()
-% OK
-% ===
-
-jpl_type_array_entityname(array(T)) --> "[", jpl_type_entityname_inside_array(T).
-
-jpl_type_entityname_inside_array(T) --> "L", jpl_type_binary_classname(Class), ";".
-jpl_type_entityname_inside_array(T) --> jpl_type_array_entityname(T).
-jpl_type_entityname_inside_array(T) --> jpl_type_primitive(T) ; jpl_type_void(T).
-
-
-
-
-
-
-
-jpl_type_array_descriptor(array(T)) --> "[", jpl_type_descriptor_1(T).
-
-jpl_type_bare_class_descriptor(class(Ps,Cs)) --> jpl_type_slashed_package_parts(Ps), jpl_type_class_parts(Cs).
-jpl_type_class_descriptor(class(Ps,Cs))      --> "L", jpl_type_bare_class_descriptor(class(Ps,Cs)), ";".
-
-
-
-jpl_type_slashed_package_parts([P|Ps]) --> jpl_type_package_part(P), "/", !, jpl_type_slashed_package_parts(Ps).
-jpl_type_slashed_package_parts([])     --> [].
-
-% ===
-%
-% ===
-
-jpl_type_method_descriptor(method(Ts,T)) --> "(", jpl_type_method_descriptor_args(Ts), ")", jpl_type_method_descriptor_return(T).
-
-jpl_type_method_descriptor_args([T|Ts]) --> jpl_type_descriptor_1(T), !, jpl_type_method_descriptor_args(Ts).
-jpl_type_method_descriptor_args([])     -->  [].
-
-jpl_type_method_descriptor_return(T) -->  jpl_type_void(T).
-jpl_type_method_descriptor_return(T) -->  jpl_type_descriptor_1(T).
-
-% ===
-%
-% ===
-
-jpl_type_id(A) -->  { nonvar(A) -> atom_codes(A,[C|Cs]) ; true },  jpl_type_alfa(C), jpl_type_id_rest(Cs), { atom_codes(A, [C|Cs]) }.
-
-jpl_type_id_rest([C|Cs]) --> jpl_type_alfa_num(C), !, jpl_type_id_rest(Cs).
-jpl_type_id_rest([])     --> [].
-
-% inner class name parts (empirically)
-
-jpl_type_id_v2(A) --> { nonvar(A) -> atom_codes(A,Cs) ; true }, jpl_type_id_rest(Cs), { atom_codes(A, Cs) }.
-
-% ===
-%
-% ===
-
-jpl_type_void(void) --> "V".
-
-% ===
-% Parse a primitive name as returned from Class.getName()
-% https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/lang/Class.html#getName()
-% OK
-% ===
-
-jpl_type_primitive(boolean) --> "Z",!.
-jpl_type_primitive(byte)    --> "B",!.
-jpl_type_primitive(char)    --> "C",!.
-jpl_type_primitive(double)  --> "D",!.
-jpl_type_primitive(float)   --> "F",!.
-jpl_type_primitive(int)     --> "I",!.
-jpl_type_primitive(long)    --> "J",!.
-jpl_type_primitive(short)   --> "S".
-
-% ===
-% 
-% ===
-
-jpl_type_findclassname(T) --> jpl_type_bare_class_descriptor(T).
-jpl_type_findclassname(T) --> jpl_type_array_descriptor(T).
-
-% ===
-% Strings
-% ===
-
-jpl_type_class_part(N)       --> ..........
-jpl_type_inner_class_part(N) --> ..........
-*/
-
-% ===
-% Java identifier characters
-% ===
-
-% A "Java identifier" starts with a "Java identifier start character" and 
-% continues with a "Java identifier part character". 
+% A "Java identifier" starts with a "Java identifier start character" and
+% continues with a "Java identifier part character".
 % A "Java identifier start character" is a character for whose unicode code point
 % Character.isJavaIdentifierStart(cp) returns true.
 % A "Java identifier part character" is a character for whose unicode code point
@@ -234,23 +17,24 @@ jpl_type_inner_class_part(N) --> ..........
 %
 % TODO: If the Prolog implementation does not represent characters internally
 % with Unicode code points (as is the case for SWI Prolog), a mapping will have
-% to be performed first.
+% to be performed first!
 
-java_identifier_start_char(C) :- 
+java_identifier_start_char(C) :-
    java_identifier_start_char_ranges(Ranges),
    char_inside_range(C,Ranges).
 
-java_identifier_part_char(C) :- 
+java_identifier_part_char(C) :-
    java_identifier_part_char_ranges(Ranges),
    char_inside_range(C,Ranges).
 
-char_inside_range(C,[[_Low,High]|Ranges]) :- 
+char_inside_range(C,[[_Low,High]|Ranges]) :-
    High < C,!,char_inside_range(C,Ranges).
-char_inside_range(C,[[Low,High]|_]) :- 
+char_inside_range(C,[[Low,High]|_]) :-
    Low =< C, C =< High.
 
 % ---
-% The ranges are generated with a Java program, then printed
+% The ranges below are generated with a Java program, then printed
+% See "CharRangePrinter.java"
 % ---
 
 java_identifier_start_char_ranges(
@@ -325,7 +109,7 @@ java_identifier_start_char_ranges(
    [65343,65343],[65345,65370],[65382,65470],[65474,65479],[65482,65487],
    [65490,65495],[65498,65500],[65504,65505],[65509,65510]]).
 
-java_identifier_part_char_ranges(   
+java_identifier_part_char_ranges(
    [[0,8],[14,27],[36,36],[48,57],[65,90],[95,95],[97,122],[127,159],[162,165],
    [170,170],[173,173],[181,181],[186,186],[192,214],[216,246],[248,705],
    [710,721],[736,740],[748,748],[750,750],[768,884],[886,887],[890,893],
@@ -405,4 +189,5 @@ java_identifier_part_char_ranges(
    [65296,65305],[65313,65338],[65343,65343],[65345,65370],[65382,65470],
    [65474,65479],[65482,65487],[65490,65495],[65498,65500],[65504,65505],
    [65509,65510],[65529,65531]]).
+
 
