@@ -6,6 +6,8 @@ Some notes taken while working on Prolog
 
 ![The Logic Programming Landscape](pics/quick_map_of_lp_landscape/quick_map_of_lp_landscape.png)
 
+Missed in the above: [αProlog](https://homepages.inf.ed.ac.uk/jcheney/programs/aprolog/)
+
 ## A Tradition
 
 ![Hiroshige: Shinagawa Station](pics/various/Hiroshige_Shinagawa_Station.jpg)
