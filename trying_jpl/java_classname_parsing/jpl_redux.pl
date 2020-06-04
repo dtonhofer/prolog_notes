@@ -2401,7 +2401,7 @@ jpl_classes_to_types([C|Cs], [T|Ts]) :-
 
 
 jpl_classname_chars_to_type(Cs, Type) :-
-    (   phrase(jpl_type_classname_1(Type), Cs)
+    (   phrase(jpl_parse_entityname(Type), Cs)
     ->  true
     ).
 
@@ -2433,7 +2433,7 @@ jpl_classname_to_type(CN, T) :-
     (   jpl_classname_type_cache(CN, Tx)
     ->  Tx = T
     ;   atom_codes(CN, CsCN),
-        phrase(jpl_type_classname_1(T), CsCN)
+        phrase(jpl_parse_entityname(T), CsCN)
     ->  jpl_assert(jpl_classname_type_cache(CN,T)),
         true
     ).
@@ -2930,7 +2930,7 @@ jpl_type_to_class(T, RefA) :-
 jpl_type_to_nicename(T, NN) :-
     (   jpl_primitive_type(T)
     ->  NN = T
-    ;   (   phrase(jpl_type_classname_1(T), Cs)
+    ;   (   phrase(jpl_parse_entityname(T), Cs)
         ->  atom_codes(CNx, Cs),                                % green commit to first solution
             NN = CNx
         )
@@ -2947,7 +2947,7 @@ jpl_type_to_nicename(T, NN) :-
 % @see jpl_type_to_nicename/2
 
 jpl_type_to_classname(T, CN) :-
-    (   phrase(jpl_type_classname_1(T), Cs)
+    (   phrase(jpl_parse_entityname(T), Cs)
     ->  atom_codes(CNx, Cs),                                % green commit to first solution
         CN = CNx
     ).
@@ -2968,7 +2968,7 @@ jpl_type_to_classname(T, CN) :-
 % I'd cache this, but I'd prefer more efficient indexing on types (hashed?)
 
 jpl_type_to_descriptor(T, D) :-
-    (   phrase(jpl_type_descriptor_1(T), Cs)
+    (   phrase(jpl_parse_java_type_descriptor(T), Cs)
     ->  atom_codes(Dx, Cs),
         D = Dx
     ).
@@ -2986,7 +2986,7 @@ jpl_type_to_descriptor(T, D) :-
 %  ==
 
 jpl_type_to_findclassname(T, FCN) :-
-    (   phrase(jpl_type_findclassname(T), Cs)
+    (   phrase(jpl_parse_findclassname_type_descriptor(T), Cs)
     ->  atom_codes(FCNx, Cs),
         FCN = FCNx
     ).

@@ -1,4 +1,7 @@
-:- module(jpl_java_name_parsing, []).
+:- module(jpl_java_name_parsing, 
+          [jpl_parse_entityname//1,
+           jpl_parse_java_type_descriptor//1,
+           jpl_parse_findclassname_type_descriptor//1]).
 
 :- use_module(library(jpl_java_identifier_chars)).
 
@@ -32,55 +35,59 @@ codepoint_call(A,G) :-
 
 rt(parsing_java_names) :- run_tests(parsing_java_names).
 
-
-/*
-
 % ===
 % Parse a classname as returned from Class.getName()
 % previously called "jpl_type_classname_1//1"
-% now called jpl_type_entityname//1
+% now called        "jpl_parse_entityname//1"
 % https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/lang/Class.html#getName()
 % ===
 
-jpl_type_entityname(T) --> jpl_type_binary_classname(T),!.
-jpl_type_entityname(T) --> jpl_type_array_of_entityname(T),!.
-jpl_type_entityname(T) --> jpl_type_primitive(T),!.
-jpl_type_entityname(T) --> jpl_type_void(T).
+jpl_parse_entityname(T) --> jpl_parse_binary_classname(T),!.
+jpl_parse_entityname(T) --> jpl_parse_array_of_entityname(T),!.
+jpl_parse_entityname(T) --> jpl_parse_primitive(T),!.
+jpl_parse_entityname(T) --> jpl_parse_void(T).
+
+jpl_parse_java_type_descriptor(T) --> jpl_parse_primitive(T),!.
+jpl_parse_java_type_descriptor(T) --> jpl_parse_class_descriptor(T),!.
+jpl_parse_java_type_descriptor(T) --> jpl_parse_array_descriptor(T),!.
+jpl_parse_java_type_descriptor(T) --> jpl_parse_method_descriptor(T).
+
+jpl_parse_findclassname_type_descriptor(T) --> jpl_type_bare_class_descriptor(T).
+jpl_parse_findclassname_type_descriptor(T) --> jpl_type_array_descriptor(T).
+
 
 % ===
 % The binary classname as specified in The Java™ Language Specification. 
 % ===
 
-jpl_type_binary_classname(class(Ps,Cs)) --> jpl_type_dotted_package_parts(Ps), jpl_type_class_parts(Cs).
-
-
+jpl_parse_binary_classname(class(Ps,Cs)) --> jpl_parse_dotted_package_parts(Ps), jpl_parse_class_parts(Cs).
 
 % ===
-% The package name: https://docs.oracle.com/javase/specs/jls/se14/html/jls-7.html#jls-7.4
-% separated by dots
+% The package name: 
+% https://docs.oracle.com/javase/specs/jls/se14/html/jls-7.html#jls-7.4
 % ===
 
-jpl_type_dotted_package_parts([P|Ps]) --> jpl_type_java_identifer(P), ".", !, jpl_type_dotted_package_parts(Ps).
-jpl_type_dotted_package_parts([])     --> [].
+jpl_parse_dotted_package_parts([P|Ps]) --> jpl_parse_java_identifier(P), ".", !, jpl_parse_dotted_package_parts(Ps).
+jpl_parse_dotted_package_parts([])     --> [].
 
 % ===
-% The Java identifier
-% is composed of identifiers: https://docs.oracle.com/javase/specs/jls/se14/html/jls-3.html#jls-Identifier
+% The Java identifier is composed of identifiers:
+% https://docs.oracle.com/javase/specs/jls/se14/html/jls-3.html#jls-Identifier
 % ===
 
-jpl_type_java_identifier(A)           --> jpl_type_java_identifier_chars(A),
+jpl_parse_java_identifier(A)           --> jpl_parse_java_identifier_chars(A),
                                           { \+keyword(A), \+boolean_literal(A), \+null_literal(A) }.
 
-jpl_type_java_identifier_chars(A)     --> { nonvar(A) -> atom_codes(A,[C|Cs]) ; true }, 
-                                          jpl_type_java_letter(C),
-                                          jpl_type_java_letter_or_digits(Cs),
+jpl_parse_java_identifier_chars(A)     --> { nonvar(A) -> atom_codes(A,[C|Cs]) ; true }, 
+                                          jpl_parse_java_letter(C),
+                                          jpl_parse_java_letter_or_digits(Cs),
                                           { atom_codes(A,[C|Cs]) }.
 
-jpl_type_java_letter_or_digits(A)     --> { nonvar(A) -> atom_codes(A,[C|Cs]) ; true }, 
-                                          jpl_type_java_letter_or_digit(C),!
-                                          jpl_type_java_letter_or_digits(C),
+jpl_parse_java_letter_or_digits(A)     --> { nonvar(A) -> atom_codes(A,[C|Cs]) ; true }, 
+                                          jpl_parse_java_letter_or_digit(C),!
+                                          jpl_parse_java_letter_or_digits(C),
                                           { atom_codes(A,[C|Cs]) }.
-jpl_type_java_letter_or_digits([])    --> [].
+jpl_parse_java_letter_or_digits([])    --> [].
  
 % A "Java letter" is a character for which the method Character.isJavaIdentifierStart(int) returns true.
 % A "Java letter-or-digit" is a character for which the method Character.isJavaIdentifierPart(int) returns true. 
@@ -133,11 +140,6 @@ jpl_type_inner_class_parts([])     --> [].
 % ===
 %
 % ===
-
-jpl_type_descriptor_1(T) --> jpl_type_primitive(T),!.
-jpl_type_descriptor_1(T) --> jpl_type_class_descriptor(T),!.
-jpl_type_descriptor_1(T) --> jpl_type_array_descriptor(T),!.
-jpl_type_descriptor_1(T) --> jpl_type_method_descriptor(T).
 
 % ===
 % Parse an array name returned from Class.getName()
@@ -213,9 +215,4 @@ jpl_type_primitive(int)     --> "I",!.
 jpl_type_primitive(long)    --> "J",!.
 jpl_type_primitive(short)   --> "S".
 
-% ===
-% 
-% ===
 
-jpl_type_findclassname(T) --> jpl_type_bare_class_descriptor(T).
-jpl_type_findclassname(T) --> jpl_type_array_descriptor(T).

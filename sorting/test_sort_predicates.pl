@@ -15,7 +15,7 @@
 % Runs on: SWI Prolog 8.1 
 % with library(yall) for the Lambda Expression in line
 % maplist([X]>>div_with_mod(X,3),InputList),
-% ============================================================================%
+% ============================================================================
 
 % ===
 % Select the sorting predicate based on a third argument
