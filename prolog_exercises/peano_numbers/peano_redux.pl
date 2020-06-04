@@ -58,9 +58,10 @@
 %                             ... where a and b stand for some Peano numbers.
 %
 % It would be extremely cool to be able to set up a constraint between two
-% variables PN and NN, so that if PN is bound to a natural number, NN is
-% automatically bound to a Peano Number, and vice-versa. That can probably be
-% done with some effort using attributed variables.
+% variables PN and NN, so that if NN is bound to a natural number, PN is
+% automatically bound to the coressponding Peano Number, and vice-versa.
+% That can probably be done with some effort using attributed variables, but I 
+% haven't thought about that.
 %
 % TODO
 %
