@@ -6,7 +6,12 @@ Some notes taken while working on Prolog
 
 ![The Logic Programming Landscape](pics/quick_map_of_lp_landscape/quick_map_of_lp_landscape.png)
 
-Missed in the above: [αProlog](https://homepages.inf.ed.ac.uk/jcheney/programs/aprolog/)
+Missed in the above: 
+
+- [αProlog](https://homepages.inf.ed.ac.uk/jcheney/programs/aprolog/) (Currently frozen?)
+- [GOLOG](https://en.wikipedia.org/wiki/GOLOG) (Ancient, based on Situation Calculus. What's the relationship to LPS?)
+- [MProlog](https://www.mimuw.edu.pl/~nguyen/mpl.pdf) (PDF) for [Modal Logic](https://plato.stanford.edu/entries/logic-modal/)
+- [Markov Logic Networks](https://en.wikipedia.org/wiki/Markov_logic_network)
 
 ## A Tradition
 
