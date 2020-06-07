@@ -7,17 +7,15 @@ similary to the types of other Prolog). As there is no way to define new datatyp
 base datatypes ([algebraically](https://en.wikipedia.org/wiki/Algebraic_data_type) or
 otherwise), these are the only one there are.
 
-![screenshot](swi_prolog_type_tree/swi_prolog_type_tree_mini.png)
-
-- [graphml file](swi_prolog_type_tree/swi_prolog_type_tree.graphml). **The editable diagram
-  in [graphml](http://graphml.graphdrawing.org/) format.** 
+- [SVG file](swi_prolog_type_tree/swi_prolog_type_tree.svg). **The diagram in SVG format**.
+  Can be visualized in a browser and easily panned & zoomed. 
+- [PNG file](swi_prolog_type_tree/swi_prolog_type_tree.png). **The diagram in PNG format**, a bit
+  awkward to use. PNG image data, 6704 x 4147, 8-bit/color RGB, non-interlaced.
+- [graphml file](swi_prolog_type_tree/swi_prolog_type_tree.graphml). **The editable diagram**
+  in [graphml](http://graphml.graphdrawing.org/) format.
   Edited with the free (but not open) Java-based [yEd](https://www.yworks.com/products/yed) editor
   (Note that you have to switch off antialiasing if you use it, otherwise it feels like driving
    an ocean liner).
-- [PNG file](swi_prolog_type_tree/swi_prolog_type_tree.png). **The diagram in PNG format**, a bit
-  awkward to use. PNG image data, 6704 x 4147, 8-bit/color RGB, non-interlaced.
-- [SVG file](swi_prolog_type_tree/swi_prolog_type_tree.svg). **The diagram in SVG format**. Best! 
-  Can be visualized in a browser and easily panned & zoomed. **Use this**.
 
 ### Compound terms of arity 0 vs atoms in predicate roles vs. in function roles
 
@@ -112,9 +110,9 @@ S = compound(p, [nongnd], [var(X), lbox([list, gnd], int(1), lbox([list, gnd], i
 - [Logtalk](https://logtalk.org/) has actual datatypes and OO-style message handlers. This is achieved by setting up Prolog Modules around terms, which have the characteristics of objects (Prolog need a proper hierarchical Module system)
 - Type tests seems to be non-logical but they are if one considers them to have a hidden additional argument: A term representing the "current computational state" of the system. That view probably doesn't help much.
 
-## Disassembling the term
+## Predicates for Assembling/Disassembling a Term
 
-Résumé:
+These are predicates found in the section [Analysing and Constructing Terms](https://eu.swi-prolog.org/pldoc/man?section=manipterm) of the SWI-Prolog manual.
 
 ![Disassembling Terms](disassembling_terms/disassembling_terms.png)
 
