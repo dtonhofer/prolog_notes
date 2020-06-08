@@ -93,7 +93,7 @@ Of course, nothing prohibits you from throwing in your own style -- **if the cal
 C = "This is my own term and I like it".
 ```
 
-## Rolling my own!!
+To get the cleartext error messages out of the `throw/1` calls, just do this:
 
 ```
 % Set up some informative atoms, and make them retrievable by code
