@@ -1,0 +1,35 @@
+
+
+                                                                          any T 
+                                                                            |
+                                                  +-------------------------+------------------------+
+                                                  |                                                  |
+                                                var(T)                                            nonvar(T)
+                                         ("is T a variable name                                      |
+                                          that is still fresh                                        |
+                                     variable at this point in time?")                               |
+                                                                         +---------------------------+-----------------------------+
+                                                                         |                                                         |      
+                                                                     atomic(T)                                                 compound(T)                                
+                                                                         |                                                         |
+                                      +----------------------------------+------------------------+                 +--------------+-------------+
+                                      |                                  |                        |                 |                            |
+                                  blob(T,_)                           string(T)                number(T)       "compound term            "compound term
+                                      |                                                           |             of arity 0"                of arity > 0"
+                                      |                                                           |                                              |
+              +-----------------------+-----------------------+                         +---------+---------+                   +----------------+-------------+
+              |                       |                       |                         |                   |                   |                |             |            
+       (other blob types)    blob(T,reserved_symbol)     blob(T,text)           rational(T,Nu,De)        float(T)              dict          "head of       ...others  
+      encapsulated foreign            |                    atom(T)                      |                                       |            of a list"
+           resources                  |                       |                         |                                (this seems to     '[|]'(H,Rs)
+                                      |                       |                         |                              be an encapsulated      [H|Rs]
+                             +--------+--------+              |              +----------+----------+                     data structure)         |
+                             |                 |              |              |                     |                                       (a nonlocal
+                           T==[]             T\==[]           |   rational(X),\+integer(X)      integer(T)                               structure; there 
+                        empty list        dict functor        |      (proper rational)                                                    may or may not
+                                                              |                                                                            be an actual
+                                                              |                                                                        list beyond the head)
+                                           +------------------+------------------+
+                                           |                  |                  |
+                                      lenghth=0           length=1            atom with
+                                   "the empty atom"      "character"          length>1
