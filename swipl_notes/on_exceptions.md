@@ -1,5 +1,7 @@
 # Throwing errors
 
+(This page referenced from [`throw/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=throw/1))
+
 ## Throwing ISO-standard errors
 
 [`library(error)`](https://www.swi-prolog.org/pldoc/man?section=error) has facilities for **throwing standard errors** (but not for **catching standard errors** you have to write the appropriate catcher term to match the exception term):
