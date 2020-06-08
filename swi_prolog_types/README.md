@@ -182,3 +182,12 @@ Among others...
 - Paper: [Towards Typed Prolog](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.456.7365) _Tom Schrijvers, Vitor Santos Costa, Jan Wielemaker, and Bart Demoen_ (2008)
 - https://eu.swi-prolog.org/pack/list?p=type_check (This probably is the corresponding pack, but it is dead) 
 
+### Simple checks at runtime
+
+Comparing various type-testing approaches with a bit of [Unit Test Code](../blob/master/code/unit_tests_for_must_be.pl)
+
+  - Default approach which fails silently if the answer is "don't know" (the on implemented currently in most Prologs)
+  - "Sufficiently instantiated" approach which throws if the answer is "don't know"
+  - [`must_be/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=must_be/2) approach which throws unless the answer is "yes, the type matches"
+  - `can_be/2` approach which throws only if the answer is "it's never going to be that type"
+  
