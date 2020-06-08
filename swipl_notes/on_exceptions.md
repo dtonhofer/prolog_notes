@@ -2,22 +2,22 @@
 
 ## Throwing ISO-standard errors
 
-[`library(error)`](https://www.swi-prolog.org/pldoc/man?section=error) has facilities for **throwing standard errors** (but not for **catching standard errors** you have to write the appropriate catcher term to match the exception term), and also a discussion of the error classes.
+[`library(error)`](https://www.swi-prolog.org/pldoc/man?section=error) has facilities for **throwing standard errors** (but not for **catching standard errors** you have to write the appropriate catcher term to match the exception term):
 
-  - type_error/2 (ISO)
-  - domain_error/2 (ISO)
-  - existence_error/2 (ISO)
-  - existence_error/3 (not ISO)
-  - permission_error/3 (ISO)
-  - instantiation_error/1 (ISO)
-  - uninstantiation_error/1 (ISO, in corrigendum)
-  - representation_error/1 (ISO)
-  - syntax_error/1 (ISO)
-  - resource_error/1 (ISO)
+  - [type_error/2](https://eu.swi-prolog.org/pldoc/doc_for?object=type_error/2) (ISO)
+  - [domain_error/2](https://eu.swi-prolog.org/pldoc/doc_for?object=domain_error/2) (ISO)
+  - [existence_error/2](https://eu.swi-prolog.org/pldoc/doc_for?object=existence_error/2) (ISO)
+  - [existence_error/3](https://eu.swi-prolog.org/pldoc/doc_for?object=existence_error/3) (not ISO)
+  - [permission_error/3](https://eu.swi-prolog.org/pldoc/doc_for?object=permission_error/3) (ISO)
+  - [instantiation_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=instantiation_error/1) (ISO)
+  - [uninstantiation_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=uninstantiation_error/1) (ISO, in corrigendum 2)
+  - [representation_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=representation_error/1) (ISO)
+  - [syntax_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=syntax_error/1) (ISO)
+  - [resource_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=resource_error/1) (ISO)
 
-Try for example this:
+### Example
 
-Here we throw an exception using the appropriate exception-throwing predicates from library(error) Note they are not called throw_type_error/2 etc. just type_error/2 etc, which may cause some confusion on reading. We then catch the exception in the catcher term _C_ 
+Here we throw an exception using the appropriate exception-throwing predicates from `library(error)` Note they are not called `throw_type_error/2` etc. just `type_error/2` etc, which may cause some confusion on reading. We then catch the exception in the catcher term _C_ 
 
 ```
 ?- catch(type_error(type,term),C,true).
@@ -39,7 +39,7 @@ C = error(instantiation_error, _7032).
 C = error(syntax_error(term), _8162).
 ```
 
-## Problems with the ISO standard exception terms
+## Some problems with the ISO standard exception terms
 
 Sadly, the ISO error terms are not "uniform": they are compound terms of
 arity 3-1 (including non-compound terms, i.e. atoms). Which is kinda hair-raising.
@@ -55,8 +55,6 @@ error(instantiation_error,[~list of mandatory args~],[~list of free args~]).
 
 Instead we get the following variability in straightjacketed terms, which seems pointless. 
 
-The =Extra= freshvar in second position of the term =error/2= is used when the exception is thrown from foreign code.
-
 ```
 ...
 error(domain_error(Arg0,Arg1), Extra).
@@ -66,13 +64,13 @@ error(instantiation_error, Extra).
 ...
 ```
 
-So we can't append any other information to the ISO standard exception inner term, even though one might be interested in the name of the variables involved in the exception, or want to transmit some informative message for the user. 
+We can't append any other information to the ISO standard exception inner term, even though one might be interested in the name of the variables involved in the exception, or want to transmit some informative message for the user. 
 
-One _could_ use the =Extra= argument of the outer `error/2` term, but it cannot be set by calling the provided calls from library(error). So if you want to use that, you have to construct the =error/2= term and call throw/1 yourself (library soon).
+One _could_ use the `Extra` argument of the outer `error/2` term, but it cannot be set by calling the provided calls from `library(error)`. So if you want to use that, you have to construct the `error/2` term and call `throw/1` yourself.
 
-Also, for =domain_error/2=, the inner term is designed to make a statement about one variable only, instead of a combination of variables. Unfortunately, the latter is by far the more interesting case. 
+Also, for `domain_error/2`, the inner term is designed to make a statement about one variable only, instead of a combination of variables. Unfortunately, the latter is by far the more interesting case. 
 
-Finally, there are assumptions about =Arg0= and =Arg1= terms. At least the toplevel expects something like =domain_error(integer,5)=. Otherwise, what it prints is confusing.
+Finally, there are assumptions about =Arg0= and =Arg1= terms. At least the toplevel expects something like `domain_error(integer,5)`. Otherwise, what it prints is confusing.
 
 The ISO standard does not provide any structure for the "can't happen" error, "illegal state error" or "assertion error". These are not ISO standard "system errors". This is seriously bad. What to do?
 
@@ -107,7 +105,7 @@ exception_code(e06,decreasing_from_start_to_end_but_step_is_positive).
 exception_code(e07,increasing_from_start_to_end_but_step_is_negative).
 ```
 
-Then we can do simple throws like these, advantageously replacing those of library(error):
+Then we can do simple throws like these, advantageously replacing those of `library(error)`:
 
 ```
 % ===
@@ -145,7 +143,7 @@ throw_illegal_state_error(Pred,ExCode) :-
    throw(error(illegal_state_error,context(Pred,ExText))).
 ```
 
-We can also have wrappers to fail or throw depending on options list contents. If "Options" is a list containing the atom =throw=, then throw, else fail:
+We can also have wrappers to fail or throw depending on options list contents. If "Options" is a list containing the atom `throw`, then throw, else fail:
 
 ```
 throw_existence_error(Pred,Type,Term,ExCode,Options) :
