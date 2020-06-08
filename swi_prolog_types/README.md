@@ -184,7 +184,7 @@ Among others...
 
 ### Simple checks at runtime
 
-Comparing various type-testing approaches with a bit of [Unit Test Code](../blob/master/code/unit_tests_for_must_be.pl)
+Comparing various type-testing approaches with a bit of [Unit Test Code](../code/unit_tests_for_must_be.pl)
 
   - Default approach which fails silently if the answer is "don't know" (the on implemented currently in most Prologs)
   - "Sufficiently instantiated" approach which throws if the answer is "don't know"
