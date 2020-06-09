@@ -27,6 +27,10 @@ The interesting case occurs if a `dif(A,B)` has been issued in State A and the p
 In that case, an unwinding of the program progress back to the point where the `dif(A,B)` occured is performed (any side-effects stay,
 of course, side-effected). The idea is to pretend nothing ever happened and to continue as if `dif(A,B)` had failed.
 
+Here is a "naive" state diagram ("naive" in that "it's wrong"). The correct one is further below
+
+[![Naive dif/2 state diagram](about_dif/about_dif.svg)]
+
 Let's try some examples:
 
 First a predicate `check/2` which prints out information about the situation:
