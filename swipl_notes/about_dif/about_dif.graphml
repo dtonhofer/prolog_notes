@@ -260,7 +260,7 @@ e.g. A=f(X,Y) --&gt; A=f(x,Y).<y:LabelModel>
       <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.process">
-          <y:Geometry height="40.0" width="206.4000000000001" x="502.1199999999998" y="-71.87333333333368"/>
+          <y:Geometry height="40.0" width="206.4000000000001" x="491.5664843749996" y="-71.87333333333368"/>
           <y:Fill color="#FFFFFF" color2="#FFFFFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="dashed" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="115.2578125" x="45.571093750000045" y="11.015625">Refinement Action<y:LabelModel>

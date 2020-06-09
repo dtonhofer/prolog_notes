@@ -55,7 +55,7 @@
         <stop stop-opacity="1" stop-color="rgb(183,201,227)" offset="0%"/>
         <stop stop-opacity="1" stop-color="rgb(183,201,227)" offset="100%"/>
       </linearGradient>
-      <linearGradient x1="502.12" gradientUnits="userSpaceOnUse" x2="708.52" y1="-71.8733" y2="-31.8733" id="linearGradient14" spreadMethod="reflect">
+      <linearGradient x1="491.5665" gradientUnits="userSpaceOnUse" x2="697.9665" y1="-71.8733" y2="-31.8733" id="linearGradient14" spreadMethod="reflect">
         <stop stop-opacity="1" stop-color="white" offset="0%"/>
         <stop stop-opacity="1" stop-color="white" offset="100%"/>
       </linearGradient>
@@ -206,11 +206,11 @@
       <text x="520.1324" xml:space="preserve" y="289.1853" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">"Unrefined"</text>
     </g>
     <g fill="url(#linearGradient14)" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,-350,87)" stroke="url(#linearGradient14)">
-      <path d="M502.12 -71.8733 L708.52 -71.8733 L708.52 -31.8733 L502.12 -31.8733 Z" stroke="none" clip-path="url(#clipPath2)"/>
+      <path d="M491.5665 -71.8733 L697.9665 -71.8733 L697.9665 -31.8733 L491.5665 -31.8733 Z" stroke="none" clip-path="url(#clipPath2)"/>
     </g>
     <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" stroke-dasharray="6,2" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,-350,87)" stroke-linecap="butt">
-      <path fill="none" d="M502.12 -71.8733 L708.52 -71.8733 L708.52 -31.8733 L502.12 -31.8733 Z" clip-path="url(#clipPath2)"/>
-      <text x="549.6911" y="-47.719" clip-path="url(#clipPath2)" font-family="sans-serif" stroke-dasharray="none" stroke="none" xml:space="preserve">Refinement Action</text>
+      <path fill="none" d="M491.5665 -71.8733 L697.9665 -71.8733 L697.9665 -31.8733 L491.5665 -31.8733 Z" clip-path="url(#clipPath2)"/>
+      <text x="539.1376" y="-47.719" clip-path="url(#clipPath2)" font-family="sans-serif" stroke-dasharray="none" stroke="none" xml:space="preserve">Refinement Action</text>
     </g>
     <g fill="url(#linearGradient15)" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,-350,87)" stroke="url(#linearGradient15)">
       <circle r="10" clip-path="url(#clipPath2)" cx="786.12" cy="278.0467" stroke="none"/>
