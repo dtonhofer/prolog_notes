@@ -43,7 +43,7 @@ check(X,Y) :-
    ((X\==Y)       -> writeln("They are different") ; true).  % Term difference/non-identity
 ```
 
-Issue a `dif(A,B)` in State A. Note that the Prolog Toplevel prints the open `dif/2` expression at the end (it seems to have been modified though?)
+Issue a `dif(A,B)` in State A. Note that the Prolog Toplevel prints the open `dif/2` expression at the end (it has been rearranged; the `f` in the printed `dif(f(Y,X),f(x,y))` is _not_ the original `f` function symbol. In fact `f` is used by `dif/2` throughout.
 
 ```
 ?- A=f(x,X),B=f(Y,y),writeln("State A: Unrefined"),check(A,B),dif(A,B),writeln("END OF GOAL").
@@ -224,4 +224,28 @@ inequality confirmed
 Yes
 A = f(x),
 B = f(y).
+```
+
+## Addendum
+
+According to [this discussion](https://swi-prolog.discourse.group/t/surprising-dif-2-behaviour/2317), anonymous variables in the term passed to `dif/2`
+will lead to non-printing at the toplevel:
+
+```
+% Unsure whether dif: succeeds
+
+?- dif((p(1) :- q),(_B:-_C)),format("Hey\n").
+Hey
+dif(f(_B, _C), f(p(1), q)).
+
+% Still unsure whether dif: succeeds. But doesn't print the dif/2 expression
+
+?- dif((p(1) :- q),(_:-_)),format("Hey\n").
+Hey
+true.
+
+% Sure that dif/2 won't succeed
+
+?- dif((p(1) :- q),(p(1):-q)),format("Hey\n").
+false.
 ```
