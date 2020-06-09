@@ -27,11 +27,11 @@ The interesting case occurs if a `dif(A,B)` has been issued in State A and the p
 In that case, an unwinding of the program progress back to the point where the `dif(A,B)` occured is performed (any side-effects stay,
 of course, side-effected). The idea is to pretend nothing ever happened and to continue as if `dif(A,B)` had failed.
 
-Here is a "naive" state diagram ("naive" in that "it's wrong"). The correct one is further below
+Here is a "naive" state diagram ("naive" in that "it's wrong"). The correct state diagram is further below.
 
-[![Naive dif/2 state diagram](about_dif/about_dif.svg)]
+![Naive dif/2 state diagram](about_dif/about_dif.svg)
 
-Let's try some examples:
+## Let's try some examples
 
 First a predicate `check/2` which prints out information about the situation:
 
@@ -97,8 +97,63 @@ A failing `dif/2` really means either:
 - I'm in State C already and `A` and `B` are identical terms, or
 - Optimistically succeeding would cause a situation where `dif(A,B)` would fail. I know this from another timeline (under assmption of a 
   deterministic program w/o access to oracles, i.e. `A` is not set from input channel or something.) So, better give up immediately.
+
+## Corrected state diagram
+
+The fact that "we never reach State C from State A if `dif(A,B)` is open" means that a corrected state diagram must consider
+whether `dif(A,B)` is "open" or "closed" as an orthogonal state variable. We thus get a new diagram. In the diagram below,
+"rollback" transitions, which can happen between any state, have been left out for clarity. Also, transition to a terminal
+state is not indicated.
+
+![Corrected dif/2 state diagram](about_dif/about_dif_correct.svg)
+
+## An example with repeated attempts using `between/3`
+
+```
+?- between(1,5,X),dif(A,B),format("Optimistically progressing with ~q\n",[X]),format("Setting dif(A,B) to certainly false\n"),A=B.
+Optimistically progressing with 1
+Setting dif(A,B) to certainly false
+Optimistically progressing with 2
+Setting dif(A,B) to certainly false
+Optimistically progressing with 3
+Setting dif(A,B) to certainly false
+Optimistically progressing with 4
+Setting dif(A,B) to certainly false
+Optimistically progressing with 5
+Setting dif(A,B) to certainly false
+false.
+
+?- between(1,5,X),dif(A,B),format("Optimistically progressing with ~q\n",[X]),format("Setting dif(A,B) to certainly true\n"),A=x,B=y.
+Optimistically progressing with 1
+Setting dif(A,B) to certainly true
+X = 1,
+A = x,
+B = y ;
+Optimistically progressing with 2
+Setting dif(A,B) to certainly true
+X = 2,
+A = x,
+B = y ;
+Optimistically progressing with 3
+Setting dif(A,B) to certainly true
+X = 3,
+A = x,
+B = y ;
+Optimistically progressing with 4
+Setting dif(A,B) to certainly true
+X = 4,
+A = x,
+B = y ;
+Optimistically progressing with 5
+Setting dif(A,B) to certainly true
+X = 5,
+A = x,
+B = y.
+```
   
-Here is a more extensive example which also reveals a problematic interaction with `->/2`. Gotta sk about that!
+## Extensive Example, with implication
+
+Here is a more extensive example which also reveals a problematic interaction with `->/2`. Gotta ask about that!
 
 ```logtalk
 magic_of_dif_above(A,B,W) :- 
