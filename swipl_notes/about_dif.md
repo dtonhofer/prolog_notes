@@ -33,24 +33,95 @@ First a predicate `check/2` which prints out information about the situation:
 
 ```logtalk
 check(X,Y) :- 
-   ((\+ \+ (X=Y))  -> writeln("they do unify!") ; true),      % \+ \+ ensures consequence-less unification attempt ("unify in pocket universe")
-   ((\+ (X\=Y))    -> writeln("they don't unify!") ; true),   % X\=Y is already consequence-less, just reverse the truth value with \+
-   ((X==Y)         -> writeln("they are identical") ; true),  % Term equivalence/identity (not unification, A and B are not refined by ==)
-   ((X\==Y)        -> writeln("they are different") ; true).  % Term difference/non-identiy
+   ((\+ \+ (X=Y)) -> writeln("They unify") ; true),          % \+ \+ ensures consequence-less unification attempt ("unify in pocket universe")
+   ((X\=Y)        -> writeln("They don't unify") ; true),    % X\=Y is already consequence-less
+   ((X==Y)        -> writeln("They are identical") ; true),  % Term equivalence/identity (not unification, A and B are not refined by ==)
+   ((X\==Y)       -> writeln("They are different") ; true).  % Term difference/non-identity
 ```
 
-
+Issue a `dif(A,B)` in State A. Note that the Prolog Toplevel prints the open `dif/2` expression at the end (it seems to have been modified though?)
 
 ```
-?- A=f(x,X),B=f(Y,y),writeln("State A: Unrefined"),check(A,B),dif(A,B),writeln("end of clause").
-unsure
-end of clause
+?- A=f(x,X),B=f(Y,y),writeln("State A: Unrefined"),check(A,B),dif(A,B),writeln("END OF GOAL").
+State A: Unrefined
+They unify
+They are different
+END OF GOAL
 A = f(x, X),
 B = f(Y, y),
 dif(f(Y, X), f(x, y)).
 ```
 
+Issue a `dif(A,B)` in State B. 
 
+```
+?- A=f(x),B=f(y),writeln("State B: Sure that 'dif'"),check(A,B),dif(A,B),writeln("END OF GOAL").
+State B: Sure that 'dif'
+They don't unify
+They are different
+END OF GOAL
+A = f(x),
+B = f(y).
+```
 
+Issue a `dif(A,B)` in State C. 
 
+```
+?- A=f(x),B=f(x),writeln("State C: Sure that 'nondif'"),check(A,B),dif(A,B),writeln("END OF GOAL").
+State C: Sure that 'nondif'
+They unify
+They are identical
+false.
+```
+
+Issue a `dif(A,B)` in State A, then make `A` and `B` identical, switching to State C.
+
+```
+?- A=f(x,X),B=f(Y,y),writeln("State A: Unrefined"),check(A,B),dif(A,B),X=y,Y=x,writeln("END OF GOAL").
+State A: Unrefined
+They unify
+They are different
+false.
+```
+
+The end of the goal is never reached! 
+
+This is philosophically interesting, as the very action that made `A` and `B` identical has been rolled back.
+
+A failing `dif/2` really means either:
+
+- I'm in State C already and `A` and `B` are identical terms, or
+- Optimistically succeeding would cause a situation where `dif(A,B)` would fail. I know this from another timeline (under assmption of a 
+  deterministic program w/o access to oracles, i.e. `A` is not set from input channel or something.) So, better give up immediately.
+  
+Here is a more extensive example which also reveals a problematic interaction with `->/2`. Gotta sk about that!
+
+```logtalk
+magic_of_dif_above(A,B,W) :- 
+   magic_of_dif(A,B,W) -> format("Yes\n",[]) ; format("No\n",[]).
+
+magic_of_dif(A,B,W) :-
+   A=f(_),
+   B=f(y),
+   % At this point, we cannot say for sure whether it will
+   % turn out that A==B or not. It could go either way.
+   (dif(A,B)
+    -> 
+    proceed_hoping_that_dif_will_turn_true(A,B,W)
+    ;
+    try_again(A,B)).
+      
+try_again(A,B) :-    
+   format("Trying again after dif(A,B) collapsed to 'false'\n",[]);
+   format("Post optimistic valus: A=~q, B=~q\n",[A,B]).
+   
+proceed_hoping_that_dif_will_turn_true(A,B,W) :- 
+   format("Proceeding, hoping that dif/2 will turn true\n"), 
+   format("Optimistic valus: A=~q, B=~q\n",[A,B]),
+   ((W==make_equal) 
+    -> 
+    (A=f(y),format("Never get here\n",[]))           % dif(A,B) collapses to false
+    ;
+    (A=f(x),format("inequality confirmed\n",[]))).   % dif(A,B) confirmed to be true   
+```
 
