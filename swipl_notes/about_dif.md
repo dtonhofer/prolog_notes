@@ -151,9 +151,9 @@ A = x,
 B = y.
 ```
   
-## Extensive Example, with implication
+## Example, with implication
 
-Here is a more extensive example which also reveals a problematic interaction with `->/2`. Gotta ask about that!
+This is unexpected:
 
 ```logtalk
 magic_of_dif_above(A,B,W) :- 
@@ -184,3 +184,44 @@ proceed_hoping_that_dif_will_turn_true(A,B,W) :-
     (A=f(x),format("inequality confirmed\n",[]))).   % dif(A,B) confirmed to be true   
 ```
 
+Calling `magic_of_dif/3` with the instruction to make `A` and `B`  equal reveals that the else branch of `->/2` is not taken:
+
+```
+?- magic_of_dif(A,B,make_equal).
+Proceeding, hoping that dif/2 will turn true
+Optimistic valus: A=f(_12650), B=f(y)
+false.
+```
+
+Alternatively, called from another predicate:
+
+```
+?- magic_of_dif_above(A,B,make_equal).
+Proceeding, hoping that dif/2 will turn true
+Optimistic valus: A=f(_15702), B=f(y)
+No
+true.
+```
+
+The "happy path" would be to confirm `dif(A,B)`, its optimism rewarded:
+
+```
+?- magic_of_dif(A,B,_).
+Proceeding, hoping that dif/2 will turn true
+Optimistic valus: A=f(_13388), B=f(y)
+inequality confirmed
+A = f(x),
+B = f(y).
+```
+
+Alternatively, called from another predicate:
+
+```
+?- magic_of_dif_above(A,B,_).
+Proceeding, hoping that dif/2 will turn true
+Optimistic valus: A=f(_14542), B=f(y)
+inequality confirmed
+Yes
+A = f(x),
+B = f(y).
+```
