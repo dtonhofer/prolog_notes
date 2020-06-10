@@ -192,7 +192,7 @@ B = y.
 
 ### With a cut
 
-The `dif/2` of SWI Prolog seems to not mesh all that well with nearby cuts. That's probably what the paper "Indexing `dif/2`" alludes to with "[`dif/2`]'s combination with established control constructs often leads to unsound results." 
+The `dif/2` of SWI Prolog seems to not mesh all that well with nearby cuts.  
 
 ```logtalk
 % A predicate which doesn't cut after the dif/2
@@ -213,7 +213,7 @@ fail_the_dif(X,Y) :-
    writeln("dif(X,Y) late failure: never get here").
 ```
 
-After dif/2 “late failure”, where does Prolog roll back to?
+After `dif/2` “late failure”, where does Prolog roll back to?
 
 For `do/2` it seems to behave as if `dif(X,Y)` had failed on first call, and takes the alternative clause:
 
