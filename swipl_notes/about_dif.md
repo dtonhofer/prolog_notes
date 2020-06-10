@@ -17,7 +17,7 @@ In [Indexing `dif/2`](https://arxiv.org/abs/1607.01590), Ulrich Neumerkel and St
 > The  major  achievement was that the  efficiency of general Prolog programs not using `dif/2`
 > remained unaffected within a system supporting `dif/2`. In this manner `dif/2` survived in major
 > high-performance implementations like _SICStus_. However, it still has not gained general acceptance
-> among programmers. We believe that the mainreason for this lack of acceptance is that `dif/2` does
+> among programmers. We believe that the main reason for this lack of acceptance is that `dif/2` does
 > not directly deliver the abstraction that is actually needed. Its direct use leads to clumsy and
 > unnecessarily inefficient code. Its combination with established control constructs often leads to
 > unsound results. New, pure constructs are badly needed
@@ -43,7 +43,7 @@ The behavious of `dif/2` in all three states is the following:
 - **State B**: `dif(A,B)` succeeds deterministically.
 - **State C**: `dif(A,B)` fails immediately.
 
-The interesting case occurs if a `dif(A,B)` has been issued in State A and the program subsequently switches to State C.
+The interesting case occurs if a `dif(A,B)` has been issued in State A and the program subsequently switches to State C ("late failure" of `dif/2`)
 
 In that case, an unwinding of the program progress back to the point where the `dif(A,B)` occured is performed (any side-effects stay,
 of course, side-effected). The idea is to pretend nothing ever happened and to continue as if `dif(A,B)` had failed.
@@ -211,7 +211,7 @@ proceed_hoping_that_dif_will_turn_true(A,B,W) :-
 
 Calling `magic_of_dif/3` with the instruction to make `A` and `B`  equal reveals that the else branch of `->/2` is not taken:
 
-```
+```logtalk
 ?- magic_of_dif(A,B,make_equal).
 Proceeding, hoping that dif/2 will turn true
 Optimistic valus: A=f(_12650), B=f(y)
@@ -220,7 +220,7 @@ false.
 
 Alternatively, called from another predicate:
 
-```
+```logtalk
 ?- magic_of_dif_above(A,B,make_equal).
 Proceeding, hoping that dif/2 will turn true
 Optimistic valus: A=f(_15702), B=f(y)
@@ -230,7 +230,7 @@ true.
 
 The "happy path" would be to confirm `dif(A,B)`, its optimism rewarded:
 
-```
+```logtalk
 ?- magic_of_dif(A,B,_).
 Proceeding, hoping that dif/2 will turn true
 Optimistic valus: A=f(_13388), B=f(y)
@@ -241,7 +241,7 @@ B = f(y).
 
 Alternatively, called from another predicate:
 
-```
+```logtalk
 ?- magic_of_dif_above(A,B,_).
 Proceeding, hoping that dif/2 will turn true
 Optimistic valus: A=f(_14542), B=f(y)
@@ -250,6 +250,72 @@ Yes
 A = f(x),
 B = f(y).
 ```
+
+## Unexpected behaviour with control constructs
+
+### With a cut
+
+The `dif/2` of SWI Prolog seems to not mesh all that well with nearby cuts. That's probably what the paper "Indexing `dif/2`" alludes to with "[`dif/2`]'s combination with established control constructs often leads to unsound results." 
+
+```logtalk
+% A predicate which doesn't cut after the dif/2
+
+do(X,Y) :- dif(X,Y),postdif(X,Y).
+do(X,Y) :- writeln(alternative),postdif(X,Y).
+
+% A predicate which cuts after the dif/2
+
+docut(X,Y) :- dif(X,Y),!,postdif(X,Y).
+docut(X,Y) :- writeln(alternative),postdif(X,Y).
+
+% A predicate to call after dif/2's "optimistic success" and "late failure"
+
+postdif(X,Y) :- 
+   writeln(X), X = 1, writeln(Y), Y = 1, 
+   writeln('end of clause').
+```
+
+After dif/2 “late failure”, where does Prolog rolls back to?
+
+For `do/2` it seems to behave as if `dif(X,Y)` had failed on first call, and takes the alternative clause:
+
+```logtalk
+?- do(X,Y).
+_13340
+_13372
+alternative
+_12986
+_12988
+end of clause
+X = Y, Y = 1.
+```
+
+For `do_cut/2` it seems to behave as if `dif(X,Y)` had failed, but the cut had been traversed. The alternative clause is not taken. That
+is unexpected to say the least.
+
+```
+?- docut(X,Y).
+_12628
+_12660
+false.
+```
+
+### With the `->/2` control construct
+
+```
+?- docut(X,Y).
+_12628
+_12660
+false.
+```
+
+
+
+
+
+
+
+
 
 ## Addendum
 
