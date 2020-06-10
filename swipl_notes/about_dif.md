@@ -297,6 +297,22 @@ doimply/1 alternative
 true.
 ```
 
+In fact, the whole [`->/2`](https://www.swi-prolog.org/pldoc/doc_for?object=(-%3E)/2) subgoal behaves as if it had already been
+run when `dif/2` late failure occurs and we were backtracking past it:
+
+```text
+?- ( dif(X,Y) -> writeln(yes) ; writeln(no) ), X = 1, Y = 1, write(" END").
+yes
+false.
+```
+
+```text
+?- (write("START ");write("BACK ")), ( dif(X,Y) -> writeln(yes) ; writeln(no) ), X = 1, Y = 1, write(" END").
+START yes
+BACK yes
+false.
+```
+
 ## Addendum
 
 According to [this discussion](https://swi-prolog.discourse.group/t/surprising-dif-2-behaviour/2317), anonymous variables in the term passed to `dif/2`
@@ -331,6 +347,8 @@ false.
 > both equality _and inequality via reification. Code complexity is reduced with a monotonic, higher-order 
 > if-then-else construct based on `call/N`. For comparable correct uses of impure definitions, our approach 
 > is as determinate and similarly efficient as its impure counterparts.
+
+[Reification with `library(reif)`](https://www.metalevel.at/prolog/metapredicates) and the [YouTube video](https://youtu.be/-nlI33r-P70?t=675)
 
 ## Reification
 
