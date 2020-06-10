@@ -337,7 +337,7 @@ memberd(X, [E|Es]) :-
 
 And so:
 
-```logtalk
+```text
 ?- membern(1, [1,2,3]).
 true ;
 false.
@@ -349,7 +349,7 @@ false.   % leftover choicepoint
 
 Is `1` in `[1,X]`? 
 
-```logtalk
+```text
 ?- membern(1, [1,X]).
 true ;   % yes it's a member
 X = 1 ;  % redundant answer
@@ -362,7 +362,7 @@ false.
 
 Is `1` in `[X,1]`? 
 
-```logtalk
+```text
 ?- membern(1, [X,1]).
 X = 1 ;
 true ;
