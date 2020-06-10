@@ -130,64 +130,6 @@ state is not indicated.
 
 ![Corrected dif/2 state diagram](about_dif/about_dif_correct.svg)
 
-## More examples
-
-### An example with repeated attempts using `between/3`
-
-```text
-?- between(1,5,X),
-   dif(A,B),
-   format("Optimistically progressing with ~q\n",[X]),
-   format("Setting dif(A,B) to certainly false\n"),
-   A=B.
-   
-Optimistically progressing with 1
-Setting dif(A,B) to certainly false
-Optimistically progressing with 2
-Setting dif(A,B) to certainly false
-Optimistically progressing with 3
-Setting dif(A,B) to certainly false
-Optimistically progressing with 4
-Setting dif(A,B) to certainly false
-Optimistically progressing with 5
-Setting dif(A,B) to certainly false
-false.
-```
-
-```text
-?- between(1,5,X),
-   dif(A,B),
-   format("Optimistically progressing with ~q\n",[X]),
-   format("Setting dif(A,B) to certainly true\n"),
-   A=x,B=y.
-   
-Optimistically progressing with 1
-Setting dif(A,B) to certainly true
-X = 1,
-A = x,
-B = y ;
-Optimistically progressing with 2
-Setting dif(A,B) to certainly true
-X = 2,
-A = x,
-B = y ;
-Optimistically progressing with 3
-Setting dif(A,B) to certainly true
-X = 3,
-A = x,
-B = y ;
-Optimistically progressing with 4
-Setting dif(A,B) to certainly true
-X = 4,
-A = x,
-B = y ;
-Optimistically progressing with 5
-Setting dif(A,B) to certainly true
-X = 5,
-A = x,
-B = y.
-```
-  
 ## Unexpected behaviour with control constructs
 
 Jan Wielemaker writes:
@@ -246,7 +188,7 @@ _13124
 false.
 ```
 
-### With the `->/2` control construct
+### With the `->/2` (if-then-else) control construct
 
 ```logtalk
 doimply(WhatDo) :-
@@ -275,7 +217,7 @@ once_dif_has_failed(X,Y) :-
    format("After late failure: X=~q, Y=~q\n",[X,Y]).
 ```
 
-The "happy path" would be to confirm `dif(A,B)`, its optimistic attirude rewarded:
+The "happy path" would be to confirm `dif(A,B)`, its optimistic attitude rewarded:
 
 ```text
 ?- doimply(_).
@@ -297,7 +239,7 @@ doimply/1 alternative
 true.
 ```
 
-In fact, the whole [`->/2`](https://www.swi-prolog.org/pldoc/doc_for?object=(-%3E)/2) subgoal behaves as if it had already been
+The whole [`->/2`](https://www.swi-prolog.org/pldoc/doc_for?object=(-%3E)/2) subgoal behaves as if it had already been
 run when `dif/2` late failure occurs and we were backtracking past it:
 
 ```text
@@ -311,6 +253,129 @@ false.
 START yes
 BACK yes
 false.
+```
+
+## More examples
+
+### An example with repeated attempts using `between/3`
+
+```text
+?- between(1,5,X),
+   dif(A,B),
+   format("Optimistically progressing with ~q\n",[X]),
+   format("Setting dif(A,B) to certainly false\n"),
+   A=B.
+   
+Optimistically progressing with 1
+Setting dif(A,B) to certainly false
+Optimistically progressing with 2
+Setting dif(A,B) to certainly false
+Optimistically progressing with 3
+Setting dif(A,B) to certainly false
+Optimistically progressing with 4
+Setting dif(A,B) to certainly false
+Optimistically progressing with 5
+Setting dif(A,B) to certainly false
+false.
+```
+
+```text
+?- between(1,5,X),
+   dif(A,B),
+   format("Optimistically progressing with ~q\n",[X]),
+   format("Setting dif(A,B) to certainly true\n"),
+   A=x,B=y.
+   
+Optimistically progressing with 1
+Setting dif(A,B) to certainly true
+X = 1,
+A = x,
+B = y ;
+Optimistically progressing with 2
+Setting dif(A,B) to certainly true
+X = 2,
+A = x,
+B = y ;
+Optimistically progressing with 3
+Setting dif(A,B) to certainly true
+X = 3,
+A = x,
+B = y ;
+Optimistically progressing with 4
+Setting dif(A,B) to certainly true
+X = 4,
+A = x,
+B = y ;
+Optimistically progressing with 5
+Setting dif(A,B) to certainly true
+X = 5,
+A = x,
+B = y.
+```
+  
+### Constructing a more deterministic member/2
+
+This approach appears in [Indexing `dif/2`](https://arxiv.org/abs/1607.01590):
+
+```logtalk
+% A normal member/2 which may generate more solutions than needed
+
+membern(X, [E|Es]) :-
+   ( X = E
+   ; membern(X, Es)
+   ).
+
+% A more deterministic member/2 (practically a memberchk/2) which tries to 
+% not generate redundant solutions
+
+memberd(X, [E|Es]) :-
+   ( X = E
+   ; dif(X, E),
+     memberd(X, Es)
+   ).  
+```
+
+And so:
+
+```logtalk
+?- membern(1, [1,2,3]).
+true ;
+false.
+
+?- memberd(1, [1,2,3]).
+true ;
+false.   % leftover choicepoint
+```
+
+Is `1` in `[1,X]`? 
+
+```logtalk
+?- membern(1, [1,X]).
+true ;   % yes it's a member
+X = 1 ;  % redundant answer
+false.
+   
+?- memberd(1, [1,X]).
+true ;   % choicepoint is unnecessarily left open
+false.
+```
+
+Is `1` in `[X,1]`? 
+
+```logtalk
+?- membern(1, [X,1]).
+X = 1 ;
+true ;
+false.   % redundant
+
+?- memberd(1, [X,1]).
+X = 1 ;
+dif(X, 1) ; % dif(1,X) still open (and printed) and there is success for second element of list
+false.      % no more solutions
+
+?- bagof(X,memberd(1, [X,1]),Bag).
+Bag = [1, _19152],    % solutions
+dif(_19152, 1).       % dif(_,1) still open
 ```
 
 ## Addendum
