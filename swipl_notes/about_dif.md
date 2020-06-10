@@ -6,7 +6,7 @@ Let's try add some explanations.
 
 First, some history.
 
-In [Indexing `dif/2`](https://arxiv.org/abs/1607.01590), Ulrich Neumerkel and Stefan Kral write:
+From: [Indexing `dif/2`](https://arxiv.org/abs/1607.01590), Ulrich Neumerkel and Stefan Kral, 2016-06-06:
 
 > The very first Prolog, sometimes called _Prolog 0_ (Colmeraueret al. 1973) already supported `dif/2`.
 > Unfortunately, the popular reimplementation _Prolog I_ (Battani and Meloni 1973) omitted `dif/2`and
@@ -67,7 +67,7 @@ check(X,Y) :-
 
 Issue a `dif(A,B)` in State A. Note that the Prolog Toplevel prints the open `dif/2` expression at the end (it has been rearranged; the `f` in the printed `dif(f(Y,X),f(x,y))` is _not_ the original `f` function symbol. In fact `f` is used in `dif/2` expressions throughout).
 
-```
+```text
 ?- A=f(x,X),B=f(Y,y),writeln("State A: Unrefined"),check(A,B),dif(A,B),writeln("END OF GOAL").
 State A: Unrefined
 They unify
@@ -80,7 +80,7 @@ dif(f(Y, X), f(x, y)).
 
 Issue a `dif(A,B)` in State B. 
 
-```
+```text
 ?- A=f(x),B=f(y),writeln("State B: Sure that 'dif'"),check(A,B),dif(A,B),writeln("END OF GOAL").
 State B: Sure that 'dif'
 They don't unify
@@ -92,7 +92,7 @@ B = f(y).
 
 Issue a `dif(A,B)` in State C. 
 
-```
+```text
 ?- A=f(x),B=f(x),writeln("State C: Sure that 'nondif'"),check(A,B),dif(A,B),writeln("END OF GOAL").
 State C: Sure that 'nondif'
 They unify
@@ -102,7 +102,7 @@ false.
 
 Issue a `dif(A,B)` in State A, then make `A` and `B` identical, switching to State C.
 
-```
+```text
 ?- A=f(x,X),B=f(Y,y),writeln("State A: Unrefined"),check(A,B),dif(A,B),X=y,Y=x,writeln("END OF GOAL").
 State A: Unrefined
 They unify
@@ -134,7 +134,7 @@ state is not indicated.
 
 ### An example with repeated attempts using `between/3`
 
-```
+```text
 ?- between(1,5,X),dif(A,B),format("Optimistically progressing with ~q\n",[X]),format("Setting dif(A,B) to certainly false\n"),A=B.
 Optimistically progressing with 1
 Setting dif(A,B) to certainly false
@@ -147,7 +147,9 @@ Setting dif(A,B) to certainly false
 Optimistically progressing with 5
 Setting dif(A,B) to certainly false
 false.
+```
 
+```text
 ?- between(1,5,X),dif(A,B),format("Optimistically progressing with ~q\n",[X]),format("Setting dif(A,B) to certainly true\n"),A=x,B=y.
 Optimistically progressing with 1
 Setting dif(A,B) to certainly true
@@ -176,81 +178,6 @@ A = x,
 B = y.
 ```
   
-### Example, with implication
-
-This is unexpected:
-
-```logtalk
-magic_of_dif_above(A,B,W) :- 
-   magic_of_dif(A,B,W) -> format("Yes\n",[]) ; format("No\n",[]).
-
-magic_of_dif(A,B,W) :-
-   A=f(_),
-   B=f(y),
-   % At this point, we cannot say for sure whether it will
-   % turn out that A==B or not. It could go either way.
-   (dif(A,B)
-    -> 
-    proceed_hoping_that_dif_will_turn_true(A,B,W)
-    ;
-    try_again(A,B)).
-      
-try_again(A,B) :-    
-   format("Trying again after dif(A,B) collapsed to 'false'\n",[]);
-   format("Post optimistic valus: A=~q, B=~q\n",[A,B]).
-   
-proceed_hoping_that_dif_will_turn_true(A,B,W) :- 
-   format("Proceeding, hoping that dif/2 will turn true\n"), 
-   format("Optimistic valus: A=~q, B=~q\n",[A,B]),
-   ((W==make_equal) 
-    -> 
-    (A=f(y),format("Never get here\n",[]))           % dif(A,B) collapses to false
-    ;
-    (A=f(x),format("inequality confirmed\n",[]))).   % dif(A,B) confirmed to be true   
-```
-
-Calling `magic_of_dif/3` with the instruction to make `A` and `B`  equal reveals that the else branch of `->/2` is not taken:
-
-```logtalk
-?- magic_of_dif(A,B,make_equal).
-Proceeding, hoping that dif/2 will turn true
-Optimistic valus: A=f(_12650), B=f(y)
-false.
-```
-
-Alternatively, called from another predicate:
-
-```logtalk
-?- magic_of_dif_above(A,B,make_equal).
-Proceeding, hoping that dif/2 will turn true
-Optimistic valus: A=f(_15702), B=f(y)
-No
-true.
-```
-
-The "happy path" would be to confirm `dif(A,B)`, its optimism rewarded:
-
-```logtalk
-?- magic_of_dif(A,B,_).
-Proceeding, hoping that dif/2 will turn true
-Optimistic valus: A=f(_13388), B=f(y)
-inequality confirmed
-A = f(x),
-B = f(y).
-```
-
-Alternatively, called from another predicate:
-
-```logtalk
-?- magic_of_dif_above(A,B,_).
-Proceeding, hoping that dif/2 will turn true
-Optimistic valus: A=f(_14542), B=f(y)
-inequality confirmed
-Yes
-A = f(x),
-B = f(y).
-```
-
 ## Unexpected behaviour with control constructs
 
 ### With a cut
@@ -260,69 +187,101 @@ The `dif/2` of SWI Prolog seems to not mesh all that well with nearby cuts. That
 ```logtalk
 % A predicate which doesn't cut after the dif/2
 
-do(X,Y) :- dif(X,Y),postdif(X,Y).
-do(X,Y) :- writeln(alternative),postdif(X,Y).
+do(X,Y) :- dif(X,Y),fail_the_dif(X,Y),writeln("END OF 1st CLAUSE OF do/2").
+do(_,_) :- writeln("END OF 2nd CLAUSE OF do/2").
 
 % A predicate which cuts after the dif/2
 
-docut(X,Y) :- dif(X,Y),!,postdif(X,Y).
-docut(X,Y) :- writeln(alternative),postdif(X,Y).
+docut(X,Y) :- dif(X,Y),!,fail_the_dif(X,Y),writeln("END OF 1st CLAUSE OF docut/2").
+docut(_,_) :- writeln("END OF 2nd CLAUSE OF docut/2").
 
-% A predicate to call after dif/2's "optimistic success" and "late failure"
+% A predicate to call after dif/2's "optimistic success" to elicit "late failure"
 
-postdif(X,Y) :- 
-   writeln(X), X = 1, writeln(Y), Y = 1, 
-   writeln('end of clause').
+fail_the_dif(X,Y) :- 
+   writeln(X), X = 1,
+   writeln(Y), Y = 1,
+   writeln("dif(X,Y) late failure: never get here").
 ```
 
-After dif/2 “late failure”, where does Prolog rolls back to?
+After dif/2 “late failure”, where does Prolog roll back to?
 
 For `do/2` it seems to behave as if `dif(X,Y)` had failed on first call, and takes the alternative clause:
 
-```logtalk
+```text
 ?- do(X,Y).
-_13340
-_13372
-alternative
-_12986
-_12988
-end of clause
-X = Y, Y = 1.
+_12174
+_12206
+END OF 2nd CLAUSE OF do/2
+true.
 ```
 
-For `do_cut/2` it seems to behave as if `dif(X,Y)` had failed, but the cut had been traversed. The alternative clause is not taken. That
-is unexpected to say the least.
+For `docut/2` it seems to behave as if `dif(X,Y)` had failed, but the cut had been traversed. The alternative clause is not taken. That
+is unexpected.
 
-```
+```text
 ?- docut(X,Y).
-_12628
-_12660
+_13092
+_13124
 false.
 ```
 
 ### With the `->/2` control construct
 
+```logtalk
+doimply(WhatDo) :-
+   X=k(_),
+   Y=k(m),
+   (dif(X,Y) 
+    -> 
+    optimistically_proceed(X,WhatDo)
+    ;
+    once_dif_has_failed(X)),
+   format("END OF CLAUSE (X=~q, Y=~q)\n",[X,Y]). 
+
+doimply(_) :-
+   writeln("doimply/1 alternative").
+
+optimistically_proceed(X,WhatDo) :- 
+   writeln("Optimistic branch"),   
+   ((WhatDo==eq) 
+    -> 
+    (X=k(m),writeln("dif(X,Y) late failure: never get here"))
+    ;
+    (X=k(u),writeln("dif(X,Y) late confirmation"))). 
+
+    
+once_dif_has_failed(X,Y) :-    
+   format("After late failure: X=~q, Y=~q\n",[X,Y]).
 ```
-?- docut(X,Y).
-_12628
-_12660
-false.
+
+The "happy path" would be to confirm `dif(A,B)`, its optimistic attirude rewarded:
+
+```text
+?- doimply(_).
+Optimistic branch
+dif(X,Y) late confirmation
+END OF CLAUSE (X=k(u), Y=k(m))
+true ;
+doimply/1 alternative
+true.
 ```
 
+Calling `doimply/1` with the instruction to make `X` and `Y`  equal reveals to elicit "late failure" that the else branch of `->/2` is not taken!
+In fact, the program does not even continue past the `->/2` and immediately executes the alternative clause of `doimply/1`. Very unexpected.
 
-
-
-
-
-
-
+```text
+?- doimply(eq).
+Optimistic branch
+doimply/1 alternative
+true.
+```
 
 ## Addendum
 
 According to [this discussion](https://swi-prolog.discourse.group/t/surprising-dif-2-behaviour/2317), anonymous variables in the term passed to `dif/2`
 will lead to non-printing at the toplevel:
 
-```
+```text
 % Unsure whether dif: succeeds
 
 ?- dif((p(1) :- q),(_B:-_C)),format("Hey\n").
