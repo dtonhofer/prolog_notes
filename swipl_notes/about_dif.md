@@ -350,6 +350,8 @@ false.
 
 [Reification with `library(reif)`](https://www.metalevel.at/prolog/metapredicates) and the [YouTube video](https://youtu.be/-nlI33r-P70?t=675)
 
+Code for `library(reif)`: http://www.complang.tuwien.ac.at/ulrich/Prolog-inedit/swi/reif.pl 
+
 ## Reification
 
 The idea is that the predicate always succeeds but the result of the `dif/2` is obtained as an atom (e.g. `dif`/`equal`)
