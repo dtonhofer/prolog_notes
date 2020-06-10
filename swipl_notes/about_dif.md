@@ -4,6 +4,24 @@ A description of predicate `dif/2` can be found [here](https://eu.swi-prolog.org
 
 Let's try add some explanations.
 
+First, some history.
+
+In [Indexing `dif/2`](https://arxiv.org/abs/1607.01590), Ulrich Neumerkel and Stefan Kral write:
+
+> The very first Prolog, sometimes called _Prolog 0_ (Colmeraueret al. 1973) already supported `dif/2`.
+> Unfortunately, the popular reimplementation _Prolog I_ (Battani and Meloni 1973) omitted `dif/2`and
+> other  coroutining  features.  This  system  was  the  basis  for  Edinburgh  Prolog (Pereira et al. 1978)
+> which led to ISO-Prolog (ISO/IEC 13211-1 1995). After _Prolog I_, `dif/2` was reintroduced in 
+> _Prolog II_, independently reinvented in _MU-Prolog_ (Naish 1986). and soon implementation schemes to
+> integrate `dif/2` and coroutining into efficient systems appeared (Carlsson 1987; Neumerkel 1990).
+> The  major  achievement was that the  efficiency of general Prolog programs not using `dif/2`
+> remained unaffected within a system supporting `dif/2`. In this manner `dif/2` survived in major
+> high-performance implementations like _SICStus_. However, it still has not gained general acceptance
+> among programmers. We believe that the mainreason for this lack of acceptance is that `dif/2` does
+> not directly deliver the abstraction that is actually needed. Its direct use leads to clumsy and
+> unnecessarily inefficient code. Its combination with established control constructs often leads to
+> unsound results. New, pure constructs are badly needed
+
 Consider the call `dif(A,B)`.
 
 A program that issues this call is in one of three states when it does so:
