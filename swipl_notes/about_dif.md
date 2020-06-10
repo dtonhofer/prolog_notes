@@ -135,7 +135,12 @@ state is not indicated.
 ### An example with repeated attempts using `between/3`
 
 ```text
-?- between(1,5,X),dif(A,B),format("Optimistically progressing with ~q\n",[X]),format("Setting dif(A,B) to certainly false\n"),A=B.
+?- between(1,5,X),
+   dif(A,B),
+   format("Optimistically progressing with ~q\n",[X]),
+   format("Setting dif(A,B) to certainly false\n"),
+   A=B.
+   
 Optimistically progressing with 1
 Setting dif(A,B) to certainly false
 Optimistically progressing with 2
@@ -150,7 +155,12 @@ false.
 ```
 
 ```text
-?- between(1,5,X),dif(A,B),format("Optimistically progressing with ~q\n",[X]),format("Setting dif(A,B) to certainly true\n"),A=x,B=y.
+?- between(1,5,X),
+   dif(A,B),
+   format("Optimistically progressing with ~q\n",[X]),
+   format("Setting dif(A,B) to certainly true\n"),
+   A=x,B=y.
+   
 Optimistically progressing with 1
 Setting dif(A,B) to certainly true
 X = 1,
