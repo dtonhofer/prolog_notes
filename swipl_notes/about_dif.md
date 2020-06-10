@@ -190,6 +190,17 @@ B = y.
   
 ## Unexpected behaviour with control constructs
 
+Jan Wielemaker writes:
+
+> The general rule of thumb is that constraints and cuts (and thus if-then-else and negation) do 
+> not play together. It only works if all relevant constraints are resolved before committing.
+> That is in general hard to predict. Constraint solvers have in general incomplete propagation 
+> and thus may have pending constraints even in cases where all constraints can be resolved. At
+> debug time, [call_residue_vars/2](https://eu.swi-prolog.org/pldoc/doc_for?object=call_residue_vars/2)
+> can be used to verify there are no pending constraints. The
+> implementation is fairly costly in terms of additional bookkeeping that, for example, protects
+> constraints against garbage collection. This may prohibit usage at runtime.
+
 ### With a cut
 
 The `dif/2` of SWI Prolog seems to not mesh all that well with nearby cuts.  
@@ -320,3 +331,54 @@ false.
 > both equality _and inequality via reification. Code complexity is reduced with a monotonic, higher-order 
 > if-then-else construct based on `call/N`. For comparable correct uses of impure definitions, our approach 
 > is as determinate and similarly efficient as its impure counterparts.
+
+## Reification
+
+The idea is that the predicate always succeeds but the result of the `dif/2` is obtained as an atom (e.g. `dif`/`equal`)
+unified with a third parameter.
+
+Peter Ludemann writes:
+
+> Here’s a simple “reified” version of `dif/2` (it requires its arguments to be fully ground rather than sufficiently ground):
+
+```logtalk
+%! test(X, Y, Result) is det.
+% Result is 'dif'   when X and Y become ground and are not unifiable
+% Result is 'equal' when X and Y become ground and are unifiable
+
+test(X, Y, dif) :-
+    when((ground(X),ground(Y)), X\=Y).
+test(X, Y, equal) :-
+    when((ground(X),ground(Y)), X==Y).
+
+my_dif(X, Y) :- test(X, Y, dif).
+```
+
+And running it gets:
+
+```text
+?- test(X, Y, Result), X=1, Y=1.
+X = Y, Y = 1,
+Result = equal.
+
+?- test(X, Y, Result), X=1, Y=2.
+X = 1,
+Y = 2,
+Result = dif ;
+false.
+```
+
+You could then rewrite your if-then-else to not have a cut but instead have both the condition and 
+its inverse – that is: if cond then A else B becomes (cond & A) | (~cond & B).
+
+```text
+?- ( test(X, Y, dif), writeln(different) ; test(X, Y, equal), writeln(equal) ), X=1, Y=1.
+different
+equal
+X = Y, Y = 1.
+
+?- ( test(X, Y, dif), writeln(different) ; test(X, Y, equal), writeln(equal) ), X=1, Y=2.
+different
+X = 1,
+Y = 2 
+```
