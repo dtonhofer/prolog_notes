@@ -54,6 +54,21 @@ otherwise), these are the only one there are.
                                    "the empty atom"      "character"          length>1
 ```
 
+Note the representation for sequences of characters:
+
+- SWI-Prolog _string_, a dedicated datatype (for example: `"Hello"`). Note that you can actually configure how the SWI-Prolog reader
+  interpretes what is in between `"` double quotes. See the flag `double_quotes` (which can be any of `codes`, `chars`, `atom`, `string`) 
+  in the manual page for [current_prolog_flag_2](https://www.swi-prolog.org/pldoc/doc_for?object=current_prolog_flag/2). For a lot
+  of information about the SWI-Prolog _string_, see [The string type and its double quoted syntax](https://www.swi-prolog.org/pldoc/man?section=strings).
+- The _atom_, the classical Prolog datatype for sequences of characters: `'XYZ'` or `hello`. (Not to be confused with the _atom_ or 
+  of [_atomic formula_](https://en.wikipedia.org/wiki/Atomic_formula) of First-Order Logic, which is a predicate applied to some terms: _p(x,y,f(z))_.
+- A _list of characters_, where Prolog "characters" are understood to be atoms of length 1: `[h, e, l, l, o]`. See 
+  [`atom_chars/2`](https://www.swi-prolog.org/pldoc/doc_for?object=atom_chars/2), which relates an atom or a string to a list of characters.
+- A _list of code points (codes, character codes)_. The code points are integers. In SWI-Prolog, they are 2-byte Unicode code points of the
+  corresponding characters: `[104, 101, 108, 108, 111]`. See [`atom_codes/2`](https://www.swi-prolog.org/pldoc/doc_for?object=atom_codes/2), 
+  which relates an atom or a string to a list of code points. This is the representation that a DCG expects, but you can give it double-quoted text
+  or a back-quoted text (```hello```) instead. 
+
 ## Code implementing the type tree decision sequence when going from root to leaf 
 
 [This](code/tagging.pl) is Prolog code which follows the datatype tree above to "tag" the elements of a term.
