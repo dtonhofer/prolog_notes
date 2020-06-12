@@ -66,8 +66,8 @@ Note the representation for sequences of characters:
   [`atom_chars/2`](https://www.swi-prolog.org/pldoc/doc_for?object=atom_chars/2), which relates an atom or a string to a list of characters.
 - A _list of code points (codes, character codes)_. The code points are integers. In SWI-Prolog, they are 2-byte Unicode code points of the
   corresponding characters: `[104, 101, 108, 108, 111]`. See [`atom_codes/2`](https://www.swi-prolog.org/pldoc/doc_for?object=atom_codes/2), 
-  which relates an atom or a string to a list of code points. This is the representation that a DCG expects, but you can give it double-quoted text
-  or a back-quoted text instead. 
+  which relates an atom or a string to a list of code points. This is the representation that 
+  [a DCG expects](https://www.swi-prolog.org/pldoc/doc_for?object=phrase/3), but you can give it double-quoted text or a back-quoted text instead. 
 
 ## Code implementing the type tree decision sequence when going from root to leaf 
 
