@@ -18,6 +18,9 @@ otherwise), these are the only one there are.
    an ocean liner).
 - [Pure text version](swi_prolog_type_tree/swi_prolog_type_tree.txt). Evidently not as complete. Also shown below.
 
+The diagram may change in the future. For example, the _dict_ datatype may move out from under the _compound_ datatype. 
+We will see what happens.
+
 ```text
                                                                           any T 
                                                                             |
