@@ -11,16 +11,16 @@ similar to the types of other Prolog. As there is no way to define new data type
 base data types ([algebraically](https://en.wikipedia.org/wiki/Algebraic_data_type) or
 otherwise), these are the only one there are.
 
-- [SVG file](swi_prolog_type_tree/swi_prolog_type_tree.svg). **The diagram in SVG format**.
+- [SVG file](swipl_datatype_tree/swipl_datatype_tree.svg). **The diagram in SVG format**.
   Can be visualized in a browser and easily panned & zoomed. 
-- [PNG file](swi_prolog_type_tree/swi_prolog_type_tree.png). **The diagram in PNG format**, a bit
+- [PNG file](swipl_datatype_tree/swipl_datatype_tree.png). **The diagram in PNG format**, a bit
   awkward to use.
-- [graphml file](swi_prolog_type_tree/swi_prolog_type_tree.graphml). **The editable diagram**
+- [graphml file](swipl_datatype_tree/swipl_datatype_tree.graphml). **The editable diagram**
   in [graphml](http://graphml.graphdrawing.org/) format.
   Edited with the free (but not open) Java-based [yEd](https://www.yworks.com/products/yed) editor
   (Note that you have to switch off antialiasing if you use it, otherwise it feels like driving
    an ocean liner).
-- [Pure text version](swi_prolog_type_tree/swi_prolog_type_tree.txt). Evidently not as complete. Also shown below.
+- [Pure text version](swipl_datatype_tree/swipl_datatype_tree.txt). Evidently not as complete. Also shown below.
 
 The diagram may change in the future. For example, the _dict_ datatype may move out from under the _compound_ datatype. 
 We will see what happens.
