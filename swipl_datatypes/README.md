@@ -1,4 +1,4 @@
-# About SWI-Prolog data types
+# About SWI-Prolog datatypes
 
 - This page is linked from SWI-Prolog comment section of ["Verify Type of a Term"](https://eu.swi-prolog.org/pldoc/man?section=typetest).
 - The SWI-Prolog wiki has more on data types here: [SWI-Prolog datatypes](https://eu.swi-prolog.org/datatypes.txt).
@@ -6,9 +6,9 @@
 
 ## SWI Prolog data type tree
 
-An image depicting the built-in "data types" one may encounter in SWI Prolog. They are 
-similar to the types of other Prolog. As there is no way to define new data types from these
-base data types ([algebraically](https://en.wikipedia.org/wiki/Algebraic_data_type) or
+An image depicting the built-in "datatypes" one may encounter in SWI Prolog. They are 
+similar to the types of other Prolog. As there is no way to define new datatypes from these
+base datatypes ([algebraically](https://en.wikipedia.org/wiki/Algebraic_data_type) or
 otherwise), these are the only one there are.
 
 - [SVG file](swipl_datatype_tree/swipl_datatype_tree.svg). **The diagram in SVG format**.
@@ -116,7 +116,7 @@ S = compound(p, [nongnd], [var(X), lbox([list, gnd], int(1), lbox([list, gnd], i
 
 ## Reading
 
-- For a description of data types, see this SWI-Prolog wiki entry:
+- For a description of datatypes, see this SWI-Prolog wiki entry:
   [SWI-Prolog datatypes](https://eu.swi-prolog.org/datatypes.txt)
 
 - For the type-testing predicates see this SWI-Prolog manual page:
