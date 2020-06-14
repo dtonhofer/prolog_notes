@@ -331,6 +331,8 @@ false.
 ```
 ## Further explorations
 
+### The paper "Indexing `dif/2`
+
 **[Indexing `dif/2`](https://arxiv.org/abs/1607.01590): Ulrich Neumerkel, Stefan Kral, 2016-06-06**
 
 > Many Prolog programs are unnecessarily impure because of inadequate means to express syntactic inequality.
@@ -341,11 +343,17 @@ false.
 > if-then-else construct based on `call/N`. For comparable correct uses of impure definitions, our approach 
 > is as determinate and similarly efficient as its impure counterparts.
 
+### `library(reif)`
+
 [Reification with `library(reif)`](https://www.metalevel.at/prolog/metapredicates) and the [YouTube video](https://youtu.be/-nlI33r-P70?t=675)
 
 Code for `library(reif)`: http://www.complang.tuwien.ac.at/ulrich/Prolog-inedit/swi/reif.pl 
 
-## Reification
+### Discourse thread 
+
+This discussion: https://swi-prolog.discourse.group/t/dif-2-call-as-implication-premiss-is-the-implications-else-part-run-should-it-be/2486/26
+
+### Reification
 
 The idea is that the predicate always succeeds but the result of the `dif/2` is obtained as an atom (e.g. `dif`/`equal`)
 unified with a third parameter.
