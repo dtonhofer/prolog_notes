@@ -19,10 +19,10 @@ These are predicates found in the section [Analysing and Constructing Terms](htt
 - [`compound_name_arity/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=compound_name_arity/3)
 
 ## Overview 
-![Analyzing and Constructing Terms](term_analysis_construction/term_analysis_construction.png)
+![Analyzing and Constructing Terms](term_analysis_construction.png)
 
 **Other formats**
 
-- [Analyzing and Constructing Terms: LibreOffice Calc](term_analysis_construction/term_analysis_construction.ods) 
-- [Analyzing and Constructing Terms: PDF](term_analysis_construction/term_analysis_construction.pdf)
+- [Analyzing and Constructing Terms: LibreOffice Calc](term_analysis_construction.ods) 
+- [Analyzing and Constructing Terms: PDF](term_analysis_construction.pdf)
 
