@@ -26,31 +26,40 @@ Consider the call `dif(A,B)`.
 
 A program that issues this call is in one of three states when it does so:
 
-- **State A: "Unrefined"** - In this state, `A` and `B` would unify (i.e. `A=B` would succeed). But `A` and `B` are still 
-  sufficiently "unrefined" (or "unconstrained" to use another adjective) that subsequent program operations may change that situation:
-  `A=B`, if issued later, might fail. 
-- **State B: "Sufficiently refined for dif(A,B)=TRUE with certainty"** - In this state, `A` and `B` won't unify, and no subsequent
-  operation can change this. When or once the program is in State B, it will stay there.
-- **State C: "Sufficiently refined for dif(A,B)=FALSE with certainty"** - In this state, `A` and `B` will unify, and no subsequent
-  operation can change this. In fact, `A` and `B` are _identical_. `A` and `B` may be nonground, and in that case, any variables
-  in the terms appear in the same position and are actually shared. When or once the program is in State C, it will stay there.
+- **Possibly different** - In this state, `A` and `B` would unify, i.e. `A=B` would succeed. 
+  However, `A` and `B` are still sufficiently "unrefined" (or "unconstrained" to use another adjective), that subsequent program
+  operations may change that situation. `A=B`, if issued later, might fail. Example: `A=f(X),B=f(Y)`. Note that `\+ A==B`.
+- **Different** - In this state, `A` and `B` won't unify and no subsequent operation will change this.
+  When or once the program is in state "different", it will stay there (unless it sufficiently backtracks). 
+  Example: `A=f(x),B=f(y)`. Note that `\+ A==B`.
+- **Identical** - In this state, `A` and `B` will unify and term identity `A==B` will actually succeed: the `A` and `B` are identical.
+  No subsequent operation can change this. `A` and `B` may be nonground, and in that case, any variables in the terms appear in
+  the same position and are shared. When or once the program is in state "identical", it will stay there (again,
+  unless it sufficiently backtracks). Example: `A=f(x),B=f(x)` or `A=f(C),B=f(C)`. Note that `A==B`. 
   
 The behavious of `dif/2` in all three states is the following:
 
-- **State A**: `dif(A,B)` succeeds "optimistically" and a `dif/2` constraint is opened/activated, to watch for changes to `A` or `B`. If
-  we are still in State A on return to the Prolog Toplevel (i.e. when the program terminates), the open `dif/2` expression (or an equivalent
-  thereof) is printed out.
-- **State B**: `dif(A,B)` succeeds deterministically.
-- **State C**: `dif(A,B)` fails immediately.
+- **Possibly different**: `dif(A,B)` succeeds "optimistically" and a `dif/2` constraint is activated, to watch for changes to `A` or `B`. If
+  we are still in **possibly different** on return to the Prolog Toplevel (i.e. when the program terminates), the still-active constraints 
+  (which do not necessarily resemble what was stated in the `dif/2` call but are equivalent) are printed out. We will never know whether
+  `A` and `B` were _actually_ different.  
+- **Different**: `dif(A,B)` succeeds deterministically.
+- **Identical**: `dif(A,B)` fails immediately.
 
-The interesting case occurs if a `dif(A,B)` has been issued in State A and the program subsequently switches to State C ("late failure" of `dif/2`)
+The interesting case occurs if a `dif(A,B)` has been issued in state **possibly different** and a refinement of `A` or `B` (through unification, 
+either in a goal or a head) occurs during processing. The refinement may also involve just a subterm of `A` or `B`.
 
-In that case, an unwinding of the program progress back to the point where the `dif(A,B)` occured is performed (any side-effects stay,
-of course, side-effected). The idea is to pretend nothing ever happened and to continue as if `dif(A,B)` had failed.
+When `A` or `B` are involved in unification, the active `dif/2` constraint is checked. It may be that the constraint is violated:
+The unifcation made `A` and `B` identicial, `dif(A,B)` cannot be sustained, and we guessed guess wrong by optimistically 
+continuing at `dif(A,B)`. This is resolved by **failing the unification which violated the constraint**. A way to think about this is that,
+past a successful `dif(A,B)`, Prolog makes sure that `A` stays different from `B` and fails every attempt that tries to make them
+identical: `dif(A,B)` should be read _"fail any attempts to make A and B identical past this point"_: `fail_making_identical(A,B)`
 
-Here is a "naive" state diagram ("naive" in that "it's not really a state diagram"). The correct state diagram is further below.
+![dif state](about_dif_states.svg)
 
-![Naive dif/2 state diagram](about_dif/about_dif.svg)
+- [PNG](about_dif_states.png)
+- [graphml](about_dif_states.graphml)
+
 
 ## Let's try some examples
 
@@ -59,136 +68,102 @@ changes to either `A` or `B` is the call `\+ \+ A=B` or equivalently `\+ A\=B`.
 
 ```logtalk
 check(X,Y) :- 
-   ((\+ \+ (X=Y)) -> writeln("They unify") ; true),          % \+ \+ ensures consequence-less unification ("unify in pocket universe")
-   ((X\=Y)        -> writeln("They don't unify") ; true),    % X\=Y is already consequence-less
-   ((X==Y)        -> writeln("They are identical") ; true),  % Term equivalence/identity (not unification, A and B are not refined by ==)
-   ((X\==Y)       -> writeln("They are different") ; true).  % Term difference/non-identity
+   ((\+ \+ (X=Y)) -> writeln("> They unify") ; true),          % \+ \+ ensures consequence-less unification ("unify in pocket universe")
+   ((X\=Y)        -> writeln("> They don't unify") ; true),    % X\=Y is already consequence-less
+   ((X==Y)        -> writeln("> They are identical") ; true),  % Term equivalence/identity (not unification, A and B are not refined by ==)
+   ((X\==Y)       -> writeln("> They are different") ; true).  % Term difference/non-identity
 ```
 
-Issue a `dif(A,B)` in State A. Note that the Prolog Toplevel prints the open `dif/2` expression at the end (it has been rearranged; the `f` in the printed `dif(f(Y,X),f(x,y))` is _not_ the original `f` function symbol. In fact `f` is used in `dif/2` expressions throughout).
+Issue a `dif(A,B)` in state _possibly different_. Note that the Prolog toplevel prints the active constraintat the end (suitable rearranged;
+the `f` function symbol is used in `dif/2` constraint expressions throughout):
 
 ```text
-?- A=f(x,X),B=f(Y,y),writeln("State A: Unrefined"),check(A,B),dif(A,B),writeln("END OF GOAL").
-State A: Unrefined
-They unify
-They are different
+?- A=g(x,X),B=g(Y,y),writeln("possibly different"),check(A,B),dif(A,B),writeln("END OF GOAL").
+possibly different
+> They unify
+> They are different
 END OF GOAL
-A = f(x, X),
-B = f(Y, y),
+A = g(x, X),
+B = g(Y, y),
 dif(f(Y, X), f(x, y)).
 ```
 
-Issue a `dif(A,B)` in State B. 
+Issue a `dif(A,B)` in state _different_:
 
 ```text
-?- A=f(x),B=f(y),writeln("State B: Sure that 'dif'"),check(A,B),dif(A,B),writeln("END OF GOAL").
-State B: Sure that 'dif'
-They don't unify
-They are different
+?- A=g(x),B=g(y),writeln("different"),check(A,B),dif(A,B),writeln("END OF GOAL").
+different
+> They don't unify
+> They are different
 END OF GOAL
-A = f(x),
-B = f(y).
+A = g(x),
+B = g(y).
 ```
 
-Issue a `dif(A,B)` in State C. 
+Issue a `dif(A,B)` in state _identical_:
 
 ```text
-?- A=f(x),B=f(x),writeln("State C: Sure that 'nondif'"),check(A,B),dif(A,B),writeln("END OF GOAL").
-State C: Sure that 'nondif'
-They unify
-They are identical
+?- A=f(x),B=f(x),writeln("identical"),check(A,B),dif(A,B),writeln("END OF GOAL").
+identical
+> They unify
+> They are identical
 false.
 ```
 
-Issue a `dif(A,B)` in State A, then make `A` and `B` identical, switching to State C.
+Issue a `dif(A,B)` in state _possibly different_, then make `A` and `B` identical, attempting to switch to state _identical_, which causes an backtrack:
 
 ```text
-?- A=f(x,X),B=f(Y,y),writeln("State A: Unrefined"),check(A,B),dif(A,B),X=y,Y=x,writeln("END OF GOAL").
-State A: Unrefined
-They unify
-They are different
+?- A=g(x,X),B=g(Y,y),writeln("possibly different"),check(A,B),dif(A,B),X=y,Y=x,writeln("END OF GOAL").
+possibly different
+> They unify
+> They are different
 false.
 ```
 
-The end of the goal is never reached! 
+The end of the goal is never reached.
 
-This is philosophically interesting, as the very action that made `A` and `B` identical has been rolled back 
+## More examples
 
-A _failing_ `dif/2` really means either:
+### Trying with if-then-else
 
-- I'm in State C already and `A` and `B` are identical terms, or
-- Optimistically succeeding would cause a situation where `dif(A,B)` would fail. I know this from another timeline (under assumption of a 
-  deterministic program w/o access to oracles, i.e. `A` is not set from input channel or something.) So, better give up immediately.
-
-## Corrected state diagram
-
-The fact that "we never reach State C from State A if `dif(A,B)` is open because the very action of entering State C
-will be rolled back before entering can happen" means that a corrected state diagram must consider
-whether `dif(A,B)` is "open" or "closed" as an orthogonal state variable. In the diagram below,
-"rollback" transitions, which can happen between any state, have been left out for clarity. Also, transition to a terminal
-state is not indicated.
-
-![Corrected dif/2 state diagram](about_dif/about_dif_correct.svg)
-
-## Unexpected behaviour with control constructs
-
-Jan Wielemaker writes:
-
-> The general rule of thumb is that constraints and cuts (and thus if-then-else and negation) do 
-> not play together. It only works if all relevant constraints are resolved before committing.
-> That is in general hard to predict. Constraint solvers have in general incomplete propagation 
-> and thus may have pending constraints even in cases where all constraints can be resolved. At
-> debug time, [call_residue_vars/2](https://eu.swi-prolog.org/pldoc/doc_for?object=call_residue_vars/2)
-> can be used to verify there are no pending constraints. The
-> implementation is fairly costly in terms of additional bookkeeping that, for example, protects
-> constraints against garbage collection. This may prohibit usage at runtime.
-
-### With a cut
-
-The `dif/2` of SWI Prolog seems to not mesh all that well with nearby cuts.  
-
-```logtalk
-% A predicate which doesn't cut after the dif/2
-
-do(X,Y) :- dif(X,Y),fail_the_dif(X,Y),writeln("END OF 1st CLAUSE OF do/2").
-do(_,_) :- writeln("END OF 2nd CLAUSE OF do/2").
-
-% A predicate which cuts after the dif/2
-
-docut(X,Y) :- dif(X,Y),!,fail_the_dif(X,Y),writeln("END OF 1st CLAUSE OF docut/2").
-docut(_,_) :- writeln("END OF 2nd CLAUSE OF docut/2").
-
-% A predicate to call after dif/2's "optimistic success" to elicit "late failure"
-
-fail_the_dif(X,Y) :- 
-   writeln(X), X = 1,
-   writeln(Y), Y = 1,
-   writeln("dif(X,Y) late failure: never get here").
+ See [`->/2`](https://www.swi-prolog.org/pldoc/doc_for?object=(-%3E)/2) 
+ 
+```text
+?- (writeln("It begins"); (writeln("Backtracked to before ->"),fail)), % print when forwarding and backtracking
+   (dif(X,Y) -> writeln("YES") ; writeln("NO")),
+   X=1,
+   (writeln("Past X=1"); (writeln("Backtracked to before Y=1"),fail)),  % print when forwarding and backtracking
+   (Y=1 ; (writeln("Y=1 failed"),fail)),                                % Y=1 fails, so print on second attempt
+   writeln("END").
+It begins
+YES
+Past X=1
+Y=1 failed
+Backtracked to before Y=1
+Backtracked to before ->
 ```
 
-After `dif/2` “late failure”, where does Prolog roll back to?
+### `dif/2` constraint working on head unification
 
-For `do/2` it seems to behave as if `dif(X,Y)` had failed on first call, and takes the alternative clause:
+```prolog
+find_a_way :- dif(X,Y), findo(X,Y).
+
+findo(x,_) :- writeln("find(x,_)").
+findo(a,a) :- writeln("find(a,a)"). 
+findo(_,y) :- writeln("find(_,y)"). 
+```
+
+Then:
 
 ```text
-?- do(X,Y).
-_12174
-_12206
-END OF 2nd CLAUSE OF do/2
+?- find_a_way.
+find(x,_)
+true ;
+find(_,y)
 true.
 ```
 
-For `docut/2` it seems to behave as if `dif(X,Y)` had failed, but the cut had been traversed. The alternative clause is not taken. That
-is unexpected.
-
-```text
-?- docut(X,Y).
-_13092
-_13124
-false.
-```
-
-### With the `->/2` (if-then-else) control construct
+### Trying with if-then-else, again
 
 ```logtalk
 doimply(WhatDo) :-
@@ -198,7 +173,7 @@ doimply(WhatDo) :-
     -> 
     optimistically_proceed(X,WhatDo)
     ;
-    once_dif_has_failed(X)),
+    dif_has_failed(X)),
    format("END OF CLAUSE (X=~q, Y=~q)\n",[X,Y]). 
 
 doimply(_) :-
@@ -208,13 +183,13 @@ optimistically_proceed(X,WhatDo) :-
    writeln("Optimistic branch"),   
    ((WhatDo==eq) 
     -> 
-    (X=k(m),writeln("dif(X,Y) late failure: never get here"))
+    (X=k(m),writeln("dif(X,Y) constraint violation: never get here"))
     ;
     (X=k(u),writeln("dif(X,Y) late confirmation"))). 
 
     
-once_dif_has_failed(X,Y) :-    
-   format("After late failure: X=~q, Y=~q\n",[X,Y]).
+dif_has_failed(X,Y) :-    
+   format("We must be in state 'different': X=~q, Y=~q\n",[X,Y]).
 ```
 
 The "happy path" would be to confirm `dif(A,B)`, its optimistic attitude rewarded:
@@ -229,8 +204,7 @@ doimply/1 alternative
 true.
 ```
 
-Calling `doimply/1` with the instruction to make `X` and `Y`  equal reveals to elicit "late failure" that the else branch of `->/2` is not taken!
-In fact, the program does not even continue past the `->/2` and immediately executes the alternative clause of `doimply/1`. Very unexpected.
+Calling `doimply/1` with the instruction to make `X` and `Y`  equal to elicit "late failure":
 
 ```text
 ?- doimply(eq).
@@ -239,81 +213,18 @@ doimply/1 alternative
 true.
 ```
 
-The whole [`->/2`](https://www.swi-prolog.org/pldoc/doc_for?object=(-%3E)/2) subgoal behaves as if it had already been
-run when `dif/2` late failure occurs and we were backtracking past it:
-
-```text
-?- ( dif(X,Y) -> writeln(yes) ; writeln(no) ), X = 1, Y = 1, write(" END").
-yes
-false.
-```
-
-```text
-?- (write("START ");write("BACK ")), ( dif(X,Y) -> writeln(yes) ; writeln(no) ), X = 1, Y = 1, write(" END").
-START yes
-BACK yes
-false.
-```
-
-## More examples
-
 ### An example with repeated attempts using `between/3`
 
 ```text
-?- between(1,5,X),
-   dif(A,B),
-   format("Optimistically progressing with ~q\n",[X]),
-   format("Setting dif(A,B) to certainly false\n"),
-   A=B.
-   
-Optimistically progressing with 1
-Setting dif(A,B) to certainly false
-Optimistically progressing with 2
-Setting dif(A,B) to certainly false
-Optimistically progressing with 3
-Setting dif(A,B) to certainly false
-Optimistically progressing with 4
-Setting dif(A,B) to certainly false
-Optimistically progressing with 5
-Setting dif(A,B) to certainly false
-false.
+?- between(1,6,B),dif(3,B).
+B = 1 ;
+B = 2 ; 
+B = 4 ;
+B = 5 ;
+B = 6.
 ```
 
-```text
-?- between(1,5,X),
-   dif(A,B),
-   format("Optimistically progressing with ~q\n",[X]),
-   format("Setting dif(A,B) to certainly true\n"),
-   A=x,B=y.
-   
-Optimistically progressing with 1
-Setting dif(A,B) to certainly true
-X = 1,
-A = x,
-B = y ;
-Optimistically progressing with 2
-Setting dif(A,B) to certainly true
-X = 2,
-A = x,
-B = y ;
-Optimistically progressing with 3
-Setting dif(A,B) to certainly true
-X = 3,
-A = x,
-B = y ;
-Optimistically progressing with 4
-Setting dif(A,B) to certainly true
-X = 4,
-A = x,
-B = y ;
-Optimistically progressing with 5
-Setting dif(A,B) to certainly true
-X = 5,
-A = x,
-B = y.
-```
-  
-### Constructing a more deterministic member/2
+### Constructing a more deterministic `member/2`
 
 This approach appears in [Indexing `dif/2`](https://arxiv.org/abs/1607.01590):
 
@@ -377,11 +288,24 @@ false.      % no more solutions
 Bag = [1, _19152],    % solutions
 dif(_19152, 1).       % dif(_,1) still open
 ```
+  
+## Beware of mixing `dif/2` and cuts.
+
+Jan Wielemaker writes:
+
+> The general rule of thumb is that constraints and cuts (and thus if-then-else and negation) do 
+> not play together. It only works if all relevant constraints are resolved before committing.
+> That is in general hard to predict. Constraint solvers have in general incomplete propagation 
+> and thus may have pending constraints even in cases where all constraints can be resolved. At
+> debug time, [call_residue_vars/2](https://eu.swi-prolog.org/pldoc/doc_for?object=call_residue_vars/2)
+> can be used to verify there are no pending constraints. The
+> implementation is fairly costly in terms of additional bookkeeping that, for example, protects
+> constraints against garbage collection. This may prohibit usage at runtime.
 
 ## Addendum
 
-According to [this discussion](https://swi-prolog.discourse.group/t/surprising-dif-2-behaviour/2317), anonymous variables in the term passed to `dif/2`
-will lead to non-printing at the toplevel:
+According to [this discussion](https://swi-prolog.discourse.group/t/surprising-dif-2-behaviour/2317), anonymous variables
+in the term passed to `dif/2` will lead to non-printing at the toplevel:
 
 ```text
 % Unsure whether dif: succeeds
