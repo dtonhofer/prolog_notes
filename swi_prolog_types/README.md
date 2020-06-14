@@ -1,10 +1,14 @@
-# About SWI-Prolog datatypes
+# About SWI-Prolog data types
 
-## SWI Prolog type tree image
+- This page is linked from SWI-Prolog comment section of ["Verify Type of a Term"](https://eu.swi-prolog.org/pldoc/man?section=typetest).
+- The SWI-Prolog wiki has more on data types here: [SWI-Prolog datatypes](https://eu.swi-prolog.org/datatypes.txt).
+- See also [data type](https://en.wikipedia.org/wiki/Data_type) at Wikipedia
 
-An image depicting the built-in "datatypes" one may encounter in SWI Prolog which are 
-similary to the types of other Prolog. As there is no way to define new datatypes from these
-base datatypes ([algebraically](https://en.wikipedia.org/wiki/Algebraic_data_type) or
+## SWI Prolog data type hierarchy
+
+An image depicting the built-in "data types" one may encounter in SWI Prolog. They are 
+similar to the types of other Prolog. As there is no way to define new data types from these
+base data types ([algebraically](https://en.wikipedia.org/wiki/Algebraic_data_type) or
 otherwise), these are the only one there are.
 
 - [SVG file](swi_prolog_type_tree/swi_prolog_type_tree.svg). **The diagram in SVG format**.
