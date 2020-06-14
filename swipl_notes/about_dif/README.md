@@ -4,6 +4,8 @@ A description of predicate `dif/2` can be found [here](https://eu.swi-prolog.org
 
 Let's try add some explanations.
 
+TL;DR: After a `dif(A.B)` (i.e. downstack from `dif(A.B)`), any unification involving `A` or `B` or subterms thereof that would make `A` and `B` identical (`A == B`) will fail (and this applies to clause heads, too).
+
 First, some history.
 
 From: [Indexing `dif/2`](https://arxiv.org/abs/1607.01590), Ulrich Neumerkel and Stefan Kral, 2016-06-06:
