@@ -4,7 +4,7 @@
 - The SWI-Prolog wiki has more on data types here: [SWI-Prolog datatypes](https://eu.swi-prolog.org/datatypes.txt).
 - See also [data type](https://en.wikipedia.org/wiki/Data_type) at Wikipedia
 
-## SWI Prolog data type hierarchy
+## SWI Prolog data type tree
 
 An image depicting the built-in "data types" one may encounter in SWI Prolog. They are 
 similar to the types of other Prolog. As there is no way to define new data types from these
@@ -114,7 +114,7 @@ S = compound(p, [nongnd], [var(X), lbox([list, gnd], int(1), lbox([list, gnd], i
 - [Logtalk](https://logtalk.org/) has actual datatypes and OO-style message handlers. This is achieved by setting up Prolog Modules around terms, which have the characteristics of objects (Prolog need a proper hierarchical Module system)
 - Type tests seems to be non-logical but they are if one considers them to have a hidden additional argument: A term representing the "current computational state" of the system. That view probably doesn't help much.
 
-### Reading
+## Reading
 
 - For a description of data types, see this SWI-Prolog wiki entry:
   [SWI-Prolog datatypes](https://eu.swi-prolog.org/datatypes.txt)
@@ -122,7 +122,7 @@ S = compound(p, [nongnd], [var(X), lbox([list, gnd], int(1), lbox([list, gnd], i
 - For the type-testing predicates see this SWI-Prolog manual page:
   [Verify Type of a Term](https://eu.swi-prolog.org/pldoc/man?section=typetest)
 
-### Compound terms of arity 0 vs atoms in predicate roles vs. in function roles
+## Compound terms of arity 0 vs atoms in predicate roles vs. in function roles
 
 In predicate role, atoms and compound terms of arity 0 are the same:
 
@@ -172,8 +172,6 @@ See the notes on [Compound terms with zero arguments](https://eu.swi-prolog.org/
 ## Predicates for Analyzing/Constructing a Term
 
 [See this page](term_analysis_construction/)
-
-![Disassembling Terms](disassembling_terms/disassembling_terms.png)
 
 ## On Type testing
 
