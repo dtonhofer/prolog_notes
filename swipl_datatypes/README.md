@@ -171,9 +171,7 @@ See the notes on [Compound terms with zero arguments](https://eu.swi-prolog.org/
 
 ## Predicates for Analyzing/Constructing a Term
 
-Vocabulary: Analyzing/Constructing or Disassembling/Assembling a Term.
-
-These are predicates found in the section [Analysing and Constructing Terms](https://eu.swi-prolog.org/pldoc/man?section=manipterm) of the SWI-Prolog manual.
+[See this page](term_analysis_construction/)
 
 ![Disassembling Terms](disassembling_terms/disassembling_terms.png)
 
