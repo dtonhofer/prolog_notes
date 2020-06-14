@@ -13,10 +13,10 @@
 
 These are predicates found in the section [Analysing and Constructing Terms](https://eu.swi-prolog.org/pldoc/man?section=manipterm) of the SWI-Prolog manual.
 
-- [`functor/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=functor/3)
-- [`../`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3D..)/2) 
-- [`compound_name_arguments/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=compound_name_arguments/3)
 - [`compound_name_arity/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=compound_name_arity/3)
+- [`compound_name_arguments/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=compound_name_arguments/3)
+- [`functor/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=functor/3)
+- [`=../`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3D..)/2) 
 
 ## Overview 
 ![Analyzing and Constructing Terms](term_analysis_construction.png)
