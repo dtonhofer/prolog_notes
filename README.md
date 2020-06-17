@@ -28,7 +28,9 @@ From _"Logic Programming with Strong Negation"_ (David Pearce, Gerd Wagner, FU B
 > It should be clear that in order to explain the deduction mechanism of Prolog one does not have to refer to the indirect method of SLD-resolution which checks for the refutability of the contrary. It is certainly more natural to view Prolog's proof procedure as a kind of natural deduction, as, for example, in [Hallnäs & Schroeder-Heister 1987] and [Miller 1989]. This also is more in line with the intuitions of a Prolog programmer. Since Prolog is the paradigm, logic programming
 semantics should take it as a point of departure. 
 
-See also: [Logic programming with strong negation and inexact predicates (1991)](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.975.3445&rank=1)
+See also: [Logic programming with strong negation and inexact predicates (1991)](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.975.3445&rank=1), where we read:
+
+> Akama [S.Akama (1987): Resolution in constructivism, Logique et Analyse, 120, 385-392] proposed to use constructive logic for the interpretation of logic programming. He showed how the resolution calculus for definite Horn clauses can be interpreted within constructive logic. In fact, he makes the point that in the definite Horn clause setting the differences between strong negation, intuitionistic negation and classical negation do not matter. We remark that this observation is not surprising since the language of definite Horn clauses can be viewed as a fragment of positive logic which forms a common subpart of constructive, intuitionistic and classical logic.
 
 ## External Resources
 
