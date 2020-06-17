@@ -19,6 +19,19 @@ Missed in the above:
 
 From [The Fifty-three Stations of the Tōkaidō](https://en.wikipedia.org/wiki/The_Fifty-three_Stations_of_the_T%C5%8Dkaid%C5%8D) by Utagawa Hiroshige, 1832.
 
+## A note of some importance
+
+From _"Logic Programming with Strong Negation"_ (David Pearce, Gerd Wagner, FU Berlin, 1991), appears in [Springer LNAI 475](https://link.springer.com/book/10.1007/BFb0038689): Extensions of Logic Programming, International Workshop Tübingen, FRG, December 8–10, 1989 Proceedings):
+
+> According to the standard view, a logic program is a set of definite Horn clauses. Thus, logic programs are regarded as syntactically restricted first-order theories within the framework of classical logic. Correspondingly, the proof theory of logic programs is considered as the specialized version of classical resolution, known as SLD-resolution. This view, however, neglects the fact that a program clause, a_0 <— a_1, a_2, • • •, a_n, is an expression of a fragment of positive logic (a subsystem of intuitionistic logic) rather than an implicational formula of classical logic. The classical interpretation of logic programs, therefore, seems to be a semantical overkill.
+>
+> It should be clear that in order to explain the deduction mechanism of Prolog one does not have to refer to the indirect method of SLD-resolution which checks for the refutability of the contrary. It is certainly more natural to view Prolog's proof procedure as a kind of natural deduction, as, for example, in [Hallnäs & Schroeder-Heister 1987] and [Miller 1989]. This also is more in line with the intuitions of a Prolog programmer. Since Prolog is the paradigm, logic programming
+semantics should take it as a point of departure. 
+
+See also: [Logic programming with strong negation and inexact predicates (1991)](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.975.3445&rank=1), where we read:
+
+> Akama [S.Akama (1987): Resolution in constructivism, Logique et Analyse, 120, 385-392] proposed to use constructive logic for the interpretation of logic programming. He showed how the resolution calculus for definite Horn clauses can be interpreted within constructive logic. In fact, he makes the point that in the definite Horn clause setting the differences between strong negation, intuitionistic negation and classical negation do not matter. We remark that this observation is not surprising since the language of definite Horn clauses can be viewed as a fragment of positive logic which forms a common subpart of constructive, intuitionistic and classical logic.
+
 ## External Resources
 
 - [The first page of the SWI-Prolog manual has a large comment with pointers to resources](https://eu.swi-prolog.org/pldoc/doc_for?object=manual) ... sometimes I add something to that comment.
@@ -70,6 +83,7 @@ From [The Fifty-three Stations of the Tōkaidō](https://en.wikipedia.org/wiki/T
   
 ### Papers of Interest
 
+- 1989 Logic Programming with Strong Negation (Appears in Springer LNAI 475, pp 311-326) (David Pearce, Gerd Wagner)
 - 1991-01 [Applying Techniques to Skeletons](https://www.researchgate.net/publication/220986744_Applying_Techniques_to_Skeletons) (Leon Sterling, Marc Kirschenbaum)
 - 1995-XX [Higher-order logic programming in Prolog](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.34.9690) (Lee Naish)
 - 1991-02 [A type system for logic programs](https://www.sciencedirect.com/science/article/pii/074310669180002U) (Eyal Yardeni, Ehud Shapiro. In: _The Journal of Logic Programming_ Volume 10, Issue 2)
@@ -140,4 +154,5 @@ These are notes on specific subjects taken while working with Prolog in general 
 - [Use of the caret ^ in` bagof/3`, `setof/3`](swipl_notes/notes_on_the_caret_used_in_bagof_goals.md)
 - [Predicates for printing & formatting](swipl_notes/output_formatting.md)
 - [SWI-Prolog string modes](swipl_notes/swipl_string_modes.md)
+
 
