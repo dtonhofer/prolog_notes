@@ -38,6 +38,18 @@ See also: [Logic programming with strong negation and inexact predicates (1991)]
 
 > Akama [S.Akama (1987): Resolution in constructivism, Logique et Analyse, 120, 385-392] proposed to use constructive logic for the interpretation of logic programming. He showed how the resolution calculus for definite Horn clauses can be interpreted within constructive logic. In fact, he makes the point that in the definite Horn clause setting the differences between strong negation, intuitionistic negation and classical negation do not matter. We remark that this observation is not surprising since the language of definite Horn clauses can be viewed as a fragment of positive logic which forms a common subpart of constructive, intuitionistic and classical logic.
 
+## Depicting Terms
+
+Being often confused by Prolog naming and concepts, my way to name & graphically represent terms (this is simpler than the one that went before)
+
+![Term notation](other_notes/depicting_terms/prolog_term_notation.svg)
+
+It is possible to have [Attributed Variables](https://eu.swi-prolog.org/pldoc/man?section=attvar) so that goals are scheduled when variables are bound.
+
+## SWI-Prolog's tree of datatypes
+
+[Tree of Types of SWI-Prolog](swi_prolog_types)
+
 ## External Resources
 
 - [The first page of the SWI-Prolog manual has a large comment with pointers to resources](https://eu.swi-prolog.org/pldoc/doc_for?object=manual) ... sometimes I add something to that comment.
@@ -123,18 +135,7 @@ Some predicates which may be of general use can be found in the [Code grabbag](c
 - [`rotate_list/3`](code/rotate_list.pl): Rotate a list left or right.
 - [`vector_replace0/4`](code/vector_replace0.pl): Replace in a list on multiple positions, by index.
 
-### Notes on Prolog & SWI-Prolog
-
-#### SWI-Prolog's tree of datatypes
-
-- [Tree of Types of SWI-Prolog](swi_prolog_types)
-   
-#### Naming and graphing
-
-Being often confused by Prolog naming and concepts, my way to name & graphically represent terms
-
-- [Naming and Symbols](naming_and_symbols/)
-- ![Naming and Symbols](naming_and_symbols/pics/Symbols.png)
+### About SWI Prolog
 
 #### Difference List Explainer
 
