@@ -48,6 +48,10 @@ It is possible to have [Attributed Variables](https://eu.swi-prolog.org/pldoc/ma
 
 ## SWI-Prolog's datatypes
 
+![swipl_datatype_tree](swipl_datatypes/swipl_datatype_tree/swipl_datatype_tree.svg) 
+
+More here:
+
 [SWI-Prolog datatypes](swipl_datatypes)
 
 ## External Resources
