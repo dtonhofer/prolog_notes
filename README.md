@@ -46,9 +46,9 @@ Being often confused by Prolog naming and concepts, my way to name & graphically
 
 It is possible to have [Attributed Variables](https://eu.swi-prolog.org/pldoc/man?section=attvar) so that goals are scheduled when variables are bound.
 
-## SWI-Prolog's tree of datatypes
+## SWI-Prolog's datatypes
 
-[Tree of Types of SWI-Prolog](swi_prolog_types)
+[SWI-Prolog datatypes](swipl_datatypes)
 
 ## External Resources
 
