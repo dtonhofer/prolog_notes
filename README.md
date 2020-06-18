@@ -11,7 +11,13 @@ Missed in the above:
 - [αProlog](https://homepages.inf.ed.ac.uk/jcheney/programs/aprolog/) (Currently frozen?)
 - [GOLOG](https://en.wikipedia.org/wiki/GOLOG) (Ancient, based on Situation Calculus. What's the relationship to LPS?)
 - [MProlog](https://www.mimuw.edu.pl/~nguyen/mpl.pdf) (PDF) for [Modal Logic](https://plato.stanford.edu/entries/logic-modal/)
-- [Markov Logic Networks](https://en.wikipedia.org/wiki/Markov_logic_network)
+- [Markov Logic Networks](https://en.wikipedia.org/wiki/Markov_logic_network) 
+
+## Rule-based Systems
+
+A very low-fidelity overview, but one needs general maps.
+
+![Rule-based Systems](https://raw.githubusercontent.com/dtonhofer/prolog_notes/master/other_notes/Forward%20Chaining%20and%20Backwards%20Chaining/Rules%20Fwd%20Chaining%20Bwd%20Chaining.svg)
 
 ## A Tradition
 
@@ -19,7 +25,7 @@ Missed in the above:
 
 From [The Fifty-three Stations of the Tōkaidō](https://en.wikipedia.org/wiki/The_Fifty-three_Stations_of_the_T%C5%8Dkaid%C5%8D) by Utagawa Hiroshige, 1832.
 
-## A note of some importance
+## A Note of some Importance
 
 From _"Logic Programming with Strong Negation"_ (David Pearce, Gerd Wagner, FU Berlin, 1991), appears in [Springer LNAI 475](https://link.springer.com/book/10.1007/BFb0038689): Extensions of Logic Programming, International Workshop Tübingen, FRG, December 8–10, 1989 Proceedings):
 
@@ -38,7 +44,7 @@ See also: [Logic programming with strong negation and inexact predicates (1991)]
 - [Extensive list at klaussinani's github account](https://github.com/klaussinani/awesome-prolog#resources)
 - [The **Prolog Syntax Highlighting** file for KDE](https://cgit.kde.org/syntax-highlighting.git/tree/data/syntax/prolog.xml) (by Torsten Eichstädt), as used in the [Kate editor](https://docs.kde.org/trunk5/en/applications/katepart/highlight.html)
 - [Bug Hunting Toolbox Wiki Page at SWI-Prolog Discourse Site](https://swi-prolog.discourse.group/t/bug-hunting-toolbox/710)
-- [Frank Pfenning's Course on Logic Programming](http://www.cs.cmu.edu/~fp/courses/lp/) ([Lecture Notes as one PDF](http://www.cs.cmu.edu/~fp/courses/lp/lectures/lp-all.pdf) ... 324 pages). Hardcore!  
+- [Frank Pfenning's Course on Logic Programming](http://www.cs.cmu.edu/~fp/courses/lp/) ([Lecture Notes as one PDF](http://www.cs.cmu.edu/~fp/courses/lp/lectures/lp-all.pdf) ... 324 pages). Hardcore!   
 
 ### "The Power of Prolog" my Markus Triska on YouTube
 
@@ -83,12 +89,15 @@ See also: [Logic programming with strong negation and inexact predicates (1991)]
   
 ### Papers of Interest
 
+- 1984 [Making Prolog more expressive](https://core.ac.uk/download/pdf/82550631.pdf) (J.W. Lloyd, R.W. Topor) (Journal of Logic Programming, 1984:3:225-240)
 - 1989 Logic Programming with Strong Negation (Appears in Springer LNAI 475, pp 311-326) (David Pearce, Gerd Wagner)
 - 1991-01 [Applying Techniques to Skeletons](https://www.researchgate.net/publication/220986744_Applying_Techniques_to_Skeletons) (Leon Sterling, Marc Kirschenbaum)
+- 1991 [Logic Programming with Strong Negation and Inexact Predicates](https://academic.oup.com/logcom/article-abstract/1/6/835/943774) (Gerd Wagner) (Journal of Logic and Computation, Volume 1, Issue 6, December 1991, Pages 835–859)
 - 1995-XX [Higher-order logic programming in Prolog](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.34.9690) (Lee Naish)
 - 1991-02 [A type system for logic programs](https://www.sciencedirect.com/science/article/pii/074310669180002U) (Eyal Yardeni, Ehud Shapiro. In: _The Journal of Logic Programming_ Volume 10, Issue 2)
 - 1991-XX [Uniform Proofs as a Foundation for Logic Programming](http://www.lix.polytechnique.fr/~dale/papers/apal91.pdf) (Dale Miller, Gopalan Nadathur, Frank Pfenning, Andre Scedrov) --- the Lambda-Prolog way
 - 2001-04 [Logic Programming, Functional Programming, and Inductive Definitions](https://www.researchgate.net/publication/1880293_Logic_Programming_Functional_Programming_and_Inductive_Definitions) (Lawrence Paulson, Andrew W. Smith)
+- 2002-07 [Abduction in Logic Programming](http://web.stanford.edu/class/cs227/Readings/Abudction%20in%20LP.pdf) (Marc Denecker, Antonis Kakas). Appears in [Computational Logic: Logic Programming and Beyond, Springer LNCS 2407](https://link.springer.com/chapter/10.1007/3-540-45628-7_16), pp 402-436
 - 2003-10 [The Essence of Strategic Programming](https://www.researchgate.net/publication/277289331_The_Essence_of_Strategic_Programming) (Ralf Lämmel, Eelco Visser, Joost Visser) --- generic programming with the use of strategies
 - 2009-11 [Coding Guidelines for Prolog](https://arxiv.org/abs/0911.2899) (Michael A. Covington, Roberto Bagnara, Richard A. O'Keefe, Jan Wielemaker, Simon Price)
 - 2015-10 [The Inductive Constraint Programming Loop](https://arxiv.org/abs/1510.03317) (
