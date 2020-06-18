@@ -89,8 +89,10 @@ See also: [Logic programming with strong negation and inexact predicates (1991)]
   
 ### Papers of Interest
 
+- 1984 [Making Prolog more expressive](https://core.ac.uk/download/pdf/82550631.pdf) (J.W. Lloyd, R.W. Topor) (Journal of Logic Programming, 1984:3:225-240)
 - 1989 Logic Programming with Strong Negation (Appears in Springer LNAI 475, pp 311-326) (David Pearce, Gerd Wagner)
 - 1991-01 [Applying Techniques to Skeletons](https://www.researchgate.net/publication/220986744_Applying_Techniques_to_Skeletons) (Leon Sterling, Marc Kirschenbaum)
+- 1991 [Logic Programming with Strong Negation and Inexact Predicates](https://academic.oup.com/logcom/article-abstract/1/6/835/943774) (Gerd Wagner) (Journal of Logic and Computation, Volume 1, Issue 6, December 1991, Pages 835–859)
 - 1995-XX [Higher-order logic programming in Prolog](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.34.9690) (Lee Naish)
 - 1991-02 [A type system for logic programs](https://www.sciencedirect.com/science/article/pii/074310669180002U) (Eyal Yardeni, Ehud Shapiro. In: _The Journal of Logic Programming_ Volume 10, Issue 2)
 - 1991-XX [Uniform Proofs as a Foundation for Logic Programming](http://www.lix.polytechnique.fr/~dale/papers/apal91.pdf) (Dale Miller, Gopalan Nadathur, Frank Pfenning, Andre Scedrov) --- the Lambda-Prolog way
