@@ -25,11 +25,11 @@
       </linearGradient>
       <linearGradient x1="2526.1575" gradientUnits="userSpaceOnUse" x2="2854.2363" y1="-510.2488" y2="-390.652" id="linearGradient6" spreadMethod="reflect">
         <stop stop-opacity="1" stop-color="lime" offset="0%"/>
-        <stop stop-opacity="1" stop-color="rgb(51,153,102)" offset="100%"/>
+        <stop stop-opacity="1" stop-color="lime" offset="100%"/>
       </linearGradient>
       <linearGradient x1="2526.1575" gradientUnits="userSpaceOnUse" x2="2854.2363" y1="-248.2037" y2="-108.2164" id="linearGradient7" spreadMethod="reflect">
         <stop stop-opacity="1" stop-color="lime" offset="0%"/>
-        <stop stop-opacity="1" stop-color="olive" offset="100%"/>
+        <stop stop-opacity="1" stop-color="lime" offset="100%"/>
       </linearGradient>
       <linearGradient x1="1570.3071" gradientUnits="userSpaceOnUse" x2="1869.0571" y1="-364.7985" y2="-304.7985" id="linearGradient8" spreadMethod="reflect">
         <stop stop-opacity="1" stop-color="rgb(153,204,255)" offset="0%"/>
@@ -101,23 +101,23 @@
       </linearGradient>
       <linearGradient x1="3281.0381" gradientUnits="userSpaceOnUse" x2="3609.1167" y1="1422.7233" y2="1515.9733" id="linearGradient25" spreadMethod="reflect">
         <stop stop-opacity="1" stop-color="lime" offset="0%"/>
-        <stop stop-opacity="1" stop-color="rgb(153,204,255)" offset="100%"/>
+        <stop stop-opacity="1" stop-color="lime" offset="100%"/>
       </linearGradient>
       <linearGradient x1="3711.5891" gradientUnits="userSpaceOnUse" x2="4083.6067" y1="846.4827" y2="912.6077" id="linearGradient26" spreadMethod="reflect">
         <stop stop-opacity="1" stop-color="rgb(153,204,255)" offset="0%"/>
         <stop stop-opacity="1" stop-color="rgb(153,204,255)" offset="100%"/>
       </linearGradient>
-      <linearGradient x1="2830.5366" gradientUnits="userSpaceOnUse" x2="3182.4131" y1="1153.905" y2="1255.4064" id="linearGradient27" spreadMethod="reflect">
+      <linearGradient x1="2830.5366" gradientUnits="userSpaceOnUse" x2="3182.4131" y1="1231.8369" y2="1333.3384" id="linearGradient27" spreadMethod="reflect">
         <stop stop-opacity="1" stop-color="lime" offset="0%"/>
-        <stop stop-opacity="1" stop-color="white" offset="100%"/>
+        <stop stop-opacity="1" stop-color="lime" offset="100%"/>
       </linearGradient>
       <linearGradient x1="3281.0381" gradientUnits="userSpaceOnUse" x2="3609.1167" y1="991.5661" y2="1131.5533" id="linearGradient28" spreadMethod="reflect">
         <stop stop-opacity="1" stop-color="lime" offset="0%"/>
-        <stop stop-opacity="1" stop-color="rgb(51,153,102)" offset="100%"/>
+        <stop stop-opacity="1" stop-color="lime" offset="100%"/>
       </linearGradient>
       <linearGradient x1="3281.0381" gradientUnits="userSpaceOnUse" x2="3609.1167" y1="1253.1107" y2="1381.1191" id="linearGradient29" spreadMethod="reflect">
         <stop stop-opacity="1" stop-color="lime" offset="0%"/>
-        <stop stop-opacity="1" stop-color="olive" offset="100%"/>
+        <stop stop-opacity="1" stop-color="lime" offset="100%"/>
       </linearGradient>
       <linearGradient x1="3711.5891" gradientUnits="userSpaceOnUse" x2="4083.6067" y1="1359.8901" y2="1452.8199" id="linearGradient30" spreadMethod="reflect">
         <stop stop-opacity="1" stop-color="rgb(153,204,255)" offset="0%"/>
@@ -396,13 +396,13 @@
       <text x="3763.7258" font-size="20px" y="898.1096" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none" stroke-width="1" xml:space="preserve">(generally not in wide use)</text>
     </g>
     <g fill="url(#linearGradient27)" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,-938,778)" stroke="url(#linearGradient27)">
-      <path d="M2830.5366 1153.905 L3182.4131 1153.905 L3182.4131 1255.4064 L2830.5366 1255.4064 Z" stroke="none" clip-path="url(#clipPath2)"/>
+      <path d="M2830.5366 1231.8369 L3182.4131 1231.8369 L3182.4131 1333.3384 L2830.5366 1333.3384 Z" stroke="none" clip-path="url(#clipPath2)"/>
     </g>
     <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" stroke-width="3" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,-938,778)" stroke-linecap="butt">
-      <path fill="none" d="M2830.5366 1153.905 L3182.4131 1153.905 L3182.4131 1255.4064 L2830.5366 1255.4064 Z" clip-path="url(#clipPath2)"/>
-      <text x="2918.5208" font-size="20px" y="1188.2983" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none" stroke-width="1" xml:space="preserve">Forward Chaining</text>
-      <text x="3003.2961" font-size="20px" y="1211.5796" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none" stroke-width="1" xml:space="preserve"> </text>
-      <text x="2884.8538" font-size="20px" y="1234.8608" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none" stroke-width="1" xml:space="preserve">*does not exist as such*</text>
+      <path fill="none" d="M2830.5366 1231.8369 L3182.4131 1231.8369 L3182.4131 1333.3384 L2830.5366 1333.3384 Z" clip-path="url(#clipPath2)"/>
+      <text x="2918.5208" font-size="20px" y="1266.2302" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none" stroke-width="1" xml:space="preserve">Forward Chaining</text>
+      <text x="3003.2961" font-size="20px" y="1289.5115" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none" stroke-width="1" xml:space="preserve"> </text>
+      <text x="2884.8538" font-size="20px" y="1312.7927" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none" stroke-width="1" xml:space="preserve">*does not exist as such*</text>
     </g>
     <g fill="url(#linearGradient28)" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,-938,778)" stroke="url(#linearGradient28)">
       <path d="M3281.0381 991.5661 L3609.1167 991.5661 L3609.1167 1131.5533 L3281.0381 1131.5533 Z" stroke="none" clip-path="url(#clipPath2)"/>
@@ -419,7 +419,7 @@
     </g>
     <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" stroke-width="3" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,-938,778)" stroke-linecap="butt">
       <path fill="none" d="M3281.0381 1253.1107 L3609.1167 1253.1107 L3609.1167 1381.1191 L3281.0381 1381.1191 Z" clip-path="url(#clipPath2)"/>
-      <text x="3337.4944" font-size="20px" y="1289.1168" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none" stroke-width="1" xml:space="preserve">Backward chaining of</text>
+      <text x="3345.7903" font-size="20px" y="1289.1168" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none" stroke-width="1" xml:space="preserve">Forward chaining of</text>
       <text x="3379.0129" font-size="20px" y="1312.3981" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none" stroke-width="1" xml:space="preserve">Horn Clauses</text>
       <text x="3441.8987" font-size="20px" y="1335.6793" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none" stroke-width="1" xml:space="preserve"> </text>
       <text x="3362.4407" font-size="20px" y="1358.9606" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none" stroke-width="1" xml:space="preserve">"modus ponens"</text>
@@ -490,11 +490,11 @@
       <path d="M2362.7319 1906.8438 L2351.4146 1900.4473 L2353.7964 1905.7695 L2350.2209 1910.3757 Z" clip-path="url(#clipPath2)" stroke="none"/>
       <path fill="none" d="M2730.7839 1935.4292 L2914.4109 1942.0183 L2951.4043 1942.4814 L2986.8401 1941.16 L3020.7188 1938.054 L3053.0396 1933.1635 L3068.616 1930.049 L3083.803 1926.4883 L3098.6008 1922.4816 L3113.009 1918.0286 L3127.0281 1913.1295 L3140.6577 1907.7843 L3153.8979 1901.9929 L3166.7488 1895.7555 L3179.2102 1889.0719 L3191.2822 1881.9421 L3202.9651 1874.3662 L3214.2585 1866.3441 L3225.1624 1857.876 L3235.677 1848.9617 L3245.8022 1839.6012 L3255.5383 1829.7946 L3264.8848 1819.5417 L3273.842 1808.8429 L3282.4097 1797.6979 L3290.5881 1786.1067 L3298.3772 1774.0693 L3305.7769 1761.5858 L3312.7874 1748.6562 L3319.4082 1735.2805 L3419.6152 1523.2299" clip-path="url(#clipPath2)"/>
       <path d="M3423.0332 1515.9968 L3413.3855 1524.7102 L3419.188 1524.134 L3422.427 1528.9827 Z" clip-path="url(#clipPath2)" stroke="none"/>
-      <path fill="none" d="M2700.9399 1439.3566 L2830.5298 1210.4615" stroke-width="4" clip-path="url(#clipPath2)"/>
-      <path fill="none" d="M3175.3599 1255.3864 L3281.0435 1468.0746" stroke-width="4" clip-path="url(#clipPath2)"/>
-      <path fill="none" d="M3182.3845 1181.0742 L3281.05 1080.2047" stroke-width="4" clip-path="url(#clipPath2)"/>
+      <path fill="none" d="M2705.3369 1441.9497 L2830.5227 1281.5022" stroke-width="4" clip-path="url(#clipPath2)"/>
+      <path fill="none" d="M3182.4009 1332.8093 L3281.0359 1476.9388" stroke-width="4" clip-path="url(#clipPath2)"/>
+      <path fill="none" d="M3182.4016 1246.1364 L3281.0386 1090.3773" stroke-width="4" clip-path="url(#clipPath2)"/>
       <path fill="none" d="M3609.1086 1004.9902 L3711.5708 879.6983" stroke-width="4" clip-path="url(#clipPath2)"/>
-      <path fill="none" d="M3182.4136 1228.4086 L3281.0117 1306.9579" stroke-width="4" clip-path="url(#clipPath2)"/>
+      <path fill="none" d="M3182.4302 1292.5585 L3281.0137 1314.3031" stroke-width="4" clip-path="url(#clipPath2)"/>
       <path fill="none" d="M3609.1106 1349.4634 L3711.6235 1369.6797" stroke-width="4" clip-path="url(#clipPath2)"/>
       <path fill="none" d="M3609.1106 1291.7172 L3711.6235 1275.8448" stroke-width="4" clip-path="url(#clipPath2)"/>
       <path fill="none" d="M3609.1501 1061.5597 L3711.5977 1061.5597" stroke-width="4" clip-path="url(#clipPath2)"/>
