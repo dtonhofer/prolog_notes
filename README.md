@@ -4,7 +4,7 @@ Some notes taken while working on Prolog
 
 ## The Logic Programming Landscape
 
-![The Logic Programming Landscape](pics/quick_map_of_lp_landscape/quick_map_of_lp_landscape.png)
+![The Logic Programming Landscape](other_notes/quick_map_of_lp_landscape/quick_map_of_lp_landscape.svg)
 
 Missed in the above: 
 
@@ -17,15 +17,15 @@ Missed in the above:
 
 A very low-fidelity overview, but one needs general maps.
 
-![Rule-based Systems](https://raw.githubusercontent.com/dtonhofer/prolog_notes/master/other_notes/Forward%20Chaining%20and%20Backwards%20Chaining/Rules%20Fwd%20Chaining%20Bwd%20Chaining.svg)
+![Rule-based Systems](other_notes/fwd_and_bwd_chaining/fwd_and_bwd_chaining.svg)
 
-## A Tradition
+## Truth Values
 
-![Hiroshige: Shinagawa Station](pics/various/Hiroshige_Shinagawa_Station.jpg)
+Once you think about it, you notice that Prolog is both cheating in pretending that it is working in two-valued logic and also deficient in modeling capabilities by keeping to two-valued logic. One day this may be extended! See also: [Paraconsistent Logic](https://plato.stanford.edu/entries/logic-paraconsistent/).
 
-From [The Fifty-three Stations of the Tōkaidō](https://en.wikipedia.org/wiki/The_Fifty-three_Stations_of_the_T%C5%8Dkaid%C5%8D) by Utagawa Hiroshige, 1832.
+![Truth Values](other_notes/extended_truth_values/extended_truth_values.svg)
 
-## A Note of some Importance
+## A we working in the right Logic?
 
 From _"Logic Programming with Strong Negation"_ (David Pearce, Gerd Wagner, FU Berlin, 1991), appears in [Springer LNAI 475](https://link.springer.com/book/10.1007/BFb0038689): Extensions of Logic Programming, International Workshop Tübingen, FRG, December 8–10, 1989 Proceedings):
 
@@ -164,4 +164,9 @@ These are notes on specific subjects taken while working with Prolog in general 
 - [Predicates for printing & formatting](swipl_notes/output_formatting.md)
 - [SWI-Prolog string modes](swipl_notes/swipl_string_modes.md)
 
+## A Tradition
+
+![Hiroshige: Shinagawa Station](pics/various/Hiroshige_Shinagawa_Station.jpg)
+
+From [The Fifty-three Stations of the Tōkaidō](https://en.wikipedia.org/wiki/The_Fifty-three_Stations_of_the_T%C5%8Dkaid%C5%8D) by Utagawa Hiroshige, 1832.
 
