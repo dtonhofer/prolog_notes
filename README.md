@@ -11,7 +11,9 @@ Missed in the above:
 - [αProlog](https://homepages.inf.ed.ac.uk/jcheney/programs/aprolog/) (Currently frozen?)
 - [GOLOG](https://en.wikipedia.org/wiki/GOLOG) (Ancient, based on Situation Calculus. What's the relationship to LPS?)
 - [MProlog](https://www.mimuw.edu.pl/~nguyen/mpl.pdf) (PDF) for [Modal Logic](https://plato.stanford.edu/entries/logic-modal/)
+- [HYPROLOG](http://akira.ruc.dk/~henning/hyprolog/) A Logic Programming Language with Abduction and Assumptions
 - [Markov Logic Networks](https://en.wikipedia.org/wiki/Markov_logic_network) 
+- More on [Logical Frameworks](https://en.wikipedia.org/wiki/Logical_framework)
 
 ## Rule-based Systems
 
