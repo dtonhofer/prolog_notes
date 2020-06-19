@@ -44,6 +44,11 @@ See also: [Logic programming with strong negation and inexact predicates (1991)]
 
 Being often confused by Prolog naming and concepts, my way to name & graphically represent terms (this is simpler than the one that went before)
 
+Remember:
+
+- Variables are clause-local.
+- Terms are global.
+
 ![Term notation](other_notes/depicting_terms/prolog_term_notation.svg)
 
 It is possible to have [Attributed Variables](https://eu.swi-prolog.org/pldoc/man?section=attvar) so that goals are scheduled when variables are bound.
