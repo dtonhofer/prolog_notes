@@ -59,11 +59,14 @@ continuing at `dif(A,B)`. This is resolved by **failing the unification which vi
 past a successful `dif(A,B)`, Prolog makes sure that `A` stays different from `B` and fails every attempt that tries to make them
 identical: `dif(A,B)` should be read _"fail any attempts to make A and B identical past this point"_: `fail_making_identical(A,B)`
 
+One could also consider `dif(A.B)` as injecting code directly after any unification that happens "downstack" (i.e. in the "future") and involves the nonground terms denoted by `A` and `B` (or even one of their nonground subterms). That code makes a test for disequality right after unification.
+
 ![dif state](about_dif_states.svg)
 
 - [PNG](about_dif_states.png)
 - [graphml](about_dif_states.graphml)
 
+The above is still too complex and can be whittled down. To be corrected.
 
 ## Let's try some examples
 
@@ -125,6 +128,38 @@ false.
 ```
 
 The end of the goal is never reached.
+
+## The dif/2 is constrained even if the variables go out of scope
+
+```prolog
+% Set up a constraint on "superterms" involving X and Y
+
+q  :- p( X, Y), X=x, writeln("X is now x"), Y=y, writeln("Y is now y, which should have failed").
+r  :- p( X,_Y), X=y, writeln("X is now y, so the constraint is resolved affirmatively").
+s  :- p(_X,_Y), writeln("the constraint remains unresolved"). % actually not printed...
+
+% Construct superterms A and B of which X and Y are subterms, and set up a dif/2 constraint betwen A and B
+
+p(X,Y) :- A = f(X,y), B = f(x,Y), dif(A,B), writeln("dif/2 passed").
+```
+Then
+
+```text
+?- q.
+dif/2 passed
+X is now x
+false.
+
+?- r.
+dif/2 passed
+X is now y, so the constraint is resolved affirmatively
+true.
+
+?- s.
+dif/2 passed
+the constraint remains unresolved
+true. % I expected SWI Prolog to print the still-open constraint here
+```
 
 ## More examples
 
