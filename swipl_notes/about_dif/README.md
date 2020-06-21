@@ -59,7 +59,7 @@ continuing at `dif(A,B)`. This is resolved by **failing the unification which vi
 past a successful `dif(A,B)`, Prolog makes sure that `A` stays different from `B` and fails every attempt that tries to make them
 identical: `dif(A,B)` should be read _"fail any attempts to make A and B identical past this point"_: `fail_making_identical(A,B)`
 
-One could also consider `dif(A.B)` as injecting code directly after any unification that happens "downstack" (i.e. in the "future") and involves the nonground terms denoted by `A` and `B` (or even one of their nonground subterms). That code makes a test for disequality right after unification.
+One could also consider `dif(A.B)` as injecting code directly after any unification that happens "downstack" (i.e. in the "future") and involves the nonground terms denoted by `A` and `B` (or even one of their nonground subterms). The injected code then performs a test for disequality right after unification.
 
 ![dif state](about_dif_states.svg)
 
@@ -129,7 +129,7 @@ false.
 
 The end of the goal is never reached.
 
-## The dif/2 is constrained even if the variables go out of scope
+## The dif/2 constraint stays live even if the involved terms involved go out of scope
 
 ```prolog
 % Set up a constraint on "superterms" involving X and Y
