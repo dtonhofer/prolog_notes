@@ -21,6 +21,8 @@ A very low-fidelity overview, but one needs general maps.
 
 ![Rule-based Systems](other_notes/fwd_and_bwd_chaining/fwd_and_bwd_chaining.svg)
 
+This an offshoot from this question on StackOverflow: [Forward and Backward Chaining](https://stackoverflow.com/questions/62376526/forward-and-backward-chaining). One error is that CHR does not do backtracking (it is "commited choice" - the backtracking is provided by the calling Prolog system). To be corrected!
+
 ## Truth Values
 
 Once you think about it, you notice that Prolog is both cheating in pretending that it is working in two-valued logic and also deficient in modeling capabilities by keeping to two-valued logic. One day this may be extended! See also: [Paraconsistent Logic](https://plato.stanford.edu/entries/logic-paraconsistent/).
