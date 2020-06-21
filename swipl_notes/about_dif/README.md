@@ -132,16 +132,20 @@ The end of the goal is never reached.
 ## The dif/2 constraint stays live even if the involved terms involved go out of scope
 
 ```prolog
-% Set up a constraint on "superterms" involving X and Y
+% Call p/2, building a term involving X and Y. Then make X and Y identical, dis-equal
+% or keep them "optimistically different"
 
 q  :- p( X, Y), X=x, writeln("X is now x"), Y=y, writeln("Y is now y, which should have failed").
 r  :- p( X,_Y), X=y, writeln("X is now y, so the constraint is resolved affirmatively").
 s  :- p(_X,_Y), writeln("the constraint remains unresolved"). % actually not printed...
 
-% Construct superterms A and B of which X and Y are subterms, and set up a dif/2 constraint betwen A and B
+% Construct superterms A and B of which X and Y are subterms, and set up a dif/2 constraint
+% between A and B. A and B then go out of scope and the terms denoted by them become
+% unreachable. The dif/2 constraint, however, correctly persists:
 
 p(X,Y) :- A = f(X,y), B = f(x,Y), dif(A,B), writeln("dif/2 passed").
 ```
+
 Then
 
 ```text
@@ -158,8 +162,10 @@ true.
 ?- s.
 dif/2 passed
 the constraint remains unresolved
-true. % I expected SWI Prolog to print the still-open constraint here
+true. 
 ```
+
+In the call to `s`, I expected the toplevel to print the still open `dif` constraint, but it's quiet.
 
 ## More examples
 
@@ -347,23 +353,24 @@ According to [this discussion](https://swi-prolog.discourse.group/t/surprising-d
 in the term passed to `dif/2` will lead to non-printing at the toplevel:
 
 ```text
-% Unsure whether dif: succeeds
+% dif succeeds optimistically
 
 ?- dif((p(1) :- q),(_B:-_C)),format("Hey\n").
 Hey
 dif(f(_B, _C), f(p(1), q)).
 
-% Still unsure whether dif: succeeds. But doesn't print the dif/2 expression
+% dif succeeds optimistically but doesn't print the dif/2 expression
 
 ?- dif((p(1) :- q),(_:-_)),format("Hey\n").
 Hey
 true.
 
-% Sure that dif/2 won't succeed
+% dif/2 fails immediately
 
-?- dif((p(1) :- q),(p(1):-q)),format("Hey\n").
+?- dif((p(1):-q),(p(1):-q)),format("Hey\n").
 false.
 ```
+
 ## Further explorations
 
 ### The paper "Indexing `dif/2`
