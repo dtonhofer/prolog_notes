@@ -88,6 +88,7 @@ More here:
   - [Bitcoinolog: Reason about Bitcoin addresses with Prolog](https://www.youtube.com/watch?v=HDJ8E8g2zeg) (25 March 2019)
   - [Term Rewriting with Prolog](https://www.youtube.com/watch?v=b2Px7cu2a68) (23 Aug 2019) 
   - [School Timetabling with Prolog](https://www.youtube.com/watch?v=uKvS62avplE) (2 Jan 2020)
+  - [Web Scraping with (Scryer) Prolog](https://www.youtube.com/watch?v=zKrw-pRI9ac) (22 Jun 2020)  
 - Prolog Style and Technique
   - [Naming Prolog Predicates](https://www.youtube.com/watch?v=Uska9DgJEoo) (23 Sep 2019)
   - [Reading Prolog Code](https://www.youtube.com/watch?v=fQUVWo209WA) (31 Jan 2020)
