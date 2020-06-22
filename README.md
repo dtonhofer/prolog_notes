@@ -57,7 +57,9 @@ It is possible to have [Attributed Variables](https://eu.swi-prolog.org/pldoc/ma
 
 ## Depicting the "Byrd Box Model"
 
-Many details have been elided:
+Many details have been elided.
+
+- The "EXIT" port should really have been called the "SUCCESS" port. 
 
 ![Byrd Box](pics/byrd_box_model/Byrd%20Box%20Model.svg)
 
