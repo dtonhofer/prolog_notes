@@ -29,7 +29,7 @@ Once you think about it, you notice that Prolog is both cheating in pretending t
 
 ![Truth Values](other_notes/extended_truth_values/extended_truth_values.svg)
 
-## A we working in the right Logic?
+## Are we working in the correct Logic?
 
 From _"Logic Programming with Strong Negation"_ (David Pearce, Gerd Wagner, FU Berlin, 1991), appears in [Springer LNAI 475](https://link.springer.com/book/10.1007/BFb0038689): Extensions of Logic Programming, International Workshop Tübingen, FRG, December 8–10, 1989 Proceedings):
 
@@ -54,6 +54,12 @@ Remember:
 ![Term notation](other_notes/depicting_terms/prolog_term_notation.svg)
 
 It is possible to have [Attributed Variables](https://eu.swi-prolog.org/pldoc/man?section=attvar) so that goals are scheduled when variables are bound.
+
+## Depicting the "Byrd Box Model"
+
+Many details have been elided:
+
+![Byrd Box](pics/byrd_box_model/Byrd%20Box%20Model.svg)
 
 ## SWI-Prolog's datatypes
 
