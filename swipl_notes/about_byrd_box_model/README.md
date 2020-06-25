@@ -41,6 +41,8 @@ Note that the Byrd Box Model conflates "ports" and "events". One can say that
 "port" designates both a "port on some kind of box" as well as the event 
 "the execution flow traverses this port". It seems to work.
 
+## From the DECsystem-10 User Manual
+
 Here is the image from the 
 [DECsystem-10 Prolog User's Manual](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.300.8430)
 of November 1982 on page 13 ("Chapter 2: Debugging")
@@ -89,6 +91,8 @@ The text says (some remarks added):
 > Since this might get confusing each invocation box is given a unique integer
 > identifier.
 
+## Explainer 
+
 Let's call that box at the center of the model a _B-Box_ for short.
 
 Consider the Prolog Processor (_PP_) running a Prolog program. The B-Box represents a
@@ -124,6 +128,10 @@ over "wires" linking the ports. Whenever the token goes through one of the ports
 corresponding event is fired and may cause the debugger/tracer to print out messages 
 or query the user for interaction.
 
+## The ports
+
+### Traditional ports
+
 The traditional set of ports (and events) is the following. Passing the execution token
 left-to-right "grows the stack". Passing the execution token right-to-left "shrinks the
 stack".
@@ -152,15 +160,21 @@ Note that the naming of the ports is less than ideal: The port for `exit` should
 be called `succeed`, in analogy to `fail` - and what does `exit` even mean? Missed the
 boat on that one!
 
+### The exception port
+
+ISO Standard Prolog specifies exceptions, so one would expected a port like `throw` or
+`exception` to be present on the B-Box, too. An execution token exiting via `exception`
+will be passed to first enclosing B-Box that can _catch_ it (i.e. unify the thrown term in a 
+[`catch/3`](https://eu.swi-prolog.org/pldoc/man?section=exception)). 
+
+### Head unification
+
 There is no mention in the model of the special B-Box performing head unifications. That
 B-Box can be considered a series of unifications which must pass. Its execution token 
 comes from the surrounding box through `call`, its `fail` passes the token back to the
 surrounding box, and its `redo` is just short-circuited to `fail`. 
 
-ISO Standard Prolog specifies exceptions, so one would expected a port like `throw` or
-`excpetion` to be present on the B-Box, too. An execution token exiting via `exception`
-will be passed to first enclosing B-Box that can _catch_ it (i.e. unify the thrown term in a 
-[`catch/3`](https://eu.swi-prolog.org/pldoc/man?section=exception)). 
+### Non-traditional ports
 
 SWI-Prolog provides `exception` as well as the additional `unify` 
 (see [Overview of the Debugger](https://www.swi-prolog.org/pldoc/man?section=debugoverview)).
@@ -183,6 +197,8 @@ An appoximate rendering of a clause for which the PP generate the head B-Box, an
 would thus be this:
 
 ![Byrd Box Model](byrd_box_model.svg)
+
+## Specific predicate behaviour in the B-Box model
 
 Note these case of predicate behaviour:
 
@@ -211,6 +227,8 @@ Note these case of predicate behaviour:
 
 ## Term Store Operations
 
+### An execution of elementary B-Boxes
+
 The B-Box Model does not talk about the term store updates that take place as a B-Box is active. The term
 store is the versioned global (or thread-local) store holding terms, said terms being named/denoted by the
 clause-local variables. If a term is no longer named (and not used by a constraint) in any predicate
@@ -230,6 +248,8 @@ of boxes:
   including comparison operation on term store elements fall under this.
 
 Both of the above are essentially "elementary B-Boxes" whose inner structure can be disregarded.
+
+### Term Store updates and rollbacks
 
 If you consider a (single-thread) Prolog program execution as a sequence of U-Boxes and V-Boxes, then the U-Boxes
 look like (transactional) updates of the term store:
@@ -256,4 +276,8 @@ required. On the other hand, a bypass of the B-Box due to determinism or semi-de
 that a forced rollback of the term store to the version valid at call time must be performed, 
 at least in this model.
 
+## See also
+
+- [SWI-Prolog: Overview of the Debugger](https://eu.swi-prolog.org/pldoc/man?section=debugoverview)
+- [SWI-Prolog: Deterministic/Semi-deterministic/Non-deterministic predicates](https://www.swi-prolog.org/pldoc/man?section=testbody)
 
