@@ -1,9 +1,10 @@
 # About the "Byrd Box Model"
 
 The "Byrd Box Model", also called "Tracing Model" or "Procedure Box Model" or 
-"4-port Model" pictures the calls to a Prolog predicate as a "box with 4 ports". 
-The Model's idea is that the Prolog Processor traverses these ports as it
-runs a program and calls and backtracks back into (and over) predicates. 
+"4-port Model", pictures the calls to a Prolog predicate as a "box with 4 ports".
+
+The model's idea is that the Prolog Processor traverses these ports as it
+runs the program.
 
 Debuggers use this model as conceptual basis when they generate output or
 allow monitoring of "ports traversal events" either in general 
@@ -11,34 +12,34 @@ allow monitoring of "ports traversal events" either in general
 or on a per-predicate basis
 ([`trace/1`](https://www.swi-prolog.org/pldoc/doc_for?object=trace/1), [`trace/2`](https://www.swi-prolog.org/pldoc/doc_for?object=trace/2)).
 
-The Byrd Box model was first mentioned here:
+The Byrd Box model has been described first in:
 
-- _Understanding the control flow of Prolog programs_ (1980) by Lawrence Byrd
+- Understanding the control flow of Prolog programs, 1980, Lawrence Byrd.
   In: "Proceedings of the Logic Programming Workshop in Debrecen, Hungary."
   (this document does not seem to exist online)
 
 And later here:
 
-- _DECSystem-10 PROLOG USER'S MANUAL version 3.47_ (November 10, 1982)
+- DECSystem-10 PROLOG USER'S MANUAL version 3.47, November 10, 1982
   by D.L. Bowen (ed.), L. Byrd, F.C.N. Pereira, L.M. Pereira, D.H.D. Warren
-  (p. 13 ff. _"2.1 The Procedure Box Control Flow Model"_). 
-  [CiteseerX](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.300.8430)
+  (p. 13 ff. "2.1 The Procedure Box Control Flow Model"). 
+  Found at [CiteseerX](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.300.8430)
 
 And is described for example here:
 
-- _Programming in Prolog_, 5th edition (Springer Verlag, 2003),
+- Programming in Prolog, 5th edition (Springer Verlag, 2003),
   William F. Clocksin, Christopher S. Mellish, p. 194 ff.: "8.3 The Tracing Model"
 - [GNU Prolog - Debugging - The Procedure Box Model](http://gprolog.univ-paris1.fr/manual/gprolog.html#sec22)
 
 The Byrd Box Model leaves out a lot of detail - being a model, that's the idea.
 But maybe it leaves out a bit too much. The Byrd-Box model says nothing about
-what happens "outside the box": cuts, selection of the clause, constraints. It doesn't
+what happens "outside the box": cuts, selection of a clause, constraints. It doesn't
 even mention the clause head. In particular it says nothing about the operations on
-the _term store_, which is however a crucial aspect. 
+the _term store_, which is, however, a crucial aspect. 
 
 Note that the Byrd Box Model conflates "ports" and "events". One can say that
 "port" designates both a "port on some kind of box" as well as the event 
-"the execution flow traverses this port". 
+"the execution flow traverses this port". It seems to work.
 
 Here is the image from the 
 [DECsystem-10 Prolog User's Manual](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.300.8430)
@@ -127,15 +128,15 @@ The traditional set of ports (and events) is the following. Passing the executio
 left-to-right "grows the stack". Passing the execution token right-to-left "shrinks the
 stack".
 
-- `call`: Incoming, left-to-right. The B-Box is created by the PP, then called (exactly
+- **`call`**: Incoming, left-to-right. The B-Box is created by the PP, then called (exactly
   once, actually) through this port. If this is the start of a clause body, there must have
   been a previous box that concluded successfully: the B-Box performing the head unifications.
-- `exit`: Outgoing, left-to-right (and it should really be called `succeed`): The predicate call
+- **`exit`**: Outgoing, left-to-right (and it should really be called **`succeed`**): The predicate call
   succeeds, and the next B-Box can be instantiated and called. Which B-Box that is
   completely depends on the current state of the surrounding B-Box, which manages branching,
   B-Box instantiations and wiring. If this was the end of a clause body, the execution token
   is transferred to the surrounding B-Box.
-- `redo`: Incoming, right-to-left. The B-Box line to the right has encountered 
+- **`redo`**: Incoming, right-to-left. The B-Box line to the right has encountered 
   failure or a collection of results via a meta-predicate like `bagof/3` is ongoing, or
   the user has asked for more solutions on the toplevel after a successful conclusion.
   Passing the execution token back into the B-Box via `redo` may:
@@ -143,7 +144,7 @@ stack".
   lead to advancing the B-Box counters to the next clause. If a new
   solution can be found, the term store is updated and the token is passed out via
   `exit`. If no new solution can be found, the token is passed out via `fail`. 
-- `fail` Outgoing, right-to-left. The B-Box cannot provide any more solutions
+- **`fail`** Outgoing, right-to-left. The B-Box cannot provide any more solutions
   given current conditions. Setting up different terms in the term store for a
   reattempt is left to the predicate instantiation to the left.
 
@@ -181,7 +182,7 @@ separated by special case:
 An appoximate rendering of a clause for which the PP generate the head B-Box, and two additional B-Boxes 
 would thus be this:
 
-![Byrd Box Model](Byrd%20Box%20Model.graphml)
+![Byrd Box Model](byrd_box_model.svg)
 
 Note these case of predicate behaviour:
 
@@ -236,6 +237,8 @@ look like (transactional) updates of the term store:
 - If any of the unifications fails, term store updates are rolled back and the preceding V-Box is reactived.
 - If that V-Box fails, then backtracking rolls the term store back to the version that existed for the
   previous V-Box (or to one even earlier) and said previous V-Box is reattempted.
+
+![Term Store Versioning](term_store_versioning.svg)
 
 For non-elementary B-Boxes, updates on the term store may occur at any point "inside the box", however
 the paths of the execution token implies some invariants:
