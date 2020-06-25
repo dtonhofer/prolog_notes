@@ -4,11 +4,13 @@ A description of predicate `dif/2` can be found [here](https://eu.swi-prolog.org
 
 Let's try add some explanations.
 
+## TL;DR
 
-**TL;DR** After a `dif(A,B)` (i.e. downstack from `dif(A,B)`), any unification involving `A` or `B` or subterms thereof that would make `A` and `B` identical (`A == B`) will FAIL (and this applies to clause heads, too). If `A` and `B` are already identical at call time, `dif(A,B)` fails at once.
+After a `dif(A,B)` call, any unification involving `A` or `B` or subterms thereof 
+that would make `A` and `B` identical (`A == B`) will **fail** (and this applies to clause heads, too). 
+If `A` and `B` are already identical at call time, `dif(A,B)` fails at once.
 
-
-First, some history.
+## Some history
 
 From: [Indexing `dif/2`](https://arxiv.org/abs/1607.01590), Ulrich Neumerkel and Stefan Kral, 2016-06-06:
 
@@ -25,6 +27,8 @@ From: [Indexing `dif/2`](https://arxiv.org/abs/1607.01590), Ulrich Neumerkel and
 > not directly deliver the abstraction that is actually needed. Its direct use leads to clumsy and
 > unnecessarily inefficient code. Its combination with established control constructs often leads to
 > unsound results. New, pure constructs are badly needed
+
+## Explain!
 
 Consider the call `dif(A,B)`.
 
@@ -59,33 +63,48 @@ continuing at `dif(A,B)`. This is resolved by **failing the unification which vi
 past a successful `dif(A,B)`, Prolog makes sure that `A` stays different from `B` and fails every attempt that tries to make them
 identical: `dif(A,B)` should be read _"fail any attempts to make A and B identical past this point"_: `fail_making_identical(A,B)`
 
-One could also consider `dif(A.B)` as injecting code directly after any unification that happens "downstack" (i.e. in the "future") and involves the nonground terms denoted by `A` and `B` (or even one of their nonground subterms). The injected code then performs a test for disequality right after unification.
+### What happens when `dif/2` is called
 
-![dif state](about_dif_states.svg)
+![dif call](dif_call.svg)
 
-- [PNG](about_dif_states.png)
-- [graphml](about_dif_states.graphml)
+### What happens after `dif/2` has been called
 
-The above is still too complex and can be whittled down. To be corrected.
+![unifications after dif call](unifications_after_dif_call.svg)
 
 ## Let's try some examples
 
 First a predicate `check/2` which prints out information about the current situation. Note that the way to test `A=B` without retaining any
 changes to either `A` or `B` is the call `\+ \+ A=B` or equivalently `\+ A\=B`.
 
-```logtalk
+```prolog
 check(X,Y) :- 
-   ((\+ \+ (X=Y)) -> writeln("> They unify") ; true),          % \+ \+ ensures consequence-less unification ("unify in pocket universe")
-   ((X\=Y)        -> writeln("> They don't unify") ; true),    % X\=Y is already consequence-less
-   ((X==Y)        -> writeln("> They are identical") ; true),  % Term equivalence/identity (not unification, A and B are not refined by ==)
-   ((X\==Y)       -> writeln("> They are different") ; true).  % Term difference/non-identity
+
+   % "\+ \+" ensures consequence-less unification test
+   ((\+ \+ (X=Y)) -> writeln("> They unify") ; true),          
+
+   % X\=Y is already consequence-less
+   ((X\=Y) -> writeln("> They don't unify") ; true),    
+
+   % Term equivalence/identity (not unification! Terms denated by A and B are not refined by ==)
+   ((X==Y) -> writeln("> They are identical") ; true),
+
+   % Term difference/non-identity
+   ((X\==Y) -> writeln("> They are different") ; true).  
 ```
 
-Issue a `dif(A,B)` in state _possibly different_. Note that the Prolog toplevel prints the active constraintat the end (suitable rearranged;
-the `f` function symbol is used in `dif/2` constraint expressions throughout):
+### Behaviour of `dif/2` call
+
+Issue a `dif(A,B)` in state _possibly different_
+
+Note that the SWI Prolog toplevel prints the active constraint the end (suitable rearranged;
+the `f` function symbol is used in `dif/2` constraint expressions and has no relationship to 
+any `f` function symbol used in the program):
 
 ```text
-?- A=g(x,X),B=g(Y,y),writeln("possibly different"),check(A,B),dif(A,B),writeln("END OF GOAL").
+?- A=g(x,X),B=g(Y,y),writeln("possibly different"),check(A,B),
+   dif(A,B),
+   writeln("END OF GOAL").
+
 possibly different
 > They unify
 > They are different
@@ -95,10 +114,13 @@ B = g(Y, y),
 dif(f(Y, X), f(x, y)).
 ```
 
-Issue a `dif(A,B)` in state _different_:
+Issue a `dif(A,B)` in state _different_
 
 ```text
-?- A=g(x),B=g(y),writeln("different"),check(A,B),dif(A,B),writeln("END OF GOAL").
+?- A=g(x),B=g(y),writeln("different"),check(A,B),
+   dif(A,B),
+   writeln("END OF GOAL").
+
 different
 > They don't unify
 > They are different
@@ -107,71 +129,89 @@ A = g(x),
 B = g(y).
 ```
 
-Issue a `dif(A,B)` in state _identical_:
+Issue a `dif(A,B)` in state _identical_
 
 ```text
-?- A=f(x),B=f(x),writeln("identical"),check(A,B),dif(A,B),writeln("END OF GOAL").
+?- A=f(x),B=f(x),writeln("identical"),check(A,B),
+   dif(A,B),
+   writeln("END OF GOAL").
+
 identical
 > They unify
 > They are identical
 false.
 ```
 
-Issue a `dif(A,B)` in state _possibly different_, then make `A` and `B` identical, attempting to switch to state _identical_, which causes an backtrack:
+### Behaviour after `dif/2` call
+
+Issue a `dif(A,B)` in state _possibly different_, then attempt to make `A` and `B` identical by unification
+operations. This triggers the active constraint and the unification fails.
 
 ```text
-?- A=g(x,X),B=g(Y,y),writeln("possibly different"),check(A,B),dif(A,B),X=y,Y=x,writeln("END OF GOAL").
+?- A=g(x,X),B=g(Y,y),writeln("possibly different"),check(A,B),
+   dif(A,B),
+   X=y,writeln("X unified with y"),
+   Y=x,writeln("Y unified with x").
+
 possibly different
 > They unify
 > They are different
+X unified with y
 false.
 ```
 
-The end of the goal is never reached.
+### The `dif/2` constraint stays active even if the involved terms go out of scope
 
-## The dif/2 constraint stays live even if the involved terms involved go out of scope
+A call to `p(X,Y)` constructs terms `A` and `B`, of which `X` and `Y` are subterms.
+A `dif/2` constraint is then set up between `A` and `B`.
+
+`A` and `B` go out of scope on return from `p(X.Y)` and the terms denoted by them become
+unreachable. The `dif/2` constraint, however, correctly persists!
 
 ```prolog
-% Call p/2, building a term involving X and Y. Then make X and Y identical, dis-equal
-% or keep them "optimistically different"
+p(X,Y) :- 
+   A = f(X,y), 
+   B = f(x,Y), 
+   dif(A,B),
+   writeln("dif/2 passed").
 
-q  :- p( X, Y), X=x, writeln("X is now x"), Y=y, writeln("Y is now y, which should have failed").
-r  :- p( X,_Y), X=y, writeln("X is now y, so the constraint is resolved affirmatively").
-s  :- p(_X,_Y), writeln("the constraint remains unresolved"). % actually not printed...
+t1(X,Y) :- p(X,Y), 
+           X=x, writeln("X is now x"), 
+           Y=y, writeln("Y is now y, which should have failed").
 
-% Construct superterms A and B of which X and Y are subterms, and set up a dif/2 constraint
-% between A and B. A and B then go out of scope and the terms denoted by them become
-% unreachable. The dif/2 constraint, however, correctly persists:
+t2(X,Y) :- p(X,Y),
+           X=y, writeln("X is now y, so the constraint is closed").
 
-p(X,Y) :- A = f(X,y), B = f(x,Y), dif(A,B), writeln("dif/2 passed").
+t3(X,Y) :- p(X,Y), 
+           writeln("the constraint remains active").
 ```
 
 Then
 
 ```text
-?- q.
+?- t1(X,Y).
 dif/2 passed
 X is now x
 false.
-
-?- r.
-dif/2 passed
-X is now y, so the constraint is resolved affirmatively
-true.
-
-?- s.
-dif/2 passed
-the constraint remains unresolved
-true. 
 ```
 
-In the call to `s`, I expected the toplevel to print the still open `dif` constraint, but it's quiet.
+```text
+?- t2(X,Y).
+dif/2 passed
+X is now y, so the constraint is closed
+X = y.
+```
 
-## More examples
+```text
+?- t3(X,Y).
+dif/2 passed
+the constraint remains active
+dif(f(X, Y), f(x, y)).
+```
 
 ### Trying with if-then-else
 
- See [`->/2`](https://www.swi-prolog.org/pldoc/doc_for?object=(-%3E)/2) 
+See [`->/2`](https://www.swi-prolog.org/pldoc/doc_for?object=(-%3E)/2) 
  
 ```text
 ?- (writeln("It begins"); (writeln("Backtracked to before ->"),fail)), % print when forwarding and backtracking
@@ -180,6 +220,7 @@ In the call to `s`, I expected the toplevel to print the still open `dif` constr
    (writeln("Past X=1"); (writeln("Backtracked to before Y=1"),fail)),  % print when forwarding and backtracking
    (Y=1 ; (writeln("Y=1 failed"),fail)),                                % Y=1 fails, so print on second attempt
    writeln("END").
+
 It begins
 YES
 Past X=1
@@ -231,7 +272,6 @@ optimistically_proceed(X,WhatDo) :-
     (X=k(m),writeln("dif(X,Y) constraint violation: never get here"))
     ;
     (X=k(u),writeln("dif(X,Y) late confirmation"))). 
-
     
 dif_has_failed(X,Y) :-    
    format("We must be in state 'different': X=~q, Y=~q\n",[X,Y]).
@@ -273,7 +313,7 @@ B = 6.
 
 This approach appears in [Indexing `dif/2`](https://arxiv.org/abs/1607.01590):
 
-```logtalk
+```prolog
 % A normal member/2 which may generate more solutions than needed
 
 membern(X, [E|Es]) :-
@@ -381,7 +421,7 @@ false.
 > While the frequently provided built-in `dif/2` is able to correctly describe expected answers, its direct
 > use in programs often leads to overly complex and inefficient definitions --- mainly due to the lack of
 > adequate indexing mechanisms. We propose to overcome these problems by using a new predicate that subsumes
-> both equality _and inequality via reification. Code complexity is reduced with a monotonic, higher-order 
+> both equality and inequality via reification. Code complexity is reduced with a monotonic, higher-order 
 > if-then-else construct based on `call/N`. For comparable correct uses of impure definitions, our approach 
 > is as determinate and similarly efficient as its impure counterparts.
 
@@ -404,7 +444,7 @@ Peter Ludemann writes in [this discussion](https://swi-prolog.discourse.group/t/
 
 > Here’s a simple “reified” version of `dif/2` (it requires its arguments to be fully ground rather than sufficiently ground):
 
-```logtalk
+```prolog
 %! test(X, Y, Result) is det.
 % Result is 'dif'   when X and Y become ground and are not unifiable
 % Result is 'equal' when X and Y become ground and are unifiable
