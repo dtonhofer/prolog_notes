@@ -7,7 +7,7 @@ Let's try add some explanations.
 ## TL;DR
 
 After a `dif(A,B)` call, any unification involving `A` or `B` or subterms thereof 
-that would make `A` and `B` identical (`A == B`) will **fail** (and this applies to clause heads, too). 
+that would make `A` and `B` identical (`A == B`) will **fail** (and this applies to unification in clause heads, too). 
 If `A` and `B` are already identical at call time, `dif(A,B)` fails at once.
 
 ## Some history
