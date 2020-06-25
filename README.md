@@ -29,7 +29,7 @@ Once you think about it, you notice that Prolog is both cheating in pretending t
 
 ![Truth Values](other_notes/extended_truth_values/extended_truth_values.svg)
 
-## A we working in the right Logic?
+## Are we working in the correct Logic?
 
 From _"Logic Programming with Strong Negation"_ (David Pearce, Gerd Wagner, FU Berlin, 1991), appears in [Springer LNAI 475](https://link.springer.com/book/10.1007/BFb0038689): Extensions of Logic Programming, International Workshop Tübingen, FRG, December 8–10, 1989 Proceedings):
 
@@ -54,6 +54,14 @@ Remember:
 ![Term notation](other_notes/depicting_terms/prolog_term_notation.svg)
 
 It is possible to have [Attributed Variables](https://eu.swi-prolog.org/pldoc/man?section=attvar) so that goals are scheduled when variables are bound.
+
+## Depicting the "Byrd Box Model"
+
+Many details have been elided.
+
+- The "EXIT" port should really have been called the "SUCCESS" port. 
+
+![Byrd Box](pics/byrd_box_model/Byrd%20Box%20Model.svg)
 
 ## SWI-Prolog's datatypes
 
@@ -88,6 +96,7 @@ More here:
   - [Bitcoinolog: Reason about Bitcoin addresses with Prolog](https://www.youtube.com/watch?v=HDJ8E8g2zeg) (25 March 2019)
   - [Term Rewriting with Prolog](https://www.youtube.com/watch?v=b2Px7cu2a68) (23 Aug 2019) 
   - [School Timetabling with Prolog](https://www.youtube.com/watch?v=uKvS62avplE) (2 Jan 2020)
+  - [Web Scraping with (Scryer) Prolog](https://www.youtube.com/watch?v=zKrw-pRI9ac) (22 Jun 2020)  
 - Prolog Style and Technique
   - [Naming Prolog Predicates](https://www.youtube.com/watch?v=Uska9DgJEoo) (23 Sep 2019)
   - [Reading Prolog Code](https://www.youtube.com/watch?v=fQUVWo209WA) (31 Jan 2020)
