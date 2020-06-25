@@ -40,10 +40,10 @@ A program that issues this call is in one of three states regarding `A` and `B` 
 - **Different** - In this state, `A` and `B` won't unify and no subsequent operation will change this.
   When or once the program is in state "different", it will stay there (unless it sufficiently backtracks). 
   Example: `A=f(x),B=f(y)`. Note that `\+ A==B`.
-- **Identical** - In this state, `A` and `B` will unify and term identity `A==B` will actually succeed: the `A` and `B` are identical.
+- **Identical** - In this state, `A` and `B` will unify and term identity `A==B` will actually succeed: `A` and `B` are identical.
   No subsequent operation can change this. `A` and `B` may be nonground, and in that case, any variables in the terms appear in
-  the same position and are shared. When or once the program is in state "identical", it will stay there (again,
-  unless it sufficiently backtracks). Example: `A=f(x),B=f(x)` or `A=f(C),B=f(C)`. Note that `A==B`. 
+  the same position and are shared. When or once the program is in state "identical", it will stay there 
+  (unless it sufficiently backtracks). Example: `A=f(x),B=f(x)` or `A=f(C),B=f(C)`. Note that `A==B`. 
   
 The behavious of `dif/2` in all three states is the following:
 
