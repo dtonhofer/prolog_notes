@@ -32,7 +32,7 @@ From: [Indexing `dif/2`](https://arxiv.org/abs/1607.01590), Ulrich Neumerkel and
 
 Consider the call `dif(A,B)`.
 
-A program that issues this call is in one of three states when it does so:
+A program that issues this call is in one of three states regarding `A` and `B` when it does so:
 
 - **Possibly different** - In this state, `A` and `B` would unify, i.e. `A=B` would succeed. 
   However, `A` and `B` are still sufficiently "unrefined" (or "unconstrained" to use another adjective), that subsequent program
