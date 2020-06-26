@@ -1,12 +1,14 @@
 # About the "Byrd Box Model"
 
+## Generalities
+
 The "Byrd Box Model", also called "Tracing Model" or "Procedure Box Model" or 
-"4-port Model", pictures the calls to a Prolog predicate as a "box with 4 ports".
+"4-port Model" conceptualizes the calls to a predicate as a "box with 4 ports".
 
-The model's idea is that the Prolog Processor traverses these ports as it
-runs the program.
+The model's idea is that the Prolog Processor traverses these ports during
+program execution.
 
-Debuggers use this model as conceptual basis when they generate output or
+Debuggers use this model as conceptual basis when they generate trace output and
 allow monitoring of "ports traversal events" either in general 
 ([`leash/1`](https://www.swi-prolog.org/pldoc/doc_for?object=leash/1))
 or on a per-predicate basis
@@ -14,38 +16,50 @@ or on a per-predicate basis
 
 The Byrd Box model has been described first in:
 
-- Understanding the control flow of Prolog programs, 1980, Lawrence Byrd.
-  In: "Proceedings of the Logic Programming Workshop in Debrecen, Hungary."
-  (this document does not seem to exist online)
+- Understanding the control flow of Prolog programs, 1980.
+  - Lawrence Byrd.
+  - Appears in: "Proceedings of the Logic Programming Workshop in Debrecen, Hungary." (this document does not seem to exist online)
 
-And later here:
+And later:
 
 - DECSystem-10 PROLOG USER'S MANUAL version 3.47, November 10, 1982
-  by D.L. Bowen (ed.), L. Byrd, F.C.N. Pereira, L.M. Pereira, D.H.D. Warren
-  (p. 13 ff. "2.1 The Procedure Box Control Flow Model"). 
-  Found at [CiteseerX](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.300.8430)
+  - D.L. Bowen (ed.), L. Byrd, F.C.N. Pereira, L.M. Pereira, D.H.D. Warren
+  - p. 13 ff. "2.1 The Procedure Box Control Flow Model"
+  - Can be downloaded from [CiteseerX](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.300.8430)
 
 And is described for example here:
 
-- Programming in Prolog, 5th edition (Springer Verlag, 2003),
-  William F. Clocksin, Christopher S. Mellish, p. 194 ff.: "8.3 The Tracing Model"
+- Programming in Prolog, 5th edition
+  - Springer Verlag, 2003,
+  - William F. Clocksin, Christopher S. Mellish
+  - p. 194 ff.: "8.3 The Tracing Model"
+  
+and here:
+
 - [GNU Prolog - Debugging - The Procedure Box Model](http://gprolog.univ-paris1.fr/manual/gprolog.html#sec22)
 
 The Byrd Box Model leaves out a lot of detail - being a model, that's the idea.
-But maybe it leaves out a bit too much. The Byrd-Box model says nothing about
-what happens "outside the box": cuts, selection of a clause, constraints. It doesn't
-even mention the clause head. In particular it says nothing about the operations on
-the _term store_, which is, however, a crucial aspect. 
+The Byrd-Box model says nothing about what happens "around the box": cuts, selection of a 
+clause, constraints. It doesn't mention the special case of the clause head (that's
+a miss). In particular it says nothing about the operations on the _term store_, which is, 
+however, a crucial aspect. We will try to fill in some details then.  
 
-Note that the Byrd Box Model conflates "ports" and "events". One can say that
-"port" designates both a "port on some kind of box" as well as the event 
-"the execution flow traverses this port". It seems to work.
+## A Note on Vocabulary
+
+(I always have problems with Prolog vocabulary)
+
+From [Is this Prolog terminology correct? (fact, rule, procedure, predicate, …)](https://stackoverflow.com/questions/49898738/is-this-prolog-terminology-correct-fact-rule-procedure-predicate), based on the ISO Standard:
+
+- *procedure*: A control construct, a built-in predicate, or a user-defined procedure. A procedure is either static or dynamic. A procedure is either private or public (see 7.5). In "Programming in Prolog (5th ed.)" (Clocksin & Mellish 2003), it is simply said on p. 188 that "The collection of clauses for a given predicate is called a procedure."
+- *predicate*: An identifier together with an arity.
+- *predicate indicator*: A compound term A/N, where A is an atom and N is a non-negative integer, denoting one particular procedure (see 7.1.6.6)
+
+I will generally use "predicate" and not bother with "procedure", which seems to be nearer the concept of "program code".
 
 ## From the DECsystem-10 User Manual
 
 Here is the image from the 
-[DECsystem-10 Prolog User's Manual](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.300.8430)
-of November 1982 on page 13 ("Chapter 2: Debugging")
+[DECsystem-10 Prolog User's Manual](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.300.8430), November 1982, page 13 ("Chapter 2: Debugging")
 
 ```text
                 *--------------------------------------*
@@ -58,13 +72,13 @@ of November 1982 on page 13 ("Chapter 2: Debugging")
                 *--------------------------------------*
 ```
 
-The text says (some remarks added):
+The text says (some remarks in [] added):
 
 > During debugging the interpreter prints out a sequence of goals [atomic goals] in various
 > states of instantiation in order to show the state the program [process] has reached
 > in its execution. However, in order to understand what is occurring it is
 > necessary to understand when and why the interpreter prints out goals.
-> As in other programming languages, key points of interest are procedure [predicate] entry
+> As in other programming languages, key points of interest are procedure entry
 > and return, but in Prolog there is the additional complexity of backtracking.
 > One of the major confusions that novice Prolog programmers have to face is
 > the question of what actually happens when a goal fails and the system suddenly
@@ -84,35 +98,35 @@ The text says (some remarks added):
 > actually doing is passing through the ports of THEIR respective boxes. If we
 > were to follow this, then we would have complete information about the control
 > flow inside the procedure box. Note that the box we have drawn round the
-> procedure should really be seen as an invocation box [i.e. an activation record].
-> That is, there will be a different box for each different invocation of the procedure [predicate].
-> Obviously, with something like a recursive procedure [predicate], there will be many different Calls and
+> procedure should really be seen as an invocation box [i.e. an activation record on stack].
+> That is, there will be a different box for each different invocation of the procedure.
+> Obviously, with something like a recursive procedure, there will be many different Calls and
 > Exits in the control flow, but these will be for different invocations.
 > Since this might get confusing each invocation box is given a unique integer
 > identifier.
 
-## Explainer 
+## Adding Details 
 
 Let's call that box at the center of the model a _B-Box_ for short.
 
 Consider the Prolog Processor (_PP_) running a Prolog program. The B-Box represents a
-_predicate activation record_ rather than a predicate. The latter is a specification,
+_activation record_ rather than a predicate or procedure. The latter is a specification,
 an element of a Prolog program (essentially text), rather than an element of a
-Prolog Processor's run. A predicate activation record is another name for a frame on
+Prolog Processor's internal state. A predicate activation record is another name for a frame on
 the Prolog Processor's execution stack, or a node in Prolog's search tree. Every B-Box
 must first be instantiated by the PP before it can be called.
 
-As a Prolog predicate can call other Prolog predicates, the B-Box model is
+As a predicate can call other predicates, the B-Box model is
 a recursive "boxes-in-boxes" model. The PP instantiates a B-Box in the context of a 
-surrounding B-Box, and deletes it when it backtracks out of the B-Box. Inside a B-Box
-the same happens: it's B-Box instantiations, callings and deletions all the way down. Or
+surrounding B-Box, and deletes it when it backtracks out of the B-Box and calls it. Inside a B-Box
+the same happens: it's B-Box instantiations, calls and deletions all the way down. Or
 at least until you reach the B-Boxes that cannot be decomposed into smaller B-Boxes.
 When you think about it, these must be either unifications or operations
 not involving unification, like branching decisions, function evaluations or I/O.
 More on that below. 
 
 The root B-Box, i.e. the one without any enclosing B-Box, would be the one enclosing the
-B-Boxes of the original goal (which is a clause body) entered at the Prolog toplevel.
+B-Boxes of the original goal entered at the Prolog toplevel (that goal is a clause body).
 
 The B-Box has _internal state_. Evidently there are the currently active sub-B-Boxes, but
 there is also the index of the predicate clause that is currently being processed. This
