@@ -47,21 +47,24 @@ A program that issues this call is in one of three states regarding `A` and `B` 
   
 The behavious of `dif/2` in all three states is the following:
 
-- **Possibly different**: `dif(A,B)` succeeds "optimistically" and a `dif/2` constraint is activated, to watch for changes to `A` or `B`. If
-  we are still in **possibly different** on return to the Prolog Toplevel (i.e. when the program terminates), the still-active constraints 
-  (which do not necessarily resemble what was stated in the `dif/2` call but are equivalent) are printed out. We will never know whether
-  `A` and `B` were _actually_ different.  
+- **Possibly different**: `dif(A,B)` succeeds "optimistically" and a `dif/2` constraint is activated/posted/opened, 
+  to watch for changes to `A` or `B`.
 - **Different**: `dif(A,B)` succeeds deterministically.
 - **Identical**: `dif(A,B)` fails immediately.
 
+ If we are still in state **possibly different** on return to the Prolog toplevel (i.e. when the program terminates), the still-active constraints 
+(which do not necessarily resemble what was stated in the `dif/2` call but are equivalent) are printed out. Whether `dif(A,B)` is actually
+true would be an philosophical & epistemological conundrum at this point: it's neither confirmed, nor denied. 
+  
 The interesting case occurs if a `dif(A,B)` has been issued in state **possibly different** and a refinement of `A` or `B` (through unification, 
-either in a goal or a head) occurs during processing. The refinement may also involve just a subterm of `A` or `B`.
+either in a goal or a head) occurs during processing. (The refinement may involve just a subterm of `A` or `B`.)
 
-When `A` or `B` are involved in unification, the active `dif/2` constraint is checked. It may be that the constraint is violated:
-The unifcation made `A` and `B` identicial, `dif(A,B)` cannot be sustained, and we guessed guess wrong by optimistically 
-continuing at `dif(A,B)`. This is resolved by **failing the unification which violated the constraint**. A way to think about this is that,
-past a successful `dif(A,B)`, Prolog makes sure that `A` stays different from `B` and fails every attempt that tries to make them
-identical: `dif(A,B)` should be read _"fail any attempts to make A and B identical past this point"_: `fail_making_identical(A,B)`
+After `A` or `B` are involved in unification, the active `dif/2` constraint is checked. It may be that the constraint is violated at that point:
+The unifcation made `A` and `B` identical. This is resolved by **failing the unification which violated the constraint**. 
+A way to think about this is that, past a successful `dif(A,B)`, Prolog makes sure that `A` stays different from `B` and fails every 
+attempt that tries to make them identical: `dif(A,B)` should be be read:
+
+> _"fail any attempts to make A and B identical past this point"_: `fail_making_identical(A,B)`
 
 ### What happens when `dif/2` is called
 
