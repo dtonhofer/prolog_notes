@@ -1,15 +1,30 @@
 # Throwing errors
 
-(This page referenced from [`throw/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=throw/1))
+This page is referenced from [`throw/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=throw/1)
+
+## Pages of interest in the SWI-Prolog manual
+
+  - [`library(error)`](https://eu.swi-prolog.org/pldoc/man?section=error)
+  - [Chapter 4.10: Exception handling](https://eu.swi-prolog.org/pldoc/man?section=exception)
+     - [`catch/3`](https://www.swi-prolog.org/pldoc/doc_for?object=catch/3)
+     - [`throw/1`](https://www.swi-prolog.org/pldoc/doc_for?object=throw/1)
+     - [`catch_with_backtrace/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=catch_with_backtrace/3)
+     - [Urgeny of exceptions](https://eu.swi-prolog.org/pldoc/man?section=urgentexceptions)
+     - [Debugging and exceptions](https://eu.swi-prolog.org/pldoc/man?section=debugexceptions)
+     - [The exception term](https://eu.swi-prolog.org/pldoc/man?section=exceptterm)
+     - [Printing messages](https://eu.swi-prolog.org/pldoc/man?section=printmsg) (from exceptions, but can be used more generally)
+     - [The exception term](https://www.swi-prolog.org/pldoc/man?section=exceptterm)
+  - [B.6 Hooks using the exception predicate](https://eu.swi-prolog.org/pldoc/man?section=exception3)
 
 ## Throwing ISO-standard errors
 
-[`library(error)`](https://www.swi-prolog.org/pldoc/man?section=error) has facilities for **throwing standard errors** (but not for **catching standard errors** you have to write the appropriate catcher term to match the exception term):
+[`library(error)`](https://www.swi-prolog.org/pldoc/man?section=error) has facilities for
+**throwing standard errors**. The following predicates exist: 
 
   - [type_error/2](https://eu.swi-prolog.org/pldoc/doc_for?object=type_error/2) (ISO)
   - [domain_error/2](https://eu.swi-prolog.org/pldoc/doc_for?object=domain_error/2) (ISO)
   - [existence_error/2](https://eu.swi-prolog.org/pldoc/doc_for?object=existence_error/2) (ISO)
-  - [existence_error/3](https://eu.swi-prolog.org/pldoc/doc_for?object=existence_error/3) (not ISO)
+  - [existence_error/3](https://eu.swi-prolog.org/pldoc/doc_for?object=existence_error/3) (**not** ISO)
   - [permission_error/3](https://eu.swi-prolog.org/pldoc/doc_for?object=permission_error/3) (ISO)
   - [instantiation_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=instantiation_error/1) (ISO)
   - [uninstantiation_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=uninstantiation_error/1) (ISO, in corrigendum 2)
@@ -17,26 +32,43 @@
   - [syntax_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=syntax_error/1) (ISO)
   - [resource_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=resource_error/1) (ISO)
 
+Note that there is no facility for **catching standard errors**, which is done by
+a successful unification of the a thrown term with a "catcher" term passed to
+[`catch/3`](https://www.swi-prolog.org/pldoc/doc_for?object=catch/3). 
+
 ### Example
 
-Here we throw an exception using the appropriate exception-throwing predicates from `library(error)` Note they are not called `throw_type_error/2` etc. just `type_error/2` etc, which may cause some confusion on reading. We then catch the exception in the catcher term _C_ 
+Here we throw an exception using the appropriate exception-throwing predicates from `library(error)` 
+Note they are not called `throw_type_error/2` etc. just `type_error/2` etc, which may cause some
+confusion on reading. We catch the exception in the catcher term _C_ which unifies with anything.
+`C` is then printed by the Prolog toplevel.
 
-```
+```prolog
 ?- catch(type_error(type,term),C,true).
 C = error(type_error(type, term), _2844).
+```
 
+```prolog
 ?- catch(domain_error(type,term),C,true).
 C = error(domain_error(type, term), _3974).
+```
 
+```prolog
 ?- catch(existence_error(type,term),C,true).
 C = error(existence_error(type, term), _5108).
+```
 
+```prolog
 ?- catch(permission_error(action,type,term),C,true).  % 3 args!
 C = error(permission_error(action, type, term), _1314).
+```
 
+```prolog
 ?- catch(instantiation_error(term),C,true). % noargs! The term is not passed along currently
 C = error(instantiation_error, _7032).
+```
 
+```prolog
 ?- catch(syntax_error(term),C,true). % 1 args!
 C = error(syntax_error(term), _8162).
 ```
@@ -49,21 +81,17 @@ arity 3-1 (including non-compound terms, i.e. atoms). Which is kinda hair-raisin
 What would be nice (or at least nicer than is the standard now) is to have error terms like these:
 
 ```
-...
 error(type_error,[~list of mandatory args~],[~list of free args~]).
 error(instantiation_error,[~list of mandatory args~],[~list of free args~]).
-...
 ```
 
-Instead we get the following variability in straightjacketed terms, which seems pointless. 
+Instead we get variability in number of arguments, allied to straight-jacketed terms: 
 
 ```
-...
-error(domain_error(Arg0,Arg1), Extra).
+error(domain_error(Arg0,Arg1), Extra).  % 2-argument compound term
 error(type_error(Arg0,Arg1), Extra).
-error(syntax_error(Arg0), Extra).
-error(instantiation_error, Extra).
-...
+error(syntax_error(Arg0), Extra).       % 1 argument compound term
+error(instantiation_error, Extra).      % atomic term (why!)
 ```
 
 We can't append any other information to the ISO standard exception inner term, even though one might be interested in the name of the variables involved in the exception, or want to transmit some informative message for the user. 
