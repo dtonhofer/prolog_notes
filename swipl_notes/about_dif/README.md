@@ -62,9 +62,7 @@ either in a goal or a head) occurs during processing. (The refinement may involv
 After `A` or `B` are involved in unification, the active `dif/2` constraint is checked. It may be that the constraint is violated at that point:
 The unifcation made `A` and `B` identical. This is resolved by **failing the unification which violated the constraint**. 
 A way to think about this is that, past a successful `dif(A,B)`, Prolog makes sure that `A` stays different from `B` and fails every 
-attempt that tries to make them identical: `dif(A,B)` should be be read:
-
-> _"fail any attempts to make A and B identical past this point"_: `fail_making_identical(A,B)`
+attempt that tries to make them identical: `dif(A,B)` should be be read "fail any attempts to make A and B identical past this point".
 
 ### What happens when `dif/2` is called
 
