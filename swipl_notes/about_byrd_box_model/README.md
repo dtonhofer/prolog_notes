@@ -54,8 +54,6 @@ From [Is this Prolog terminology correct? (fact, rule, procedure, predicate, …
 - *predicate*: An identifier together with an arity.
 - *predicate indicator*: A compound term A/N, where A is an atom and N is a non-negative integer, denoting one particular procedure (see 7.1.6.6)
 
-I will generally use "predicate" and not bother with "procedure", which seems to be nearer the concept of "program code".
-
 ## From the DECsystem-10 User Manual
 
 Here is the image from the 
@@ -128,7 +126,7 @@ More on that below.
 The root B-Box, i.e. the one without any enclosing B-Box, would be the one enclosing the
 B-Boxes of the original goal entered at the Prolog toplevel (that goal is a clause body).
 
-The B-Box has _internal state_. Evidently there are the currently active sub-B-Boxes, but
+A B-Box has _internal state_. Evidently there are the currently active sub-B-Boxes, but
 there is also the index of the predicate clause that is currently being processed. This
 index which will be incremented when the B-Box is asked for a "redo". 
 
@@ -139,26 +137,31 @@ an interesting view).
 Execution flow can be considered as a token passing into one port of an instantiated
 B-Box and out of another. In a picture chaining several B-Boxes, the token is transported
 over "wires" linking the ports. Whenever the token goes through one of the ports, the
-corresponding event is fired and may cause the debugger/tracer to print out messages 
+corresponding port traversal event is fired and may cause the tracer to print out messages 
 or query the user for interaction.
 
 ## The ports
 
 ### Traditional ports
 
-The traditional set of ports (and events) is the following. Passing the execution token
-left-to-right "grows the stack". Passing the execution token right-to-left "shrinks the
-stack".
+The traditional set of ports is the following. Note that:
+
+- Passing the execution token left-to-right generally "grows the stack" (unless optimization
+removes stack frames).
+- Passing the execution token right-to-left always "shrink the stack" as the activation record
+just left behind may be dropped.
 
 - **`call`**: Incoming, left-to-right. The B-Box is created by the PP, then called (exactly
   once, actually) through this port. If this is the start of a clause body, there must have
-  been a previous box that concluded successfully: the B-Box performing the head unifications.
+  been a previous box that concluded successfully: the special B-Box performing the head unifications.
+  
 - **`exit`**: Outgoing, left-to-right (and it should really be called **`succeed`**): The predicate call
   succeeds, and the next B-Box can be instantiated and called. Which B-Box that is
-  completely depends on the current state of the surrounding B-Box, which manages branching,
+  depends on the current state of the surrounding B-Box, which manages branching,
   B-Box instantiations and wiring. If this was the end of a clause body, the execution token
-  is transferred to the surrounding B-Box.
-- **`redo`**: Incoming, right-to-left. The B-Box line to the right has encountered 
+  is transferred to the surrounding B-Box instead.
+
+- **`redo`**: Incoming, right-to-left. The B-Box to the right has encountered 
   failure or a collection of results via a meta-predicate like `bagof/3` is ongoing, or
   the user has asked for more solutions on the toplevel after a successful conclusion.
   Passing the execution token back into the B-Box via `redo` may:
@@ -166,22 +169,22 @@ stack".
   lead to advancing the B-Box counters to the next clause. If a new
   solution can be found, the term store is updated and the token is passed out via
   `exit`. If no new solution can be found, the token is passed out via `fail`. 
+
 - **`fail`** Outgoing, right-to-left. The B-Box cannot provide any more solutions
   given current conditions. Setting up different terms in the term store for a
   reattempt is left to the predicate instantiation to the left.
 
 Note that the naming of the ports is less than ideal: The port for `exit` should really
-be called `succeed`, in analogy to `fail` - and what does `exit` even mean? Missed the
-boat on that one!
+be called `succeed`, in analogy to `fail`. I will use `succeed` as alternative to `exit`.
 
 ### The exception port
 
-ISO Standard Prolog specifies exceptions, so one would expected a port like `throw` or
+ISO Standard Prolog specifies exceptions, so one would expect port like `throw` or
 `exception` to be present on the B-Box, too. An execution token exiting via `exception`
 will be passed to first enclosing B-Box that can _catch_ it (i.e. unify the thrown term in a 
 [`catch/3`](https://eu.swi-prolog.org/pldoc/man?section=exception)). 
 
-### Head unification
+### Head unifications
 
 There is no mention in the model of the special B-Box performing head unifications. That
 B-Box can be considered a series of unifications which must pass. Its execution token 
@@ -190,54 +193,52 @@ surrounding box, and its `redo` is just short-circuited to `fail`.
 
 ### Non-traditional ports
 
-SWI-Prolog provides `exception` as well as the additional `unify` 
+**SWI-Prolog** provides `exception` port as well as the additional `unify` port 
 (see [Overview of the Debugger](https://www.swi-prolog.org/pldoc/man?section=debugoverview)).
 `unify` can be seen as an event or as the `exit` port of the special head B-Box: 
 
-- `unify`: allows the user to inspect the result after unification of the head.
-- `exception`: shows exceptions raised by `throw/1` or one of the built-in predicates. 
+> - `unify`: allows the user to inspect the result after unification of the head.
+> - `exception`: shows exceptions raised by `throw/1` or one of the built-in predicates. 
 
-Logtalk additionally distinguishes the `unify` depending on whether the PP is currently
+**Logtalk** additionally distinguishes the `unify` depending on whether the PP is currently
 evaluating a rule or a fact
-(see [Logtalk - Debugging - Procedure box model](https://logtalk.org/manuals/userman/debugging.html#procedure-box-model)).
-Again, `rule` and `fact` can be seen as an events or as the `exit` port of the special head B-Box, 
-separated by special case:
+(see [Logtalk - Debugging - Procedure box model](https://logtalk.org/manuals/userman/debugging.html#procedure-box-model)):
 
-- `rule`: unification success between a goal and a rule head
-- `fact`: unification success between a goal and a fact
-- `exception`: predicate call throws an exception
+> - `rule`: unification success between a goal and a rule head
+> - `fact`: unification success between a goal and a fact
+> - `exception`: predicate call throws an exception
 
 An appoximate rendering of a clause for which the PP generate the head B-Box, and two additional B-Boxes 
-would thus be this:
+would thus be this (the `excpetion` port is not shown)
 
 ![Byrd Box Model](byrd_box_model.svg)
 
-## Specific predicate behaviour in the B-Box model
+## Well-behavedness
+
+See [SWI-Prolog: Deterministic/Semi-deterministic/Non-deterministic predicates](https://www.swi-prolog.org/pldoc/man?section=testbody)
 
 Note these case of predicate behaviour:
 
-- A **deterministic** predicate always has exactly one solution and tells the PP
-  that this is indeed the case, that there are no alterntive solutions and
-  there is no point asking for more. In the B-Box model, this can be understood thus:
-  the token exits at `succeed` but, when going left for some backtracking,
-  it does not enter `redo` - it bypasses the B-Box entirely (and this bypassing
-  may be chained). This implies there must be some kind of "switch" for the token
-  path that is set by the B-Box at `succeed` time. On the Prolog Toplevel,
-  a deterministic predicate will not accept a `;` for more solutions, but only say
-  `true.` (or else `false.`). Example: `memberchk/2`.
-- A **semi-deterministic** predicate may succeed several times but behaves
-  deterministically on the last solution. Exploiting internal information, it can tell
-  the PP there is nothing more, that it can behave deterministically the
-  last time a token goes out via `succeed`. Again, the token emitted from the `redo`
-  port on the right can bypass that Byrd Box entirely.
-  Example: `member/2`  having had a match on the last item of a list.
-- A **non-deterministic** predicate gives nothing away. It demands that the PP
-  call `redo` on every backtrack. If there are no solutions after all, it will `fail`.
-  This is the behaviour of predicates that have a search space that does not allow 
-  to directly determine whether more solutions exist without actually looking for them
-  (a problem of epistemology?) Example: `member/2` having a nonempty list left to
-  traverse when it found the objectively last solution. These predicates accept `;` 
+- A **deterministic** predicate always succeeds exactly once, a `redo` will lead to failure. If the predicate is _well-behaved_ it tells the PP
+  that there are no alterntive solutions and there is no point asking for more ("it leaves no choicepoints").
+  On the Prolog Toplevel, a well-behaved deterministic predicate will always only say `true.` and not accept a `;` for more solutions.
+  Example: [`true/0`](https://eu.swi-prolog.org/pldoc/doc_for?object=true/0).
+- A **semi-deterministic** predicate may succeed once or else fail. A `redo` will lead to failure. Similarly to above,
+  if the predicate is _well-behaved_ it tells the PP that there are no alterntive solutions.
+  On the Prolog Toplevel, a well-behaved semi-deterministic predicate will either says `true.` or `false.` and not accept a `;` for more solutions.
+  Example: [`memberchk/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=memberchk/2).
+- A **non-deterministic** predicate gives nothing away. It demands that the PP call `redo` unconditionally.
+  If there are no solutions after all, it will `fail`. This is the behaviour of predicates that have a search space that does not allow 
+  to directly determine whether more solutions exist without actually looking for them. Example: `member/2` having a nonempty list left to
+  traverse when it found the (objectively) last solution. These predicates accept `;` 
   on the toplevel but then may say `false`.
+- A bit more vaguely, a predicate which **provides determinism on the last solution** may succeed several times but, on the last solution, 
+  behaves like a well-behaved **deterministic** predicate. Example: [`member/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=member/2). 
+
+In the B-Box model, a "well-behaved" predicate can be understood thus: the token always exits at `succeed` but, when going leftwards during
+backtracking, the token does not enter `redo` - it bypasses the B-Box entirely (and this bypassing may certainly be chained, bypassing 
+more B-Boxes to the left). This implies there must be some kind of "switch" for the token path that is set by the B-Box at `succeed` time,
+which is indicated in teh diagram above.
 
 ## Term Store Operations
 
@@ -293,5 +294,4 @@ at least in this model.
 ## See also
 
 - [SWI-Prolog: Overview of the Debugger](https://eu.swi-prolog.org/pldoc/man?section=debugoverview)
-- [SWI-Prolog: Deterministic/Semi-deterministic/Non-deterministic predicates](https://www.swi-prolog.org/pldoc/man?section=testbody)
 
