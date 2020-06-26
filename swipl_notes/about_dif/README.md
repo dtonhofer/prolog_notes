@@ -10,6 +10,20 @@ After a `dif(A,B)` call, any unification involving `A` or `B` or subterms thereo
 that would make `A` and `B` identical (`A == B`) will **fail** (and this applies to unification in clause heads, too). 
 If `A` and `B` are already identical at call time, `dif(A,B)` fails at once.
 
+### From the SWI-Prolog manual
+
+The text in SWI-Prolog's [`library(dif)`](https://eu.swi-prolog.org/pldoc/doc/_SWI_/library/dif.pl) says:
+
+> Among the most important coroutining predicates is dif/2, which expresses disequality of terms in a sound way.
+> The actual test is delayed until the terms are sufficiently different, or have become identical.
+
+The corresponding text for the [`dif/2`](https://eu.swi-prolog.org/pldoc/doc/_SWI_/library/dif.pl) constraint says (remarks in [] by me):
+
+> Constraint that expresses that `Term1` and `Term2` [shall] never become identical (==/2). 
+> Fails if `Term1 == Term2`. Succeeds if `Term1` can never become identical to `Term2` [at call time]. 
+> In other cases the predicate succeeds after attaching constraints to the relevant parts of `Term1` and `Term2`
+> that prevent the two terms to become identical.
+
 ## Some history
 
 From: [Indexing `dif/2`](https://arxiv.org/abs/1607.01590), Ulrich Neumerkel and Stefan Kral, 2016-06-06:
