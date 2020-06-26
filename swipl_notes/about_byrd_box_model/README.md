@@ -144,12 +144,14 @@ or query the user for interaction.
 
 ### Traditional ports
 
-The traditional set of ports is the following. Note that:
+Note that:
 
 - Passing the execution token left-to-right generally "grows the stack" (unless optimization
 removes stack frames).
 - Passing the execution token right-to-left always "shrink the stack" as the activation record
 just left behind may be dropped.
+
+The traditional set of ports is the following:
 
 - **`call`**: Incoming, left-to-right. The B-Box is created by the PP, then called (exactly
   once, actually) through this port. If this is the start of a clause body, there must have
