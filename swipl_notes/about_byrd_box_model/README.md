@@ -45,6 +45,29 @@ clause, constraints. It doesn't mention the special case of the clause head (tha
 a miss). In particular it says nothing about the operations on the _term store_, which is, 
 however, a crucial aspect. We will try to fill in some details then.  
 
+For alternatives, see:
+
+- [Prolog without tears: An evaluation of the effectiveness of a non Byrd Box model for students](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.57.2456)
+   - Paul Mulholland, Human Cognition Research Laboratory, Open University, Milton Keynes
+   - Psychology of Programming Interest Group, 1995, University of Edinburgh, Edinburgh.
+
+> All existing tracers adopt the Byrd Box style model of execution which underpins the Spy tracer (Byrd, 1980). 
+> The results gained from the previous study suggest that certain principles of Prolog execution are difficult
+> to represent within the Byrd box model, in particular backtracking. In order to combat these problems a
+> choice-point model of execution was adopted (Dodd, 1993). The key feature of the choice-point model is
+> that as each clause is entered, the interpreter "looks ahead" to see if any later clauses could match
+> should the present route fail. If so, this is marked as a choice-point. Backtracking can then be shown
+> as jumping back to the nearest choice-point. This model was combined with promising notational
+> techniques found in existing tracers to develop two Prolog choice-point tracers: the Prolog Linear Tracer 
+> (Plater) and the Prolog Non-linear Tracer (Pinter). These also shared a new textual representation of
+> binding, loosely based on the lozenge notation used in TPM (Eisenstadt & Brayshaw, 1990).
+
+- A choice-point model of Prolog execution. 
+   - ALP-UK Workshop on Logic Programming Support Environments, Edinburgh.
+   - Dodd, Tony
+   - 1993 
+   - (this document does not seem to exist online)
+
 ## A Note on Vocabulary
 
 (I always have problems with Prolog vocabulary)
