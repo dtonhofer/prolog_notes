@@ -264,7 +264,10 @@ Note these case of predicate behaviour:
 In the B-Box model, a "well-behaved" predicate can be understood thus: the token always exits at `succeed` but, when going leftwards during
 backtracking, the token does not enter `redo` - it bypasses the B-Box entirely (and this bypassing may certainly be chained, bypassing 
 more B-Boxes to the left). This implies there must be some kind of "switch" for the token path that is set by the B-Box at `succeed` time,
-which is indicated in teh diagram above.
+which is indicated in the diagram above.
+
+**UPDATE**: It is even more elegant to posit that the B-Box being exited does not set a switch but "closes the REDO port" instead. The PP
+then has no choice but to bypass the B-Box on backtracking. Gotta change the description in that direction.
 
 ## Term store operations
 
