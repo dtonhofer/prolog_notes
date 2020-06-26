@@ -13,6 +13,7 @@ allow monitoring of "ports traversal events" either in general
 ([`leash/1`](https://www.swi-prolog.org/pldoc/doc_for?object=leash/1))
 or on a per-predicate basis
 ([`trace/1`](https://www.swi-prolog.org/pldoc/doc_for?object=trace/1), [`trace/2`](https://www.swi-prolog.org/pldoc/doc_for?object=trace/2)).
+See also: [SWI-Prolog: Overview of the Debugger](https://eu.swi-prolog.org/pldoc/man?section=debugoverview).
 
 The Byrd Box model has been described first in:
 
@@ -242,43 +243,44 @@ backtracking, the token does not enter `redo` - it bypasses the B-Box entirely (
 more B-Boxes to the left). This implies there must be some kind of "switch" for the token path that is set by the B-Box at `succeed` time,
 which is indicated in teh diagram above.
 
-## Term Store Operations
+## Term store operations
 
 ### An execution of elementary B-Boxes
 
-The B-Box Model does not talk about the term store updates that take place as a B-Box is active. The term
-store is the versioned global (or thread-local) store holding terms, said terms being named/denoted by the
-clause-local variables. If a term is no longer named (and not used by a constraint) in any predicate
-activation record on the stack, it can evidently be garbage-collected as it has no influence on further
-processing.
+The B-Box Model says nothing about _term store_ updates that take place as a B-Box is active. Let's add something about this,
+introducing some radically new terminology never before seen in an introductory Prolog text. Hell yeah.
+
+The _term store_ is the versioned global (or possibly thread-local) store that holds terms. The terms are named/denoted by
+the clause-local variables. If a term is no longer named (and not used by a constraint) in any activation record currently on
+the stack, it can evidently be dropped/garbage-collected as it has no influence on further processing.
 
 If you flatten the recursively imbricated boxes of the B-Box Model, you will end up with a chain with two types
-of boxes:
+of elementary B-Boxes:
 
-- _U-Boxes_: These are boxes which perform a sequence of unifications on the global term store. That modifies the term
-  store. Unification operations instantiate uninstantiated terms (fresh terms) at leaf positions of term trees or merge pairs
-  of fresh terms into single fresh terms. This extends the term trees in term store downwards (term trees newer
-  shrink going forward in computation). The clause-local variables that appear to the left and right of any `=` 
+- _U-Boxes_: These are B-Boxes which perform a sequence of unifications on the global term store. Such B-Boxes modify the term
+  store. Unification operations instantiate freshterms (uninstantiated terms) at leaf positions of term trees, or merge pairs
+  of freshterms into single freshterms ("variable sharing"). This extends the term trees in the term store downwards (term
+  trees newer shrink going leftward). The clause-local variables that appear to the LHS and RHS of any `=` 
   name the positions of interest in those trees. In particular, clause head B-Boxes are U-Boxes.  
-- _V-Boxes_: These are boxes which do not change the global term store, though they may consult it. They perform
+- _V-Boxes_: These are B-Boxes which do **not** modify the term store, though they may consult it. They perform
   processing other than unification. What processing is this? Branching decisions, I/O and function evaluation,
   including comparison operation on term store elements fall under this.
 
 Both of the above are essentially "elementary B-Boxes" whose inner structure can be disregarded.
 
-### Term Store updates and rollbacks
+### Term store updates and rollbacks
 
 If you consider a (single-thread) Prolog program execution as a sequence of U-Boxes and V-Boxes, then the U-Boxes
 look like (transactional) updates of the term store:
 
-- If any of the unifications fails, term store updates are rolled back and the preceding V-Box is reactived.
-- If that V-Box fails, then backtracking rolls the term store back to the version that existed for the
-  previous V-Box (or to one even earlier) and said previous V-Box is reattempted.
+- If any of the unifications in the U-Box fails, term store updates are rolled back and the preceding V-Box is reactivated.
+- If a V-Box fails, then the backtracking operation rolls the term store (which is versioned) back to the version that
+  existed for the previous V-Box (or to one even earlier) and said previous V-Box is reattempted.
 
 ![Term Store Versioning](term_store_versioning.svg)
 
-For non-elementary B-Boxes, updates on the term store may occur at any point "inside the box", however
-the paths of the execution token implies some invariants:
+For non-elementary B-Boxes, updates on the term store may occur at any point "inside the box", just before leaving, just after
+entering, and inside of any sub-B-Box. However the paths of the execution token inside a B-Box imply some invariants:
 
 - Going from `call` to `fail`: No updates on the term store are retained. When exiting via `fail` the term
   store is back at the same version as it had when entering via `call`.
@@ -289,11 +291,13 @@ the paths of the execution token implies some invariants:
   it had when entering via `call`.
 
 The above is a direct consequence of what sub B-Boxes and the U-Boxes do, no special handling is
-required. On the other hand, a bypass of the B-Box due to determinism or semi-determinism indicates
-that a forced rollback of the term store to the version valid at call time must be performed, 
-at least in this model.
+required. 
 
-## See also
+On the other hand, a "bypass" of the B-Box to implement "well-behavedness" demands a rollback of the term store
+without intervention of the B-Box being bypassed. But this is easily done: the rollback must be to the version
+valid at call time of the B-Box being bypassed.
 
-- [SWI-Prolog: Overview of the Debugger](https://eu.swi-prolog.org/pldoc/man?section=debugoverview)
+We can now easily show where operations on the term story happen:
+
+![byrd Box Model with term store](byrd_box_model_with_term_store.svg)
 
