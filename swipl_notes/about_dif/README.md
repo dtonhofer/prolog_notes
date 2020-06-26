@@ -22,11 +22,13 @@ From: [Indexing `dif/2`](https://arxiv.org/abs/1607.01590), Ulrich Neumerkel and
 > integrate `dif/2` and coroutining into efficient systems appeared (Carlsson 1987; Neumerkel 1990).
 > The  major  achievement was that the  efficiency of general Prolog programs not using `dif/2`
 > remained unaffected within a system supporting `dif/2`. In this manner `dif/2` survived in major
-> high-performance implementations like _SICStus_. However, it still has not gained general acceptance
+> high-performance implementations like _SICStus_. 
+>
+> However, it still has not gained general acceptance
 > among programmers. We believe that the main reason for this lack of acceptance is that `dif/2` does
 > not directly deliver the abstraction that is actually needed. Its direct use leads to clumsy and
 > unnecessarily inefficient code. Its combination with established control constructs often leads to
-> unsound results. New, pure constructs are badly needed
+> unsound results. New, pure constructs are badly needed.
 
 ## Explain!
 
@@ -35,7 +37,7 @@ Consider the call `dif(A,B)`.
 A program that issues this call is in one of three states regarding `A` and `B` when it does so:
 
 - **Possibly different** - In this state, `A` and `B` would unify, i.e. `A=B` would succeed. 
-  However, `A` and `B` are still sufficiently "unrefined" (or "unconstrained" to use another adjective), that subsequent program
+  However, `A` and `B` are still sufficiently unrefined/uninstantiated, that subsequent program
   operations may change that situation. `A=B`, if issued later, might fail. Example: `A=f(X),B=f(Y)`. Note that `\+ A==B`.
 - **Different** - In this state, `A` and `B` won't unify and no subsequent operation will change this.
   When or once the program is in state "different", it will stay there (unless it sufficiently backtracks). 
@@ -52,17 +54,19 @@ The behavious of `dif/2` in all three states is the following:
 - **Different**: `dif(A,B)` succeeds deterministically.
 - **Identical**: `dif(A,B)` fails immediately.
 
- If we are still in state **possibly different** on return to the Prolog toplevel (i.e. when the program terminates), the still-active constraints 
-(which do not necessarily resemble what was stated in the `dif/2` call but are equivalent) are printed out. Whether `dif(A,B)` is actually
-true would be an philosophical & epistemological conundrum at this point: it's neither confirmed, nor denied. 
+If we are still in state **possibly different** on return to the Prolog toplevel (i.e. when the program terminates), the still-active
+constraints are printed out. Whether `dif(A,B)` is actually true would be an philosophical & epistemological conundrum
+at this point: it's neither confirmed, nor denied. The printed constraint term does not necessarily resemble what was stated in the `dif/2` call, 
+but it is equivalent.
   
-The interesting case occurs if a `dif(A,B)` has been issued in state **possibly different** and a refinement of `A` or `B` (through unification, 
-either in a goal or a head) occurs during processing. (The refinement may involve just a subterm of `A` or `B`.)
+The interesting case occurs if a `dif(A,B)` has been issued in state **possibly different** and a refinement 
+through unification of `A` or `B` is requested, either in a goal or a head. The refinement may involve just a
+subterm of `A` or `B`. 
 
-After `A` or `B` are involved in unification, the active `dif/2` constraint is checked. It may be that the constraint is violated at that point:
-The unifcation made `A` and `B` identical. This is resolved by **failing the unification which violated the constraint**. 
-A way to think about this is that, past a successful `dif(A,B)`, Prolog makes sure that `A` stays different from `B` and fails every 
-attempt that tries to make them identical: `dif(A,B)` should be be read "fail any attempts to make A and B identical past this point".
+It may be that the unification would cause a constraint violation: it would unifcation make `A` and `B` identical. 
+This is resolved by **failing the unification which violated the constraint**. A way to think about this is that, after
+a successful `dif(A,B)` call, Prolog makes sure that `A` stays different from `B` and fails every attempt that tries to
+make them identical: `dif(A,B)` should be be read _"fail any attempts to make A and B identical after this point"_.
 
 ### What happens when `dif/2` is called
 
@@ -72,7 +76,7 @@ attempt that tries to make them identical: `dif(A,B)` should be be read "fail an
 
 ![unifications after dif call](unifications_after_dif_call.svg)
 
-## Let's try some examples
+## Some examples
 
 First a predicate `check/2` which prints out information about the current situation. Note that the way to test `A=B` without retaining any
 changes to either `A` or `B` is the call `\+ \+ A=B` or equivalently `\+ A\=B`.
