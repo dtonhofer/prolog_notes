@@ -1,10 +1,10 @@
-# Throwing errors
+# SWI-Prolog Exceptions
 
 This page is referenced from [`throw/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=throw/1)
 
 ## Pages of interest in the SWI-Prolog manual
 
-  - [`library(error)`](https://eu.swi-prolog.org/pldoc/man?section=error)
+  - [`library(error)`](https://eu.swi-prolog.org/pldoc/man?section=error) - Has a description of exception meanings & usage
   - [Chapter 4.10: Exception handling](https://eu.swi-prolog.org/pldoc/man?section=exception)
      - [`catch/3`](https://www.swi-prolog.org/pldoc/doc_for?object=catch/3)
      - [`throw/1`](https://www.swi-prolog.org/pldoc/doc_for?object=throw/1)
@@ -15,28 +15,283 @@ This page is referenced from [`throw/1`](https://eu.swi-prolog.org/pldoc/doc_for
      - [Printing messages](https://eu.swi-prolog.org/pldoc/man?section=printmsg) (from exceptions, but can be used more generally)
      - [The exception term](https://www.swi-prolog.org/pldoc/man?section=exceptterm)
   - [B.6 Hooks using the exception predicate](https://eu.swi-prolog.org/pldoc/man?section=exception3)
+  - [A.14 library(debug): Print debug messages and test assertions](https://eu.swi-prolog.org/pldoc/man?section=debug)
+     - [assertion/1](https://eu.swi-prolog.org/pldoc/doc_for?object=assertion/1)
 
-## Throwing ISO-standard errors
+## Throwing exceptions 
 
-[`library(error)`](https://www.swi-prolog.org/pldoc/man?section=error) has facilities for
-**throwing standard errors**. The following predicates exist: 
+Predicate [`throw/1`](https://www.swi-prolog.org/pldoc/doc_for?object=throw/1) takes a single argument, the _exception term_:
 
-  - [type_error/2](https://eu.swi-prolog.org/pldoc/doc_for?object=type_error/2) (ISO)
-  - [domain_error/2](https://eu.swi-prolog.org/pldoc/doc_for?object=domain_error/2) (ISO)
-  - [existence_error/2](https://eu.swi-prolog.org/pldoc/doc_for?object=existence_error/2) (ISO)
-  - [existence_error/3](https://eu.swi-prolog.org/pldoc/doc_for?object=existence_error/3) (**not** ISO)
-  - [permission_error/3](https://eu.swi-prolog.org/pldoc/doc_for?object=permission_error/3) (ISO)
+```text
+`throw(+Exception)`.
+```
+
+User predicates are free to choose the structure of their exception terms (i.e. they can define their own conventions) but _should_
+adhere to the ISO Standard if possible, in particular for libraries.
+
+SWI-Prolog Built-in predicates throw exception terms as specified by the ISO Standard unless the exception does not fit any of
+the ISO Standard error term definitions.
+
+In particular [assertion/1](https://eu.swi-prolog.org/pldoc/doc_for?object=assertion/1) throws a non ISO-standard exception with
+an exception term `error(assertion_error(Reason,Culprit),Context)`. Note that this exception term reflects the structure of a
+ISO-standard exception term, but there is no compelling reason for that.
+
+## ISO-standard exception terms
+
+The ISO Standard stipulates that the exception term be of the form `error(Formal, Context)`.
+
+- The `Formal` term is the formal description of the error, specifying the error class and error context information. 
+  It may be an atom or variously a compound term of arity 1,2 or 3. The ISO Standard lists the admissible `Formal` terms in chapter
+  7.12.2 pp. 62-63 ("Error classification").
+  
+- The `Context` term, if set (i.e. if not a fresh variable), gives additional context information to help the programmer
+  in debugging or to allow error-handling routines to decide what to do next. The structure of `Context` is left unspecified
+   y the ISO Standard.
+
+The `Context` is generally of the form `context(Name/Arity, Message)`, where `Name/Arity` is the predicate indicator of the 
+built-in predicate that raises the error, and `Message` provides an additional description of the error.
+
+Any part of this structure may be a fresh variable if no appropriate information exists.
+
+We thus have the following term hierarchy:
+
+```prolog
+thrower(FormalFunctor,FormalArgs,PredInd,Msg) :-
+    compound_name_arguments(Formal,FormalFunctor,FormalArgs),  % Formal = FormalFunctor(FormalArgs...) (very variable)
+    compound_name_arguments(Context,context,[PredInd,Msg]),    % Context = context(PredInd,Msg)
+    compound_name_arguments(Exception,error,[Formal,Context]), % Exception = error(Formal,Context)
+    throw(Exception).
+```
+
+## Throwing ISO-Standard exceptions with `library(error)`
+
+ISO Standard exceptions are generally thrown via the predicates exported from [`library(error)`](https://www.swi-prolog.org/pldoc/man?section=error).
+Those predicates look exactly like the ISO Standard error terms.
+
+The following predicates exist (in order of appearance in the ISO Standard)
+
   - [instantiation_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=instantiation_error/1) (ISO)
-  - [uninstantiation_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=uninstantiation_error/1) (ISO, in corrigendum 2)
+     - `instantiation_error(+FormalSubTerm)` 
+     - the `FormalSubTerm` is not currently exploited as the standard demands the `Formal` be the atom `instantiation_error` only
+  - [uninstantiation_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=uninstantiation_error/1) (ISO)
+     - `uninstantiation_error(+Culprit)`      
+     - appears in Corrigendum 2: ISO/IEC 13211-1:1995/Cor.2:2012(en)
+  - [type_error/2](https://eu.swi-prolog.org/pldoc/doc_for?object=type_error/2) (ISO)
+     - `type_error(+ValidType,+Culprit)`
+  - [domain_error/2](https://eu.swi-prolog.org/pldoc/doc_for?object=domain_error/2) (ISO)
+      - `domain_error(+ValidDomain,+Culprit)`
+  - [existence_error/2](https://eu.swi-prolog.org/pldoc/doc_for?object=existence_error/2) (ISO)
+      - `existence_error(+ObjectType,-Culprit)`
+  - [existence_error/3](https://eu.swi-prolog.org/pldoc/doc_for?object=existence_error/3) (**not** ISO)
+      - `existence_error(+ObjectType,+Culprit,+Set)`
+      - the third argument `Set` makes this a non-ISO exception. `Set` goes into the `Formal` like this: `Formal=existence_error(ObjectType,Culprit,Set)`
+  - [permission_error/3](https://eu.swi-prolog.org/pldoc/doc_for?object=permission_error/3) (ISO)
+      - `permission_error(+Operation,+PermissionType,+Culprit)`
   - [representation_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=representation_error/1) (ISO)
-  - [syntax_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=syntax_error/1) (ISO)
+      - `representation_error(+Flag)`
   - [resource_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=resource_error/1) (ISO)
-
+      - `resource_error(+Resource)`
+  - [syntax_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=syntax_error/1) (ISO)
+      - `syntax_error(+ImplDepAtom)`
+      
 Note that there is no facility for **catching standard errors**, which is done by
 a successful unification of the a thrown term with a "catcher" term passed to
 [`catch/3`](https://www.swi-prolog.org/pldoc/doc_for?object=catch/3). 
 
-### Example
+## The ISO-Standard exceptions terms
+
+  - The ISO-Standard document "ISO/IEC 13211-1, 1st edition 1995-06-01" lists the error terms below in Chapter 7.12, pages 61 ff.
+  - The following page substantially _is_ the ISO Standard text: https://www.deransart.fr/prolog/exceptions.html 
+  - Ulrich Neumerkel lists the various error classes here in a standardization
+    discussion: http://www.complang.tuwien.ac.at/ulrich/iso-prolog/error_k - the
+    context is a discussion leading up to the second corrigendum of the ISO standard.
+  - [Coding Guidelines for Prolog](https://arxiv.org/abs/0911.2899) offers a bit of commentary on _when_ to throw, but does not go further.
+
+Note that the ISO Standard stipulates that atoms chosen from a restricted set must appear in certain positions of `Formal`. This
+is unnecessarily restrictive as there is no way the ISO Standard can list all the possible atoms and information may well have have to 
+carried in terms more complex than atoms. Worse, the intended meaning of the listed atoms is undescribed and in some cases is obviously
+obscure.
+
+The ISO Standard also says:
+
+> Most errors defined in this part of ISO/IEC 13211 occur because the arguments of the goal fail to satisfy a particular
+> condition; they are thus detected before execution of the goal begins, and no side effect will have taken place.
+> The exceptional cases are: Syntax Errors, Resource Errors, and System Errors.
+
+In order of appearance in the ISO Standard:
+
+### Instantiation Error
+
+An argument or one of its components is uninstantiated, but an instantiated argument or component is required instead.
+In effect, "I need more data".
+
+```
+Formal = instantiation_error
+```
+
+The `Formal` is just the atom `instantiation_error`. One cannot communicate to the caller
+which argument is the one that failed, and one _has_ to use `Context` to do that.
+This exception is pointlessly deficient in information carrying capacity and the specification needs improvement!
+
+Thrown with [instantiation_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=instantiation_error/1). The argument passed
+to `instantiation_error/1` is just for future extensions and remains unused.
+
+### Uninstantiation error
+
+An argument or one of its components is instantiated, and an uninstantiated argument or argument component is required.  
+
+```
+Formal=uninstantiation_error(Culprit)
+```
+
+- `Culprit` is the argument or one of its components which caused the error.
+
+Thrown with [uninstantiation_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=uninstantiation_error/1).
+
+### Type Error
+
+An argument or one of its components is instantiated but incorrect.
+
+```
+Formal=type_error(ValidType,Culprit)
+```
+
+- `ValidType` is an atom chosen from
+ `[atom, atomic, byte, callable, charactder, compound, evaluable, in_byte, in_character, integer, list, number, predicate_indicator, variable]`.
+- `Culprit` is the argument or one of its components which caused the error.
+
+Thrown with [type_error/2](https://eu.swi-prolog.org/pldoc/doc_for?object=type_error/2)
+
+_Personal Note:_ The "list" is the odd one in the above, because "list" is not a type but a convention on how a term is supposed to look
+like non-locally. It would make more sense to generate a "Domain Error" if an argument turns out to not be a list.  
+epecially as there is already a "non_empty_list" Domain Error. Oh well!
+
+### Domain Error
+
+An argument's type is correct but the value is outside the domain for which the procedure is defined. ("Domain Error occurs when the value is not a a member of an implementation defined or implementation-dependent set.")
+
+
+_Personal Note:_ This exception lacks the possibility to properly express being outside the allowed subdomain
+if that subdomain is spanned by several arguments instead of just one.
+
+```
+Formal=domain_error(ValidDomain,Culprit)
+```
+
+- `ValidDomain` is an atom chosen from
+ `[character_code_list, close_option, flag_value, io_mode, non_empty_list, not_less_than_zero, operator_priority, operator_specifier, prolog_flag, read_option, source_sink, stream, stream_option, stream_or_alias, stream_position, stream_property, write_option]`.
+- `Culprit` is the argument or one of its components which caused the error.
+
+Thrown with [domain_error/2](https://eu.swi-prolog.org/pldoc/doc_for?object=domain_error/2)
+
+### Existence Error
+
+An object on which an operation is to be performed does not exist. 
+
+```
+Formal=existence_error(ObjectType,Culprit)
+```
+
+- `ObjectType` is an atom chosen from `[procedure, source_sink, stream]`.
+- `Culprit` is the argument or one of its components which caused the error.
+
+Thrown with [existence_error/2](https://eu.swi-prolog.org/pldoc/doc_for?object=existence_error/2).
+
+SWI-Prolog has a non-ISO-conformant extension with an enlarged `Formal`
+
+```
+Formal=existence_error(ObjectType,Culprit,Set)
+```
+
+Thrown with [existence_error/3](https://eu.swi-prolog.org/pldoc/doc_for?object=existence_error/3).
+ 
+### Permission Error
+
+The runtime system (or the thread) is lacking permission to perform a specific operation.
+
+```
+Formal=permission_error(Operation,PermissionType,Culprit)
+```
+
+- `Operation` is an atom chosen from `[access, create, input, modify, open, output, reposition]`.
+- `PermissionType` is an atom chosen from `[binary_stream, flag, operator, past_end_of_stream, private_procedure, static_procedure, source_sink, stream, text_stream]`
+- `Culprit` is the argument or one of its components which caused the error.
+
+Thrown with [permission_error/3](https://eu.swi-prolog.org/pldoc/doc_for?object=permission_error/3).
+
+_Personal Note:_ The intended semantics of the atoms listed are not clear at all. Recommendation: Don't stick closely to this over-specification.
+
+### Representation Error
+
+An implementation-defined limit has been breached. 
+
+```
+Formal=representation_error(Flag)
+```
+
+- `Flag` is an atom chosen from `[character, character_code, in_character_code, max_arity, max_integer, min_integer]`.
+
+Thrown with [representation_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=representation_error/1).
+
+### Evaluation Error
+
+The operands of an evaluable functor are such that the operation has an exceptional value or event.
+
+```
+Formal=evaluation_error(Error)
+```
+
+- `Error` is an atom chosen from `[float_overflow, int_overflow, undefined, underflow, zero_divisor]`.
+
+Thrown with [representation_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=representation_error/1).
+
+_Personal Note:_ This does not seem to cover all of the IEEE 754 exceptional cases.
+
+### Resource Error
+
+The runtime system has insufficient resources to complete execution. A resource error
+may happen for example when a calculation on unbounded integers has a value which
+is too large.
+
+```
+Formal=resource_error(Resource)
+```
+
+- `Resource` denotes an implementation-dependent atom.
+
+Thrown with [resource_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=resource_error/1).
+
+### Syntax Error
+
+A sequence of characters which are being input as a read-term do not conform to an acceptable syntax. "Being input as a read-term" means
+this error is thrown by predicates like [`read/1`](https://www.swi-prolog.org/pldoc/doc_for?object=read/1) which are about
+deserializatoin of terms.
+
+```
+Formal=syntax_error(ImplDepAtom)
+```
+
+- `ImplDepAtom` denotes an implementation-dependent atom.
+
+Thrown with [syntax_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=syntax_error/1). 
+
+### System Error
+
+Can happen at any point of computation. The conditions for a System Error and the actions taken by a Prolog runtime 
+after occurrence are implementation-dependent. A System Error may happen for example 
+
+- in interactions with the operating system (for example, a disc crash or interrupt), or
+- when a goal `throw(T)` has been executed and there is no active goal `catch/3`. 
+
+The `Formal` is a parameterless atom (which means one has the same problems as for `instantiation_error`).
+
+```
+Formal=system_error
+```
+
+There is no corresponding `library(error)` predicate. "System Error" should not be thrown from user code. The counterpart in the Java world would be [Error](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/lang/Error.html).
+
+## Examples
 
 Here we throw an exception using the appropriate exception-throwing predicates from `library(error)` 
 Note they are not called `throw_type_error/2` etc. just `type_error/2` etc, which may cause some
@@ -88,10 +343,9 @@ error(instantiation_error,[~list of mandatory args~],[~list of free args~]).
 Instead we get variability in number of arguments, allied to straight-jacketed terms: 
 
 ```
-error(domain_error(Arg0,Arg1), Extra).  % 2-argument compound term
-error(type_error(Arg0,Arg1), Extra).
-error(syntax_error(Arg0), Extra).       % 1 argument compound term
-error(instantiation_error, Extra).      % atomic term (why!)
+error(type_error(Arg0,Arg1), Extra).    % 2-argument compound term on first position
+error(syntax_error(Arg0), Extra).       % 1 argument compound term on first position
+error(instantiation_error, Extra).      % atom on first position
 ```
 
 We can't append any other information to the ISO standard exception inner term, even though one might be interested in the name of the variables involved in the exception, or want to transmit some informative message for the user. 
@@ -192,117 +446,4 @@ throw_mystyle_existence_error(Pred,Type,Term,ExCode) :-
    throw(mystyle([[error,existence],-(type,Type),-(term,Term),-(pred,Pred),-(msg,ExText)]).
 ```
 
-# When to throw which ISO Standard error
 
-  - Ulrich Neumerkel lists the various error classes here in a standardization discussion: http://www.complang.tuwien.ac.at/ulrich/iso-prolog/error_k - the context is a discussion leading up to the second corrigendum of the ISO standard.
-  - *Coding Guidelines for Prolog* https://arxiv.org/abs/0911.2899 offers a bit of commentary on _when_ to throw, but does not go further.
-  - The following page substantially _is_ the ISO Standard text: https://www.deransart.fr/prolog/exceptions.html 
-
-The ISO standard document ( *ISO/IEC 13211-1, 1st edition 1995-06-01* ) stipulates the following (paraphrased), in Chapter 7.12, pages 61 ff.
-
-The "Error_term" determines the class of the error an can be:
-
-### Instantiation Error
-
-An argument or one of its components is a variable, and an instantiated argument or component is required.
-
-Throw instantiation_error
-
-(In effect, "I need more data").
-
-### Uninstantiation error
-
-"There shall be an Uninstantiation Error when an argument or one of its components is not a variable, and a variable or a component as variable is required. It has the form uninstantiation_error(Culprit) where Culprit is the argument or one of its components which caused the error."
-
-Appears in ISO/IEC 13211-1:1995/Cor.2:2012(en)
-
-See also: See http://www.complang.tuwien.ac.at/ulrich/iso-prolog/error_k 
-
-### Type Error
-
-An argument or one of its components is incorrect, but not a variable ("A Type Error occurs when a value does not belong to one of the types defined in this part of ISO/IEC 13211"). 
-
-Throw type_error(ValidType,Culprit)
-
-  - "ValidType" is one of: "atom, atomic, byte, callable, character, compound, evaluable, in_byte, in_character, integer, list, number, predicate_indicator, variable".
-  - "Culprit" is the argument or one of its components which are the reason for the error.
-
----
-
-*Personal Note:* 
-
-The "list" is the odd one in the above, because "list" is not a type but a convention on how a term is supposed to look like non-locally. It would make more sense to generate a "Domain Error" if an argument turns out to not be a list. Especially as there is already a "non_empty_list" Domain Error. Oh well!
-
----
-
-### Domain Error
-
-An argument's type is correct but the value is outside the domain for which the procedure is defined. ("Domain Error occurs when the value is not a a member of an implementation defined or implementation-dependent set.")
-
-Throw domain_error(ValidDomain, Culprit)
-
-  - "ValidDomain" is one of "character_code_list, close_option, flag_value, io_mode, non_empty_list, not_less_than_zero, operator_priority, operator_specifier, prolog_flag, read_option, source_sink, stream, stream_option, stream_or_alias, stream_position, stream_property, write_option"
-  - "Culprit" is the argument or one of its components which are the reason for the error.
-
-### Existence Error
-
-An object on which an operation is to be performed does not exist. 
-
-Throw existence_error(ObjectType, Culprit)
-
-  - "ObjectType" is one of "procedure, source_sink, stream"
-  - "Culprit" is the argument or one of its components which are the reason for the error.
- 
-### Permission Error
-
-The runtime system (or the thread) is lacking permission to perform a specific operation.
-
-Throw permission_error(Operation, PermissionType, Culprit)
- 
-  - "Operation" is one of "access, create, input, modify, open, output, reposition"
-  - "PermissionType" is one of "binary_stream, flag, operator, past_end_of_stream, private_procedure, static_procedure, source_sink, stream, text_stream"
-  - "Culprit" is the argument or one of its components which are the reason for the error.
-
-### Representation Error
-
-An implementation-defined limit has been breached. 
-
-Throw representation_error(Flag)
-
-  - "Flag" is one of "character, character_code, in_character_code, max_arity, max_integer, min_integer"
-
-### Evaluation Error
-
-The operands of an evaluable functor are such that the operation has an exceptional value. 
-
-Throw evaluation_error(Error)
-
-  - "Error" is one of "float_overflow, int_overflow, undefined, underflow, zero_divisor"
-
-### Resource Error
-
-The runtime system has insufficient resources to complete execution. "A Resource Error may happen for example when a calculation on unbounded integers has a value which is too large."
-
-Throw resource_error(Resource)
-
-  - "Resource" is an implementation-dependent atom.
-
-### Syntax Error
-
-A sequence of characters which are being input as a read-term do not conform to the syntax. 
-
-Throw syntax_error(imp_dep_atom)
-
-  - "imp_dep_atom" denotes an implementation-dependent atom.
-
-### System Error
-
-Can happen at any point of computation. The conditions for a System Error and the actions taken by a Prolog runtime after occurrence are implementation-dependent. A System Error may happen for example (a) in interactions with the operating system (for example, a disc crash or interrupt), or (b) when a goal throw(T) has been executed and there is no active goal catch/3. 
-
-Throw =system_error=
-
-Note by editor: As a programmer, you would NOT throw System Error (the more so as it doesn't take any parameter). It sounds like the counterpart of [Java Error](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/lang/Error.html).
-
-### Note
-
-"Most errors defined in this part of ISO/IEC 13211 occur because the arguments of the goal fail to satisfy a particular condition; they are thus detected before execution of the goal begins, and no side effect will have taken place. The exceptional cases are: Syntax Errors, Resource Errors, and System Errors."
