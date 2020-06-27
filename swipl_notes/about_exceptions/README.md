@@ -18,6 +18,9 @@ This page is referenced from [`throw/1`](https://eu.swi-prolog.org/pldoc/doc_for
   - [A.14 library(debug): Print debug messages and test assertions](https://eu.swi-prolog.org/pldoc/man?section=debug)
      - [assertion/1](https://eu.swi-prolog.org/pldoc/doc_for?object=assertion/1)
 
+  - [Coding Guidelines for Prolog](https://arxiv.org/abs/0911.2899) offers a bit of commentary on _when_ to throw, but does not go further.
+
+
 ## Throwing exceptions 
 
 Predicate [`throw/1`](https://www.swi-prolog.org/pldoc/doc_for?object=throw/1) takes a single argument, the _exception term_:
@@ -36,7 +39,9 @@ In particular [assertion/1](https://eu.swi-prolog.org/pldoc/doc_for?object=asser
 an exception term `error(assertion_error(Reason,Culprit),Context)`. Note that in this case the exception term reflects the
 structure of a ISO-standard exception term.
 
-## ISO-standard exception terms
+## Throwing ISO-Standard exceptions 
+
+### The ISO-Standard exception term
 
 The ISO Standard stipulates that the exception term be of the form `error(Formal, Context)`.
 
@@ -63,12 +68,17 @@ thrower(FormalFunctor,FormalArgs,PredInd,Msg) :-
     throw(Exception).
 ```
 
-## Throwing ISO-Standard exceptions with `library(error)`
+- The ISO-Standard document "ISO/IEC 13211-1, 1st edition 1995-06-01" lists the error terms in Chapter 7.12, pages 61 ff.
+- The following page substantially _is_ the ISO Standard text: https://www.deransart.fr/prolog/exceptions.html 
+- Ulrich Neumerkel lists the various error classes [here](http://www.complang.tuwien.ac.at/ulrich/iso-prolog/error_k).
+  The context is a discussion leading up to the second corrigendum of the ISO standard.
 
-ISO Standard exceptions are generally thrown via the predicates exported from [`library(error)`](https://www.swi-prolog.org/pldoc/man?section=error).
-Those predicates look exactly like the ISO Standard error terms.
+### Using `library(error)` 
 
-The following predicates exist (in order of appearance in the ISO Standard)
+ISO-Standard exceptions can be thrown with [`library(error)`](https://www.swi-prolog.org/pldoc/man?section=error).
+It exports predicates which look exactly like the ISO Standard error terms.
+
+The following predicates exist (in order of appearance in the ISO Standard):
 
   - [instantiation_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=instantiation_error/1)
      - `instantiation_error(+FormalSubTerm)` 
@@ -98,27 +108,19 @@ Note that there is no facility for **catching standard errors**, which is done b
 a successful unification of the a thrown term with a "catcher" term passed to
 [`catch/3`](https://www.swi-prolog.org/pldoc/doc_for?object=catch/3). 
 
-## The ISO-Standard exceptions terms
+### List of the ISO-Standard exception term
 
-  - The ISO-Standard document "ISO/IEC 13211-1, 1st edition 1995-06-01" lists the error terms below in Chapter 7.12, pages 61 ff.
-  - The following page substantially _is_ the ISO Standard text: https://www.deransart.fr/prolog/exceptions.html 
-  - Ulrich Neumerkel lists the various error classes here in a standardization
-    discussion: http://www.complang.tuwien.ac.at/ulrich/iso-prolog/error_k - the
-    context is a discussion leading up to the second corrigendum of the ISO standard.
-  - [Coding Guidelines for Prolog](https://arxiv.org/abs/0911.2899) offers a bit of commentary on _when_ to throw, but does not go further.
+_Personal Note_  The ISO-Standard stipulates that atoms chosen from a restricted set must appear in certain positions of `Formal`. This
+is unnecessarily restrictive as there is no way the ISO-Standard can list all the possible atoms and information may well have have to 
+carried in terms more complex than atoms. Additionally the intended meaning of the listed atoms is undescribed and in some cases is obscure.
 
-Note that the ISO Standard stipulates that atoms chosen from a restricted set must appear in certain positions of `Formal`. This
-is unnecessarily restrictive as there is no way the ISO Standard can list all the possible atoms and information may well have have to 
-carried in terms more complex than atoms. Worse, the intended meaning of the listed atoms is undescribed and in some cases is obviously
-obscure.
-
-The ISO Standard also says:
+The ISO-Standard also says:
 
 > Most errors defined in this part of ISO/IEC 13211 occur because the arguments of the goal fail to satisfy a particular
 > condition; they are thus detected before execution of the goal begins, and no side effect will have taken place.
 > The exceptional cases are: Syntax Errors, Resource Errors, and System Errors.
 
-In order of appearance in the ISO Standard:
+In order of appearance in the ISO-Standard:
 
 ### Instantiation Error
 
