@@ -70,28 +70,28 @@ Those predicates look exactly like the ISO Standard error terms.
 
 The following predicates exist (in order of appearance in the ISO Standard)
 
-  - [instantiation_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=instantiation_error/1) (ISO)
+  - [instantiation_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=instantiation_error/1)
      - `instantiation_error(+FormalSubTerm)` 
      - the `FormalSubTerm` is not currently exploited as the standard demands the `Formal` be the atom `instantiation_error` only
-  - [uninstantiation_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=uninstantiation_error/1) (ISO)
+  - [uninstantiation_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=uninstantiation_error/1)
      - `uninstantiation_error(+Culprit)`      
      - appears in Corrigendum 2: ISO/IEC 13211-1:1995/Cor.2:2012(en)
-  - [type_error/2](https://eu.swi-prolog.org/pldoc/doc_for?object=type_error/2) (ISO)
+  - [type_error/2](https://eu.swi-prolog.org/pldoc/doc_for?object=type_error/2)
      - `type_error(+ValidType,+Culprit)`
-  - [domain_error/2](https://eu.swi-prolog.org/pldoc/doc_for?object=domain_error/2) (ISO)
+  - [domain_error/2](https://eu.swi-prolog.org/pldoc/doc_for?object=domain_error/2)
       - `domain_error(+ValidDomain,+Culprit)`
-  - [existence_error/2](https://eu.swi-prolog.org/pldoc/doc_for?object=existence_error/2) (ISO)
+  - [existence_error/2](https://eu.swi-prolog.org/pldoc/doc_for?object=existence_error/2)
       - `existence_error(+ObjectType,-Culprit)`
   - [existence_error/3](https://eu.swi-prolog.org/pldoc/doc_for?object=existence_error/3) (**not** ISO)
       - `existence_error(+ObjectType,+Culprit,+Set)`
       - the third argument `Set` makes this a non-ISO exception. `Set` goes into the `Formal` like this: `Formal=existence_error(ObjectType,Culprit,Set)`
-  - [permission_error/3](https://eu.swi-prolog.org/pldoc/doc_for?object=permission_error/3) (ISO)
+  - [permission_error/3](https://eu.swi-prolog.org/pldoc/doc_for?object=permission_error/3)
       - `permission_error(+Operation,+PermissionType,+Culprit)`
-  - [representation_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=representation_error/1) (ISO)
+  - [representation_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=representation_error/1)
       - `representation_error(+Flag)`
-  - [resource_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=resource_error/1) (ISO)
+  - [resource_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=resource_error/1)
       - `resource_error(+Resource)`
-  - [syntax_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=syntax_error/1) (ISO)
+  - [syntax_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=syntax_error/1)
       - `syntax_error(+ImplDepAtom)`
       
 Note that there is no facility for **catching standard errors**, which is done by
