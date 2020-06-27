@@ -23,7 +23,7 @@ This page is referenced from [`throw/1`](https://eu.swi-prolog.org/pldoc/doc_for
 Predicate [`throw/1`](https://www.swi-prolog.org/pldoc/doc_for?object=throw/1) takes a single argument, the _exception term_:
 
 ```text
-`throw(+Exception)`.
+throw(+Exception).
 ```
 
 User predicates are free to choose the structure of their exception terms (i.e. they can define their own conventions) but _should_
