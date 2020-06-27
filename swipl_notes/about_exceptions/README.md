@@ -27,14 +27,14 @@ throw(+Exception).
 ```
 
 User predicates are free to choose the structure of their exception terms (i.e. they can define their own conventions) but _should_
-adhere to the ISO Standard if possible, in particular for libraries.
+adhere to the ISO-Standard if possible, in particular for libraries.
 
-SWI-Prolog Built-in predicates throw exception terms as specified by the ISO Standard unless the exception does not fit any of
+SWI-Prolog built-in predicates throw exception terms as specified by the ISO-Standard unless the exception does not fit any of
 the ISO Standard error term definitions.
 
 In particular [assertion/1](https://eu.swi-prolog.org/pldoc/doc_for?object=assertion/1) throws a non ISO-standard exception with
-an exception term `error(assertion_error(Reason,Culprit),Context)`. Note that this exception term reflects the structure of a
-ISO-standard exception term, but there is no compelling reason for that.
+an exception term `error(assertion_error(Reason,Culprit),Context)`. Note that in this case the exception term reflects the
+structure of a ISO-standard exception term.
 
 ## ISO-standard exception terms
 
