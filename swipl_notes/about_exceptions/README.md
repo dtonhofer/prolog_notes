@@ -73,10 +73,40 @@ thrower(FormalFunctor,FormalArgs,PredInd,Msg) :-
 - Ulrich Neumerkel lists the various error classes [here](http://www.complang.tuwien.ac.at/ulrich/iso-prolog/error_k).
   The context is a discussion leading up to the second corrigendum of the ISO standard.
 
+### Some problems with the ISO-Standard exception terms
+
+The ISO-Standard exception terms are not "uniform": they are compound terms of arity 3-1 (including non-compound terms, i.e. atoms)
+
+What would be nice (or at least nicer than is the standard now) is to have error terms like these:
+
+```
+error(type_error         ,[~list of mandatory args~],[~list of free args~]).
+error(instantiation_error,[~list of mandatory args~],[~list of free args~]).
+```
+
+Instead we get variability in number of arguments, together with straight-jacketed terms: 
+
+```
+error(permission_error(Arg0,Arg1,Arg2), Context). % 3-argument compound term on first position
+error(type_error(Arg0,Arg1), Context).            % 2-argument compound term on first position
+error(syntax_error(Arg0), Context).               % 1 argument compound term on first position
+error(instantiation_error, Context).              % atom (not 0-argument compound term) on first position
+```
+
+We can't append any other information to the ISO-Standard `Formal` term, even though one might be interested in
+the name of the variables involved in the exception, or want to transmit some informative message for the user. 
+Only the `Context` term can be used.
+
+The ISO-Standard is missing entries for a "can't happen" error, "illegal state error" or "assertion error". 
+
+The ISO-Standard stipulates that atoms chosen from a restricted set must appear in certain positions of `Formal`. This
+is unnecessarily restrictive as there is no way the ISO-Standard can list all the possible atoms and information may well have have to 
+carried in terms more complex than atoms. Additionally the intended meaning of the listed atoms is undescribed and in some cases is obscure.
+
 ### Using `library(error)` 
 
 ISO-Standard exceptions can be thrown with [`library(error)`](https://www.swi-prolog.org/pldoc/man?section=error).
-It exports predicates which look exactly like the ISO Standard error terms.
+It exports predicates which (as terms) look exactly like the ISO-Standard `Formal` part of the corresponding exception term.
 
 The following predicates exist (in order of appearance in the ISO Standard):
 
@@ -109,12 +139,6 @@ a successful unification of the a thrown term with a "catcher" term passed to
 [`catch/3`](https://www.swi-prolog.org/pldoc/doc_for?object=catch/3). 
 
 ### List of the ISO-Standard exception term
-
-_Personal Note_  The ISO-Standard stipulates that atoms chosen from a restricted set must appear in certain positions of `Formal`. This
-is unnecessarily restrictive as there is no way the ISO-Standard can list all the possible atoms and information may well have have to 
-carried in terms more complex than atoms. Additionally the intended meaning of the listed atoms is undescribed and in some cases is obscure.
-
-The ISO-Standard also says:
 
 > Most errors defined in this part of ISO/IEC 13211 occur because the arguments of the goal fail to satisfy a particular
 > condition; they are thus detected before execution of the goal begins, and no side effect will have taken place.
@@ -329,36 +353,6 @@ C = error(instantiation_error, _7032).
 ?- catch(syntax_error(term),C,true). % 1 args!
 C = error(syntax_error(term), _8162).
 ```
-
-## Some problems with the ISO standard exception terms
-
-Sadly, the ISO error terms are not "uniform": they are compound terms of
-arity 3-1 (including non-compound terms, i.e. atoms). Which is kinda hair-raising.
-
-What would be nice (or at least nicer than is the standard now) is to have error terms like these:
-
-```
-error(type_error,[~list of mandatory args~],[~list of free args~]).
-error(instantiation_error,[~list of mandatory args~],[~list of free args~]).
-```
-
-Instead we get variability in number of arguments, allied to straight-jacketed terms: 
-
-```
-error(type_error(Arg0,Arg1), Extra).    % 2-argument compound term on first position
-error(syntax_error(Arg0), Extra).       % 1 argument compound term on first position
-error(instantiation_error, Extra).      % atom on first position
-```
-
-We can't append any other information to the ISO standard exception inner term, even though one might be interested in the name of the variables involved in the exception, or want to transmit some informative message for the user. 
-
-One _could_ use the `Extra` argument of the outer `error/2` term, but it cannot be set by calling the provided calls from `library(error)`. So if you want to use that, you have to construct the `error/2` term and call `throw/1` yourself.
-
-Also, for `domain_error/2`, the inner term is designed to make a statement about one variable only, instead of a combination of variables. Unfortunately, the latter is by far the more interesting case. 
-
-Finally, there are assumptions about =Arg0= and =Arg1= terms. At least the toplevel expects something like `domain_error(integer,5)`. Otherwise, what it prints is confusing.
-
-The ISO standard does not provide any structure for the "can't happen" error, "illegal state error" or "assertion error". These are not ISO standard "system errors". This is seriously bad. What to do?
 
 ## Rolling your own exceptions
 
