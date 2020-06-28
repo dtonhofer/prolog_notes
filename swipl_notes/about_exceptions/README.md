@@ -1,6 +1,6 @@
 # SWI-Prolog Exceptions
 
-This page is referenced from [`throw/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=throw/1)
+This page is referenced from the comment on the SWI-Prolog manual page for [`throw/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=throw/1)
 
 ## Pages of interest in the SWI-Prolog manual
 
@@ -74,48 +74,6 @@ thrower(FormalFunctor,FormalArgs,PredInd,Msg) :-
 - Ulrich Neumerkel lists the various error classes [here](http://www.complang.tuwien.ac.at/ulrich/iso-prolog/error_k).
   The context is a discussion leading up to the second corrigendum of the ISO standard.
 
-### Some problems with the ISO-Standard exception terms
-
-The ISO-Standard exception terms are not "uniform": they are compound terms of arity 3-1 (including non-compound terms, i.e. atoms)
-
-What would be nice (or at least nicer than is the standard now) is to have error terms like these:
-
-```
-error(type_error         ,[~list of mandatory args~],[~list of free args~]).
-error(instantiation_error,[~list of mandatory args~],[~list of free args~]).
-```
-
-Instead we get variability in number of arguments, together with straight-jacketed terms: 
-
-```
-error(permission_error(Arg0,Arg1,Arg2), Context). % 3-argument compound term on first position
-error(type_error(Arg0,Arg1), Context).            % 2-argument compound term on first position
-error(syntax_error(Arg0), Context).               % 1 argument compound term on first position
-error(instantiation_error, Context).              % atom (not 0-argument compound term) on first position
-```
-
-We can't append any other information to the ISO-Standard `Formal` term, even though one might be interested in
-the name of the variables involved in the exception, or want to transmit some informative message for the user. 
-Only the `Context` term can be used.
-
-The ISO-Standard is missing entries for a "can't happen" error, "illegal state error" or "assertion error". 
-
-The ISO-Standard stipulates that atoms chosen from a restricted set must appear in certain positions of `Formal`. This
-is unnecessarily restrictive as there is no way the ISO-Standard can list all the possible atoms and information may well have have to 
-carried in terms more complex than atoms. Additionally the intended meaning of the listed atoms is undescribed and in some cases is obscure.
-
-If you **have** to invent your own exception consider this:
-
-Jan Wielemaker writes:
-
-> All errors must use `error(Formal, Context)` because that is what the development environment expects.
-> Formal should be one of the ISO terms if (reasonably) appropriate. If nothing is appropriate you
-> may look in boot/messages.pl whether SWI-Prolog already defines something more appropriate or you may
-> invent your own `Formal`. In this case my vote would got for jpl_state_error with enough arguments
-> to provide enough context for a good message. So, not illegal state_error. Look at the ISO terms.
-> There is no `illegal_type_error`, bad something, etc. It would be double, we are already talking 
-> about an error.
-
 ### Using `library(error)` 
 
 ISO-Standard exceptions can be thrown with [`library(error)`](https://www.swi-prolog.org/pldoc/man?section=error).
@@ -172,7 +130,7 @@ iso_message(type_error(free_of_attvar, Actual)) -->
 
 In order of appearance in the ISO-Standard:
 
-### Instantiation Error
+#### Instantiation Error
 
 An argument or one of its components is uninstantiated, but an instantiated argument or component is required instead.
 In effect, "I need more data".
@@ -188,7 +146,7 @@ This exception is pointlessly deficient in information carrying capacity and the
 Thrown with [instantiation_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=instantiation_error/1). The argument passed
 to `instantiation_error/1` is just for future extensions and remains unused.
 
-### Uninstantiation error
+#### Uninstantiation error
 
 An argument or one of its components is instantiated, and an uninstantiated argument or argument component is required.  
 
@@ -200,7 +158,7 @@ Formal=uninstantiation_error(Culprit)
 
 Thrown with [uninstantiation_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=uninstantiation_error/1).
 
-### Type Error
+#### Type Error
 
 An argument or one of its components is instantiated but incorrect.
 
@@ -218,7 +176,7 @@ _Personal Note:_ The "list" is the odd one in the above, because "list" is not a
 like non-locally. It would make more sense to generate a "Domain Error" if an argument turns out to not be a list.  
 epecially as there is already a "non_empty_list" Domain Error. Oh well!
 
-### Domain Error
+#### Domain Error
 
 An argument's type is correct but the value is outside the domain for which the procedure is defined. ("Domain Error occurs when the value is not a a member of an implementation defined or implementation-dependent set.")
 
@@ -236,7 +194,7 @@ Formal=domain_error(ValidDomain,Culprit)
 
 Thrown with [domain_error/2](https://eu.swi-prolog.org/pldoc/doc_for?object=domain_error/2)
 
-### Existence Error
+#### Existence Error
 
 An object on which an operation is to be performed does not exist. 
 
@@ -257,7 +215,7 @@ Formal=existence_error(ObjectType,Culprit,Set)
 
 Thrown with [existence_error/3](https://eu.swi-prolog.org/pldoc/doc_for?object=existence_error/3).
  
-### Permission Error
+#### Permission Error
 
 The runtime system (or the thread) is lacking permission to perform a specific operation.
 
@@ -273,7 +231,7 @@ Thrown with [permission_error/3](https://eu.swi-prolog.org/pldoc/doc_for?object=
 
 _Personal Note:_ The intended semantics of the atoms listed are not clear at all. Recommendation: Don't stick closely to this over-specification.
 
-### Representation Error
+#### Representation Error
 
 An implementation-defined limit has been breached. 
 
@@ -285,7 +243,7 @@ Formal=representation_error(Flag)
 
 Thrown with [representation_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=representation_error/1).
 
-### Evaluation Error
+#### Evaluation Error
 
 The operands of an evaluable functor are such that the operation has an exceptional value or event.
 
@@ -299,7 +257,7 @@ Thrown with [representation_error/1](https://eu.swi-prolog.org/pldoc/doc_for?obj
 
 _Personal Note:_ This does not seem to cover all of the IEEE 754 exceptional cases.
 
-### Resource Error
+#### Resource Error
 
 The runtime system has insufficient resources to complete execution. A resource error
 may happen for example when a calculation on unbounded integers has a value which
@@ -313,7 +271,7 @@ Formal=resource_error(Resource)
 
 Thrown with [resource_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=resource_error/1).
 
-### Syntax Error
+#### Syntax Error
 
 A sequence of characters which are being input as a read-term do not conform to an acceptable syntax. "Being input as a read-term" means
 this error is thrown by predicates like [`read/1`](https://www.swi-prolog.org/pldoc/doc_for?object=read/1) which are about
@@ -327,7 +285,7 @@ Formal=syntax_error(ImplDepAtom)
 
 Thrown with [syntax_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=syntax_error/1). 
 
-### System Error
+#### System Error
 
 Can happen at any point of computation. The conditions for a System Error and the actions taken by a Prolog runtime 
 after occurrence are implementation-dependent. A System Error may happen for example 
@@ -380,9 +338,70 @@ C = error(instantiation_error, _7032).
 C = error(syntax_error(term), _8162).
 ```
 
-## Rolling your own exceptions
+## Some problems with the ISO-Standard exception terms
 
-The exception term might possibly be better being open-ended like this (but that's my opinion):
+### Non-uniformity
+
+The ISO-Standard exception terms are not "uniform": they are compound terms of arity 3-1 (including non-compound terms, i.e. atoms)
+
+What would be nice (or at least nicer than is the standard now) is to have error terms like these:
+
+```
+error(type_error         ,[~list of mandatory args~],[~list of free args~]).
+error(instantiation_error,[~list of mandatory args~],[~list of free args~]).
+```
+
+Instead we get variability in number of arguments, together with straight-jacketed terms: 
+
+```
+error(permission_error(Arg0,Arg1,Arg2), Context). % 3-argument compound term on first position
+error(type_error(Arg0,Arg1), Context).            % 2-argument compound term on first position
+error(syntax_error(Arg0), Context).               % 1 argument compound term on first position
+error(instantiation_error, Context).              % atom (not 0-argument compound term) on first position
+```
+
+### Overspecified `Formal`
+
+We can't append any other information to the ISO-Standard `Formal` term, even though one might be interested in
+the name of the variables involved in the exception, or want to transmit some informative message for the user. 
+Only the `Context` term can be used.
+
+The ISO-Standard stipulates that atoms chosen from a restricted set must appear in certain positions of `Formal`. This
+is unnecessarily restrictive as there is no way the ISO-Standard can list all the possible atoms and information may well have have to 
+carried in terms more complex than atoms. Additionally the intended meaning of the listed atoms is undescribed and in some cases is obscure.
+
+### Missing possibilities.
+
+The ISO-Standard is missing entries for a "can't happen",  "illegal state reached" or "assertion violated". This is just to be
+expected, no specification can hope to be complete & precise in an open problem domain like a programming language. 
+
+In SWI-Prolog, some non-ISO exceptions may be encountered. As mentioned, the predicate
+[assertion/1](https://eu.swi-prolog.org/pldoc/doc_for?object=assertion/1) throws a non ISO-standard exception with
+an exception term `error(assertion_error(Reason,Culprit),Context)`. Others exist, take a look at the error 
+text generation in file ` boot/messages.pl`.
+
+If you **have** to invent your own exception consider this (in the context of `library(jpl)`:
+
+Jan Wielemaker writes:
+
+> All errors must use `error(Formal, Context)` because that is what the development environment expects.
+> `Formal` should be one of the ISO terms if (reasonably) appropriate. If nothing is appropriate you
+> may look in `boot/messages.pl` whether SWI-Prolog already defines something more appropriate or you may
+> invent your own `Formal`. In this case my vote would got for `jpl_state_error` with enough arguments
+> to provide enough context for a good message. So, not `illegal_state_error`. Look at the ISO terms.
+> There is no `illegal_type_error`, bad something, etc. It would be double, we are already talking 
+> about an error.
+
+### Ideally...
+
+If non-ISO is an option, you can be inventive (or not):
+
+```
+?- catch(throw("This is my own term and I like it"),C,true).
+C = "This is my own term and I like it".
+```
+
+The exception term might be better as open-ended representation, for example:
 
 ```
 error(DistinguishableTypeCode,ListOrTaggedListOrAssocOrDictOfExtraValues).
@@ -390,14 +409,15 @@ error(DistinguishableTypeCode,ListOrTaggedListOrAssocOrDictOfExtraValues).
 
 And then you can use lists (or even better, dicts) instead of using compound terms of variable arity to transmit data to the catch point.
 
-Of course, nothing prohibits you from throwing in your own style -- **if the caller is fine with handling non-ISO standard exceptions**:
-
 ```
-?- catch(throw("This is my own term and I like it"),C,true).
-C = "This is my own term and I like it".
+throw_mystyle_existence_error(Pred,Type,Term,ExCode) :-
+   (exception_code(ExCode,ExText) -> true ; (ExText = ExCode)),
+   throw(mystyle([[error,existence],type-Type,term-Term,pred-Pred,msg-ExText]).
 ```
 
-To get the cleartext error messages out of the `throw/1` calls, just do this:
+### Avoiding cleartext errors littering you code
+
+To collect the cleartext error messages outside of the `throw/1` calls, just do this:
 
 ```
 % Set up some informative atoms, and make them retrievable by code
@@ -444,12 +464,15 @@ throw_permission_error(Pred,Action,Type,Term,ExCode) :-
 % also not ISO, and also incorrect: system_error should be used when
 % the harddisk crashes, not when the assertion fails.
 
-throw_illegal_state_error(Pred,ExCode) :-
+throw_state_error(Pred,ExCode) :-
    (exception_code(ExCode,ExText) -> true ; throw(ExText = ExCode)),
-   throw(error(illegal_state_error,context(Pred,ExText))).
+   throw(error(state_error,context(Pred,ExText))).
 ```
 
-We can also have wrappers to fail or throw depending on options list contents. If "Options" is a list containing the atom `throw`, then throw, else fail:
+### Selecting throwing or faling at runtime
+
+We can add wrappers to fail or throw depending on options list contents.
+If `Options` is a list containing the atom `throw`, then throw, else fail:
 
 ```
 throw_existence_error(Pred,Type,Term,ExCode,Options) :
@@ -459,13 +482,4 @@ throw_existence_error(Pred,Type,Term,ExCode,Options) :
    ;
    fail. % actually unnecessary to write this
 ```
-
-Alternatively, if non-ISO is an option, you can choose a better representation. Here with a list having the error class and subclass as a sublist on position 0, followed by an arbitrary set of key-value pairs (in SWI Prolog, you can use dicts instead):
-
-```
-throw_mystyle_existence_error(Pred,Type,Term,ExCode) :-
-   (exception_code(ExCode,ExText) -> true ; (ExText = ExCode)),
-   throw(mystyle([[error,existence],-(type,Type),-(term,Term),-(pred,Pred),-(msg,ExText)]).
-```
-
 
