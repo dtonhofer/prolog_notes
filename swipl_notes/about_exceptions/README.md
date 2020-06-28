@@ -151,7 +151,7 @@ Note that there is no facility for **catching standard errors**, which is done b
 a successful unification of the a thrown term with a "catcher" term passed to
 [`catch/3`](https://www.swi-prolog.org/pldoc/doc_for?object=catch/3). 
 
-The generator for user-readble error messages based on the exception term can be found in `boot/messages.pl`, where there is code like this:
+The generator for user-readable error messages based on the exception term can be found in `boot/messages.pl`, where there is code like this:
 
 ```prolog
 iso_message(resource_error(Missing)) -->
