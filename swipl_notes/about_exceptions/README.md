@@ -18,8 +18,9 @@ This page is referenced from [`throw/1`](https://eu.swi-prolog.org/pldoc/doc_for
   - [A.14 library(debug): Print debug messages and test assertions](https://eu.swi-prolog.org/pldoc/man?section=debug)
      - [assertion/1](https://eu.swi-prolog.org/pldoc/doc_for?object=assertion/1)
 
-  - [Coding Guidelines for Prolog](https://arxiv.org/abs/0911.2899) offers a bit of commentary on _when_ to throw, but does not go further.
+## Some reading
 
+  - [Coding Guidelines for Prolog](https://arxiv.org/abs/0911.2899) offers a bit of commentary on _when_ to throw, but does not go further.
 
 ## Throwing exceptions 
 
@@ -103,6 +104,18 @@ The ISO-Standard stipulates that atoms chosen from a restricted set must appear 
 is unnecessarily restrictive as there is no way the ISO-Standard can list all the possible atoms and information may well have have to 
 carried in terms more complex than atoms. Additionally the intended meaning of the listed atoms is undescribed and in some cases is obscure.
 
+If you **have** to invent your own exception consider this:
+
+Jan Wielemaker writes:
+
+> All errors must use `error(Formal, Context)` because that is what the development environment expects.
+> Formal should be one of the ISO terms if (reasonably) appropriate. If nothing is appropriate you
+> may look in boot/messages.pl whether SWI-Prolog already defines something more appropriate or you may
+> invent your own `Formal`. In this case my vote would got for jpl_state_error with enough arguments
+> to provide enough context for a good message. So, not illegal state_error. Look at the ISO terms.
+> There is no `illegal_type_error`, bad something, etc. It would be double, we are already talking 
+> about an error.
+
 ### Using `library(error)` 
 
 ISO-Standard exceptions can be thrown with [`library(error)`](https://www.swi-prolog.org/pldoc/man?section=error).
@@ -137,6 +150,19 @@ The following predicates exist (in order of appearance in the ISO Standard):
 Note that there is no facility for **catching standard errors**, which is done by
 a successful unification of the a thrown term with a "catcher" term passed to
 [`catch/3`](https://www.swi-prolog.org/pldoc/doc_for?object=catch/3). 
+
+The generator for user-readble error messages based on the exception term can be found in `boot/messages.pl`, where there is code like this:
+
+```prolog
+iso_message(resource_error(Missing)) -->
+    [ 'Not enough resources: ~w'-[Missing] ].
+iso_message(type_error(evaluable, Actual)) -->
+    { callable(Actual) },
+    [ 'Arithmetic: `~p'' is not a function'-[Actual] ].
+iso_message(type_error(free_of_attvar, Actual)) -->
+    [ 'Type error: `~W'' contains attributed variables'-
+      [Actual,[portray(true), attributes(portray)]] ].
+```
 
 ### List of the ISO-Standard exception term
 
