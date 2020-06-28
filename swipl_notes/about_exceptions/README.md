@@ -415,6 +415,8 @@ throw_mystyle_existence_error(Pred,Type,Term,ExCode) :-
    throw(mystyle([[error,existence],type-Type,term-Term,pred-Pred,msg-ExText]).
 ```
 
+## Good ideas
+
 ### Avoiding cleartext errors littering you code
 
 To collect the cleartext error messages outside of the `throw/1` calls, just do this:
