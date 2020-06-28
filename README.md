@@ -13,6 +13,8 @@ Missed in the above:
 - [MProlog](https://www.mimuw.edu.pl/~nguyen/mpl.pdf) (PDF) for [Modal Logic](https://plato.stanford.edu/entries/logic-modal/)
 - [HYPROLOG](http://akira.ruc.dk/~henning/hyprolog/) A Logic Programming Language with Abduction and Assumptions
 - [Markov Logic Networks](https://en.wikipedia.org/wiki/Markov_logic_network) 
+- [LogicBlox](https://developer.logicblox.com/technology/)
+- [Datalog](https://en.wikipedia.org/wiki/Datalog)
 - More on [Logical Frameworks](https://en.wikipedia.org/wiki/Logical_framework)
 
 ## Rule-based Systems
@@ -125,6 +127,7 @@ More here:
 
 - 1984 [Making Prolog more expressive](https://core.ac.uk/download/pdf/82550631.pdf) (J.W. Lloyd, R.W. Topor) (Journal of Logic Programming, 1984:3:225-240)
 - 1989 Logic Programming with Strong Negation (Appears in Springer LNAI 475, pp 311-326) (David Pearce, Gerd Wagner)
+- 1989 [What you always wanted to know about Datalog (and never dared to ask)](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.210.1118) (Stefan Ceri, Georg Gottlob, Letizia Tanca) in: [IEEE Transactions on Knowledge and Data Engineering](https://ieeexplore.ieee.org/document/43410), March 1989
 - 1991-01 [Applying Techniques to Skeletons](https://www.researchgate.net/publication/220986744_Applying_Techniques_to_Skeletons) (Leon Sterling, Marc Kirschenbaum)
 - 1991-02 [A type system for logic programs](https://www.sciencedirect.com/science/article/pii/074310669180002U) (Eyal Yardeni, Ehud Shapiro. In: _The Journal of Logic Programming_ Volume 10, Issue 2)
 - 1991 [Logic Programming with Strong Negation and Inexact Predicates](https://academic.oup.com/logcom/article-abstract/1/6/835/943774) (Gerd Wagner) (Journal of Logic and Computation, Volume 1, Issue 6, December 1991, Pages 835–859)
@@ -135,6 +138,7 @@ More here:
 - 2002-07 [Abduction in Logic Programming](http://web.stanford.edu/class/cs227/Readings/Abudction%20in%20LP.pdf) (Marc Denecker, Antonis Kakas). Appears in [Computational Logic: Logic Programming and Beyond, Springer LNCS 2407](https://link.springer.com/chapter/10.1007/3-540-45628-7_16), pp 402-436
 - 2003-10 [The Essence of Strategic Programming](https://www.researchgate.net/publication/277289331_The_Essence_of_Strategic_Programming) (Ralf Lämmel, Eelco Visser, Joost Visser) --- generic programming with the use of strategies
 - 2009-11 [Coding Guidelines for Prolog](https://arxiv.org/abs/0911.2899) (Michael A. Covington, Roberto Bagnara, Richard A. O'Keefe, Jan Wielemaker, Simon Price)
+- 2011 [Answer Set Programming’s Contributions to Classical Logic](https://people.cs.kuleuven.be/~marc.denecker/ctc.pdf) (Marc Denecker, Joost Vennekens, Hanne Vlaeminck, Johan Wittocx, Maurice Bruynooghe) (Stable Semantics) (appears in Springer LNAI6565)
 - 2013-05 [Truth versus Information in Logic Programming](https://arxiv.org/abs/1305.0141v2) (Lee Naish, Harold Sondergaard)
 - 2015-01 [The sad state concerning the relationships between Logic, Rules and Logic Programming](http://via.aayo.ws/nrGeX) (Robert Kowalski, 2015-01-13)
 - 2015-10 [The Inductive Constraint Programming Loop](https://arxiv.org/abs/1510.03317) (
