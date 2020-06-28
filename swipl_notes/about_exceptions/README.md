@@ -2,7 +2,9 @@
 
 This page is referenced from the comment on the SWI-Prolog manual page for [`throw/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=throw/1)
 
-## Pages of interest in the SWI-Prolog manual
+## Pointers
+
+### Pages of interest in the SWI-Prolog manual
 
   - [`library(error)`](https://eu.swi-prolog.org/pldoc/man?section=error) - Has a description of exception meanings & usage
   - [Chapter 4.10: Exception handling](https://eu.swi-prolog.org/pldoc/man?section=exception)
@@ -18,7 +20,7 @@ This page is referenced from the comment on the SWI-Prolog manual page for [`thr
   - [A.14 library(debug): Print debug messages and test assertions](https://eu.swi-prolog.org/pldoc/man?section=debug)
      - [assertion/1](https://eu.swi-prolog.org/pldoc/doc_for?object=assertion/1)
 
-## Some reading
+### Some reading
 
   - [Coding Guidelines for Prolog](https://arxiv.org/abs/0911.2899) offers a bit of commentary on _when_ to throw, but does not go further.
 
