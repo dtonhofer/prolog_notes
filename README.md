@@ -126,10 +126,11 @@ More here:
 - 1984 [Making Prolog more expressive](https://core.ac.uk/download/pdf/82550631.pdf) (J.W. Lloyd, R.W. Topor) (Journal of Logic Programming, 1984:3:225-240)
 - 1989 Logic Programming with Strong Negation (Appears in Springer LNAI 475, pp 311-326) (David Pearce, Gerd Wagner)
 - 1991-01 [Applying Techniques to Skeletons](https://www.researchgate.net/publication/220986744_Applying_Techniques_to_Skeletons) (Leon Sterling, Marc Kirschenbaum)
-- 1991 [Logic Programming with Strong Negation and Inexact Predicates](https://academic.oup.com/logcom/article-abstract/1/6/835/943774) (Gerd Wagner) (Journal of Logic and Computation, Volume 1, Issue 6, December 1991, Pages 835–859)
-- 1995-XX [Higher-order logic programming in Prolog](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.34.9690) (Lee Naish)
 - 1991-02 [A type system for logic programs](https://www.sciencedirect.com/science/article/pii/074310669180002U) (Eyal Yardeni, Ehud Shapiro. In: _The Journal of Logic Programming_ Volume 10, Issue 2)
-- 1991-XX [Uniform Proofs as a Foundation for Logic Programming](http://www.lix.polytechnique.fr/~dale/papers/apal91.pdf) (Dale Miller, Gopalan Nadathur, Frank Pfenning, Andre Scedrov) --- the Lambda-Prolog way
+- 1991 [Logic Programming with Strong Negation and Inexact Predicates](https://academic.oup.com/logcom/article-abstract/1/6/835/943774) (Gerd Wagner) (Journal of Logic and Computation, Volume 1, Issue 6, December 1991, Pages 835–859)
+- 1991 [Uniform Proofs as a Foundation for Logic Programming](http://www.lix.polytechnique.fr/~dale/papers/apal91.pdf) (Dale Miller, Gopalan Nadathur, Frank Pfenning, Andre Scedrov) --- the Lambda-Prolog way
+- 1995 [Higher-order logic programming in Prolog](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.34.9690) (Lee Naish)
+- 1996 ["Classical" Negation in Non-Monotonic Reasoning and Logic Programming](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.53.4127) (José Alferes, Luís Moniz Pereira, Teodor C. Przymusinski). Appears in "Proceedings of the European Workshop on Logic in Artificial Intelligence (JELIA'96), Springer LNAI 1126, pp. 143-163.
 - 2001-04 [Logic Programming, Functional Programming, and Inductive Definitions](https://www.researchgate.net/publication/1880293_Logic_Programming_Functional_Programming_and_Inductive_Definitions) (Lawrence Paulson, Andrew W. Smith)
 - 2002-07 [Abduction in Logic Programming](http://web.stanford.edu/class/cs227/Readings/Abudction%20in%20LP.pdf) (Marc Denecker, Antonis Kakas). Appears in [Computational Logic: Logic Programming and Beyond, Springer LNCS 2407](https://link.springer.com/chapter/10.1007/3-540-45628-7_16), pp 402-436
 - 2003-10 [The Essence of Strategic Programming](https://www.researchgate.net/publication/277289331_The_Essence_of_Strategic_Programming) (Ralf Lämmel, Eelco Visser, Joost Visser) --- generic programming with the use of strategies
