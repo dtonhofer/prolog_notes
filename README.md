@@ -135,9 +135,10 @@ More here:
 - 2002-07 [Abduction in Logic Programming](http://web.stanford.edu/class/cs227/Readings/Abudction%20in%20LP.pdf) (Marc Denecker, Antonis Kakas). Appears in [Computational Logic: Logic Programming and Beyond, Springer LNCS 2407](https://link.springer.com/chapter/10.1007/3-540-45628-7_16), pp 402-436
 - 2003-10 [The Essence of Strategic Programming](https://www.researchgate.net/publication/277289331_The_Essence_of_Strategic_Programming) (Ralf Lämmel, Eelco Visser, Joost Visser) --- generic programming with the use of strategies
 - 2009-11 [Coding Guidelines for Prolog](https://arxiv.org/abs/0911.2899) (Michael A. Covington, Roberto Bagnara, Richard A. O'Keefe, Jan Wielemaker, Simon Price)
+- 2013-05 [Truth versus Information in Logic Programming](https://arxiv.org/abs/1305.0141v2) (Lee Naish, Harold Sondergaard)
+- 2015-01 [The sad state concerning the relationships between Logic, Rules and Logic Programming](http://via.aayo.ws/nrGeX) (Robert Kowalski, 2015-01-13)
 - 2015-10 [The Inductive Constraint Programming Loop](https://arxiv.org/abs/1510.03317) (
 Christian Bessiere, Luc De Raedt, Tias Guns, Lars Kotthoff, Mirco Nanni, Siegfried Nijssen, Barry O'Sullivan, Anastasia Paparrizou, Dino Pedreschi, Helmut Simonis). Appears in modified form in _IEEE Intelligent Systems_, September/October 2017.
-- 2015-01 [The sad state concerning the relationships between Logic, Rules and Logic Programming](http://via.aayo.ws/nrGeX) (Robert Kowalski, 2015-01-13)
 - 2016-07 [Indexing `dif/2`](https://arxiv.org/abs/1607.01590v1) (Ulrich Neumerkel, Stefan Kral)
 - 2017-09 [plspec – A Specification Language for Prolog Data](https://www.krin.gs/publication/koerner-plspec-declare17/koerner-plspec-declare17.pdf) (Philipp Körner, Sebastian Krings, _DECLARE 2017_)
 - 2019-09 [Prolog Coding Guidelines: Status and Tool Support](https://arxiv.org/abs/1909.08230v1) (Falco Nogatz, Philipp Körner, Seastuan Krings, ICLP 2019
