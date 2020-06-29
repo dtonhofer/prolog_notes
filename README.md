@@ -143,6 +143,10 @@ More here:
 - 1989-10 [A denotational semantics for Prolog](https://dl.acm.org/doi/abs/10.1145/69558.69564)
    - Tim Nicholson, Norma Foo
    - ACM Transactions on Programming Languages and Systems, October 1989
+   - With: [Some comments on “a denotational semantics for Prolog”](https://dl.acm.org/doi/abs/10.1145/177492.177605)
+      - Bijan Arbab, Daniel M. Berry
+      - ACM Transactions on Programming Languages and Systems, May 1994 
+Authors Info & Affiliations 
 - 1991-01 [Applying Techniques to Skeletons](https://www.researchgate.net/publication/220986744_Applying_Techniques_to_Skeletons)
    - Leon Sterling, Marc Kirschenbaum
 - 1991-02 [A type system for logic programs](https://www.sciencedirect.com/science/article/pii/074310669180002U)
