@@ -56,6 +56,14 @@ This text from **Specifying trace models with a continuation semantics** (see fu
 > Wether Byrd's trace is a proper output format for an end-user may indeed be discussed. A trace, however, can
 > be the basis of automated tools, as we have shown for debugging or monitoring. In general, automated dynamic
 > analysis needs an execution model to be based upon and Byrd's box model is a good candidate for Prolog.
+> 
+> ...
+>
+> There is a large number of slightly different execution models for Prolog; see for example .... This means that there
+> is no best model. It is therefore important to be able to easily specify variants of Byrd's box model. The validation
+> of the formal specification becomes then an essential feature if one wants to reason about the generated trace. 
+> We show how this can be done in this article. We add the treatment of cut, unification and clause numbers to
+> the basic specification of the trace. 
 
 ## A Note on Vocabulary
 
