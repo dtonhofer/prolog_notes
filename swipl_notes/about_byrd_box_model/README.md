@@ -35,16 +35,27 @@ And is described for example here:
   - Springer Verlag, 2003,
   - William F. Clocksin, Christopher S. Mellish
   - p. 194 ff.: "8.3 The Tracing Model"
-  
-or here:
+- **[GNU Prolog - Debugging - The Procedure Box Model](http://gprolog.univ-paris1.fr/manual/gprolog.html#sec22)**
 
-- [GNU Prolog - Debugging - The Procedure Box Model](http://gprolog.univ-paris1.fr/manual/gprolog.html#sec22)
+The Byrd Box Model is quite informal and leaves out a lot of detail. It says nothing about what
+happens "around the box": cuts, selection of a clause, constraints. It doesn't mention the
+special case of the clause head (that's a miss). In particular it says nothing about the 
+operations on the _term store_, which is, however, a crucial aspect. We will try to fill in some details then.  
 
-The Byrd Box Model leaves out a lot of detail - being a model, that's the idea.
-The Byrd-Box model says nothing about what happens "around the box": cuts, selection of a 
-clause, constraints. It doesn't mention the special case of the clause head (that's
-a miss). In particular it says nothing about the operations on the _term store_, which is, 
-however, a crucial aspect. We will try to fill in some details then.  
+This text from **Specifying trace models with a continuation semantics** (see further below) is quite informative:
+
+> The basic model for tracing Prolog executions is Byrd's box model, described in a rather informal way in
+> \[_Lawrence Byrd's original paper_\]. As detailed in \[_G. Tobermann and C. Beckstein. What's in a trace: The box model revisited_\],
+> Prolog debugging systems have quite different interpretations of what Byrd's box model is. It is not always clear
+> whether theses differences come from a misinterpretation of the original model or from a will to improve it.
+> 
+> In this article we propose a formal specification of Byrd's box model. One can conjecture that a formal specification
+> would avoid misinterpretations. Indeed, people would have the formal framework to prove that their model conforms to the
+> specification. Furthermore, people enhancing the model would then be able to state precisely what the enhancements are.
+> Byrd's box model is often judged too low-level and it is sometimes stated that it should not be used in debuggers.
+> Wether Byrd's trace is a proper output format for an end-user may indeed be discussed. A trace, however, can
+> be the basis of automated tools, as we have shown for debugging or monitoring. In general, automated dynamic
+> analysis needs an execution model to be based upon and Byrd's box model is a good candidate for Prolog.
 
 ## A Note on Vocabulary
 
@@ -161,7 +172,7 @@ The traditional set of ports is the following:
   once, actually) through this port. If this is the start of a clause body, there must have
   been a previous box that concluded successfully: the special B-Box performing the head unifications.
   
-- **`exit`**: Outgoing, left-to-right: The predicate call
+- **`exit`** (or better, **`succ`**) Outgoing, left-to-right: The predicate call
   succeeds, and the next B-Box can be instantiated and called. Which B-Box that is
   depends on the current state of the surrounding B-Box, which manages branching,
   B-Box instantiations and wiring. If this was the end of a clause body, the execution token
