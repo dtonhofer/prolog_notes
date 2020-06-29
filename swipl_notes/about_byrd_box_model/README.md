@@ -19,7 +19,7 @@ The Byrd Box model has been described first in:
 
 - **Understanding the control flow of Prolog programs**
   - Lawrence Byrd, 1980
-  - Appears in: _Proceedings of the Logic Programming Workshop in Debrecen, Hungary_ (S.-A. Tärnlund, editor)
+  - Appears in: _Proceedings of the Logic Programming Workshop in Debrecen, Hungary_ (Sten Åke Tärnlund, editor)
   - ... this document does not seem to exist online.
 
 And later:
