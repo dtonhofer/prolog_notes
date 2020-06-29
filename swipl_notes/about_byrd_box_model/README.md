@@ -17,25 +17,26 @@ See also: [SWI-Prolog: Overview of the Debugger](https://eu.swi-prolog.org/pldoc
 
 The Byrd Box model has been described first in:
 
-- Understanding the control flow of Prolog programs, 1980.
-  - Lawrence Byrd.
-  - Appears in: "Proceedings of the Logic Programming Workshop in Debrecen, Hungary." (this document does not seem to exist online)
+- **Understanding the control flow of Prolog programs**
+  - Lawrence Byrd, 1980
+  - Appears in: _Proceedings of the Logic Programming Workshop in Debrecen, Hungary_ (S.-A. Tärnlund, editor)
+  - ... this document does not seem to exist online.
 
 And later:
 
-- DECSystem-10 PROLOG USER'S MANUAL version 3.47, November 10, 1982
+- **DECSystem-10 PROLOG USER'S MANUAL version 3.47, November 10, 1982**
   - D.L. Bowen (ed.), L. Byrd, F.C.N. Pereira, L.M. Pereira, D.H.D. Warren
   - p. 13 ff. "2.1 The Procedure Box Control Flow Model"
   - Can be downloaded from [CiteseerX](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.300.8430)
 
 And is described for example here:
 
-- Programming in Prolog, 5th edition
+- **Programming in Prolog, 5th edition**
   - Springer Verlag, 2003,
   - William F. Clocksin, Christopher S. Mellish
   - p. 194 ff.: "8.3 The Tracing Model"
   
-and here:
+or here:
 
 - [GNU Prolog - Debugging - The Procedure Box Model](http://gprolog.univ-paris1.fr/manual/gprolog.html#sec22)
 
@@ -45,38 +46,17 @@ clause, constraints. It doesn't mention the special case of the clause head (tha
 a miss). In particular it says nothing about the operations on the _term store_, which is, 
 however, a crucial aspect. We will try to fill in some details then.  
 
-For alternatives, see:
-
-- [Prolog without tears: An evaluation of the effectiveness of a non Byrd Box model for students](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.57.2456)
-   - Paul Mulholland, Human Cognition Research Laboratory, Open University, Milton Keynes
-   - Psychology of Programming Interest Group, 1995, University of Edinburgh, Edinburgh.
-
-> All existing tracers adopt the Byrd Box style model of execution which underpins the Spy tracer (Byrd, 1980). 
-> The results gained from the previous study suggest that certain principles of Prolog execution are difficult
-> to represent within the Byrd box model, in particular backtracking. In order to combat these problems a
-> choice-point model of execution was adopted (Dodd, 1993). The key feature of the choice-point model is
-> that as each clause is entered, the interpreter "looks ahead" to see if any later clauses could match
-> should the present route fail. If so, this is marked as a choice-point. Backtracking can then be shown
-> as jumping back to the nearest choice-point. This model was combined with promising notational
-> techniques found in existing tracers to develop two Prolog choice-point tracers: the Prolog Linear Tracer 
-> (Plater) and the Prolog Non-linear Tracer (Pinter). These also shared a new textual representation of
-> binding, loosely based on the lozenge notation used in TPM (Eisenstadt & Brayshaw, 1990).
-
-- A choice-point model of Prolog execution. 
-   - ALP-UK Workshop on Logic Programming Support Environments, Edinburgh.
-   - Dodd, Tony
-   - 1993 
-   - (this document does not seem to exist online)
-
 ## A Note on Vocabulary
 
 (I always have problems with Prolog vocabulary)
 
 From [Is this Prolog terminology correct? (fact, rule, procedure, predicate, …)](https://stackoverflow.com/questions/49898738/is-this-prolog-terminology-correct-fact-rule-procedure-predicate), based on the ISO Standard:
 
-- *procedure*: A control construct, a built-in predicate, or a user-defined procedure. A procedure is either static or dynamic. A procedure is either private or public (see 7.5). In "Programming in Prolog (5th ed.)" (Clocksin & Mellish 2003), it is simply said on p. 188 that "The collection of clauses for a given predicate is called a procedure."
-- *predicate*: An identifier together with an arity.
-- *predicate indicator*: A compound term A/N, where A is an atom and N is a non-negative integer, denoting one particular procedure (see 7.1.6.6)
+- *procedure*: A control construct, a built-in predicate, or a user-defined procedure. A procedure is either static or dynamic. A procedure is either private or public (see 7.5). In "Programming in Prolog (5th ed.)" (Clocksin & Mellish 2003), it is simply said on p. 188 that "The collection of clauses for a given predicate is called a procedure." ⇒ Conceptually near the **code**.
+- *predicate*: An identifier together with an arity ⇒ Conceptually near the **specification** or the platonic predicate object (could even be uncomputable, I would say)
+- *predicate indicator*: A compound term A/N, where A is an atom and N is a non-negative integer, denoting one particular procedure (see 7.1.6.6) ⇒ A structure manipulated by the machine.
+
+When in doubt about having to choose between _procedure_ and _predicate_ I will use _predicate_.
 
 ## From the DECsystem-10 User Manual
 
@@ -181,7 +161,7 @@ The traditional set of ports is the following:
   once, actually) through this port. If this is the start of a clause body, there must have
   been a previous box that concluded successfully: the special B-Box performing the head unifications.
   
-- **`exit`**: Outgoing, left-to-right (and it should really be called **`succeed`**): The predicate call
+- **`exit`**: Outgoing, left-to-right: The predicate call
   succeeds, and the next B-Box can be instantiated and called. Which B-Box that is
   depends on the current state of the surrounding B-Box, which manages branching,
   B-Box instantiations and wiring. If this was the end of a clause body, the execution token
@@ -201,7 +181,33 @@ The traditional set of ports is the following:
   reattempt is left to the predicate instantiation to the left.
 
 Note that the naming of the ports is less than ideal: The port for `exit` should really
-be called `succeed`, in analogy to `fail`. I will use `succeed` as alternative to `exit`.
+be called `succeed`, in analogy to `fail`. Or maybe `succ` to keep it a 4-letter string.
+(Debugger text alignment is important). I will use `succ` as alternative to `exit`.
+
+**Example**
+
+From **Specifying trace models with a continuation semantics**. This example apparently
+was in Lawrence Byrd's original paper, too:
+
+A program
+
+```prolog
+p :- q, r.   r :- a, b.
+q :- s.      s.
+q :- t.      a.
+```
+
+A corresponding trace for `?- p.`
+
+```text
+[(call q), (call s), (exit s), (exit q), (call r), (call a),
+ (exit a), (call b), (fail b), (redo a), (fail a), (fail r),
+ (redo q), (redo s), (fail s), (call t), (fail t), (fail q),
+ no]
+```
+
+Note that no ouput is emitted for a rule head match or a rule head mismatch or even for a fact
+match. This may make the trace harder to follow than is necessary.
 
 ### The exception port
 
@@ -212,10 +218,10 @@ will be passed to first enclosing B-Box that can _catch_ it (i.e. unify the thro
 
 ### Head unifications
 
-There is no mention in the model of the special B-Box performing head unifications. That
-B-Box can be considered a series of unifications which must pass. Its execution token 
-comes from the surrounding box through `call`, its `fail` passes the token back to the
-surrounding box, and its `redo` is just short-circuited to `fail`. 
+Although left unmentioned in the original B-Box model, a rule head can be considered as
+a special B-Box that performs a series of unifications. Its execution token comes from the
+surrounding box through `call`, its `fail` passes the token back to the surrounding box, 
+and its `redo` is just short-circuited to `fail`. 
 
 ### Non-traditional ports
 
@@ -233,6 +239,8 @@ evaluating a rule or a fact
 > - `rule`: unification success between a goal and a rule head
 > - `fact`: unification success between a goal and a fact
 > - `exception`: predicate call throws an exception
+
+## Time for graphics
 
 An appoximate rendering of a clause for which the PP generate the head B-Box, and two additional B-Boxes 
 would thus be this (the `excpetion` port is not shown)
@@ -327,3 +335,55 @@ We can now easily show where operations on the term story happen:
 
 ![byrd Box Model with term store](byrd_box_model_with_term_store.svg)
 
+## More Reading
+
+- **[Specifying Trace Models With a Continuation Semantics](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.39.8325)** 
+   - Erwam Jahier, Mireille Ducassé, Olivier Ridoux, 1999
+   - appears in [Springer LNCS 2042](https://link.springer.com/chapter/10.1007/3-540-45142-0_10): "LOPSTR 2000: Logic Based Program Synthesis and Transformation" pp. 165-181. 
+   - The preprint is named differently: [Specifying Byrd's Box Model with a Continuation Semantics](https://www.researchgate.net/publication/220153715_Specifying_Byrd's_Box_Model_with_a_Continuation_Semantics) 
+
+> We give a formal specification of Byrd's box model and show how this specification can be extended to specify richer
+> trace models. We also show how these specifications can be executed by a direct translation into λProlog, leading
+> to a Prolog interpreter that performs execution traces. This interpreter can be used both to experiment various
+> trace models and to validate the different event specifications. We have hence a formal framework to specify and
+> prototype trace models.
+
+- **[What's in a Trace: The Box Model Revisited](https://www.researchgate.net/publication/225203235_What's_in_a_trace_The_box_model_revisited)** 
+   - Gerhard Tobermann, Clemens Beckstein
+   - appears in "Automated and Algorithmic Debugging, First International Workshop, AADEBUG '93, Linköping, Sweden, May 3-5, 1993, Proceedings" (Springer), pp. 171-187.
+
+> The box model as introduced by Byrd describes the process of finding an answer to a query wrt a logic
+> program by means of a chronological trace protocol. This protocol contains entries for primitive 
+> events associated with the execution of PROLOG procedures. Basic events are `call` (a procedure is 
+> being entered), `exit` (a procedure was left signaling a success), `redo` (another solution to
+> the `call` associated with the procedure is sought for), and `fail` (there is no (other) solution).
+> 
+> Byrd only gives an informal account of how to visualize procedural aspects of the execution of
+> PROLOG programs. He e.g. does not explicitly consider goals with variables and does not show
+> how to keep track of the evolution of bindings during the proof. The major reason for this - as we
+> believe - is that he did not introduce the box model along with a formalization. His primary goal
+> apparently was to use the model as a vehicle for teaching and explaining PROLOG.
+>
+> Our paper is an attempt to fill this gap: we intend to give a precise mathematical specification
+> of PROLOG trace protocols that can be used as a guide line for a formal description and classification
+> of debugging components of logic programming systems.
+
+- **[Prolog without tears: An evaluation of the effectiveness of a non Byrd Box model for students](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.57.2456)**
+   - Paul Mulholland, Human Cognition Research Laboratory, Open University, Milton Keynes
+   - Psychology of Programming Interest Group, 1995, University of Edinburgh, Edinburgh.
+
+> All existing tracers adopt the Byrd Box style model of execution which underpins the Spy tracer (Byrd, 1980). 
+> The results gained from the previous study suggest that certain principles of Prolog execution are difficult
+> to represent within the Byrd box model, in particular backtracking. In order to combat these problems a
+> choice-point model of execution was adopted (Dodd, 1993). The key feature of the choice-point model is
+> that as each clause is entered, the interpreter "looks ahead" to see if any later clauses could match
+> should the present route fail. If so, this is marked as a choice-point. Backtracking can then be shown
+> as jumping back to the nearest choice-point. This model was combined with promising notational
+> techniques found in existing tracers to develop two Prolog choice-point tracers: the Prolog Linear Tracer 
+> (Plater) and the Prolog Non-linear Tracer (Pinter). These also shared a new textual representation of
+> binding, loosely based on the lozenge notation used in TPM (Eisenstadt & Brayshaw, 1990).
+
+- **A choice-point model of Prolog execution.** 
+   - presented at ALP-UK Workshop on Logic Programming Support Environments, Edinburgh.
+   - Tony Dodd, 1993
+   - (this document does not seem to exist online)
