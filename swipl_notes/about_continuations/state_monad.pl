@@ -1,48 +1,57 @@
 % ===
-% State monad, illustration delimited continuations
-% See "Delimited Continuations for Prolog", Schrijvers & al.
+% State monad (or rather, effect handler expressing the state monad), illustrating usage
+% of delimited continuations
+% See "Delimited Continuations for Prolog", Schrijvers & al., p. 3
 % ===
 
 :- debug(count/0).
 :- debug(run_with_state/3).
 
 % ===
-% The worker predicate, which gets/sets surrounding 
-% state using commands
+% Call this at the toplevel. The final state will be unified with "Out"
+% ===
+
+run(Out) :- 
+   run_with_state(count,[0,5],Out).
+
+% ===
+% The worker predicate, which gets/sets state held by the (invisible) context using
+% provided commands
 % ===
 
 count :- 
    debug(count/0,"In count/0",[]),
+   %%
    get_state(S),
+   %%
    S = [Val,Count],
    debug(count/0,"In count/0: got Val=~q, Count=~q",S),
    (
-      Count == 0 -> true % stop the loop
+      Count == 0 
+      -> 
+      % stop the loop, we are done counting
+      true    
       ;
       NewVal   is Val   + 1, 
       NewCount is Count - 1,
       NewS     = [NewVal,NewCount],
       debug(count/0,"In count/0: putting Val=~q, Count=~q",NewS),
+      %%
       put_state(NewS),
-      count % recursive call
+      %%
+      % tail-recursive call to perform looping
+      count 
    ).
 
 % ===
-% Main call
-% ===
-
-run(Out) :- 
-   run_with_state(count,[0,100000000],Out).
-
-% ===
-% Available commands for state handling loop (pure syntax)
+% Available effect handler commands ("pure syntax around a shift")
 % ===
 
 get_state(S) :- shift(get_state(S)).
 put_state(S) :- shift(put_state(S)).  
 
 % ===
-% State handling
+% Effect handler
 % ===
 
 run_with_state(Goal,Scur,Sout) :-     % a stateful context for "Goal" with current state "Scur"
