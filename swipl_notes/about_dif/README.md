@@ -44,6 +44,42 @@ From: [Indexing `dif/2`](https://arxiv.org/abs/1607.01590), Ulrich Neumerkel and
 > unnecessarily inefficient code. Its combination with established control constructs often leads to
 > unsound results. New, pure constructs are badly needed.
 
+From: [An implementation of _dif_ and _freeze_ in the WAM](http://www.softwarepreservation.org/projects/prolog/sics/doc/Carlsson-SICS-TR-86-12.pdf) (PDF), Mats Carlsson, 1986-12-18:
+
+> Prolog II [Colmerauer 82a,82b], has received much attention for its theoretical model as a term
+> rewriting system in the domain of infinite trees, but also for its ability to delay certain predicates
+> until enough information is available: _dif(X,Y)_, read as "_X_ and _Y_ are different terms", and
+> _freeze(X,P)_ , read as "delay _P_ until _X_ has been instantiated".
+> 
+> Similar primitives have subsequently been included into various implementations, for example
+> LM-Prolog [Carlsson 83], MU-Prolog [Naish 85a], and NU-Prolog [Naish 86]. The concept of
+> delay primitives is related to the idea of coroutines which were first introduced in Logic
+> Programming with IC-Prolog [Clark 79], [Clark 80]. It is tightly coupled to the concept of
+> constraints [Steele 80]. A study of the introduction of the constraint concept into Logic
+> Programming is given in [Dincbas 86].
+>
+> The usefulness of delay primitives is widely recognized. By adding a data-driven component to a
+> language which otherwise is goal-driven, new programming techniques become available. They
+> help solve certain semantical problems, in particular by allowing a sound treatment of negation.
+> MU-Prolog, for example, supply sound versions built on delays for arithmetic, negation, and
+> if_then_else. They can increase the efficiency of "generate and test" programs and even prevent
+> infinite loops. They can be used for simulating and-parallelism by coroutining. Certain uses of
+> delay primitives cause new yet unsolved semantical problems, for example when used for
+> simulating perpetual processes computing with infinite streams. These problems are being attacked
+> in a scheme called Constraint Logic Programming (CLP) [Jaffar 86], and some very promising
+> results have already been reported.
+
+...
+
+> **3.2 Dif in Prolog II**
+>
+> Superficially, Prolog II treats _dif_ by a completely different mechanism. Prolog II replaces
+> unification by the solving of systems of equations and inequations over infinite trees, using two
+> algorithms called _reduction_ and _simplification_ [Colmerauer 84]. _dif(X,Y)_ is defined as adding the
+> inequation _X≠Y_ to the system, and this has nothing to do with the freeze mechanism. However,
+> the simplification algorithm, which is invoked whenever the system is augmented, can select certain
+> inequations for "reprocessing", an operation that is tantamount to waking a delayed goal.
+
 ## Explain!
 
 Consider the call `dif(A,B)`.
