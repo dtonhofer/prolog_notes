@@ -3,8 +3,8 @@
 % See "Delimited Continuations for Prolog", Schrijvers & al.
 % ===
 
-:- nodebug(count/0).
-:- nodebug(run_with_state/3).
+:- debug(count/0).
+:- debug(run_with_state/3).
 
 % ===
 % The worker predicate, which gets/sets surrounding 
