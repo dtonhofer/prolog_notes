@@ -136,6 +136,8 @@ If you want to check whether there 'exists' an element in the list that fullfill
 
 - Using [`include/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=include/3), which is the "filter" predicate.
 - Using [`foldl/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=foldl/4), which is not as direct because one needs a helper predicate.
+- Of course, if the criterium reduces to unification, you can just use [`member/2` ](https://eu.swi-prolog.org/pldoc/doc_for?object=member/2)
+  or [`memberchk/2`](https://eu.swi-prolog.org/pldoc/man?predicate=memberchk/2).
 
 This time, let's use the SWI-Prolog [unit testing framework](https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/plunit.html%27))
 to write code. We assume that we are not looking for variables!
@@ -143,7 +145,7 @@ to write code. We assume that we are not looking for variables!
 ```logtalk
 :- discontiguous rt/1.
 
-% Selection criterium
+% Criterium
 
 verify(I) :- format("verify(~q)\n", I), 5 > I.
 
