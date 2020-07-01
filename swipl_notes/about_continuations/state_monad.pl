@@ -1,14 +1,15 @@
 % ===
 % State monad (or rather, effect handler expressing the state monad), illustrating usage
-% of delimited continuations
-% See "Delimited Continuations for Prolog", Schrijvers & al., p. 3
+% of delimited continuations.
+% See "Delimited Continuations for Prolog", Schrijvers & al., 2012, p. 3
 % ===
 
 :- debug(count/0).
 :- debug(run_with_state/3).
 
 % ===
-% Call this at the toplevel. The final state will be unified with "Out"
+% Call this at the toplevel. We request 5 loops through count. 
+% The final state will be unified with "Out"
 % ===
 
 run(Out) :- 
@@ -44,7 +45,9 @@ count :-
    ).
 
 % ===
-% Available effect handler commands ("pure syntax around a shift")
+% Available effect handler commands. 
+% The put and get predicates are all syntax and no semantics; they simply "shift" 
+% their own term representations. 
 % ===
 
 get_state(S) :- shift(get_state(S)).
