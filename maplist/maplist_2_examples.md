@@ -64,14 +64,14 @@ E = [_1468, _2312, _3040, _3768] ;
 
 - Markus Triska has a page on [metapredicates](https://www.metalevel.at/prolog/metapredicates), which includes `maplist/N`.
 
-## How to pass parameters to _Goal_
+## How to pass parameters to _goal_
 
 Consider this predicate, which tests whether a list item is less than 5.
 
-In standard Prolog notation:
+In standard Prolog notation, indicate the name of the predicate as an atom (`verify`):
 
 ````logtalk
-verify(I) :- format("verify(~d)\n", I), 5 > I.
+verify(I) :- format("verify(~q)\n", I), 5 > I.
 ````
 
 ````logtalk
@@ -83,7 +83,7 @@ verify(4)
 true.
 ````
 
-Alternatively
+Alternatively, you may indicate the name of the predicate as a compound term of arity 0 (`verify()`). This is SWI-Prolog specific:
 
 ````logtalk
 ?- maplist(verify(), [1,2,3,4]).
@@ -94,12 +94,14 @@ verify(4)
 true.
 ````
 
-`maplist/2` is passed the name of the predicate (alternatively, a term of arity 0), and will build a new term from it by appending the current item (giving `verify(1)` for example), then call that.
+`maplist/2` is passed the name of the predicate and will build a new term from it by appending
+the current item (giving `verify(1)` for example), then call that.
 
-The `verify` predicate may depend on a second value. Above, we hardcoded the upper limit to be 5. Why not pass it as a parameter:
+The `verify` predicate may depend on a second value. Above, we hardcoded the upper 
+limit to be 5. Why not pass it as a parameter:
 
 ```logtalk
-verify(Lim,I) :- format("verify(~d > ~d)\n", [Lim,I]), Lim>I.
+verify(Lim,I) :- format("verify(~q > ~q)\n", [Lim,I]), Lim>I.
 ```
 
 In standard Prolog notation:
@@ -115,16 +117,76 @@ false.
 ```
 
 The same as earlier happens. You pass a term `verify(5)` to `maplist/2`. This term may be regarded
-as a half-parameterized call to `verify/2`, with the last argument still missing, a half-completed goal.
-`maplist/2` will append the current list item as the missing argument to form a complete 2-argument goal
-(giving `verify(5,1)` for example), then call that.
+as a half-parameterized call to `verify/2`, with the last argument still missing.
+`maplist/2` will append the current list item as the missing argument to form a complete 2-argument
+atomic goal (giving `verify(5,1)` for example), then call that.
 
-Note that the goal given to `maplist/2` cannot be complex. Syntax restriction!
+Note that the goal given to `maplist/2` cannot be complex:
 
 ```logtalk
 ?- maplist((verify(6),verify(2)),[1,2,3,4,5,6]).
 ERROR: Unknown procedure: (',')/3
 ```
+
+### Sidenote: What about testing 'exists' instead of 'forall'?
+
+`maplist/2` performs "forall" processing over the list.
+
+If you want to check whether there 'exists' an element in the list that fullfills a predicate, here are two ways of doing it.
+
+- Using [`include/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=include/3), which is the "filter" predicate.
+- Using [`foldl/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=foldl/4), which is not as direct because one needs a helper predicate.
+
+This time, let's use the SWI-Prolog [unit testing framework](https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/plunit.html%27))
+to write code. We assume that we are not looking for variables!
+
+```logtalk
+:- discontiguous rt/1.
+
+% Selection criterium
+
+verify(I) :- format("verify(~q)\n", I), 5 > I.
+
+% ===
+% Using include/3
+% ===
+
+:- begin_tests(exists_with_include).
+
+test(find,         true(Founds == [2,3])) :- include(verify, [7,2,9,3,10], Founds).
+test(notfind,      true(Founds == []))    :- include(verify, [7,8,9,5,10], Founds).
+test(notfindempty, true(Founds == []))    :- include(verify, [], Founds).
+   
+:- end_tests(exists_with_include).
+
+rt(exists_with_include) :- run_tests(exists_with_include).
+
+% ===
+% Using foldl/4
+% ===
+
+% Pass accumulator "Acc" on if "Acc" is nonvar, which is supposed to mean "found an item and it's in Acc"
+
+foldy_verify(_,Acc,Acc) :-
+   nonvar(Acc),!.
+
+% Otherwise verify the current Item, and pass it on if it passes the test.
+
+foldy_verify(Item,Acc,AccNext) :- 
+   var(Acc),!,(verify(Item) -> AccNext = Item ; AccNext = Acc).   
+
+:- begin_tests(exists_with_foldl).
+
+test(find,         true(Found == 2)) :- foldl(foldy_verify, [7,2,9,3,10], _, Found),nonvar(Found).
+test(notfind,      true)             :- foldl(foldy_verify, [7,8,9,5,10], _, Found),var(Found).
+test(notfindempty, true)             :- foldl(foldy_verify, [], _, Found),var(Found).
+   
+:- end_tests(exists_with_foldl).
+
+rt(exists_with_foldl) :- run_tests(exists_with_foldl).
+```
+
+Run `rt(_)` on the toplevel after loading the above.
 
 ### How about a little λ?
 
