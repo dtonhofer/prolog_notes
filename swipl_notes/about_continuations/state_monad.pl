@@ -69,7 +69,7 @@ run_with_state(Goal,Scur,Sout) :-     % a stateful context for "Goal" with curre
 % may well run out of global stack!
    
 branch(zero,_,Scur,Scur) :- 
-   debug(run_with_state/3,"After return from reset/3: continuation is 0; goal succeeded",_).
+   debug(run_with_state/3,"After return from reset/3: continuation is 0; goal succeeded",[]).
    
 branch(cont(Cont),get_state(Scur),Scur,Sout) :- !,
    debug(run_with_state/3,"After return from reset/3: ~q",[get_state(Scur)]),
