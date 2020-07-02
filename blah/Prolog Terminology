@@ -1,0 +1,235 @@
+https://stackoverflow.com/questions/49898738/is-this-prolog-terminology-correct-fact-rule-procedure-predicate
+
+From the Prolog ISO Standard
+
+> [ISO/IEC 13211-1][1] (First edition 1995-06-01)
+> 
+>
+> **Information technology - Programming languages - Prolog**
+>
+> **Part 1**: General Core
+
+which has an extensive glossary on pages 2-10.
+
+> 3.7 **argument**: A *term* which is associated with a *predication* or *compound term*.
+>
+> 3.9 **arity**: The number of *arguments* of a *compound term*. Syntactically, a non-negative integer associated with a *functor* or
+> *predicate*.
+> 
+> 3.10 **assert**, to: To assert a *clause* is to add it to the *user-defined procedure* in the *database* defined by the *predicate* of
+> that *clause*.
+> 
+> 3.19 **body**: A goal, distinguished by its context as part of a *rule* (see 3.154).
+> 
+> 3.21 **built-in predicate**: A *procedure* whose *execution* is implemented by the *processor* (see 8).
+>
+> 3.32 **clause**: A *fact* or a *rule*. It has two parts: a *head*, and a *body*.
+> 
+> 3.35 **complete database** The set of *procedures* with respect to which *execution* is performed (see 7.5).
+>
+> 3.37 **compound term**: A *functor* of arity `N`, `N` positive, together with a sequence of `N` *arguments*.
+> 
+> 3.45 **control construct**: A *procedure* whose definition is part of the Prolog *processor* (see 7.8).
+> 
+> 3.52 **database**: The set of *user-defined procedures* which currently exist during *execution* (see 7.5).
+>
+> 3.57 **directive**: A *term* `D` which affects the meaning of *Prolog text* (see 7.4.2) and is denoted in that *Prolog text* by the *directive-term* `:-(D)`.
+>
+> 3.59 **dynamic** (of a *procedure*): A dynamic *procedure* is one whose *clauses* can be inspected or altered during *execution*, for example by
+> *asserting* or *retracting* *clauses* (see 7.5.2).
+> 
+> 3.72 **fact**: A *clause* whose *body* is the *goal* `true`.   NOTE - A fact can be represented in *Prolog text* by a *term* whose *principal functor* is neither `(:-)/1` nor `(:-)/2`.
+>
+> 3.77 **functor**: An *identifier* together with an *arity*.
+> 
+> 3.81 **goal**: A *predication* which is to be *executed* (see *body*, *query*, and 7.7.3).
+>
+> 3.84 **head** (of a *rule*): A *predication*, distinguished by its context.
+> 
+> 3.88 **identifier**: A basic unstructured object used to denote an *atom*, *functor name* or *predicate name*.
+> 
+> 3.129 **predicate**: An *identifier* together with an *arity*.
+>
+> 3.131 **predicate indicator**: A *compound term* `A/N`, where `A` is an *atom* and `N` is a non-negative integer, denoting one particular *procedure* (see 7.1.6.6).
+> 
+> 3.133 **predication**: A *predicate* with *arity* `N` and a sequence of `N` *arguments*.
+> 
+> 3.136 **procedure**: A *control construct*, a *built-in predicate*, or a *user-defined procedure*. A procedure is either *static* or *dynamic*. A
+> procedure is either *private* or *public* (see 7.5). 
+> 
+> 3.141 **Prolog text**: A sequence of *read-terms* denoting *directives* and *clauses* (see 6.2, 7.4).
+>
+> 3.143 **query**: A *goal* given as interactive input to the *top level*.
+> 
+> 3.154 **rule**: A *clause* whose *body* is not the *goal* `true`. During *execution*, if the *body* is true for some *substitution*, then the *head* is also true for that *substitution*. A rule is represented in *Prolog text*
+> by a *term* whose *principal functor* is `(:-)/2` where the first *argument* is converted to the *head*, and the second argument is *converted* to the body.
+> 
+> 3.164 **static** (of a *procedure*): A static *procedure* is one whose *clauses* cannot be altered (see 7.5.2).
+> 
+> 3.185 **top level**: A process whereby a Prolog *processor* repeatedly inputs and *executes* * *queries*.
+> 
+> 3.195 **user-defined procedure**: A *procedure* which is defined by a sequence of *clauses* where the *head* of each *clause* has the same
+> *predicate indicator*, and each *clause* is expressed by *Prolog text* or
+> has been *asserted* during execution (see 8.9).
+
+# Notes
+
+**Basic overview**
+
+````
+h(A,B,C) :- g(A,B),h(B,C),j(A,C).
+<------------------------------->  - A (HORN) CLAUSE, which is also a RULE. 
+            <------------------>   - BODY of the RULE, which also a GOAL.
+                                     ... only one literal: ATOMIC GOAL.
+<------>                           - HEAD of the RULE, which can appear
+                                     as GOAL depending on context.
+
+f(A,B,C).                          - A CLAUSE with the elided body `true`.
+                                     This is a FACT, but _not_ a RULE.
+                                     Also called a UNIT CLAUSE.
+f(A,B,C)  :- true.                 - Same as above, still not a RULE.
+f(A,B,C)  :- !.                    - Is it a RULE? We don't know!
+
+          :- f(A,B,C).             - A DIRECTIVE.
+          :- (foo(bar)).           - Another DIRECTIVE.
+````
+
+Slightly different definitions can be found at the entry for [Horn Clause](https://en.wikipedia.org/wiki/Horn_clause) a Wikipedia. In particular, "fact" is said to be "a unit clause without variables" - this is not in accordance wit the ISO definition.
+
+**The non-terminal indicator**
+
+In addition to the _predicate indicator_ notation `A/N` (`functor/arity`), there is the notation `A//N`, which is not in the ISO standard (or not yet, see [this draft](http://www.complang.tuwien.ac.at/ulrich/iso-prolog/#dcg)). It tells the reader that this predicate is used in a [Definite Clause Grammar (DCG)](https://en.wikipedia.org/wiki/Definite_clause_grammar) and takes 2 hidden arguments for the input "difference list" (or "list difference") pair in addition to the number of arguments indicated. 
+
+In the standard proposal indicated above, it is described as: 
+
+> 3.19 **non-terminal indicator**: A compound term `A//N` where `A` is
+> an atom and `N` is a non-negative integer, denoting one particular
+> non-terminal 
+
+Most implementations translate a non-terminal `nt//n` to a predicate `nt/n+2`. However, one cannot rely on the precise way of translation and the outcome of calling a non-terminal directly by calling the corresponding predicate, that is, with the same name and two extra arguments is not defined. In particular the second additional argument has to be handled with care. A direct use might violate steadfastness, in particular when using [tag:dcg-semicontext].
+
+**Note on _directive_** 
+
+The directive can be another way of writing a query. [From the SICStus Prolog manual](https://sicstus.sics.se/sicstus/docs/latest4/html/sicstus.html/Queries-and-Directives.html#Queries-and-Directives): 
+
+> Queries and directives are ways of directing the system to execute
+> some goal or goals. (...) The principal use for directives (as opposed
+> to queries) is to allow files to contain directives that call various
+> predicates, but for which you do not want to have the answers printed
+> out. In such cases you only want to call the predicates for their
+> effect, i.e. you do not want terminal interaction in the middle of
+> consulting the file.
+
+A directive can also be source file markup, whose position is important (i.e. code meta-information). [From the SWI Prolog manual](https://www.swi-prolog.org/pldoc/doc_for?object=module/2) on the `module` directive:
+
+> This directive can only be used as the first term of a source file. It
+> declares the file to be a module file, defining a module named _Module_.
+
+The predicates used in a directive may be quite peculiar, giving instructions and predicate meta-information to the Prolog processor. [From the SWI Prolog manual](https://www.swi-prolog.org/pldoc/man?section=declare) on "declaring predicate properties":
+
+> This section describes directives which manipulate attributes of
+> predicate definitions.
+
+For example, "load the library for constraint logic programming over finite domains": 
+
+```
+:- use_module(library(clpfd)).
+```
+
+The rule with the empty head `:- foo`, which could be interpreted as `false :- foo` is _not_ used in Prolog to express the constraint "it is never the case that _foo_". It _is_ used that way in implementations of [Answer Set Programming](https://en.wikipedia.org/wiki/Answer_set_programming) like "ASP Prolog" (which has Prolog-y syntax but otherwise is nothing like Prolog).
+
+**Note on _built-in predicate_**
+
+In chapter 8, on page 63, we find: 
+
+> "A built-in predicate is a procedure which is provided by a
+> standard-conforming processor"
+
+Colloquially, "the built-in predicate is part of the Prolog language". Other predicates may be *library predicates* which need to be pulled into the Prolog program by appropriate *directive*. Example from SWI Prolog: [library predicates][2]. 
+
+**Note on _fact_**
+
+Colloquially, a "flat fact" is a fact represented by ground term - a term without variables.
+
+**Note on _functor_**
+
+This has nothing to do with the "[functor][3]" of Category Theory. On the functor of Category Theory, Wikipedia has this to say: 
+
+> The word functor was borrowed by mathematicians from the philosopher
+> Rudolf Carnap, who used the term in a linguistic context; see
+> [function word][4].
+
+And on "function word":
+
+> In linguistics, function words (also called functors) are words
+> that have little lexical meaning or have ambiguous meaning and express
+> grammatical relationships among other words within a sentence, or
+> specify the attitude or mood of the speaker.
+
+So the choice of "functor" for Prolog is a bit unfortunate. 
+
+**Note on _goal_**
+
+The goal can be what one would describe as "simple", e.g. `p(X)`, in which case it is an *atomic goal*, or a tree composed of subgoals e.g. `p(X),q(Y)` because `,` is a predication with the principal functor `(',')/2`. 
+
+In fact, goal is generally taken to be anything that can appear as a rule body. For example, `p(X) -> q(Y) ; r(Z)`, with principal functor `;` (not `->`) is absolutely a goal. 
+
+The goal could also be a variable resolving to a goal, which might be passed to a meta-predicate like [`call/1`][3] for example: `X=(Z is 1+2), call(X).`.
+
+A variation is the incomplete atomic goal used by a meta-predicate. This names a callable predicate with some arguments "on the left" pre-set. The meta-predicate will adjoin arguments "on the right". This is called a **closure** although, unlike in functional programming, it isn't actually a function referring to context valid at function creation time.
+
+For example, the three calls all output `u v w`:
+
+```
+foo(X,Y,Z) :- format("~q ~q ~q\n", [X,Y,Z]).
+
+maplist(foo,    [u],[v],[w]). % call "foo" with 3 arguments
+maplist(foo(u),     [v],[w]). % call closure foo(u) with 2 arguments
+maplist(foo(u,v)       ,[w]). % call closure foo(u,v) with 1 argument
+```
+
+**Note on _predicate_ vs. _procedure_ vs. _predicate indicator_** 
+
+This concept of _predicate_ seems to float in the "space of semantics" rather than the "space of syntax":
+
+- the name or declaration of the "predicate thing" is the *predicate indicator*;
+- the definition of the predicate of the "predicate thing" is the *procedure* (based presumably on code, Prolog or otherwise).
+
+_Example_:
+
+For the _predicate_ `fact` of arity 2 which computes the factorial function:
+
+`fact/2` is the _predicate indicator_, and 
+
+````
+fact(0,1) :- !.
+fact(X,F) :- Xp is (X-1), fact(Xp,Fp), F is (Fp*X).
+````
+
+is the possible corresponding _procedure_.
+
+In practice, _predicate_ is used to denote any _procedure_ as well and one writes the _predicate indicator_ to identify it. 
+
+A _procedure_ which admits to a logical interpretation and allows variables for any of its arguments would a **relation** in the [database interpetation][5] or the [logic interpretation][6] of that word.
+
+In "Programming in Prolog (5th ed.)" (Clocksin & Mellish 2003), it is simply said on p. 188 that 
+
+> The collection of clauses for a given predicate is called a _procedure_.
+
+**Note on _Prolog text_**
+
+A "Prolog program" (a term which is not defined in the ISO Standard) would be the colloquial description of a set of **Prolog texts** to be run by the (possibly standard) processor.
+
+**Prolog text** also includes text entered at the top level which is not a Prolog program, e.g. 
+
+```prolog
+?- X is 5 * 3.
+X = 15.
+```
+
+  [1]: https://stackoverflow.com/tags/iso-prolog/info
+  [2]: https://www.swi-prolog.org/pldoc/man?section=library
+  [3]: https://en.wikipedia.org/wiki/Functor
+  [4]: https://en.wikipedia.org/wiki/Function_word
+  [5]: https://en.wikipedia.org/wiki/Relation_(database)
+  [6]: https://en.wikipedia.org/wiki/Augustus_De_Morgan#Relations
