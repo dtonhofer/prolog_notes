@@ -1,7 +1,7 @@
 # Example: Count occurrences of 'ab' and 'ba' in a string
 
 DCGs are actually too powerful for this example, as the string can be recognized by a 
-regular expression (regex), i.e. a  (nondeterministic) finite state machine.
+regular expression (as given by a simple regex), i.e. a  (nondeterministic) finite state machine.
 
 On the other hand, this allow us to compare the DCG approach and the regex approach.
 
@@ -11,6 +11,12 @@ In this, we use Perl Regular Expressions.
 - Wikipedia: [Regular Expressions](https://en.wikipedia.org/wiki/Regular_expression)
 - Wikipedia: [PCRE: Perl Compatible Regular Expressions Library](https://en.wikipedia.org/wiki/Perl_Compatible_Regular_Expressions)
 - SWI-Prolog's wrapper around PCRE [SWI-Prolog Regular Expression library](https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/pcre.html%27))
+- A regex-testing tool: https://regex101.com/
+
+Note that, as said in the Wikipedia article on "Regular Expressions":
+
+> It is worth noting that many real-world "regular expression" engines implement features that cannot be
+> described by the regular expressions in the sense of formal language theory; rather, they implement _regexes_. 
 
 ## In Perl, using Perl Regular Expressions
 
