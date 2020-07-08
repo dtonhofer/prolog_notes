@@ -1,3 +1,5 @@
+This page is referenced from the comment section of [Environment Control (Prolog flags)](https://eu.swi-prolog.org/pldoc/man?section=flags)
+
 # SWI Prolog strings modes: How is something enclosed by double quotes `"` interpreted?
 
 ## Intro

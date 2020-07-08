@@ -1,4 +1,6 @@
-https://eu.swi-prolog.org/pldoc/doc_for?object=(\%2B)/1
+*** 
+*** This is the text in the comment section of https://eu.swi-prolog.org/pldoc/doc_for?object=(\%2B)/1
+*** 
 
 ## Interpretation
 

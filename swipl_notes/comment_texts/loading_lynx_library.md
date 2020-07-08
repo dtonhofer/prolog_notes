@@ -1,3 +1,5 @@
+This page is referenced from the comment section of [Defining a Module](https://eu.swi-prolog.org/pldoc/man?section=defmodule)
+
 # Prolog module loading example: Loading the "lynx" library
 
 Suppose you want to load the [lynx library](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/lynx/index.html).

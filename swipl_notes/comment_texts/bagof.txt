@@ -1,0 +1,148 @@
+***
+*** Text in th comment section of https://eu.swi-prolog.org/pldoc/doc_for?object=bagof/3
+***
+
+## No solutions for Goal lead to failure, instead of an empty bag.
+
+==
+?- bagof(X,(X=p),Bag).
+Bag = [p].
+
+?- bagof(X,(false),Bag).
+false.
+==
+
+I consider this a bit surprising.
+
+In fact, this means binding the Bag to [] must always fail, because an empty Bag **is never generated**
+
+==
+?- bagof(X,true,[]).
+false.
+==
+
+Evidently, one "true" generates a one-element bag with a fresh variable:
+
+==
+?- bagof(X,true,L).
+L = [_65320].
+==
+
+## Bag needs to fit
+
+Note that the "bag" needs to exactly fit the number of results; there is no "early breakoff if the bag is too small" or "leave remaining elements in bag non-unified if the bag is too large". 
+
+From a logicial standpoint, this absolutely makes sense.
+
+If the bag is a fresh variable, a new list (evidently fitting the number of results obtained) is bound to it.
+
+Example:
+
+==
+?- bagof(S,between(1,3,S),[X]).
+false.
+
+?- bagof(S,between(1,3,S),[X,Y]).
+false.
+
+?- bagof(S,between(1,3,S),[X,Y,Z]).
+X = 1,
+Y = 2,
+Z = 3.
+
+?- bagof(S,between(1,3,S),Bag).
+Bag = [1, 2, 3].
+==
+
+This also applies to setof/3
+
+==
+% Generate some duplicates with bagof/3
+
+?- bagof(S,(between(1,3,S);between(1,2,S)),Bag).
+Bag = [1, 2, 3, 1, 2].
+
+% Eliminate duplicates with setof/3 and either freshvar Bag or three-freshvar list
+
+?- setof(S,(between(1,3,S);between(1,2,S)),Bag).
+Bag = [1, 2, 3].
+
+?- setof(S,(between(1,3,S);between(1,2,S)),[X,Y,Z]).
+X = 1,
+Y = 2,
+Z = 3.
+
+% But
+
+?- setof(S,(between(1,3,S);between(1,2,S)),[X,Y]).
+false.
+==
+
+----
+
+## Notes on the ^ ("caret") mark of setof/3 and bagof/3
+
+More text and test cases at this page: [**Behaviour of the caret ^ in setof/3 and bagof/3 goal expressions**](https://bit.ly/3iDUQap_prolog)
+
+==
+                                 Clause-wide variable
+                                         |
+                                         |
+                +------------------------+------------------------+
+                |                                                 |
+                |          Clause-wide variables                  |
+                |          that are collected via the             |
+                |          template at arg-position 1 by          |
+                |          setof/3 (NOT local to setof/3)         |
+                |          thus can be constrained elsewhere      |
+                |          in the clause (possibly accidentally)  |
+                |                           |                     |
+                |                           |                     |                
+                |                +-+--------+----------+-+        |
+                |                | |                   | |        |
+                |                | |                   | |        |            
+get_closed_set(Set,K) :- setof( [X,Y] , P^R^search(P,R,X,Y,K) , Set).
+                   |                    | |        | |     |
+                   |                    <-------------------> Goal expression 
+                   |                    | |        | |     |
+                   |                    | |        | |     |                   
+                   +---------------------------------------+-----+                    
+                                        | |        | |           |
+                                        | |        | |           |
+                                        +-+----+---+-+          Clause-wide variable.
+                                               |                Backtracking over this
+                                               |                is done by the caller
+                                               |                of get_closed_set/2.
+                                               |
+                                       Variables marked as "free for
+                                       backtracking if fresh".
+                                       This is NEARLY the same as "being
+                                       local to the goal expression" or
+                                       "being existentially quantified."
+                                       Backtracking over these is done by setof/3.
+                                       If these appear elsewhere in the clause,
+                                       they be constrained (possibly accidentally)!
+==
+
+TL;DR It doesn't always work as expected. 
+
+You may want to write a dedicated predicate to "hide" the caret-adorned variables from the context of the clause calling bagof/3:
+
+So transform
+
+==
+bag_them(Bag) :- bagof( [X,Y] , P^R^search(P,R,X,Y) , Bag).
+==
+
+into
+
+==
+bag_them(Bag) :- bagof( [X,Y] , indirect_search(X,Y) , Bag).
+
+indirect_search(X,Y) :- search(_P,_R,X,Y).
+==
+
+See also the "free variable" bracy notation `{X}` used in the lambda expressions of [library(yall)](https://eu.swi-prolog.org/pldoc/man?section=yall). It does the _contrary_ of the caret notation of bagof/3
+
+   - The caret notation of bagof/3 _hides_ variables of the goal from the context of the surrounding clause.
+   - The bracy notation of library(yall) _connects_ variables of the lambda expression to the context of the surrounding clause.

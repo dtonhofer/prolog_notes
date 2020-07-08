@@ -1,3 +1,7 @@
+*** 
+*** This is the comment text on page https://eu.swi-prolog.org/pldoc/doc_for?object=must_be/2
+*** 
+
 This predicate should be used exclusively to perform contract checks and assertion checks, i.e. to inspect the current computational state of the running program.
 
 Because it only does two things, Succeed or Throw:
@@ -41,17 +45,13 @@ user:goal_expansion(must_be(_,_), true).
 
 The predicate seems to be missing a *third argument*: any context information which might be of interest to the whoever is handling the exception. A must_be/3 might be nice. 
 
-The ISO Standard exception, (which is not particularly flexible) allows an =Extra= term in the exception term =error(type_error(_,_),Extra)= or =error(instantiation_error,Extra)=. Could be used here.
+The ISO Standard exception, (which is not particularly flexible) allows an =Extra= term in the exception term error(type_error(_,_),Extra) or error(instantiation_error,Extra). Could be used here.
 
 ----
 
-Finally, comparing various type-testing approaches with a bit of test code: https://bit.ly/2Zha7Xy_prolog
+Finally, comparing various type-testing approaches **with a bit of test code**: https://bit.ly/2Zha7Xy_prolog
 
   - Default approach which fails silently if the answer is "don't know"
   - "Sufficiently instantiated" approach which throws if the answer is "don't know"
-  - must_be/2 approach which throws unless the answer is "yes, the type matches"
-  - can_be/2 approach which throws only if the answer is "it's never going to be that type"
-  - 
-
-
-
+  - must_be/2 approach which throws unless the answer is "yes, the type matches" (can be used on predicate entry to check whether a contract regarding input arguments is being upheld)
+  - can_be/2 approach which throws only if the answer is "it's never going to be that type" (can be used on predicate entry to check whether a contract regarding output arguments is being upheld: is it possible to bind a term of a certain type to that argument later on?) 
