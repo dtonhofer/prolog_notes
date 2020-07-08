@@ -3,9 +3,16 @@
 DCGs are actually too powerful for this example, as the string can be recognized by a 
 regular expression (regex), i.e. a  (nondeterministic) finite state machine.
 
-On the other hand, this allow us to compare the DCG approach and the Regex approach.
+On the other hand, this allow us to compare the DCG approach and the regex approach.
 
-## In perl
+In this, we use Perl Regular Expressions.
+
+- [Cheatsheet for Perl Regular Expressions](https://perlmaven.com/regex-cheat-sheet)
+- Wikipedia: [Regular Expressions](https://en.wikipedia.org/wiki/Regular_expression)
+- Wikipedia: [PCRE: Perl Compatible Regular Expressions Library](https://en.wikipedia.org/wiki/Perl_Compatible_Regular_Expressions)
+- SWI-Prolog's wrapper around PCRE [SWI-Prolog Regular Expression library](https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/pcre.html%27))
+
+## In Perl, using Perl Regular Expressions
 
 Write this in Perl first. The problem is extracting the counts of `ab` and `ba`. It's 
 done in a loop, with the same regular expression applied repeatedly to the ever-smaller
@@ -36,7 +43,7 @@ $ perl fsm_perl.pl abbayyabbaba
 'abbayyabbaba' contains 2 'ab' and 3 'ba': ab-ba-yy-ab-ba-ba
 ```
 
-## In Prolog 
+## In Prolog, using DCGs 
 
 Now build the DCG-based Prolog program. There is some subtlety involved because, during the
 DCG predicate processing (as opposed to after recognition), we want to:
@@ -58,6 +65,44 @@ We can get rid of the intermediate `F` state and soon find a simpler alternative
 ![regex_fsm_2](regex_fsm_2.svg)
 
 Here it is, complete with test cases: [`fsm_prolog.pl`](fsm_prolog.pl)
+
+Note that:
+
+- Non-DCG Calls to Prolog have to be made inside the DCG clauses to compute the latest list of runs (`Pieces`).
+- CLP(FD) is used to make the recursive DCG call on last position (not sure it helps).
+
+Run it on the Prolog Toplevel:
+
+```
+?- [fsm_prolog].
+true.
+
+?- fsm_parse('bab',AB,BA,D,[]).
+AB = 0,
+BA = 1,
+D = 'ba-b'.
+
+?- fsm_parse('aba',AB,BA,D,[]).
+AB = 1,
+BA = 0,
+D = 'ab-a'.
+
+?- fsm_parse('yyabyybayy',AB,BA,D,[]).
+AB = BA, BA = 1,
+D = 'yy-ab-yy-ba-yy' ;
+false.
+
+?- rt(dcg_chars).
+% PL-Unit: dcg_chars ............... done
+% All 15 tests passed
+true.
+```
+
+## In Prolog, using Perl Regular Expressions
+
+SWI-Prolog comes with a library wrapping the PCRE library: 
+[SWI-Prolog Regular Expression library](https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/pcre.html%27)).
+Let's try it!
 
 
 
