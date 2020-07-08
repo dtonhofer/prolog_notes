@@ -1,0 +1,562 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java" xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0" xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:y="http://www.yworks.com/xml/graphml" xmlns:yed="http://www.yworks.com/xml/yed/3" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml/1.1/ygraphml.xsd">
+  <!--Created by yEd 3.20-->
+  <key attr.name="Description" attr.type="string" for="graph" id="d0"/>
+  <key for="port" id="d1" yfiles.type="portgraphics"/>
+  <key for="port" id="d2" yfiles.type="portgeometry"/>
+  <key for="port" id="d3" yfiles.type="portuserdata"/>
+  <key attr.name="url" attr.type="string" for="node" id="d4"/>
+  <key attr.name="description" attr.type="string" for="node" id="d5"/>
+  <key for="node" id="d6" yfiles.type="nodegraphics"/>
+  <key for="graphml" id="d7" yfiles.type="resources"/>
+  <key attr.name="url" attr.type="string" for="edge" id="d8"/>
+  <key attr.name="description" attr.type="string" for="edge" id="d9"/>
+  <key for="edge" id="d10" yfiles.type="edgegraphics"/>
+  <graph edgedefault="directed" id="G">
+    <data key="d0"/>
+    <node id="n0">
+      <data key="d6">
+        <y:GenericNode configuration="com.yworks.flowchart.start2">
+          <y:Geometry height="40.0" width="80.0" x="498.93264248704656" y="402.21243523316065"/>
+          <y:Fill color="#00FF00" color2="#00FF00" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="31.94921875" x="24.025390625" y="11.015625">start<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n1">
+      <data key="d6">
+        <y:GenericNode configuration="com.yworks.flowchart.start2">
+          <y:Geometry height="40.0" width="80.0" x="774.9326424870466" y="402.21243523316065"/>
+          <y:Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="31.9375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="38.39453125" x="20.802734375" y="4.03125">ab
+found<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n2">
+      <data key="d6">
+        <y:GenericNode configuration="com.yworks.flowchart.start2">
+          <y:Geometry height="40.0" width="80.0" x="222.93264248704656" y="402.21243523316065"/>
+          <y:Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="31.9375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="38.39453125" x="20.802734375" y="4.03125">ba
+found<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n3">
+      <data key="d6">
+        <y:GenericNode configuration="com.yworks.flowchart.start2">
+          <y:Geometry height="40.0" width="80.0" x="659.9326424870466" y="523.2124352331607"/>
+          <y:Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="38.0" y="18.0">
+            <y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n4">
+      <data key="d6">
+        <y:GenericNode configuration="com.yworks.flowchart.start2">
+          <y:Geometry height="40.0" width="80.0" x="774.9326424870466" y="523.2124352331607"/>
+          <y:Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="38.0" y="18.0">
+            <y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n5">
+      <data key="d6">
+        <y:GenericNode configuration="com.yworks.flowchart.start2">
+          <y:Geometry height="40.0" width="80.0" x="327.93264248704656" y="523.2124352331607"/>
+          <y:Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="38.0" y="18.0">
+            <y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n6">
+      <data key="d6">
+        <y:GenericNode configuration="com.yworks.flowchart.start2">
+          <y:Geometry height="40.0" width="80.0" x="222.93264248704656" y="523.2124352331607"/>
+          <y:Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="38.0" y="18.0">
+            <y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n7">
+      <data key="d6">
+        <y:GenericNode configuration="com.yworks.flowchart.start2">
+          <y:Geometry height="40.0" width="80.0" x="498.93264248704656" y="681.2124352331607"/>
+          <y:Fill color="#FF6600" color2="#FF6600" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="31.9375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="151.498046875" x="-35.7490234375" y="4.03125">end condition:
+input list must be empty<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+        </y:GenericNode>
+      </data>
+    </node>
+    <edge id="e0" source="n0" target="n1">
+      <data key="d10">
+        <y:QuadCurveEdge straightness="0.1">
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.4609375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="22.71337890625" x="106.66433194017156" y="-10.73046637816742">ab<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.5" segment="0"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+        </y:QuadCurveEdge>
+      </data>
+    </edge>
+    <edge id="e1" source="n0" target="n2">
+      <data key="d10">
+        <y:QuadCurveEdge straightness="0.1">
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.4609375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="22.71337890625" x="-129.37766024732844" y="-10.73046637816742">ba<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.5" segment="0"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+        </y:QuadCurveEdge>
+      </data>
+    </edge>
+    <edge id="e2" source="n0" target="n3">
+      <data key="d10">
+        <y:QuadCurveEdge straightness="0.1">
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.4609375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="13.19189453125" x="57.906275299546564" y="37.74634026245758">a<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.5" segment="0"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+        </y:QuadCurveEdge>
+      </data>
+    </edge>
+    <edge id="e3" source="n3" target="n4">
+      <data key="d10">
+        <y:QuadCurveEdge straightness="0.1">
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.4609375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="13.19189453125" x="30.885767487046564" y="-10.730496895745546">a<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.5" segment="0"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+        </y:QuadCurveEdge>
+      </data>
+    </edge>
+    <edge id="e4" source="n3" target="n0">
+      <data key="d10">
+        <y:BezierEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
+            <y:Point x="590.9326424870466" y="602.2124352331607"/>
+            <y:Point x="555.9326424870466" y="533.2124352331607"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.4609375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="90.91650390625" x="-114.77429032695488" y="-6.3921038439518725">not a, not b<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="right" ratio="0.0" segment="0"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+        </y:BezierEdge>
+      </data>
+    </edge>
+    <edge id="e5" source="n4" target="n1">
+      <data key="d10">
+        <y:BezierEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.4609375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="13.521484375" x="-6.760716887953436" y="-41.30648974651581">b<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.29965830861040793" segment="-1"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+        </y:BezierEdge>
+      </data>
+    </edge>
+    <edge id="e6" source="n0" target="n5">
+      <data key="d10">
+        <y:BezierEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.4609375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="13.521484375" x="-75.91635653639082" y="38.20422600464508">b<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.5" segment="0"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+        </y:BezierEdge>
+      </data>
+    </edge>
+    <edge id="e7" source="n5" target="n6">
+      <data key="d10">
+        <y:BezierEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.4609375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="13.521484375" x="-39.23999545240656" y="-10.730496895745546">b<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.5" segment="0"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+        </y:BezierEdge>
+      </data>
+    </edge>
+    <edge id="e8" source="n6" target="n6">
+      <data key="d10">
+        <y:BezierEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
+            <y:Point x="296.93264248704656" y="594.2124352331607"/>
+            <y:Point x="242.93264248704656" y="637.2124352331607"/>
+            <y:Point x="175.93264248704656" y="579.2124352331607"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.4609375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="13.521484375" x="-68.86746737623469" y="36.253572928473204">b<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.5" segment="2"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+        </y:BezierEdge>
+      </data>
+    </edge>
+    <edge id="e9" source="n5" target="n0">
+      <data key="d10">
+        <y:BezierEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
+            <y:Point x="422.93264248704656" y="581.2124352331607"/>
+            <y:Point x="510.93264248704656" y="613.2124352331607"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.4609375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="90.91650390625" x="22.414136790850534" y="-4.268354725018071">not a, not b<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="left" ratio="0.22329139869353365" segment="1"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+        </y:BezierEdge>
+      </data>
+    </edge>
+    <edge id="e10" source="n6" target="n2">
+      <data key="d10">
+        <y:BezierEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.4609375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="13.19189453125" x="-6.595952483656561" y="-47.41058537523452">a<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.42287613552666503" segment="-1"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+        </y:BezierEdge>
+      </data>
+    </edge>
+    <edge id="e11" source="n1" target="n0">
+      <data key="d10">
+        <y:BezierEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
+            <y:Point x="814.9326424870466" y="322.21243523316065"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.4609375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="57.583984375" x="-28.462926360609686" y="-26.433774483636228">epsilon<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.0" segment="0"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+        </y:BezierEdge>
+      </data>
+    </edge>
+    <edge id="e12" source="n2" target="n0">
+      <data key="d10">
+        <y:BezierEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
+            <y:Point x="262.93264248704656" y="328.21243523316065"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.4609375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="57.583984375" x="-29.141026946547186" y="-26.490811837151853">epsilon<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.0" segment="0"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+        </y:BezierEdge>
+      </data>
+    </edge>
+    <edge id="e13" source="n4" target="n0">
+      <data key="d10">
+        <y:BezierEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
+            <y:Point x="1008.9326424870466" y="427.21243523316065"/>
+            <y:Point x="903.9326424870466" y="252.21243523316065"/>
+            <y:Point x="719.9326424870466" y="257.21243523316065"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.4609375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="90.91650390625" x="17.01844877283338" y="-248.73082798530413">not a, not b<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="left" ratio="0.8468315353930891" segment="1"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+        </y:BezierEdge>
+      </data>
+    </edge>
+    <edge id="e14" source="n6" target="n0">
+      <data key="d10">
+        <y:BezierEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
+            <y:Point x="87.93264248704656" y="432.21243523316065"/>
+            <y:Point x="186.93264248704656" y="250.21243523316065"/>
+            <y:Point x="340.93264248704656" y="208.21243523316065"/>
+            <y:Point x="389.93264248704656" y="320.21243523316065"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.4609375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="90.91650390625" x="-99.50340909189833" y="-239.6261395892655">not a, not b<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="right" ratio="0.7887126534690729" segment="1"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+        </y:BezierEdge>
+      </data>
+    </edge>
+    <edge id="e15" source="n4" target="n4">
+      <data key="d10">
+        <y:BezierEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
+            <y:Point x="758.9326424870466" y="615.2124352331607"/>
+            <y:Point x="794.9326424870466" y="630.2124352331607"/>
+            <y:Point x="860.9326424870466" y="605.2124352331607"/>
+            <y:Point x="866.9326424870466" y="587.2124352331607"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.4609375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="13.19189453125" x="17.790064362046564" y="47.313875662848204">a<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.5" segment="2"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+        </y:BezierEdge>
+      </data>
+    </edge>
+    <edge id="e16" source="n0" target="n0">
+      <data key="d10">
+        <y:BezierEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
+            <y:Point x="483.93264248704656" y="318.21243523316065"/>
+            <y:Point x="587.9326424870466" y="311.21243523316065"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="31.9375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="38.634765625" x="-19.013278463304687" y="-77.3584019426246">not a,
+not b<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="right" ratio="0.5" segment="0"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+        </y:BezierEdge>
+      </data>
+    </edge>
+    <edge id="e17" source="n0" target="n7">
+      <data key="d10">
+        <y:BezierEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="46.8671875" x="-23.433568450453436" y="189.52380608277008">epsilon<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.874352139789723" segment="-1"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+        </y:BezierEdge>
+      </data>
+    </edge>
+    <edge id="e18" source="n3" target="n7">
+      <data key="d10">
+        <y:BezierEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="46.8671875" x="-123.12463416853348" y="88.84906507448193">epsilon<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.8649310293465052" segment="-1"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+        </y:BezierEdge>
+      </data>
+    </edge>
+    <edge id="e19" source="n5" target="n7">
+      <data key="d10">
+        <y:BezierEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="46.8671875" x="80.04354820879985" y="86.62606032758401">epsilon<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.835098106090435" segment="-1"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+        </y:BezierEdge>
+      </data>
+    </edge>
+    <edge id="e20" source="n4" target="n7">
+      <data key="d10">
+        <y:BezierEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="46.8671875" x="-124.23414391101528" y="48.72027411066301">epsilon<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.37379425015795714" segment="-1"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+        </y:BezierEdge>
+      </data>
+    </edge>
+    <edge id="e21" source="n6" target="n7">
+      <data key="d10">
+        <y:BezierEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="46.8671875" x="73.01464370928142" y="80.79667305043495">epsilon<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="right" ratio="0.5" segment="0"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+        </y:BezierEdge>
+      </data>
+    </edge>
+  </graph>
+  <data key="d7">
+    <y:Resources/>
+  </data>
+</graphml>
