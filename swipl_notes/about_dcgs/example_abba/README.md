@@ -1,15 +1,13 @@
 # Example: Count occurrences of 'ab' and 'ba' in a string
 
-DCGs are actually too powerful for this example, but the string
-can be recognized by a regular expression, i.e. a (nondeterministic)
-finite state machine.
+DCGs are actually too powerful for this example, as the string can be recognized by a 
+regular expression (regex), i.e. a  (nondeterministic) finite state machine.
 
-But this will allow us to compare it to a regex approach.
+On the other hand, this allow us to compare the DCG approach and the Regex approach.
 
-Write in in Perl first. The problem is extracting the counts of
-`ab` and `ba`. It's done in a loop, with the same regular 
-expression applied repeatedly to the ever-smaller tail of the
-input string:
+Write this in Perl first. The problem is extracting the counts of `ab` and `ba`. It's 
+done in a loop, with the same regular expression applied repeatedly to the ever-smaller
+tail of the input string:
 
 [fsm_perl.pl](fsm_perl.pl)
 
