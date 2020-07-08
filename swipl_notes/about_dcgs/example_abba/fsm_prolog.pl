@@ -1,6 +1,4 @@
 :- use_module(library(clpfd)).
-:- use_module(library(pcre)).
-:- debug(dcg).
 
 % ---
 % merge(+XX, +Chars, +PiecesIn, -PiecesOut)
@@ -58,18 +56,20 @@ fsm_parse(Str,AB,BA,Dashed,Rest) :-
 :- begin_tests(dcg_chars).
 
 test(fsm_00,[true(T),nondet]) :- fsm_parse(''                ,AB,BA,D,[]), T = ([AB,BA,D] == [0,0,'']).
-test(fsm_01,[true(T),nondet]) :- fsm_parse('yyabyybayy'      ,AB,BA,D,[]), T = ([AB,BA,D] == [1,1,'yy-ab-yy-ba-yy']).
-test(fsm_02,[true(T),nondet]) :- fsm_parse('yyabbayyabaabaab',AB,BA,D,[]), T = ([AB,BA,D] == [4,1,'yy-ab-ba-yy-ab-a-ab-a-ab']).
-test(fsm_03,[true(T),nondet]) :- fsm_parse('abbaayybbaba'    ,AB,BA,D,[]), T = ([AB,BA,D] == [1,3,'ab-ba-ayyb-ba-ba']).
-test(fsm_04,[true(T),nondet]) :- fsm_parse('abbaabbaba'      ,AB,BA,D,[]), T = ([AB,BA,D] == [2,3,'ab-ba-ab-ba-ba']).
-test(fsm_05,[true(T),nondet]) :- fsm_parse('abbayyabbaba'    ,AB,BA,D,[]), T = ([AB,BA,D] == [2,3,'ab-ba-yy-ab-ba-ba']).
+test(fsm_01,[true(T),nondet]) :- fsm_parse('bab'             ,AB,BA,D,[]), T = ([AB,BA,D] == [0,1,'ba-b']).
+test(fsm_02,[true(T),nondet]) :- fsm_parse('aba'             ,AB,BA,D,[]), T = ([AB,BA,D] == [1,0,'ab-a']).
+test(fsm_03,[true(T),nondet]) :- fsm_parse('yyabyybayy'      ,AB,BA,D,[]), T = ([AB,BA,D] == [1,1,'yy-ab-yy-ba-yy']).
+test(fsm_04,[true(T),nondet]) :- fsm_parse('yyabbayyabaabaab',AB,BA,D,[]), T = ([AB,BA,D] == [4,1,'yy-ab-ba-yy-ab-a-ab-a-ab']).
+test(fsm_05,[true(T),nondet]) :- fsm_parse('abbaayybbaba'    ,AB,BA,D,[]), T = ([AB,BA,D] == [1,3,'ab-ba-ayyb-ba-ba']).
 test(fsm_06,[true(T),nondet]) :- fsm_parse('abbaabbaba'      ,AB,BA,D,[]), T = ([AB,BA,D] == [2,3,'ab-ba-ab-ba-ba']).
-test(fsm_07,[true(T),nondet]) :- fsm_parse('yabybayyyy'      ,AB,BA,D,[]), T = ([AB,BA,D] == [1,1,'y-ab-y-ba-yyyy']).
-test(fsm_08,[true(T),nondet]) :- fsm_parse('yyyyyyyyya'      ,AB,BA,D,[]), T = ([AB,BA,D] == [0,0,'yyyyyyyyya']).
-test(fsm_09,[true(T),nondet]) :- fsm_parse('yyyyyyybaa'      ,AB,BA,D,[]), T = ([AB,BA,D] == [0,1,'yyyyyyy-ba-a']).
-test(fsm_10,[true(T),nondet]) :- fsm_parse('yyyyyyyba'       ,AB,BA,D,[]), T = ([AB,BA,D] == [0,1,'yyyyyyy-ba']).
-test(fsm_11,[true(T),nondet]) :- fsm_parse('yaybyayba'       ,AB,BA,D,[]), T = ([AB,BA,D] == [0,1,'yaybyay-ba']).
-test(fsm_12,[true(T),nondet]) :- fsm_parse('yaabby'          ,AB,BA,D,[]), T = ([AB,BA,D] == [1,0,'ya-ab-by']).
+test(fsm_07,[true(T),nondet]) :- fsm_parse('abbayyabbaba'    ,AB,BA,D,[]), T = ([AB,BA,D] == [2,3,'ab-ba-yy-ab-ba-ba']).
+test(fsm_08,[true(T),nondet]) :- fsm_parse('abbaabbaba'      ,AB,BA,D,[]), T = ([AB,BA,D] == [2,3,'ab-ba-ab-ba-ba']).
+test(fsm_09,[true(T),nondet]) :- fsm_parse('yabybayyyy'      ,AB,BA,D,[]), T = ([AB,BA,D] == [1,1,'y-ab-y-ba-yyyy']).
+test(fsm_10,[true(T),nondet]) :- fsm_parse('yyyyyyyyya'      ,AB,BA,D,[]), T = ([AB,BA,D] == [0,0,'yyyyyyyyya']).
+test(fsm_11,[true(T),nondet]) :- fsm_parse('yyyyyyybaa'      ,AB,BA,D,[]), T = ([AB,BA,D] == [0,1,'yyyyyyy-ba-a']).
+test(fsm_12,[true(T),nondet]) :- fsm_parse('yyyyyyyba'       ,AB,BA,D,[]), T = ([AB,BA,D] == [0,1,'yyyyyyy-ba']).
+test(fsm_13,[true(T),nondet]) :- fsm_parse('yaybyayba'       ,AB,BA,D,[]), T = ([AB,BA,D] == [0,1,'yaybyay-ba']).
+test(fsm_14,[true(T),nondet]) :- fsm_parse('yaabby'          ,AB,BA,D,[]), T = ([AB,BA,D] == [1,0,'ya-ab-by']).
 
 :- end_tests(dcg_chars). 
 
