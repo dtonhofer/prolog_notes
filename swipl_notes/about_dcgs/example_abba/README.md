@@ -5,6 +5,8 @@ regular expression (regex), i.e. a  (nondeterministic) finite state machine.
 
 On the other hand, this allow us to compare the DCG approach and the Regex approach.
 
+## In perl
+
 Write this in Perl first. The problem is extracting the counts of `ab` and `ba`. It's 
 done in a loop, with the same regular expression applied repeatedly to the ever-smaller
 tail of the input string:
@@ -34,6 +36,8 @@ $ perl fsm_perl.pl abbayyabbaba
 'abbayyabbaba' contains 2 'ab' and 3 'ba': ab-ba-yy-ab-ba-ba
 ```
 
+## In Prolog 
+
 Now build the DCG-based Prolog program. There is some subtlety involved because, during the
 DCG predicate processing (as opposed to after recognition), we want to:
 
@@ -51,9 +55,7 @@ twice through back to `start`, which would be undesired.
 
 We can get rid of the intermediate `F` state and soon find a simpler alternative:
 
-[![regex_fsm_2](regex_fsm_2.svg)
-
-Coding this into a Prolog DCG is a bit tricky:
+![regex_fsm_2](regex_fsm_2.svg)
 
 Here it is, complete with test cases: [`fsm_prolog.pl`](fsm_prolog.pl)
 
