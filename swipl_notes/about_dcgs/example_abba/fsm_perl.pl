@@ -66,6 +66,8 @@ die "You must provide a string to recognize" unless (defined $str);
 
 if ($str eq "test") {
    test(''                ,0,0,'');
+   test('bab'             ,0,1,'ba-b');
+   test('aba'             ,1,0,'ab-a');
    test('yyabyybayy'      ,1,1,'yy-ab-yy-ba-yy');
    test('yyabbayyabaabaab',4,1,'yy-ab-ba-yy-ab-a-ab-a-ab');
    test('abbaayybbaba'    ,1,3,'ab-ba-ayyb-ba-ba');
@@ -87,7 +89,7 @@ else {
    my $pieces            = $$result{pieces};
    my $recons_dashed_str = join('-' , @$pieces);
    print "'$str' contains $ab_count 'ab' and $ba_count 'ba': $recons_dashed_str\n";
-   print "test('$str',$ab_count,$ba_count,'$recons_dashed_str')\n"
+   # print "test('$str',$ab_count,$ba_count,'$recons_dashed_str')\n"
 }
 
 
