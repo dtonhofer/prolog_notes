@@ -146,10 +146,11 @@ S = compound(p, [nongnd], [var(X), lbox([list, gnd], int(1), lbox([list, gnd], i
 - There is a question on Stack Overflow about this: [What are the data types in Prolog?](https://stackoverflow.com/questions/12038009/what-are-the-data-types-in-prolog)
    - Where a reference is given to [Richard A. O'Keefe's draft Prolog Standard](http://www.complang.tuwien.ac.at/ulrich/iso-prolog/okeefe.txt) (1984), a document which contains a type tree.
 - [Logtalk](https://logtalk.org/) has actual datatypes and OO-style message handlers. This is achieved by setting up Prolog Modules around terms, which have the characteristics of objects (Prolog need a proper hierarchical Module system)
-- Type tests seems to be non-logical but they are if one considers them to have a hidden additional argument: A term representing the "current computational state" of the system. That view probably doesn't help much.
+- Type tests seems to be **non-logical** because they may succeed or fail on the same call depending on the current state of the computation.
+  The "logicality" can be recovered if one considers that they have a hidden additional argument: A term representing the "current computational 
+  state" of the system. Well, that view probably doesn't help much, except in a philosophical sense.
 
-
-## Compound terms of arity 0 vs atoms in predicate roles vs. in function roles
+## Compound terms of arity 0 vs. atoms in "predicate roles" and in "function roles"
 
 In predicate role, atoms and compound terms of arity 0 are the same:
 
