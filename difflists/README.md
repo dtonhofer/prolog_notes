@@ -4,14 +4,31 @@
 
 - ["Difference List" wiki entry](https://swi-prolog.discourse.group/t/difference-list/959) at Prolog Discourse site.
 - ["Difference Lists" by Frank Pfenning](https://www.cs.cmu.edu/~fp/courses/lp/lectures/11-diff.pdf) (PDF)
-- [Applying "Difference Lists" to DCGs by Markus Triska](https://www.metalevel.at/prolog/dcg). "Difference Lists" are called "List Differences" here: _In the literature, you will also encounter the term "difference list". However, this terminology is misleading: We are not talking about—as the name may suggest—a special kind of list. The additional arguments are completely ordinary lists. It is their differences that matter especially in such cases._
-   - A corresponding presentation on Youtube: https://youtu.be/6egAF4-HVzw
 - [Presentation on Difference Lists](https://www.cl.cam.ac.uk/teaching/0809/Prolog/Prolog08ML5R2.pdf) by David Eyers at University of Cambridge, for the [Prolog Course](https://www.cl.cam.ac.uk/teaching/0809/Prolog/).
-- [PrologHub: Difference Lists Explored](https://prologhub.pl/difference-lists-explored/)
 
 Also: 
 
 - [Difference Lists in Logtalk](https://logtalk.org/library/difflist_0.html), with [code here](https://github.com/LogtalkDotOrg/logtalk3/blob/master/library/types/difflist.lgt)
+
+### Some vocabulary confusion
+
+Prolog DCGs are rules for parsing, and more generally, for list processing. DCG rules takes two "hidden arguments", name the input list to be
+processed and the output list, the result of processing by the rule.
+
+For me, this is the standard "accumulator pattern". Indeed, the hidden arguments are designated as "accumulator" in a paper discussion
+extension of the DCGs to EDCGs.
+
+However, those hidden arguments are also designated as "difference lists", and I feel that is completely wrong: These are just two lists.
+
+In particular the SWI-Prolog [manual page on DCGs](https://eu.swi-prolog.org/pldoc/man?section=DCG) used the word "difference lists":
+
+> Grammar rules form a comfortable interface to difference lists. They are designed both to support writing parsers that build a parse
+> tree from a list of characters or tokens and for generating a flat list from a term. 
+
+Also, in [Applying "Difference Lists" to DCGs](https://www.metalevel.at/prolog/dcg) (corresponding presentation on Youtube: https://youtu.be/6egAF4-HVzw) 
+Markus Triska also uses "Difference Lists" or "List Differences".
+
+This confusion still needs to be clarified.
 
 ## About 
 
