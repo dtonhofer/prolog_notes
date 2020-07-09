@@ -32,11 +32,7 @@ true.
 
 ## SWI Prolog data type tree
 
-An image depicting the built-in data types one may encounter in SWI Prolog. They are 
-similar to the types of other ISO-standard Prologs (but additional features may be found, see
-[Comparison of Prolog implementations](https://en.wikipedia.org/wiki/Comparison_of_Prolog_implementations). 
-In SWI-Prolog there is no way to define new data types from the base datatypes,
-([algebraically](https://en.wikipedia.org/wiki/Algebraic_data_type) or otherwise), so these are the only one there are.
+An image depicting the built-in data types one may encounter in SWI Prolog can be found below.
 
 - [SVG file](swipl_datatype_tree/swipl_datatype_tree.svg). **The diagram in SVG format**.
   Can be visualized in a browser and easily panned & zoomed. 
@@ -48,6 +44,13 @@ In SWI-Prolog there is no way to define new data types from the base datatypes,
   (Note that you have to switch off antialiasing if you use it, otherwise it feels like driving
    an ocean liner).
 - [Pure text version](swipl_datatype_tree/swipl_datatype_tree.txt). Evidently not as complete. Also shown below.
+
+SWI-Prolog built-in data types are similar to the types of other ISO-standard Prologs. Additional 
+features may be found, in particular to support some kind of object orientation. See
+[Comparison of Prolog implementations](https://en.wikipedia.org/wiki/Comparison_of_Prolog_implementations). 
+
+In SWI-Prolog there is no way to define new data types from the base datatypes,
+([algebraically](https://en.wikipedia.org/wiki/Algebraic_data_type) or otherwise), so these are the only one there are.
 
 The diagram may change in the future. For example, the _dict_ datatype may move out from under the _compound_ datatype. 
 We will see what happens.
