@@ -106,9 +106,9 @@ Note the representation for sequences of characters:
   would thus be `[104, 101, 108, 108, 111]`. See [`atom_codes/2`](https://www.swi-prolog.org/pldoc/doc_for?object=atom_codes/2), 
   which relates an atom or a string to a list of code points.
   
- Note that a [DCG](https://www.swi-prolog.org/pldoc/doc_for?object=phrase/3) rule deals with _lists_ in general. For processing text,
- and depending on how it has been programmed, it may expect a list of characters, a lits of character codes or maybe even a list of
- strings of length 1  (that would be unlikely though).
+ Note that a [DCG](https://www.swi-prolog.org/pldoc/doc_for?object=phrase/3) rule deals with _lists_ in general. When processing text,
+ and depending on how it has been programmed, it may expect a list of characters, a list of character codes or even a list of
+ strings of length 1 (the last situation would be unlikely though).
 
 ## Code implementing the type tree decision sequence when going from root to leaf 
 
