@@ -34,14 +34,14 @@ true.
 
 An image depicting the built-in data types one may encounter in SWI Prolog can be found below.
 
-- **The diagram in SVG format**: [SVG file](swipl_datatype_tree/swipl_data_type_tree.svg), can be visualized in a browser and easily panned & zoomed. 
-- **The diagram in PNG format**: [PNG file](swipl_datatype_tree/swipl_data_type_tree.png), awkward to use.
-- **The editable diagram**: [graphml file](swipl_datatype_tree/swipl_data_type_tree.graphml), in [graphml](http://graphml.graphdrawing.org/) format.
+- **The diagram in SVG format**: [SVG file](swipl_data_type_tree/swipl_data_type_tree.svg), can be visualized in a browser and easily panned & zoomed. 
+- **The diagram in PNG format**: [PNG file](swipl_data_type_tree/swipl_data_type_tree.png), awkward to use.
+- **The editable diagram**: [graphml file](swipl_datat_ype_tree/swipl_data_type_tree.graphml), in [graphml](http://graphml.graphdrawing.org/) format.
   Edited with the free (but not open) Java-based [yEd](https://www.yworks.com/products/yed) editor
   (Note that you have to switch off antialiasing if you use it, otherwise it feels like driving an ocean liner).
-- [Pure text version](swipl_datatype_tree/swipl_data_type_tree.txt), not as complete, also shown below.
-   - [Pure text version as ODT](swipl_datatype_tree/swipl_data_type_tree.odt)
-   - [Pure text version as PDF](swipl_datatype_tree/swipl_data_type_tree.pdf)
+- [Pure text version](swipl_data_type_tree/swipl_data_type_tree.txt), not as complete, also shown below.
+   - [Pure text version as ODT](swipl_data_type_tree/swipl_data_type_tree.odt)
+   - [Pure text version as PDF](swipl_data_type_tree/swipl_data_type_tree.pdf)
 
 SWI-Prolog built-in data types are similar to the types of other ISO-standard Prologs. Additional 
 features may be found, in particular to support some kind of object orientation. See
