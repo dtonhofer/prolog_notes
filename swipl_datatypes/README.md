@@ -17,7 +17,7 @@ Note that in basic Prolog, data types are all what could be called "primitive". 
 [Abstract Data Types](https://en.wikipedia.org/wiki/Data_type#Abstract_data_types) or opaque data types.
 (except maybe the Dictionary of SWI Prolog and the "blobs" hiding some system facility like sockets etc.)
 
-Structure is given by arranging instances of the primitive datatypes into a graph of arbitrary depth, including depth zero, 
+Structure is given by arranging instances of the primitive data types into a graph of arbitrary depth, including depth zero, 
 forming a **term**. That graph is generally acyclic, and generally a tree. Once created, a graph cannot be changed, but if it
 has leaves that are "uninstantiated" (leaves which I call "fresh terms"), the graph can grow at those leaves over time 
 as new terms are grafted onto those places. Once all the "fresh terms" remain, the term is called **ground**. Prolog **variables**
@@ -34,25 +34,23 @@ true.
 
 An image depicting the built-in data types one may encounter in SWI Prolog can be found below.
 
-- [SVG file](swipl_datatype_tree/swipl_datatype_tree.svg). **The diagram in SVG format**.
-  Can be visualized in a browser and easily panned & zoomed. 
-- [PNG file](swipl_datatype_tree/swipl_datatype_tree.png). **The diagram in PNG format**, a bit
-  awkward to use.
-- [graphml file](swipl_datatype_tree/swipl_datatype_tree.graphml). **The editable diagram**
-  in [graphml](http://graphml.graphdrawing.org/) format.
+- **The diagram in SVG format**: [SVG file](swipl_datatype_tree/swipl_data_type_tree.svg), can be visualized in a browser and easily panned & zoomed. 
+- **The diagram in PNG format**: [PNG file](swipl_datatype_tree/swipl_data_type_tree.png), awkward to use.
+- **The editable diagram**: [graphml file](swipl_datatype_tree/swipl_data_type_tree.graphml), in [graphml](http://graphml.graphdrawing.org/) format.
   Edited with the free (but not open) Java-based [yEd](https://www.yworks.com/products/yed) editor
-  (Note that you have to switch off antialiasing if you use it, otherwise it feels like driving
-   an ocean liner).
-- [Pure text version](swipl_datatype_tree/swipl_datatype_tree.txt). Evidently not as complete. Also shown below.
+  (Note that you have to switch off antialiasing if you use it, otherwise it feels like driving an ocean liner).
+- [Pure text version](swipl_datatype_tree/swipl_data_type_tree.txt), not as complete, also shown below.
+   - [Pure text version as ODT](swipl_datatype_tree/swipl_data_type_tree.odt)
+   - [Pure text version as PDF](swipl_datatype_tree/swipl_data_type_tree.pdf)
 
 SWI-Prolog built-in data types are similar to the types of other ISO-standard Prologs. Additional 
 features may be found, in particular to support some kind of object orientation. See
 [Comparison of Prolog implementations](https://en.wikipedia.org/wiki/Comparison_of_Prolog_implementations). 
 
-In SWI-Prolog there is no way to define new data types from the base datatypes,
+In SWI-Prolog there is no way to define new data types from the base data types,
 ([algebraically](https://en.wikipedia.org/wiki/Algebraic_data_type) or otherwise), so these are the only one there are.
 
-The diagram may change in the future. For example, the _dict_ datatype may move out from under the _compound_ datatype. 
+The diagram may change in the future. For example, the _dict_ data type may move out from under the _compound_ data type. 
 We will see what happens.
 
 ```text
@@ -93,11 +91,11 @@ We will see what happens.
 
 Note the representation for sequences of characters:
 
-- SWI-Prolog _string_, a dedicated datatype (for example: `"Hello"`). Note that you can actually configure how the SWI-Prolog reader
+- SWI-Prolog _string_, a dedicated data type (for example: `"Hello"`). Note that you can actually configure how the SWI-Prolog reader
   interpretes what is in between `"` double quotes. See the flag `double_quotes` (which can be any of `codes`, `chars`, `atom`, `string`) 
   in the manual page for [current_prolog_flag_2](https://www.swi-prolog.org/pldoc/doc_for?object=current_prolog_flag/2). For a lot
   of information about the SWI-Prolog _string_, see [The string type and its double quoted syntax](https://www.swi-prolog.org/pldoc/man?section=strings).
-- The _atom_, the classical Prolog datatype for sequences of characters: `'XYZ'` or `hello`. (Not to be confused with the _atom_ or 
+- The _atom_, the classical Prolog data type for sequences of characters: `'XYZ'` or `hello`. (Not to be confused with the _atom_ or 
   of [_atomic formula_](https://en.wikipedia.org/wiki/Atomic_formula) of First-Order Logic, which is a predicate applied to some terms: _p(x,y,f(z))_.
 - A _list of characters_, where Prolog "characters" are understood to be atoms of length 1: `[h, e, l, l, o]`. See 
   [`atom_chars/2`](https://www.swi-prolog.org/pldoc/doc_for?object=atom_chars/2), which relates an atom or a string to a list of characters.
@@ -112,7 +110,7 @@ Note the representation for sequences of characters:
 
 ## Code implementing the type tree decision sequence when going from root to leaf 
 
-[This](code/tagging.pl) is Prolog code which follows the datatype tree above to "tag" the elements of a term.
+[This](code/tagging.pl) is Prolog code which follows the data type tree above to "tag" the elements of a term.
 
 Contains Unit Test code to be run with `rt(_).`.
 
@@ -143,12 +141,17 @@ S = compound(p, [nongnd], [var(X), lbox([list, gnd], int(1), lbox([list, gnd], i
 
 ## Notes
 
-- There is a question on Stack Overflow about this: [What are the data types in Prolog?](https://stackoverflow.com/questions/12038009/what-are-the-data-types-in-prolog)
-   - Where a reference is given to [Richard A. O'Keefe's draft Prolog Standard](http://www.complang.tuwien.ac.at/ulrich/iso-prolog/okeefe.txt) (1984), a document which contains a type tree.
-- [Logtalk](https://logtalk.org/) has actual datatypes and OO-style message handlers. This is achieved by setting up Prolog Modules around terms, which have the characteristics of objects (Prolog need a proper hierarchical Module system)
-- Type tests seems to be **non-logical** because they may succeed or fail on the same call depending on the current state of the computation.
-  The "logicality" can be recovered if one considers that they have a hidden additional argument: A term representing the "current computational 
-  state" of the system. Well, that view probably doesn't help much, except in a philosophical sense.
+- There is a question on Stack Overflow about this:
+  [What are the data types in Prolog?](https://stackoverflow.com/questions/12038009/what-are-the-data-types-in-prolog)
+   - Where a reference is given to
+     [Richard A. O'Keefe's draft Prolog Standard](http://www.complang.tuwien.ac.at/ulrich/iso-prolog/okeefe.txt) (1984), a 
+      document which contains a very simple type tree.
+- [Logtalk](https://logtalk.org/) has actual data types and OO-style message handlers. This is achieved by setting
+  up Prolog Modules around terms, which have the characteristics of objects (Prolog need a proper hierarchical Module system)
+- Type tests seems to be **non-logical** because they may succeed or fail on the same call depending on the current 
+  state of the computation. The "logicalness" can be recovered if one considers that they have a hidden additional 
+  argument: A term representing the "current computational state" of the system. Well, that view probably doesn't help much, 
+  except in a philosophical sense.
 
 ## Compound terms of arity 0 vs. atoms in "predicate roles" and in "function roles"
 
@@ -223,7 +226,8 @@ The above is fun, but is not a scalable approach. What does exist? (How is it do
 ### plspec
 
 There is `plspec`, a "spec" approach inspired by the "spec" approach of Clojure (Clojure being a Scheme for the JVM that
-has no type checking; although there is "Typed Clojure" it does not seem to be liked or used. Clojure specs provides the possibility to add annotations to perform runtime checks on precondition, postconditions and invariants). 
+has no type checking; although there is "Typed Clojure" it does not seem to be liked or used. Clojure specs 
+provides the possibility to add annotations to perform runtime checks on precondition, postconditions and invariants). 
 
 - Paper: [plspec – A Specification Languagefor Prolog Data](https://www3.hhu.de/stups/downloads/pdf/plspec.pdf)
 - https://github.com/wysiib/plspec
@@ -242,6 +246,7 @@ Comparing various type-testing approaches with a bit of [Unit Test Code](../code
 
   - Default approach which fails silently if the answer is "don't know" (the on implemented currently in most Prologs)
   - "Sufficiently instantiated" approach which throws if the answer is "don't know"
-  - [`must_be/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=must_be/2) approach which throws unless the answer is "yes, the type matches"
+  - [`must_be/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=must_be/2) approach which throws unless the answer
+    is "yes, the type matches"
   - `can_be/2` approach which throws only if the answer is "it's never going to be that type"
   
