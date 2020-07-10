@@ -12,7 +12,7 @@ merge_cs(XX,[]    ,FPs,[  XX|FPs]).
 merge_cs([C|Cs],[A]) :- reverse([C|Cs],Csr), atom_chars(A,Csr).
 merge_cs([]    ,[]).
 
-ex_debug(Format,Args,HiddenLeft,HiddenRight). 
+ex_debug(Format,Args,H,H). 
 /*
  :-  
    atomic_list_concat(["~q ~q :", Format],'',NewFormat),
@@ -25,7 +25,7 @@ ex_debug(Format,Args,HiddenLeft,HiddenRight).
 
 start(AB,BA,Pieces) --> 
    [], 
-   % call(ex_debug("start->anything",[])),
+   call(ex_debug("start->anything",[])),
    { 
       debug(dcg,"start->anything",[])
    }, 

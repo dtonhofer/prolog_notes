@@ -8,6 +8,10 @@
    - http://www.pathwayslms.com/swipltuts/dcg by Anne Ogborn
    - https://en.wikipedia.org/wiki/Definite_clause_grammar (has more references)
 
+## Extensions
+
+- https://www.info.ucl.ac.be/~pvr/edcg.html
+
 ## Résumé of Markus Triska's tutorial
 
 A Prolog definite clause grammar (DCG) describes a **list**.
