@@ -18,11 +18,12 @@ These are predicates found in the section [Analysing and Constructing Terms](htt
 - [`functor/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=functor/3)
 - [`=../`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3D..)/2) 
 
-And this is one is for distinguishing _atomic_ terms (of which atoms are a subclass; 
-these are tested with [`atom/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=atom/1)) from _compound_ terms:
+And this is one is for distinguishing _compound_ terms from _atomic_ terms. Both are complements of each other: Anything that
+is not a fresh variable is either _compound_ or _atomic_ (at least in the current implementation). Atoms are a sublcass
+of the atomic terms and are tested with [`atom/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=atom/1).
 
-- [`compound/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=compound/1) , with its
-  complement, [`atomic/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=atomic/1)
+- [`compound/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=compound/1)
+- [`atomic/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=atomic/1)
 
 ## Overview 
 ![Analyzing and Constructing Terms](term_analysis_construction.png)
