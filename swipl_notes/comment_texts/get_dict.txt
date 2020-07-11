@@ -1,0 +1,63 @@
+***
+*** https://eu.swi-prolog.org/pldoc/doc_for?object=get_dict/3
+***
+
+Simple extraction:
+
+==
+?- get_dict(x,_{x:1, y:2},R).
+R = 1.
+
+?- get_dict(y,_{x:1, y:2},R).
+R = 2.
+
+% in particular, for nonexistent key:
+
+?- get_dict(z,_{x:1, y:2},R).
+false.
+==
+
+Example of using a dict to count atomic values encountered during processing:
+
+==
+% ===
+% inc(+Din,?Dout,+Key)
+% Increment the counter for "Key" in dict "Din", giving "Dout".
+% If the counter does not exist, add a new entry with initial counter value 1.
+% ===
+
+inc(Din,Dout,Key) :- 
+   (get_dict(Key,Din,X) -> succ(X,XX) ; XX=1), 
+   put_dict(Key,Din,XX,Dout).
+   
+:- begin_tests(inc).
+
+   test(inc1,[ true(T) ]) :- Di = quux{}, inc(Di,Do,a)              , T = (Do == quux{a:1}).
+   test(inc2,[ true(T) ]) :- Di = quux{}, inc(Di,Dt,a), inc(Dt,Do,a), T = (Do == quux{a:2}).
+   test(inc3,[ true(T) ]) :- Di = quux{}, inc(Di,Dt,a), inc(Dt,Do,b), T = (Do == quux{a:1,b:1}).
+
+   % This is a NO: You cannot use fresh variables ("names of holes") as keys
+   % Di = quux{}, inc(Di,Dt1,X),inc(Dt1,Dt2,_),inc(Dt2,Dt3,X).
+
+   test(no, [ error(instantiation_error) ]) :- Di = quux{}, inc(Di,Dt1,X),inc(Dt1,Dt2,_),inc(Dt2,_Dt3,X).
+   
+:- end_tests(inc).
+
+rt(inc) :- run_tests(inc).
+==
+
+Example to sum (over keys) the integer values contained in a dictionary, using library(aggregate)
+
+==
+dict_sum(_{} ,0)     :- !.
+dict_sum(Dict,Total) :- aggregate(sum(Val), Key^get_dict(Key,Dict,Val), Total).
+
+:- begin_tests(sum).
+
+   test(sum1, [ true(T) ]) :- Dict = quux{},        dict_sum(Dict,Total), T = ( Total == 0 ).
+   test(sum2, [ true(T) ]) :- Dict = quux{x:1,y:2}, dict_sum(Dict,Total), T = ( Total == 3 ).
+
+:- end_tests(sum).
+
+rt(_) :- run_tests(sum).
+== 
