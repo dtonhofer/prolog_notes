@@ -30,6 +30,11 @@ Markus Triska also uses "Difference Lists" or "List Differences".
 
 This confusion still needs to be clarified.
 
+The above is described in Richard O'Keefe's "The Craft of Prolog" on page 21 ff. as "Accumulator Passing". (O'Keefe illustrates this also with
+some LISP code that uses an explicit loop construct and `setq`, which is not how this is supposed to be done ?)
+
+On the other hand, Richard O'Keefe discussed "Difference Lists" in the same book on page 32.
+
 ## About 
 
 In Prolog, it is cheap to prepend an item to a list (also called "pushing an item onto a list" if it is regarded
