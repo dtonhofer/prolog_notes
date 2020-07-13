@@ -50,8 +50,16 @@ features may be found, in particular to support some kind of object orientation.
 In SWI-Prolog there is no way to define new data types from the base data types,
 ([algebraically](https://en.wikipedia.org/wiki/Algebraic_data_type) or otherwise), so these are the only one there are.
 
-The diagram may change in the future. For example, the _dict_ data type may move out from under the _compound_ data type. 
-We will see what happens.
+The diagram may change in the future. For example, the _dict_ data type may move out from under the _compound_ data type.
+
+The predicates listed are applied to a term or a variable naming a term (i.e. an instantiated variable), in 
+which case the application is done to the named term, or a variable naming nothing/a "hole" (an uninstantiated/unbound/fresh variable),
+in which case only `var/1` will succeed, all the other predicates will fail.
+
+The predicates are "local" in the sense that they only consider the root node of a term tree. Anything "underneath"
+is not considered and demands predicates that look at "nonlocal structure", for example `is_list/1`.
+
+Going from top to bottom, the full set of (root) terms is iteratively divided into two or more distinct & complementary subsets at each branch/question/test.
 
 ```text
                                                                           any T 
@@ -89,7 +97,23 @@ We will see what happens.
                                    "the empty atom"      "character"          length>1
 ```
 
-Note the representation for sequences of characters:
+**Note on integers:**
+
+"small" integers, which are those less or equal than [`max_tagged_integer`](https://eu.swi-prolog.org/pldoc/man?section=flags#flag:max_tagged_integer)
+can be efficiently stored. The SWI-Prolog manual says:  
+
+> Tagged integers require one word storage. Larger integers are represented as‘indirect data' and require significantly more space.
+
+But "small" is relative. On my machine, it is a 7-byte integer:
+
+```
+?- current_prolog_flag(max_tagged_integer,X).
+X = 72057594037927935.
+```
+
+which is 0xFFFFFFFFFFFFFF
+
+**Note on the representation for sequences of characters:**
 
 - SWI-Prolog _string_, a dedicated data type (for example: `"Hello"`). Note that you can actually configure how the SWI-Prolog reader
   interpretes what is in between `"` double quotes. See the flag `double_quotes` (which can be any of `codes`, `chars`, `atom`, `string`) 
@@ -107,6 +131,17 @@ Note the representation for sequences of characters:
  Note that a [DCG](https://www.swi-prolog.org/pldoc/doc_for?object=phrase/3) rule deals with _lists_ in general. When processing text,
  and depending on how it has been programmed, it may expect a list of characters, a list of character codes or even a list of
  strings of length 1 (the last situation would be unlikely though).
+
+**Note on dicts**
+
+- The SWI-Prolog manual says this about [dicts](https://eu.swi-prolog.org/pldoc/man?section=bidicts): 
+
+> SWI-Prolog version 7 introduces dicts as an abstract object with a concrete modern syntax and functional notation for
+> accessing members and as well as access functions defined by the user. 
+> ...
+> The dict is transformed into an opaque internal representation... 
+
+So the dict's actual internal structure is not accessible from the Prolog layer, but any dict can be transformed into a standard list.
 
 ## Code implementing the type tree decision sequence when going from root to leaf 
 
