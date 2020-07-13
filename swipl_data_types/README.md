@@ -134,7 +134,7 @@ which is 0xFFFFFFFFFFFFFF
 
 **Note on dicts**
 
-- The SWI-Prolog manual says this about [dicts](https://eu.swi-prolog.org/pldoc/man?section=bidicts): 
+The SWI-Prolog manual on [dicts](https://eu.swi-prolog.org/pldoc/man?section=bidicts): 
 
 > SWI-Prolog version 7 introduces dicts as an abstract object with a concrete modern syntax and functional notation for
 > accessing members and as well as access functions defined by the user. 
