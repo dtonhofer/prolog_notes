@@ -4,12 +4,16 @@ _Work in progress_
 
 - Some predicates are SWI-Prolog specific.
 - Most of the text comes directly from the [SWI Prolog manual](https://www.swi-prolog.org/pldoc/doc_for?object=manual).
-- There is one I missed: [library(debug): Print debug messages and test assertions](https://www.swi-prolog.org/pldoc/man?section=debug).
+- There is one I missed writing details about: [library(debug): Print debug messages and test assertions](https://www.swi-prolog.org/pldoc/man?section=debug).
 - This page is referenced from the comment section of [`format/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=format/2)
+- I/O is sometimes described as an application of a Monad from Category Theory, I wonder whether it has ever been described
+  as an application of [linear logic](https://plato.stanford.edu/entries/logic-linear/)? Would it help in this context? 🤔
+- The fact that there are two version of output predicates, one taking a (mode +) stream and one not taking a stream, indicates that 
+  there is something basically wrong in the approach. One should be able to associate a stream to a clause maybe. 🤔
 
 # TL;DR
 
-![TL;DR Diagram](output_formatting_pics/tldr.png).
+![TL;DR Diagram](output_formatting_pics/tldr.svg).
 
 ## Formatted write: "format family"
 
