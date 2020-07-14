@@ -538,3 +538,65 @@ More on quasi-quotation: [quasi_quotations.pl -- Define Quasi Quotation syntax](
 > None of this provides good support for logging. The HTTP server provides logging infra structure. The idea is to use [library(broadcast)](https://www.swi-prolog.org/pldoc/man?section=broadcast) which implements a publish/subscribe interface. Now the application broadcasts events as Prolog terms and a subscriber can send these events somewhere (write to a file, send over the network, add to a database, …).
 
 This would be something like a [Log4J JMS Appender](https://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/net/JMSAppender.html). 
+
+## Inline function call 
+
+SWI-Prolog has [dicts](https://eu.swi-prolog.org/pldoc/man?section=bidicts). Predicates can be associated to those, and they behave like function calls. This gives us function calls beyond the arithmetic evaluation of is/2. In particular, for strings you can do things like this:
+
+Define a module called `string` to associate functions to dicts with tag `string` (there is a problem in that modules are not hierarchical so you may end up with a name clash in the unique global module space, but, let's disregard this for now):
+
+```
+:- module(string,[]).
+
+% This is a predicate format/3 written as a function format/2 (maybe there
+% needs to be a new descriptor syntax: format///2 ?) taking a dict tagged as
+% "string" and two arguments which evaluates to the value of variable Text.
+
+S.format(Msg,Args) := Text :- with_output_to(string(Text),format(Msg,Args)).
+```
+
+Once the above module has been loaded, you can do things like these, which 
+behave like a Java "static" method call (you can move args into the dict
+too of course):
+
+```
+?- X=string{}.format("Hello, ~q\n",["World"]).
+X = "Hello, \"World\"\n".
+```
+
+```
+?- debug(foo),debug(foo,string{}.format("Hello, ~q\n",["World"]),[]).
+% Hello, "World"
+```
+
+## Defensive programming around format calls
+
+`format/2` is **precise in the arguments it expects**. If you want to make sure a call to `format/2` won't generate further exceptions in situations where you are already handling an error for example:
+
+```Logtalk
+textize(Msg,Args,Text) :-
+   (is_list(Args) -> ListyArgs = Args ; ListyArgs = [Args]),
+   catch(
+      % happy path
+      with_output_to(string(Text),format(Msg,ListyArgs)),
+      _,
+      catch(
+         % we end up here if format/2 doesn't like what it sees; finagle something!
+         (maplist([X,Buf]>>with_output_to(string(Buf),format("~q",[X])),[Msg|ListyArgs],L),atomic_list_concat(["SPROING!"|L]," & ",Text)),
+         _,
+         "WTF,MAN!")).
+```
+
+Then 
+
+```  
+% Happy path
+
+?- textize("This is a ~q test: ~q ~d",[cute,"Hello, World",15],Text).
+Text = "This is a cute test: \"Hello, World\" 15".
+
+% Saves your bacon because "foo" is not a ~d:
+
+?- textize("This is a ~q test: ~q ~d",[cute,"Hello, World", foo],Text).
+Text = 'SPROING! & "This is a ~q test: ~q ~d" & cute & "Hello, World" & foo'.
+```
