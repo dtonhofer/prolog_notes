@@ -10,8 +10,14 @@ The correct name should be:
 fresh/1
 ==
 
-Because var(X) does not test whether whatever is in between the parentheses (in this case =X=), is a _variable_ (we **know that** just by looking at the source code and the compiler should flag an always-true call "var(foo)", and actually it does), but whether =X= is a _fresh variable_ (alias "names a 'hole'", "names an uninstantiated term", "names a fresh term", "is uninstantiated", "is the name denoting an empty box in the term store" and also "unifies with anything" and variations thereof) at the current state of computation.
+Because var(X) does not test whether whatever is in between the parentheses (in this case =X=), is a _variable_ (we **know that** just by looking at the source code and the compiler should flag an always-true call "var(foo)", and actually it does), but whether =X= is a _fresh variable_ (alias "names a 'hole'", "names an uninstantiated term", "names a fresh term", "is uninstantiated", "is unrefined", "is the name denoting an empty box in the term store" and also "unifies with anything" and variations thereof) at the current state of computation.
 
 It is also the **exact complement** of "nonvar(X)". 
 
-Note that you can absolutely **test** whether two variables name the same "empty box" in the term store using the X == Y operator, whereas unification is active: X = Y will **make sure** that two variables name the exact same term in the term store ... and generally that term first has to be constructed (by unification) from the distinct terms named by =X= and =Y= first.  
+Note the difference between functional languages supporting =nil=, imperative languages supporting =null= and the logical fresh variable:
+
+   - Imperative =null= in languages that have it: "I have currently no content assigned to this variable but that may change with the next instruction"
+   - Functional =nil= in languages that support it: "I have currently no content assigned to this variable and that cannot change (unless a new context is created wherein the same variable name designates valid content, e.g. through a recursive call)
+   - Prolog's var(X)  : "I have currently no content assigned to this variable and this may change via unification a bit further to the right, but only by repeatedly replacing leaf holes in a term tree by new term trees (growing the tree at the leaves)" 
+
+Note that you can absolutely **test** whether two variables name the same "empty box" in the term store using the X == Y operator, whereas unification is active: X = Y will **make sure** that two variables name the exact same term in the term store ... and generally that term first has to be constructed (by unification) from the distinct terms named by =X= and =Y= first. 
