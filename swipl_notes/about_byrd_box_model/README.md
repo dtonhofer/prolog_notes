@@ -296,6 +296,10 @@ which is indicated in the diagram above.
 **UPDATE**: It is even more elegant to posit that the B-Box being exited does not set a switch but "closes the REDO port" instead. The PP
 then has no choice but to bypass the B-Box on backtracking. Gotta change the description in that direction.
 
+With the above, we can create a few illustrations. 
+
+![Byrd Box examples](byrd_box_examples.svg)
+
 ## Term store operations
 
 ### An execution of elementary B-Boxes
