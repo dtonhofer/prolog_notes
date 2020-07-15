@@ -38,9 +38,13 @@ adhere to the ISO-Standard if possible, in particular for libraries.
 SWI-Prolog built-in predicates throw exception terms as specified by the ISO-Standard unless the exception does not fit any of
 the ISO Standard error term definitions.
 
-In particular [assertion/1](https://eu.swi-prolog.org/pldoc/doc_for?object=assertion/1) throws a non ISO-standard exception with
-an exception term `error(assertion_error(Reason,Culprit),Context)`. Note that in this case the exception term reflects the
-structure of a ISO-standard exception term.
+In particular [`assertion/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=assertion/1) throws a non ISO-standard exception with
+an exception term `error(assertion_error(Reason,Culprit),Context)`. 
+
+Another non-ISO exception is thrown by [`dict_pairs/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=dict_pairs/3) (and probabyl
+other dict-handling predciates), whereby the exception term is `error(duplicate_key(Key),Context)`.
+
+Note that the above excpetions, while non-ISO, keep the structure of a ISO-standard exception term.
 
 ## Throwing ISO-Standard exceptions 
 
