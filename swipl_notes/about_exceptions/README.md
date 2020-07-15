@@ -35,16 +35,16 @@ throw(+Exception).
 User predicates are free to choose the structure of their exception terms (i.e. they can define their own conventions) but _should_
 adhere to the ISO-Standard if possible, in particular for libraries.
 
-SWI-Prolog built-in predicates throw exception terms as specified by the ISO-Standard unless the exception does not fit any of
-the ISO Standard error term definitions.
+SWI-Prolog built-in predicates throw exception terms as specified by the ISO standard unless the exception does not fit any of
+the ISO standard error term definitions.
 
-In particular [`assertion/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=assertion/1) throws a non ISO-standard exception with
-an exception term `error(assertion_error(Reason,Culprit),Context)`. 
+In particular [`assertion/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=assertion/1) throws a non ISO standard 
+exception term `error(assertion_error(Reason,Culprit),Context)`. 
 
-Another non-ISO exception is thrown by [`dict_pairs/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=dict_pairs/3) (and probabyl
-other dict-handling predciates), whereby the exception term is `error(duplicate_key(Key),Context)`.
+Another non-ISO standard exception term is thrown by [`dict_pairs/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=dict_pairs/3)
+(and probably other dict-handling predicates): `error(duplicate_key(Key),Context)`.
 
-Note that the above excpetions, while non-ISO, keep the structure of a ISO-standard exception term.
+Note that the above exceptions terms use a non-standard formal term but retain the structure of the ISO standard exception term.
 
 ## Throwing ISO-Standard exceptions 
 
