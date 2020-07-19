@@ -179,12 +179,17 @@ The traditional set of ports is the following:
 - **`call`**: Incoming, left-to-right. The B-Box is created by the PP, then called (exactly
   once, actually) through this port. If this is the start of a clause body, there must have
   been a previous box that concluded successfully: the special B-Box performing the head unifications.
+  Entering via `call` is equivalent to asking the predicate to constructively find
+  solutions given the current values for its arguments (which can be found in the term store).
   
 - **`exit`** (or better, **`succ`**) Outgoing, left-to-right: The predicate call
   succeeds, and the next B-Box can be instantiated and called. Which B-Box that is
   depends on the current state of the surrounding B-Box, which manages branching,
   B-Box instantiations and wiring. If this was the end of a clause body, the execution token
-  is transferred to the surrounding B-Box instead.
+  is transferred to the surrounding B-Box instead. Exiting via `succ` is equivalent to 
+  the predicate stating that it constructively found a solution and that the witness (the constructed
+  solution) is given by the current contents of the term store (which are named by
+  the shared variables of the clause)
 
 - **`redo`**: Incoming, right-to-left. The B-Box to the right has encountered 
   failure or a collection of results via a meta-predicate like `bagof/3` is ongoing, or
@@ -194,14 +199,26 @@ The traditional set of ports is the following:
   lead to advancing the B-Box counters to the next clause. If a new
   solution can be found, the term store is updated and the token is passed out via
   `exit`. If no new solution can be found, the token is passed out via `fail`. 
+  Entering via `redo` is equivalent to asking the predicate to constructively find
+  more solutions than the one already found given the current contents of term store.
 
 - **`fail`** Outgoing, right-to-left. The B-Box cannot provide any more solutions
   given current conditions. Setting up different terms in the term store for a
-  reattempt is left to the predicate instantiation to the left.
+  reattempt is left to the predicate instantiation to the left. Exiting via `fail` is 
+  equivalent to the predicate stating that there are no
+  more solution than the one given (which may be none at all) given the current contents
+  of the term store.
 
 Note that the naming of the ports is less than ideal: The port for `exit` should really
 be called `succeed`, in analogy to `fail`. Or maybe `succ` to keep it a 4-letter string.
 (Debugger text alignment is important). I will use `succ` as alternative to `exit`.
+
+What is confusing is that "failure" as the result of sending a token "to the left"
+via the `redo` port may evoke an action that is communicated to the predicate to the
+right of said `redo` port and possibly the printing of `fail` at the Prolog Toplevel.
+Nope! The `fail` port should maybe have been called quite differently .. `punt leftwards` 
+maybe, as the predicate activation cannot find any solution and punts the problem back
+leftwards.
 
 **Example**
 
@@ -272,29 +289,30 @@ See [SWI-Prolog: Deterministic/Semi-deterministic/Non-deterministic predicates](
 
 Note these case of predicate behaviour:
 
-- A **deterministic** predicate always succeeds exactly once, a `redo` will lead to failure. If the predicate is _well-behaved_ it tells the PP
-  that there are no alterntive solutions and there is no point asking for more ("it leaves no choicepoints").
-  On the Prolog Toplevel, a well-behaved deterministic predicate will always only say `true.` and not accept a `;` for more solutions.
-  Example: [`true/0`](https://eu.swi-prolog.org/pldoc/doc_for?object=true/0).
-- A **semi-deterministic** predicate may succeed once or else fail. A `redo` will lead to failure. Similarly to above,
-  if the predicate is _well-behaved_ it tells the PP that there are no alterntive solutions.
-  On the Prolog Toplevel, a well-behaved semi-deterministic predicate will either says `true.` or `false.` and not accept a `;` for more solutions.
+- A **deterministic** predicate always succeeds exactly once, a `redo` means pass-through to the preceding
+  predicate activation or the clause head. If the predicate is _well-behaved_ it tells the Prolog Processor that there are 
+  no alternative solutions ("it leaves no choicepoints"). Programmatically, this is implemented by a cut at very the end
+  of a clause. When backtracking, the Prolog Processor can then dispense with a `redo` call to this predicate and
+  backtrack to the preceding predicate call (or hit the head of the clause). On the Prolog Toplevel, a well-behaved
+  deterministic predicate will always only say `true.` and not accept a `;` for more solutions. Generally, predicates
+  of this kind perform side-effects, I/O and control. The outcome "true" really means "success in computation", with failure
+  indicated by a thrown exception instead of the outcome "false". Simplest example: [`true/0`](https://eu.swi-prolog.org/pldoc/doc_for?object=true/0).
+- A **semi-deterministic** predicate may succeed once or fail. In case of success, behaviour and well-behaved behaviour
+  are as described for the deterministic predicate. On the Prolog Toplevel, a well-behaved 
+  semi-deterministic predicate will either says `true.` or `false.` and not accept a `;` for more solutions. 
   Example: [`memberchk/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=memberchk/2).
-- A **non-deterministic** predicate gives nothing away. It demands that the PP call `redo` unconditionally.
-  If there are no solutions after all, it will `fail`. This is the behaviour of predicates that have a search space that does not allow 
-  to directly determine whether more solutions exist without actually looking for them. Example: `member/2` having a nonempty list left to
-  traverse when it found the (objectively) last solution. These predicates accept `;` 
-  on the toplevel but then may say `false`.
-- A bit more vaguely, a predicate which **provides determinism on the last solution** may succeed several times but, on the last solution, 
-  behaves like a well-behaved **deterministic** predicate. Example: [`member/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=member/2). 
-
-In the B-Box model, a "well-behaved" predicate can be understood thus: the token always exits at `succeed` but, when going leftwards during
-backtracking, the token does not enter `redo` - it bypasses the B-Box entirely (and this bypassing may certainly be chained, bypassing 
-more B-Boxes to the left). This implies there must be some kind of "switch" for the token path that is set by the B-Box at `succeed` time,
-which is indicated in the diagram above.
-
-**UPDATE**: It is even more elegant to posit that the B-Box being exited does not set a switch but "closes the REDO port" instead. The PP
-then has no choice but to bypass the B-Box on backtracking. Gotta change the description in that direction.
+- A **non-deterministic** predicate may fail or succeed on first call, and succeed N>=0 times on `redo`.
+  This is the most general situation. The predicate may additionally provide **determinism on the last solution**,
+  i.e. leave no choicepoints after the last success. Whether that is possible depends.
+  Example: [`member/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=member/2). That predicate may provide
+  determinism on the last solution or not, for example for `member(1,[1,2,3,1])` it will, but it won't for
+  `member(1,[1,2,3,4])` because there is no way that the predicate can know there are no further `1` in the
+  list after the first one (which is objectively also the last one) without actually searching through the list.
+  
+In the B-Box model, the "well-behaved" deterministic and semi-deterministic predicates and the non-deterministic 
+ones which "provides determinism on the last solution" can all be understood thus: when the token exits at `exit`,
+the `redo` port is "closed". When going leftwards during backtracking, the token won't enter via `redo` but bypasses
+the B-Box entirely. This bypass operation may certainly be chained, bypassing more B-Boxes towards the left. 
 
 With the above, we can create a few illustrations. 
 
