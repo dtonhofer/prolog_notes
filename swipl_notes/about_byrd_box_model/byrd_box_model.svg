@@ -103,7 +103,8 @@
     </g>
     <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,349,1108)" stroke-linecap="butt">
       <path fill="none" d="M259.0114 -598.7006 L299.0114 -562.0322 L259.0114 -525.3638 L219.0114 -562.0322 Z" clip-path="url(#clipPath2)"/>
-      <text x="234.7301" xml:space="preserve" y="-557.8779" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">bypass?</text>
+      <text x="245.3737" xml:space="preserve" y="-564.8622" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">redo</text>
+      <text x="236.5641" xml:space="preserve" y="-550.8935" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">closed?</text>
     </g>
     <g fill="rgb(255,204,0)" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,349,1108)" stroke="rgb(255,204,0)">
       <path d="M409.3165 -717.3223 L496.2506 -717.3223 L505.91 -697.3223 L496.2506 -677.3223 L409.3165 -677.3223 L418.9758 -697.3223 Z" fill-rule="evenodd" clip-path="url(#clipPath2)" stroke="none"/>
@@ -136,7 +137,8 @@
     </g>
     <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,349,1108)" stroke-linecap="butt">
       <path fill="none" d="M895.5497 -599.2006 L935.5497 -562.5322 L895.5497 -525.8638 L855.5497 -562.5322 Z" clip-path="url(#clipPath2)"/>
-      <text x="871.2685" xml:space="preserve" y="-558.3779" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">bypass?</text>
+      <text x="881.912" xml:space="preserve" y="-565.3622" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">redo</text>
+      <text x="873.1025" xml:space="preserve" y="-551.3935" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">closed?</text>
     </g>
     <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,349,1108)" stroke-linecap="butt">
       <path fill="none" d="M-18.1158 -733.9907 L21.8842 -697.3223 L-18.1158 -660.6539 L-58.1158 -697.3223 Z" clip-path="url(#clipPath2)"/>
@@ -188,7 +190,8 @@
     </g>
     <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,349,1108)" stroke-linecap="butt">
       <path fill="none" d="M1514.1627 -598.7006 L1554.1627 -562.0322 L1514.1627 -525.3638 L1474.1627 -562.0322 Z" clip-path="url(#clipPath2)"/>
-      <text x="1489.8815" xml:space="preserve" y="-557.8779" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">bypass?</text>
+      <text x="1500.525" xml:space="preserve" y="-564.8622" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">redo</text>
+      <text x="1491.7155" xml:space="preserve" y="-550.8935" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">closed?</text>
     </g>
     <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,349,1108)" stroke-linecap="butt">
       <circle fill="none" r="15" clip-path="url(#clipPath2)" cx="1489.1628" cy="-964.3063"/>
@@ -211,6 +214,16 @@
     <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,349,1108)" stroke-linecap="butt">
       <path fill="none" d="M1287.1676 -803.341 L1374.1018 -803.341 L1383.7611 -783.341 L1374.1018 -763.341 L1287.1676 -763.341 L1296.8269 -783.341 Z" fill-rule="evenodd" clip-path="url(#clipPath2)"/>
       <text x="1305.9302" xml:space="preserve" y="-779.1867" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">exception</text>
+      <rect x="779.8351" y="-1033.315" clip-path="url(#clipPath2)" fill="none" width="231.4292" rx="4" ry="4" height="84.0086"/>
+      <text x="800.7773" xml:space="preserve" y="-1015.0939" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Being "well-behaved"</text>
+      <text x="800.7773" xml:space="preserve" y="-1001.1251" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">means "closing the 'redo' port</text>
+      <text x="800.7773" xml:space="preserve" y="-987.1564" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">on the last solution" (which is</text>
+      <text x="800.7773" xml:space="preserve" y="-973.1876" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">done by a "cut" at the very end</text>
+      <text x="800.7773" xml:space="preserve" y="-959.2189" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">of a clause)</text>
+      <text x="764.8861" xml:space="preserve" y="-632.5073" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">maybe</text>
+      <text x="755.7982" xml:space="preserve" y="-618.5386" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">close port</text>
+      <text x="1390.6301" xml:space="preserve" y="-635.1524" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">maybe</text>
+      <text x="1381.5422" xml:space="preserve" y="-621.1837" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">close port</text>
       <path fill="none" d="M-237.5775 -949.3063 L-237.5775 -706.8223 L-236.9525 -702.4508 L-235.0775 -699.3362 L-231.9526 -697.4786 L-227.5776 -696.8779 L-194.2923 -697.0627" clip-path="url(#clipPath2)"/>
       <path d="M-186.2924 -697.1072 L-198.3201 -702.0404 L-195.2923 -697.0572 L-198.2644 -692.0406 Z" clip-path="url(#clipPath2)" stroke="none"/>
       <text x="-299.0969" xml:space="preserve" y="-934.1287" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Token passed-in from</text>
@@ -219,12 +232,9 @@
       <path d="M-237.5775 -310.4572 L-232.5775 -322.4572 L-237.5775 -319.4572 L-242.5775 -322.4572 Z" clip-path="url(#clipPath2)" stroke="none"/>
       <text x="-275.3265" xml:space="preserve" y="-489.7093" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Clause Head</text>
       <text x="-280.4505" xml:space="preserve" y="-475.7405" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">does not unify</text>
-      <path fill="none" stroke-dasharray="6,2" d="M117.6931 -677.3102 L129.8923 -638.8561 L134.0171 -627.7613 L138.8036 -618.3947 L144.2518 -610.7565 L150.3618 -604.8465 L157.1335 -600.6648 L164.5669 -598.2114 L172.6621 -597.4863 L181.419 -598.4896 L189.4971 -600.1494 L198.2501 -601.5795 L206.3334 -602.1351 L213.7472 -601.8163 L220.4913 -600.623 L226.5658 -598.5552 L231.9707 -595.6129 L236.706 -591.7961 L238.0063 -590.2957 L238.0651 -590.2148" clip-path="url(#clipPath2)"/>
-      <path stroke-dasharray="6,2" d="M243.0606 -583.9662 L239.4728 -596.4613 L237.4407 -590.9959 L231.662 -590.217 Z" clip-path="url(#clipPath2)" stroke="none"/>
-      <text x="128.9163" xml:space="preserve" y="-628.1171" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">always set bypass flag</text>
       <path fill="none" d="M259.0114 -525.3706 L259.0114 -416.42 L258.3864 -412.045 L256.5114 -408.92 L253.3864 -407.045 L249.0114 -406.42 L-227.5775 -406.42 L-231.9525 -405.795 L-235.0775 -403.92 L-236.9525 -400.795 L-237.5775 -396.42 L-237.5775 -318.4572" clip-path="url(#clipPath2)"/>
       <path d="M-237.5775 -310.4572 L-232.5775 -322.4572 L-237.5775 -319.4572 L-242.5775 -322.4572 Z" clip-path="url(#clipPath2)" stroke="none"/>
-      <text x="248.5289" xml:space="preserve" y="-507.2251" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Yes</text>
+      <text x="237.9791" xml:space="preserve" y="-507.2251" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Always</text>
       <path fill="none" d="M159.658 -697.3223 L410.9503 -697.3223" clip-path="url(#clipPath2)"/>
       <path d="M418.9503 -697.3223 L406.9503 -702.3223 L409.9503 -697.3223 L406.9503 -692.3223 Z" clip-path="url(#clipPath2)" stroke="none"/>
       <path fill="none" d="M499.3604 -683.7808 L508.6656 -680.4736 L528.7219 -672.0492 L545.1315 -663.6248 L557.8947 -655.2004 L567.0111 -646.776 L572.481 -638.3516 L574.3043 -629.9272 L572.481 -621.5029 L567.0111 -613.0785 L557.8947 -604.6541 L545.1315 -596.2297 L528.7219 -587.8053 L511.0158 -580.3681 L510.9216 -580.3346" clip-path="url(#clipPath2)"/>
@@ -237,17 +247,16 @@
       <path d="M670.3486 -680.8126 L657.3488 -680.751 L662.0574 -677.3117 L661.2387 -671.5385 Z" clip-path="url(#clipPath2)" stroke="none"/>
       <path fill="none" d="M668.5291 -562.5322 L504.2588 -562.5322" clip-path="url(#clipPath2)"/>
       <path d="M496.2588 -562.5322 L508.2588 -557.5322 L505.2588 -562.5322 L508.2588 -567.5322 Z" clip-path="url(#clipPath2)" stroke="none"/>
-      <path fill="none" stroke-dasharray="6,2" d="M759.8727 -686.174 L782.359 -680.6084 L829.2612 -668.4933 L862.7733 -658.6799 L868.7327 -656.7549 L875.0179 -654.123 L880.4651 -650.5586 L885.0743 -646.0618 L888.8455 -640.6324 L891.7786 -634.2706 L893.8737 -626.9763 L895.1307 -618.7495 L895.5497 -609.5902 L895.5497 -607.1584" clip-path="url(#clipPath2)"/>
-      <path stroke-dasharray="6,2" d="M895.5497 -599.1584 L900.5497 -611.1584 L895.5497 -608.1584 L890.5497 -611.1584 Z" clip-path="url(#clipPath2)" stroke="none"/>
-      <text x="842.3085" xml:space="preserve" y="-645.6838" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">if "well-behaved",</text>
-      <text x="842.2734" xml:space="preserve" y="-631.7151" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">set bypass flag to</text>
-      <text x="833.2529" xml:space="preserve" y="-617.7463" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">leave no choicepoint</text>
       <path fill="none" d="M895.5497 -525.8279 L895.5497 -414.4452 L894.9247 -410.0702 L893.0497 -406.9452 L889.9247 -405.0702 L885.5497 -404.4452 L375.7334 -404.4452 L371.3584 -405.0702 L368.2334 -406.9452 L366.3584 -410.0702 L365.7334 -414.4452 L365.7334 -552.0322 L365.1084 -556.4072 L363.2334 -559.5322 L360.1084 -561.4072 L355.7334 -562.0322 L307.0061 -562.0322" clip-path="url(#clipPath2)"/>
       <path d="M299.0061 -562.0322 L311.0061 -557.0322 L308.0061 -562.0322 L311.0061 -567.0322 Z" clip-path="url(#clipPath2)" stroke="none"/>
-      <text x="885.0673" xml:space="preserve" y="-507.7251" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Yes</text>
+      <text x="883.1601" xml:space="preserve" y="-507.7251" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Yes,</text>
+      <text x="862.6992" xml:space="preserve" y="-493.7563" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">bypass the</text>
+      <text x="835.4648" xml:space="preserve" y="-479.7876" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">predicate activation</text>
       <path fill="none" d="M855.5433 -562.5322 L763.486 -562.5322" clip-path="url(#clipPath2)"/>
       <path d="M755.486 -562.5322 L767.486 -557.5322 L764.486 -562.5322 L767.486 -567.5322 Z" clip-path="url(#clipPath2)" stroke="none"/>
-      <text x="802.1898" xml:space="preserve" y="-558.3779" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">No</text>
+      <text x="800.2825" xml:space="preserve" y="-572.3466" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">No,</text>
+      <text x="794.3441" xml:space="preserve" y="-558.3779" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">enter</text>
+      <text x="785.9095" xml:space="preserve" y="-544.4091" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">via redo</text>
       <path fill="none" d="M-99.2497 -697.3223 L-66.0885 -697.3223" clip-path="url(#clipPath2)"/>
       <path d="M-58.0885 -697.3223 L-70.0885 -702.3223 L-67.0885 -697.3223 L-70.0885 -692.3223 Z" clip-path="url(#clipPath2)" stroke="none"/>
       <path fill="none" d="M-18.1158 -660.6262 L-18.1158 -572.0322 L-18.7408 -567.6572 L-20.6158 -564.5322 L-23.7408 -562.6572 L-28.1158 -562.0322 L-100.9212 -562.0322" clip-path="url(#clipPath2)"/>
@@ -268,23 +277,32 @@
       <path d="M1288.9651 -680.8185 L1275.9652 -680.7756 L1280.6688 -677.3295 L1279.8418 -671.5576 Z" clip-path="url(#clipPath2)" stroke="none"/>
       <path fill="none" d="M1287.142 -562.0322 L1122.8718 -562.0322" clip-path="url(#clipPath2)"/>
       <path d="M1114.8718 -562.0322 L1126.8718 -557.0322 L1123.8718 -562.0322 L1126.8718 -567.0322 Z" clip-path="url(#clipPath2)" stroke="none"/>
-      <path fill="none" stroke-dasharray="6,2" d="M1377.0433 -683.3165 L1385.762 -680.4845 L1406.22 -674.1634 L1426.4418 -668.5674 L1446.4272 -663.6965 L1466.1763 -659.5508 L1474.9009 -657.8693 L1484.1029 -655.4752 L1492.0779 -652.0764 L1498.826 -647.6726 L1504.3473 -642.264 L1508.6415 -635.8505 L1511.7089 -628.4323 L1513.5492 -620.0091 L1514.1627 -610.5811 L1514.1627 -606.6809" clip-path="url(#clipPath2)"/>
-      <path stroke-dasharray="6,2" d="M1514.1627 -598.6809 L1519.1627 -610.6809 L1514.1627 -607.6809 L1509.1627 -610.6809 Z" clip-path="url(#clipPath2)" stroke="none"/>
-      <text x="1460.9215" xml:space="preserve" y="-647.2168" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">if "well-behaved",</text>
-      <text x="1460.8864" xml:space="preserve" y="-633.248" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">set bypass flag to</text>
-      <text x="1451.8658" xml:space="preserve" y="-619.2793" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">leave no choicepoint</text>
       <path fill="none" d="M1474.1564 -562.0322 L1382.099 -562.0322" clip-path="url(#clipPath2)"/>
       <path d="M1374.099 -562.0322 L1386.099 -557.0322 L1383.099 -562.0322 L1386.099 -567.0322 Z" clip-path="url(#clipPath2)" stroke="none"/>
-      <text x="1420.8027" xml:space="preserve" y="-557.8779" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">No</text>
+      <text x="1418.8955" xml:space="preserve" y="-571.8466" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">No,</text>
+      <text x="1412.957" xml:space="preserve" y="-557.8779" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">enter</text>
+      <text x="1404.5225" xml:space="preserve" y="-543.9091" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">via redo</text>
       <path fill="none" d="M1514.1627 -525.3671 L1514.1627 -414.4452 L1513.5377 -410.0702 L1511.6627 -406.9452 L1508.5377 -405.0702 L1504.1627 -404.4452 L1003.7179 -404.4452 L999.3429 -405.0702 L996.2179 -406.9452 L994.3429 -410.0702 L993.7179 -414.4452 L993.7179 -552.5322 L993.0929 -556.9072 L991.2179 -560.0322 L988.0929 -561.9072 L983.7179 -562.5322 L943.5743 -562.5322" clip-path="url(#clipPath2)"/>
       <path d="M935.5743 -562.5322 L947.5743 -557.5322 L944.5743 -562.5322 L947.5743 -567.5322 Z" clip-path="url(#clipPath2)" stroke="none"/>
-      <text x="1503.6803" xml:space="preserve" y="-507.2251" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Yes</text>
+      <text x="1501.7731" xml:space="preserve" y="-507.2251" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">Yes,</text>
+      <text x="1481.3121" xml:space="preserve" y="-493.2563" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">bypass the</text>
+      <text x="1454.0778" xml:space="preserve" y="-479.2876" clip-path="url(#clipPath2)" font-family="sans-serif" stroke="none">predicate activation</text>
       <path fill="none" d="M1383.7578 -696.8223 L1479.1627 -696.8223 L1483.5377 -697.4473 L1486.6627 -699.3223 L1488.5377 -702.4473 L1489.1627 -706.8223 L1489.1627 -941.3063" clip-path="url(#clipPath2)"/>
       <path d="M1489.1627 -949.3063 L1484.1627 -937.3063 L1489.1627 -940.3063 L1494.1627 -937.3063 Z" clip-path="url(#clipPath2)" stroke="none"/>
       <path fill="none" stroke-dasharray="6,2" d="M1489.1627 -979.3063 L1489.1627 -1082.1844 L1489.7877 -1086.5594 L1491.6627 -1089.6844 L1494.7877 -1091.5594 L1499.1627 -1092.1844 L1653.0339 -1092.1844 L1657.4089 -1091.5594 L1660.5339 -1089.6844 L1662.4089 -1086.5594 L1663.0339 -1082.1844 L1663.0339 -987.3063" clip-path="url(#clipPath2)"/>
       <path stroke-dasharray="6,2" d="M1663.0339 -979.3063 L1668.0339 -991.3063 L1663.0339 -988.3063 L1658.0339 -991.3063 Z" clip-path="url(#clipPath2)" stroke="none"/>
       <path fill="none" d="M1663.0339 -949.3063 L1663.0339 -572.0322 L1662.4089 -567.6572 L1660.5339 -564.5322 L1657.4089 -562.6572 L1653.0339 -562.0322 L1562.1792 -562.0322" clip-path="url(#clipPath2)"/>
       <path d="M1554.1792 -562.0322 L1566.1792 -557.0322 L1563.1792 -562.0322 L1566.1792 -567.0322 Z" clip-path="url(#clipPath2)" stroke="none"/>
+      <path fill="none" stroke-dasharray="6,2" d="M760.008 -686.4357 L767.9412 -680.4015 L775.4679 -670.9364 L780.8963 -659.3273 L782.5684 -652.4219 L782.5762 -652.3221" clip-path="url(#clipPath2)"/>
+      <path stroke-dasharray="6,2" d="M784.3227 -644.5151 L786.5823 -657.3173 L782.3578 -653.298 L776.8235 -655.1341 Z" clip-path="url(#clipPath2)" stroke="none"/>
+      <path fill="none" stroke-dasharray="6,2" d="M882.7693 -949.329 L792.1567 -651.6802" clip-path="url(#clipPath2)"/>
+      <path stroke-dasharray="6,2" d="M789.8268 -644.027 L798.1049 -654.0507 L792.4479 -652.6369 L788.5383 -656.963 Z" clip-path="url(#clipPath2)" stroke="none"/>
+      <path fill="none" stroke-dasharray="6,2" d="M784.3011 -614.7427 L784.2265 -613.7802 L780.8963 -600.0272 L775.4679 -588.4181 L767.9412 -578.953 L767.3529 -578.5056" clip-path="url(#clipPath2)"/>
+      <path stroke-dasharray="6,2" d="M760.9855 -573.6623 L773.5636 -576.9476 L768.1488 -579.111 L767.5095 -584.9067 Z" clip-path="url(#clipPath2)" stroke="none"/>
+      <path fill="none" stroke-dasharray="6,2" d="M1380.1699 -689.6066 L1389.4584 -683.5068 L1397.9178 -674.2609 L1404.3616 -662.6482 L1406.8273 -654.8643 L1406.8419 -654.7653" clip-path="url(#clipPath2)"/>
+      <path stroke-dasharray="6,2" d="M1409.0385 -647.0728 L1410.5515 -659.9844 L1406.5674 -655.7269 L1400.9358 -657.2387 Z" clip-path="url(#clipPath2)" stroke="none"/>
+      <path fill="none" stroke-dasharray="6,2" d="M1409.6489 -617.4193 L1409.4231 -615.2522 L1405.4473 -600.5489 L1399.2749 -588.2124 L1390.9059 -578.2427 L1384.7086 -573.7832 L1384.6161 -573.7452" clip-path="url(#clipPath2)"/>
+      <path stroke-dasharray="6,2" d="M1377.7885 -569.576 L1390.6357 -571.5626 L1385.4696 -574.2664 L1385.4242 -580.0972 Z" clip-path="url(#clipPath2)" stroke="none"/>
     </g>
   </g>
 </svg>
