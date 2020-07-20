@@ -209,21 +209,26 @@ The traditional set of ports is the following:
   more solution than the one given (which may be none at all) given the current contents
   of the term store.
 
-Note that the naming of the ports is less than ideal: The port for `exit` should really
+### Traditional port names are confusing!
+
+Note that the naming of the ports is ... less than ideal: The port for `exit` should really
 be called `succeed`, in analogy to `fail`. Or maybe `succ` to keep it a 4-letter string.
 (Debugger text alignment is important). I will use `succ` as alternative to `exit`.
 
 What is confusing is that "failure" as the result of sending a token "to the left"
-via the `redo` port may evoke an action that is communicated to the predicate to the
-right of said `redo` port and possibly the printing of `fail` at the Prolog Toplevel.
-Nope! The `fail` port should maybe have been called quite differently .. `punt leftwards` 
-maybe, as the predicate activation cannot find any solution and punts the problem back
-leftwards.
+via the `redo` port may, to newcomers, sugest an action that is communicated to the predicate
+to the right that said `redo` port and possibly the printing of `fail` at the Prolog Toplevel.
+The leeway for initial confusions is large (which may be why there are papers complaining
+that the Byrd Box Model is confusing to students; why not fix it?)
 
-**Example**
+And thus, here is a port naming that sounds exceedingly better, at least to me:
 
-From **Specifying trace models with a continuation semantics**. This example apparently
-was in Lawrence Byrd's original paper, too:
+![Byrd Box Model port names](byrd_box_model_port_names.svg)
+
+### A trace example
+
+From the paper **Specifying trace models with a continuation semantics** (see the end of this page for the reference).
+This example apparently was in Lawrence Byrd's original paper, too:
 
 A program
 
@@ -242,7 +247,7 @@ A corresponding trace for `?- p.`
  no]
 ```
 
-Note that no ouput is emitted for a rule head match or a rule head mismatch or even for a fact
+Note that no ouput is emitted for a rule head match nor for a rule head mismatch nor even for a fact
 match. This may make the trace harder to follow than is necessary.
 
 ### The exception port
