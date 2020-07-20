@@ -115,7 +115,12 @@ Note that there is no facility for **catching standard errors**, which is done b
 a successful unification of the a thrown term with a "catcher" term passed to
 [`catch/3`](https://www.swi-prolog.org/pldoc/doc_for?object=catch/3). 
 
-The generator for user-readable error messages based on the exception term can be found in `boot/messages.pl`, where there is code like this:
+If you want to decorate the exceptoin with more context information, take a look
+at [Adding context to errors: prolog_exception_hook](https://eu.swi-prolog.org/pldoc/man?section=excepthook), 
+which allows to do that before the jump to the approriate `catch/3` is performed.
+
+The generator for user-readable error messages based on the exception term can be found 
+in `boot/messages.pl`, where there is code like this:
 
 ```prolog
 iso_message(resource_error(Missing)) -->
@@ -127,6 +132,10 @@ iso_message(type_error(free_of_attvar, Actual)) -->
     [ 'Type error: `~W'' contains attributed variables'-
       [Actual,[portray(true), attributes(portray)]] ].
 ```
+
+You may be able to change the printing of messages based on exception. See
+[4.10.4 Printing messages](https://eu.swi-prolog.org/pldoc/man?section=printmsg) and
+in particular [Predicate message_hook/3](https://eu.swi-prolog.org/pldoc/doc_for?object=message_hook/3).
 
 ### List of the ISO-Standard exception term
 
@@ -140,6 +149,9 @@ In order of appearance in the ISO-Standard:
 
 An argument or one of its components is uninstantiated, but an instantiated argument or component is required instead.
 In effect, "I need more data".
+
+Note that the atom expresses what is _lacking_ (an "instantiation" is lacking), not what _is the problem or what is the matter_ 
+(that would mean the atom be `required_instantiation_error` or something similar). That's a bit unusual.
 
 ```
 Formal = instantiation_error
@@ -155,6 +167,10 @@ to `instantiation_error/1` is just for future extensions and remains unused.
 #### Uninstantiation error
 
 An argument or one of its components is instantiated, and an uninstantiated argument or argument component is required.  
+In effect, "I need some space for output".
+
+Note that the atom expresses what is _lacking_ (an "uninstantiation" is lacking), not what _is the problem or what is the matter_ 
+(that would mean the atom be `required_uninstantiation_error` or something similar). Again, unusual.
 
 ```
 Formal=uninstantiation_error(Culprit)
