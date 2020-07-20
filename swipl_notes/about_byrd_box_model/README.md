@@ -288,13 +288,13 @@ would thus be this (the `excpetion` port is not shown)
 
 ![Byrd Box Model](byrd_box_model.svg)
 
-## Well-behavedness
+## Predicate behaviour and well-behavedness
 
 See [SWI-Prolog: Deterministic/Semi-deterministic/Non-deterministic predicates](https://www.swi-prolog.org/pldoc/man?section=testbody)
 
 Note these case of predicate behaviour:
 
-- A **deterministic** predicate always succeeds exactly once, a `redo` means pass-through to the preceding
+- A **deterministic** predicate always succeeds **exactly once**, a `redo` means pass-through to the preceding
   predicate activation or the clause head. If the predicate is _well-behaved_ it tells the Prolog Processor that there are 
   no alternative solutions ("it leaves no choicepoints"). Programmatically, this is implemented by a cut at very the end
   of a clause. When backtracking, the Prolog Processor can then dispense with a `redo` call to this predicate and
@@ -302,22 +302,23 @@ Note these case of predicate behaviour:
   deterministic predicate will always only say `true.` and not accept a `;` for more solutions. Generally, predicates
   of this kind perform side-effects, I/O and control. The outcome "true" really means "success in computation", with failure
   indicated by a thrown exception instead of the outcome "false". Simplest example: [`true/0`](https://eu.swi-prolog.org/pldoc/doc_for?object=true/0).
-- A **semi-deterministic** predicate may succeed once or fail. In case of success, behaviour and well-behaved behaviour
+- A **semi-deterministic** predicate ***may succeed once or fail**. In case of success, behaviour and well-behaved behaviour
   are as described for the deterministic predicate. On the Prolog Toplevel, a well-behaved 
   semi-deterministic predicate will either says `true.` or `false.` and not accept a `;` for more solutions. 
   Example: [`memberchk/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=memberchk/2).
-- A **non-deterministic** predicate may fail or succeed on first call, and succeed N>=0 times on `redo`.
+- A **non-deterministic** predicate **may fail or succeed on first call, and succeed N>=0 times on `redo`**.
   This is the most general situation. The predicate may additionally provide **determinism on the last solution**,
   i.e. leave no choicepoints after the last success. Whether that is possible depends.
   Example: [`member/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=member/2). That predicate may provide
   determinism on the last solution or not, for example for `member(1,[1,2,3,1])` it will, but it won't for
   `member(1,[1,2,3,4])` because there is no way that the predicate can know there are no further `1` in the
   list after the first one (which is objectively also the last one) without actually searching through the list.
-  
-In the B-Box model, the "well-behaved" deterministic and semi-deterministic predicates and the non-deterministic 
-ones which "provides determinism on the last solution" can all be understood thus: when the token exits at `exit`,
-the `redo` port is "closed". When going leftwards during backtracking, the token won't enter via `redo` but bypasses
-the B-Box entirely. This bypass operation may certainly be chained, bypassing more B-Boxes towards the left. 
+    
+In the B-Box model, a "well-behaved" predicate can be understood thus: when the token exits at `exit` and this
+is know (by the predicate) to be the last solution, the `redo` port is "closed". When going leftwards during
+backtracking, the token won't enter via `redo` but bypasses the B-Box entirely. This bypass operation may 
+certainly be chained, bypassing more B-Boxes towards the left. The bypass doesn't add functionality, but is
+a representation of an optimization that the Prolog Process may choose to implement.
 
 With the above, we can create a few illustrations. 
 
