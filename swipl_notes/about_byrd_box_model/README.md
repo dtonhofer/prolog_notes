@@ -318,7 +318,9 @@ In the B-Box model, a "well-behaved" predicate can be understood thus: when the 
 is know (by the predicate) to be the last solution, the `redo` port is "closed". When going leftwards during
 backtracking, the token won't enter via `redo` but bypasses the B-Box entirely. This bypass operation may 
 certainly be chained, bypassing more B-Boxes towards the left. The bypass doesn't add functionality, but is
-a representation of an optimization that the Prolog Process may choose to implement.
+a representation of an optimization that the Prolog Process may choose to implement. In fact, the implementation
+will probably just remove the predicate activation record from its stack, any `redo` will not
+even be able to know that it has ever been there.
 
 With the above, we can create a few illustrations. 
 
