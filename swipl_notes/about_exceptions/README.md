@@ -439,7 +439,7 @@ throw_mystyle_existence_error(Pred,Type,Term,ExCode) :-
 
 ## Good ideas
 
-### Avoiding cleartext errors littering you code: Take #1
+### Good idea: Avoiding cleartext errors littering you code: Take #1
 
 To collect the cleartext error messages outside of the `throw/1` calls, just do this:
 
@@ -493,10 +493,14 @@ throw_state_error(Pred,ExCode) :-
    throw(error(state_error,context(Pred,ExText))).
 ```
 
-### Avoiding cleartext errors littering you code: Take #2 (better!)
+### Good idea: Avoiding cleartext errors littering you code: Take #2 (better!)
 
-This is a more flexible proposal for the Prolog-Java bridge, aka _JPL_: 
-[JPL: A bidirectional Prolog/Java interface](https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/jpl.html%27)).
+This is a more flexible proposal (made for the Prolog-Java bridge 
+[JPL](https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/jpl.html%27))).
+
+The idea is that neither text nor exception type are coded inside the program proper.
+Instead all exception code is thrown via calls to a dedicated predicate `throwme/2`
+and all exceptions are described by clauses of the predicate `exc_desc/4`
 
 **All exception code is thrown via calls to `throwme/2`**
 
@@ -551,11 +555,11 @@ throwme_h1(Count,_,LookupPred,LookupTerm) :-
 
 **All exceptions are described by clauses of the predicate `exc_desc/4`**
 
-Each clause works the same way as a data record, maybe found in a map/dictionary/hash, would in other languages.
-As Prolog program in essence _is_ a map, we can code the data directly (remember the adage of keeping "code
-and data separate"? We have more flexibility here. "Separate" now just mean "grouped at the end of the program").
+Each clause of `exc_desc/4` works essentially as a data record (in other programming languages, one
+would stash these records into a "data record holder" like a map; but a Prolog program essentially
+_is_ a map, so let's be direct).
 
-Here is the description of `exc_desc/4` with two examples as called by the code snippet given above:
+Here is the description of `exc_desc/4`, followed by two examples as called by the code snippet given above:
 
 ```prolog
 % ===
@@ -615,21 +619,24 @@ exc_desc(jpl_get_static,arg2_is_bad(F),
          '2nd arg must be an atom naming a public field of the class').
 ```
 
-Now one can start to think about dynamically creating messages and internationalization.
+Now one can start to think about dynamically creating messages and perfoming internationalization.
+
+**Making sure the `throwme/2` calls are correct**
 
 To test whether all calls to `throwme/2`  have been coded correctly, you first need to
 extract all those calls from the source code, then copy-paste them into a small plunit test block.
 (This is best automated, but I haven done so yet).
 
-The test block:
+The plunit test block:
 
 [exception_testcode.pl](exception_testcode.pl)
 
-The Perl program to get those `throwme/2` calls out of a a Prolog program read from STDIN:
+A Perl program to get those `throwme/2` calls out of a a Prolog program read from STDIN (should
+be rewritten to Prolog; maybe later):
 
 [perl_throwme_extractor.pl](perl_throwme_extractor.pl)
 
-### Selecting whether to "throw or fail" at runtime
+## Good idea: Selecting whether to "throw or fail" at runtime
 
 Sometimes context determines whether some code, upon encountering an identical
 problematic situation, should fail or throw. For example, deterministic predicates
