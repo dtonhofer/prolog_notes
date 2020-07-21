@@ -493,7 +493,7 @@ throw_state_error(Pred,ExCode) :-
    throw(error(state_error,context(Pred,ExText))).
 ```
 
-### Avoiding cleartext errors littering you code: Take #2
+### Avoiding cleartext errors littering you code: Take #2 (better!)
 
 This is a more flexible proposal for the Prolog-Java bridge, aka _JPL_: 
 [JPL: A bidirectional Prolog/Java interface](https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/jpl.html%27)).
