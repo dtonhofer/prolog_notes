@@ -12,20 +12,24 @@ _From [The Fifty-three Stations of the Tōkaidō](https://en.wikipedia.org/wiki/
 
 ![The Logic Programming Landscape](other_notes/quick_map_of_lp_landscape/quick_map_of_lp_landscape.svg)
 
+So many *modeling languages* which are also *programming languages*, all a bit different.
+
 Missed in the above: 
 
 - [αProlog](https://homepages.inf.ed.ac.uk/jcheney/programs/aprolog/) (Currently frozen?)
 - [GOLOG](https://en.wikipedia.org/wiki/GOLOG) (Ancient, based on Situation Calculus. What's the relationship to LPS?)
 - [MProlog](https://www.mimuw.edu.pl/~nguyen/mpl.pdf) (PDF) for [Modal Logic](https://plato.stanford.edu/entries/logic-modal/)
-- NProlog ([part 1](https://www.sciencedirect.com/science/article/pii/S0743106685800030) and [part 2](https://www.sciencedirect.com/science/article/pii/0743106684900293))
+- NProlog: An extension of prolog with hypothetical implication. 
+   - [part 1](https://www.sciencedirect.com/science/article/pii/0743106684900293)
+   - [part 2](https://www.sciencedirect.com/science/article/pii/S0743106685800030)
 - [HYPROLOG](http://akira.ruc.dk/~henning/hyprolog/) A Logic Programming Language with Abduction and Assumptions
 - [LogicBlox](https://developer.logicblox.com/technology/)
 - [Datalog](https://en.wikipedia.org/wiki/Datalog)
 - [Logical Frameworks](https://en.wikipedia.org/wiki/Logical_framework)
 - [Markov Logic Networks](https://en.wikipedia.org/wiki/Markov_logic_network) -- This seems to be hot right now
 - Lambda-Prolog: [A pragmatic reconstruction of Lambda-Prolog](https://core.ac.uk/display/48194387)
-
-So many *modeling languages* which are also *programming languages*, all a bit different.
+- There should be something here on implementation of more general theorem provers using the very restricted top-down 
+  theorem prover (or rather, "enumerating consequence checker") of Prolog.
 
 ## Notes on...
 
