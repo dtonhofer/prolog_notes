@@ -2,8 +2,9 @@
 
 ## Vocabulary
 
-- *Analyzing/Constructing* a Term or 
-- *Disassembling/Assembling* a Term.
+- *Analyzing/Constructing* a term or 
+- *Disassembling/Assembling* a term or maybe
+- *Decomposing/Composition* a term
 - In Clojure there is also ["Destructuring"](https://clojure.org/guides/destructuring), which is pattern-matching a term and disassembling it into parts
   like one-way unification. In Prolog this would by copy_term, followed by unification.
   - This is also how calls work in [Erlang](https://en.wikipedia.org/wiki/Erlang_(programming_language))
