@@ -2,7 +2,7 @@
 
 A very low-fidelity overview, but one needs general maps.
 
-![Rule-based Systems](fwd_and_bwd_chaining.svg)
+![Rule-based Systems](pics/fwd_and_bwd_chaining.svg)
 
 This an offshoot from this question on StackOverflow: [Forward and Backward Chaining](https://stackoverflow.com/questions/62376526/forward-and-backward-chaining).
 
