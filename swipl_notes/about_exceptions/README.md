@@ -143,15 +143,28 @@ in particular [Predicate message_hook/3](https://eu.swi-prolog.org/pldoc/doc_for
 > condition; they are thus detected before execution of the goal begins, and no side effect will have taken place.
 > The exceptional cases are: Syntax Errors, Resource Errors, and System Errors.
 
+Note that the ISO standard formal term tries ot express what _should be the case_ or what is the expected  _correct state_, and 
+not what _is the problem_ with the encountered erroneous state.
+
+For example:
+
+- In case a veriable is uninstantiated but it should be instantiated, you get an _instantiation error_: The problem
+is _not_ that there is an unwanted instantiation, but that the correct state is the one with an instantiated variable.
+- In case a veriable is instantiated but it should be uninstantiated (because it will be used for output), you get an
+_uninstantiation error_: The problem is _not_ that there is an unwanted uninstantiation, but that the correct state
+is the one with an uninstantiated variable.
+- If you try to disassemble an empty list with compound_name_arguments/3, you get a formal `type_error(compound,[])`.
+The problem is _not_ that `[]` is erroneously a compound term, but that a compound term is expected and `[]` isn't
+one of those.
+
+(that would mean the atom be `required_instantiation_error` or something similar). 
+
 In order of appearance in the ISO-Standard:
 
 #### Instantiation Error
 
 An argument or one of its components is uninstantiated, but an instantiated argument or component is required instead.
 In effect, "I need more data".
-
-Note that the atom expresses what is _lacking_ (an "instantiation" is lacking), not what _is the problem or what is the matter_ 
-(that would mean the atom be `required_instantiation_error` or something similar). That's a bit unusual.
 
 ```
 Formal = instantiation_error
@@ -189,7 +202,7 @@ Formal=type_error(ValidType,Culprit)
 ```
 
 - `ValidType` is an atom chosen from
- `[atom, atomic, byte, callable, charactder, compound, evaluable, in_byte, in_character, integer, list, number, predicate_indicator, variable]`.
+ `[atom, atomic, byte, callable, character, compound, evaluable, in_byte, in_character, integer, list, number, predicate_indicator, variable]`.
 - `Culprit` is the argument or one of its components which caused the error.
 
 Thrown with [type_error/2](https://eu.swi-prolog.org/pldoc/doc_for?object=type_error/2)
