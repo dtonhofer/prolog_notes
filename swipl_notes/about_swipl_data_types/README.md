@@ -237,7 +237,7 @@ See the notes on [Compound terms with zero arguments](https://eu.swi-prolog.org/
 
 ## Predicates for Analyzing/Constructing a Term
 
-[See this page](term_analysis_construction/)
+[See this page](../about_term_analysis_and_construction/)
 
 ## On Type testing
 
