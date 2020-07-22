@@ -143,21 +143,23 @@ in particular [Predicate message_hook/3](https://eu.swi-prolog.org/pldoc/doc_for
 > condition; they are thus detected before execution of the goal begins, and no side effect will have taken place.
 > The exceptional cases are: Syntax Errors, Resource Errors, and System Errors.
 
-Note that the ISO standard formal term tries ot express what _should be the case_ or what is the expected  _correct state_, and 
-not what _is the problem_ with the encountered erroneous state.
+**Style**
+
+Note that the ISO standard formal term tries ot express what _should be the case_ or _what is the expected correct state_, and 
+not what _is the problem_.
 
 For example:
 
-- In case a veriable is uninstantiated but it should be instantiated, you get an _instantiation error_: The problem
-is _not_ that there is an unwanted instantiation, but that the correct state is the one with an instantiated variable.
-- In case a veriable is instantiated but it should be uninstantiated (because it will be used for output), you get an
-_uninstantiation error_: The problem is _not_ that there is an unwanted uninstantiation, but that the correct state
-is the one with an uninstantiated variable.
-- If you try to disassemble an empty list with compound_name_arguments/3, you get a formal `type_error(compound,[])`.
-The problem is _not_ that `[]` is erroneously a compound term, but that a compound term is expected and `[]` isn't
-one of those.
-
-(that would mean the atom be `required_instantiation_error` or something similar). 
+- If a variable is found to be uninstantiated but should be instantiated, you get a
+  formal term equal to `instantiation_error`: The problem is not that there is an 
+  unwanted instantiation, but that the correct state is the one with an instantiated variable.
+- In case a variable is found to be instantiated but should be uninstantiated (because 
+  it will be used for output), you get a formal term equal to `uninstantiation_error(Culprit)`: 
+  The problem is not that there is lack of instantiation, but that the correct state is the one 
+  which `Culprit` (or one of its subterms) is "more uninstantiated" than is the case.
+- If you try to disassemble an empty list with compound_name_arguments/3, you get a formal 
+  `type_error(compound,[])`. The problem is not that `[]` is (erroneously) a 
+  compound term, but that a compound term is expected and `[]` doesn't belong to that class.
 
 In order of appearance in the ISO-Standard:
 
