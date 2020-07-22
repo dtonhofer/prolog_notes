@@ -629,12 +629,12 @@ extract all those calls from the source code, then copy-paste them into a small 
 
 The plunit test block:
 
-[exception_testcode.pl](exception_testcode.pl)
+[exception_testcode.pl](code/exception_testcode.pl)
 
 A Perl program to get those `throwme/2` calls out of a a Prolog program read from STDIN (should
 be rewritten to Prolog; maybe later):
 
-[perl_throwme_extractor.pl](perl_throwme_extractor.pl)
+[perl_throwme_extractor.pl](code/perl_throwme_extractor.pl)
 
 ## Good idea: Selecting whether to "throw or fail" at runtime
 
