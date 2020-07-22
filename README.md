@@ -52,7 +52,7 @@ Prolog naming and concepts are confusing. My way to name & graphically represent
 
 ## More subjects, general and SWI-Prolog oriented
 
-- [About the Byrd Box Model](swipl_notes/about_byrd_box_model) (rather complete)
+- [About the Byrd Box Model](other_notes/about_byrd_box_model) (rather complete)
 - [SWI-Prolog data types](swipl_notes/about_swipl_data_types) (rather complete)
 - [Exceptions](swipl_notes/about_exceptions) (rather complete)
 - [Output formatting](swipl_notes/about_output_formatting) (rather complete)
