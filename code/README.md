@@ -1,5 +1,11 @@
 # Code grabbag
 
+Some predicates which may be of general use.
+
+I will have to move these to an SWI-Prolog package (see also [library(prolog_pack](https://eu.swi-prolog.org/pldoc/man?section=prologpack))
+
+How do I do that?
+
 ## `vector_nth0/3`
 
 - Code: [`vector_nth0.pl`](vector_nth0.pl)

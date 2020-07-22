@@ -63,21 +63,16 @@ Remember:
 
 It is possible to have [Attributed Variables](https://eu.swi-prolog.org/pldoc/man?section=attvar) so that goals are scheduled when variables are bound.
 
-## Depicting the "Byrd Box Model"
+## Subjects
 
-Many details have been elided.
-
-- The "EXIT" port should really have been called the "SUCCESS" port. 
-
-![Byrd Box](pics/byrd_box_model/Byrd%20Box%20Model.svg)
-
-## SWI-Prolog's datatypes
-
-![swipl_datatype_tree](swipl_datatypes/swipl_datatype_tree/swipl_datatype_tree.svg) 
-
-More here:
-
-[SWI-Prolog datatypes](swipl_datatypes)
+- [About Exceptions](swipl_notes/about_exceptions) (rather complete)
+- [About the Byrd Box Model](swipl_notes/about_byrd_box_model) (rather complete)
+- [About SWI-Prolog data types](swipl_notes/about_swipl_data_types) (rather complete)
+- [SWI-Prolog datatypes](swipl_datatypes)
+- [About output formatting in SWI-Prolog](swipl_notes/about_output_formatting) (semi-complete)
+- [About DCGs](swipl_notes/about_dcgs) (just getting started)
+- [About Prolog DB operations](swipl_notes/about_prolog_db_operations) (?)
+- [About `dif/2`](swipl_notes/about_dif) (rather complete)
 
 ## External Resources
 
@@ -87,113 +82,13 @@ More here:
 - [Bug Hunting Toolbox Wiki Page at SWI-Prolog Discourse Site](https://swi-prolog.discourse.group/t/bug-hunting-toolbox/710)
 - [Frank Pfenning's Course on Logic Programming](http://www.cs.cmu.edu/~fp/courses/lp/) ([Lecture Notes as one PDF](http://www.cs.cmu.edu/~fp/courses/lp/lectures/lp-all.pdf) ... 324 pages). Hardcore!   
 
-### "The Power of Prolog" my Markus Triska on YouTube
+### On YouTube: "The Power of Prolog" by Markus Triska
 
-[https://www.youtube.com/channel/UCFFeNyzCEQDS4KCecugmotg](https://www.youtube.com/channel/UCFFeNyzCEQDS4KCecugmotg)
-
-- Logical Foundations of Prolog
-  - [Logic](https://www.youtube.com/watch?v=nlTZQ0FF2Eo) (6 Mar 2019)
-  - [Predicate Logic](https://www.youtube.com/watch?v=PCO3lzGfU90) (24 Jul 2019)
-  - [Horn Clauses](https://www.youtube.com/watch?v=hgw59_HBU2A) (21 Oct 2019)
-- Prolog Applications
-  - [Collatz Conjecture in Prolog](https://www.youtube.com/watch?v=XTrLbfl-Ag0) (12 Nov 2018)
-  - [Knights and Knaves in Prolog](https://www.youtube.com/watch?v=oEAa2pQKqQU) (6 Jan 2019)
-  - [Map Colouring in Prolog](https://www.youtube.com/watch?v=6XD7vBbywMc) (29 Jan 2019)
-  - [Sudoku in Prolog](https://www.youtube.com/watch?v=5KUdEZTu06o) (16 Feb 2019)    
-  - [N-Queens in Prolog](https://www.youtube.com/watch?v=l_tbL9RjFdo) (14 Mar 2019)
-  - [Bitcoinolog: Reason about Bitcoin addresses with Prolog](https://www.youtube.com/watch?v=HDJ8E8g2zeg) (25 March 2019)
-  - [Term Rewriting with Prolog](https://www.youtube.com/watch?v=b2Px7cu2a68) (23 Aug 2019) 
-  - [School Timetabling with Prolog](https://www.youtube.com/watch?v=uKvS62avplE) (2 Jan 2020)
-  - [Web Scraping with (Scryer) Prolog](https://www.youtube.com/watch?v=zKrw-pRI9ac) (22 Jun 2020)  
-- Prolog Style and Technique
-  - [Naming Prolog Predicates](https://www.youtube.com/watch?v=Uska9DgJEoo) (23 Sep 2019)
-  - [Reading Prolog Code](https://www.youtube.com/watch?v=fQUVWo209WA) (31 Jan 2020)
-  - [Clean vs. Defaulty Representations in Prolog](https://www.youtube.com/watch?v=KJ8uZiWpomg) (10 May 2020)
-  - [Argument Indexing in Prolog](https://www.youtube.com/watch?v=FZLofckPu4A) (11 Dec 2019)
-  - [Representing Strings in Prolog](https://www.youtube.com/watch?v=plvBFNi0cVw) (10 Feb 2020)
-  - [Sparrows on Eagles: Delegate your work to Prolog!](https://www.youtube.com/watch?v=vdabv9EkYrY) (22 Mar 2020)
-- Prolog Language: Synatx and Semantics
-  - [Prolog Terms](https://www.youtube.com/watch?v=TUjQqvCTwjQ) (9 Jul 2019)
-  - [Prolog Lists](https://www.youtube.com/watch?v=9JzwUnMSCdA) (16 Jul 2019)
-  - [Prolog Operators](https://www.youtube.com/watch?v=DepPPfDVSpw) (20 Dec 2018)
-  - [Clauses, Rules and Facts](https://www.youtube.com/watch?v=x_APqarir-k) (18 Jan 2019)
-  - [Prolog Predicates](https://www.youtube.com/watch?v=GlWI9PBZD2Y) (25 Jan 2019)
-  - [Prolog Queries and Answers](https://www.youtube.com/watch?v=UmGih8xOrJ4) (20 Jun 2019) 
-  - [Prolog Integer Arithmetic](https://www.youtube.com/watch?v=sHo6-hk21L8) (16 Jul 2019)
-  - [Meta-Predicates in Prolog](https://www.youtube.com/watch?v=-nlI33r-P70) (11 Feb 2019)
-  - [Prolog Conformity Testing](https://www.youtube.com/watch?v=Ko_IrwN9yAM) (31 Mar 2019)
-  - [Type tests in Prolog](https://www.youtube.com/watch?v=ZIv0G4b1xBQ) (3 Apr 2019)
-  - [List differences in Prolog](https://www.youtube.com/watch?v=6egAF4-HVzw) (12 May 2019)
-- Prolog Development Environment
-  - [Prolog development with GNU Emacs](https://www.youtube.com/watch?v=WdWOKbTX-i4) (24 Mar 2014)
-  - [ediprolog: Emacs Does Interactive Prolog](https://www.youtube.com/watch?v=jMg8sY2R930) (15 Jul 2019)
-  - [Debugging Prolog Code](https://www.youtube.com/watch?v=4IWruicMd4c) (22 Jul 2019)
+Gotta watch them all: [List of uploads](other_notes/about_power_of_prolog_on_youtube/)
   
 ### Papers of Interest
 
-- 1984 [Making Prolog more expressive](https://core.ac.uk/download/pdf/82550631.pdf)
-   - J.W. Lloyd, R.W. Topor
-   - Journal of Logic Programming, 1984:3 pp 225-240
-- 1989 Logic Programming with Strong Negation 
-   - David Pearce, Gerd Wagner
-   - Springer LNAI 475, pp 311-326
-- 1989 [What you always wanted to know about Datalog (and never dared to ask)](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.210.1118) 
-   - Stefan Ceri, Georg Gottlob, Letizia Tanca
-   - [IEEE Transactions on Knowledge and Data Engineering](https://ieeexplore.ieee.org/document/43410), March 1989
-- 1989-10 [A denotational semantics for Prolog](https://dl.acm.org/doi/abs/10.1145/69558.69564)
-   - Tim Nicholson, Norma Foo
-   - ACM Transactions on Programming Languages and Systems, October 1989
-   - With: [Some comments on “a denotational semantics for Prolog”](https://dl.acm.org/doi/abs/10.1145/177492.177605)
-      - Bijan Arbab, Daniel M. Berry
-      - ACM Transactions on Programming Languages and Systems, May 1994 
-Authors Info & Affiliations 
-- 1991-01 [Applying Techniques to Skeletons](https://www.researchgate.net/publication/220986744_Applying_Techniques_to_Skeletons)
-   - Leon Sterling, Marc Kirschenbaum
-- 1991-02 [A type system for logic programs](https://www.sciencedirect.com/science/article/pii/074310669180002U)
-   - Eyal Yardeni, Ehud Shapiro
-   - Journal of Logic Programming_ Volume 10, Issue 2
-- 1991 [Logic Programming with Strong Negation and Inexact Predicates](https://academic.oup.com/logcom/article-abstract/1/6/835/943774) 
-   - Gerd Wagner
-   - Journal of Logic and Computation, Volume 1, Issue 6, December 1991, pp 835–859
-- 1991 [Uniform Proofs as a Foundation for Logic Programming](http://www.lix.polytechnique.fr/~dale/papers/apal91.pdf) 
-   - Dale Miller, Gopalan Nadathur, Frank Pfenning, Andre Scedrov
-   - _the Lambda-Prolog way_
-- 1995 [Higher-order logic programming in Prolog](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.34.9690) 
-   - Lee Naish
-- 1996 ["Classical" Negation in Non-Monotonic Reasoning and Logic Programming](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.53.4127)
-   - José Alferes, Luís Moniz Pereira, Teodor C. Przymusinski
-   - Proceedings of the European Workshop on Logic in Artificial Intelligence (JELIA'96), Springer LNAI 1126, pp 143-163   
-- 2001-04 [Logic Programming, Functional Programming, and Inductive Definitions](https://www.researchgate.net/publication/1880293_Logic_Programming_Functional_Programming_and_Inductive_Definitions) 
-   - Lawrence Paulson, Andrew W. Smith
-- 2002-07 [Abduction in Logic Programming](http://web.stanford.edu/class/cs227/Readings/Abudction%20in%20LP.pdf) 
-   - Marc Denecker, Antonis Kakas
-   - [Computational Logic: Logic Programming and Beyond, Springer LNCS 2407](https://link.springer.com/chapter/10.1007/3-540-45628-7_16), pp 402-436
-- 2003-10 [The Essence of Strategic Programming](https://www.researchgate.net/publication/277289331_The_Essence_of_Strategic_Programming) 
-   - Ralf Lämmel, Eelco Visser, Joost Visser
-   - _generic programming with the use of strategies_
-- 2009-11 [Coding Guidelines for Prolog](https://arxiv.org/abs/0911.2899)
-   - Michael A. Covington, Roberto Bagnara, Richard A. O'Keefe, Jan Wielemaker, Simon Price
-- 2011 [Answer Set Programming’s Contributions to Classical Logic](https://people.cs.kuleuven.be/~marc.denecker/ctc.pdf)
-   - Marc Denecker, Joost Vennekens, Hanne Vlaeminck, Johan Wittocx, Maurice Bruynooghe
-   - Springer LNAI 6565
-   - _Stable Semantics_ 
-- 2013-05 [Truth versus Information in Logic Programming](https://arxiv.org/abs/1305.0141v2)
-   - Lee Naish, Harold Sondergaard
-- 2015-01 [The sad state concerning the relationships between Logic, Rules and Logic Programming](http://via.aayo.ws/nrGeX) 
-   - Robert Kowalski
-- 2015-10 [The Inductive Constraint Programming Loop](https://arxiv.org/abs/1510.03317)
-   - Christian Bessiere, Luc De Raedt, Tias Guns, Lars Kotthoff, Mirco Nanni, Siegfried Nijssen, Barry O'Sullivan, Anastasia Paparrizou, Dino Pedreschi, Helmut Simonis
-   - Appears in modified form in _IEEE Intelligent Systems_, September/October 2017.
-- 2016-07 [Indexing `dif/2`](https://arxiv.org/abs/1607.01590v1) 
-   - Ulrich Neumerkel, Stefan Kral
-- 2017-09 [plspec – A Specification Language for Prolog Data](https://www.krin.gs/publication/koerner-plspec-declare17/koerner-plspec-declare17.pdf)
-   - Philipp Körner, Sebastian Krings
-   - DECLARE 2017
-- 2019-09 [Prolog Coding Guidelines: Status and Tool Support](https://arxiv.org/abs/1909.08230v1) 
-   - Falco Nogatz, Philipp Körner, Seastuan Krings
-   - ICLP 2019
-- 2020-01 [Drawing Prolog Search Trees. A Manual for Teachers and Students of Logic Programming](https://arxiv.org/abs/2001.08133v1)
-   - Johan Bos
+A small selection: [List of papers](other_notes/about_papers_of_interest/)
 
 ### Packages of Interest
 
