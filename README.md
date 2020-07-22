@@ -52,20 +52,20 @@ Prolog naming and concepts are confusing. My way to name & graphically represent
 
 ## More subjects, general and SWI-Prolog oriented
 
-- [About the Byrd Box Model](other_notes/about_byrd_box_model) (rather complete)
-- [SWI-Prolog data types](swipl_notes/about_swipl_data_types) (rather complete)
-- [SWI-Prolog term analysis & construction](swipl_notes/about_term_analysis_and_construction) (rather complete)
-- [Exceptions](swipl_notes/about_exceptions) (rather complete)
-- [Output formatting](swipl_notes/about_output_formatting) (rather complete)
-- [How to load a library (the lynx library in this case)](swipl_notes/loading_lynx_library.md)
-- [The use of the caret `^` in` bagof/3`, `setof/3`](swipl_notes/notes_on_the_caret_used_in_bagof_goals.md)
-- [SWI-Prolog string modes](swipl_notes/swipl_string_modes.md)
-- [`dif/2`](swipl_notes/about_dif) (rather complete)
+- [About the Byrd Box Model](other_notes/about_byrd_box_model/) (rather complete)
+- [SWI-Prolog data types](swipl_notes/about_swipl_data_types/) (rather complete)
+- [SWI-Prolog term analysis & construction](swipl_notes/about_term_analysis_and_construction/) (rather complete)
+- [Exceptions](swipl_notes/about_exceptions/) (rather complete)
+- [Output formatting](swipl_notes/about_output_formatting/) (rather complete)
+- [How to load a library (the lynx library in this case)](swipl_notes/various/loading_lynx_library.md)
+- [The use of the caret `^` in` bagof/3`, `setof/3`](swipl_notes/various/notes_on_the_caret_used_in_bagof_goals.md)
+- [SWI-Prolog string modes](swipl_notes/various/swipl_string_modes.md)
+- [`dif/2`](swipl_notes/about_dif/) (rather complete)
 - ["Difference Lists"](swipl_notes/about_difference_lists/)
 - Questions on `maplist/N` are recurrent and popular (not only on Stack Overflow), so these page collect notes & examples:
-   - [maplist_2_examples.md](maplist/maplist_2_examples.md): Examples and major explainer for [`maplist/2`](https://www.swi-prolog.org/pldoc/man?predicate=maplist%2f2)
-   - [maplist_3_examples.md](maplist/maplist_3_examples.md): Examples for [`maplist/3`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/3)
-   - [maplist_4_examples.md](maplist/maplist_4_examples.md): Examples for [`maplist/4`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/4)
+   - [maplist_2_examples.md](swipl_notes/about_maplist/maplist_2_examples.md): Examples and major explainer for [`maplist/2`](https://www.swi-prolog.org/pldoc/man?predicate=maplist%2f2)
+   - [maplist_3_examples.md](swipl_notes/about_maplist/maplist_3_examples.md): Examples for [`maplist/3`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/3)
+   - [maplist_4_examples.md](swipl_notes/about_maplist/maplist_4_examples.md): Examples for [`maplist/4`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/4)
 - Linear "fold" in Prolog: [`foldl` and `foldr`](other_notes/about_foldl_and_foldr), Explainer and code
 
 ### Under construction
