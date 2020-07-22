@@ -29,9 +29,9 @@ The description for [`maplist/4`](https://eu.swi-prolog.org/pldoc/doc_for?object
 
 ### Implementing `foldl/4` with `maplist/4`.
 
-This is rather pointless, but why not:
+This is somewhat pointless, but why not:
 
-- [Explainer](https://github.com/dtonhofer/prolog_notes/blob/master/foldl_foldr/linear_foldl_with_maplist4.md)
+- [Explainer](../../other_notes/about_foldl_foldr/linear_foldl_with_maplist4.md)
 - [Code](https://github.com/dtonhofer/prolog_notes/blob/master/foldl_foldr/maplist_foldl.pl)
 
 ### Arbitrary packing and unpacking using the same goal
