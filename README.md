@@ -27,9 +27,10 @@ Missed in the above:
 - [Datalog](https://en.wikipedia.org/wiki/Datalog)
 - [Logical Frameworks](https://en.wikipedia.org/wiki/Logical_framework)
 - [Markov Logic Networks](https://en.wikipedia.org/wiki/Markov_logic_network) -- This seems to be hot right now
-- Lambda-Prolog: [A pragmatic reconstruction of Lambda-Prolog](https://core.ac.uk/display/48194387)
+- Lambda-Prolog: [A pragmatic reconstruction of Lambda-Prolog](https://hal-enac.archives-ouvertes.fr/hal-00934033)
 - There should be something here on implementation of more general theorem provers using the very restricted top-down 
-  theorem prover (or rather, "enumerating consequence checker") of Prolog.
+  theorem prover (or rather, "enumerating consequence checker") of Prolog. And how do you direct search in a theorem prover anyway?
+  The NP desert is not for the faint of heart.
 
 ## Notes on...
 
