@@ -2,7 +2,7 @@
 
 Graphical notation can still be simplifed. TO BE DONE!
 
-![Prolog term graphical notation](prolog_term_notation.svg)
+![Prolog term graphical notation](pics2/prolog_term_notation.svg)
 
 # Names and Symbols
 
