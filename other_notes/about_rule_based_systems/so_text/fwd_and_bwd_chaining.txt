@@ -1,0 +1,236 @@
+Text for anser to "Forward and Backward Chaining"
+
+https://stackoverflow.com/questions/62376526/forward-and-backward-chaining
+
+
+I have done some research on the current understanding of "forward chaining" and "backward chaining". This brings up a lot of material. Here is a résumé.
+
+First a diagram, partially based on:
+
+- [The Sad State Concerning the Relationships between Logic, Rules and Logic Programming](http://via.aayo.ws/nrGeX) (Robert Kowalski)
+
+`LHS` stands for "left-hand-side", `RHS` stands for "right-hand-side" of a rule throughout.
+
+Let us separate "Rule-Based Systems" (i.e. systems which do local computation based on rules), into three groups as follows:
+
+- *Production Rule Systems*, which include the old-school [Expert System Shells](https://en.wikipedia.org/wiki/Expert_system), which are not built on logical principles, i.e. "without a guiding model".
+- *Logic Rule Systems*, i.e. system based on a logical formalism (generally a fragment of first-order logic, classical or intuitionistic). This includes Prolog. 
+- *Rewrite Rule Systems*, systems which rewrite some working memory based on, `LHS => RHS` rewrite rules.
+
+There may be others. Features of one group can be found in another group. Systems of one group may be partially or wholly implemented by systems of another group. Overlap is not only possible but certain. 
+
+(Sadly, imgur does not accept .svg in 2020, so it's a .png)
+
+[![Classification Attempt of Backward Chaining & Forward Chaining][2]][2]
+
+- Green: Forward Chaining
+- Orange: Backward Chaining
+- Yellow: Prolog
+
+[RuleML](https://en.wikipedia.org/wiki/RuleML) (an organization) tries to XML-ize the various rulesets which exist. They classify rules as follows:
+
+[![The RuleML Family: Rule Type Tree][3]][3]
+
+The above appears in [The RuleML Perspective on Reaction Rule Standards ](https://www.slideshare.net/swadpasc/reaction-rule-mladrianpaschke20140109long) by Adrian Paschke.
+
+So they make a differentiation between "deliberative rules" and "reactive rules", which fits.
+
+# First box: "Production Rule Systems"
+
+**The General Idea of the "Production Rule System" (PRS)**
+
+- There are "`LHS->RHS`" rules & meta-rules, with the latter controlling application of the first. Rules can be "logical" (similar to Prolog Horn Clauses), but they need not be! 
+- The PRS has a "working memory", which is changed destructively whenever a rule is applied: elements or facts can be removed, added or replaced in the working memory.
+- PRS have "operational semantics" only (they are defined by what they do). 
+- PRS have no "declarative semantics", which means there is no proper way to reason about the ruleset itself: What it computes, what its fixpoint is (if there is one), what its invariants are, whether it terminates etc. 
+- More features:
+  - Ad-hoc handling of uncertainty using locally computable functions (i.e.
+    not probability computations) as in [MYCIN](https://en.wikipedia.org/wiki/Mycin#Evidence_combination), with [Fuzzy rules](https://en.wikipedia.org/wiki/Fuzzy_rule), [Dempster-Shaefer theory](https://en.wikipedia.org/wiki/Dempster%E2%80%93Shafer_theory) etc.
+  - Strong Negation may be expressed in an ad-hoc fashion.
+  - Generally, backtracking on impasse is not performed, one has to implement it explicitly.
+- PRS can connect to other systems rather directly: Call a neural network, call an optimizer or SAT Solver, call a sensor, call Prolog etc.
+- Special support for explanations & debugging may or may not exist.
+
+**Example Implementations**
+
+- Ancient:
+  - Old-school ["expert systems shells"](https://en.wikipedia.org/wiki/Expert_system), often written in LISP.
+  - [Planner](https://en.wikipedia.org/wiki/Planner_(programming_language)) of 1971, which is language with rudimentary (?) forward and backward chaining. The implementations of that language were never complete. 
+  - The original OPSx series, in particular OPS5, on which [R1/XCON](https://en.wikipedia.org/wiki/Xcon) - a VAX system configurator with 2500 rules - was running. This was actually a forward-chaining implementation.
+- Recent:
+  - CLIPS (written in C): http://www.clipsrules.net/
+  - Jess (written in Java): https://jess.sandia.gov/
+  - Drools (writen in "Enterprise" Java): https://www.drools.org/ 
+
+_Drools supports "backwards-chaining" (how exactly), but I'm not sure any of the others does, and if they do, how it looks like)_
+
+## "Forward chaining" in PRS
+
+Forward-chaining is the original approach to the PRS "cycle", also called "recognize-act" cycle, or the "data-driven cycle", which indicates what it is for. [Event-Condition-Action](https://en.wikipedia.org/wiki/Event_condition_action) architecture is another commonly used description.
+
+The inner working are straightforward:
+
+1. The rule `LHS`s are matched against the working memory (which happens at every working memory update thanks to the [RETE algorithm](https://en.wikipedia.org/wiki/Rete_algorithm)).
+2.  One of the matching rules is selected according to some criterium (e.g. priority) and its `RHS` is executed. This continues until no `LHS` matches anymore. 
+
+This cycle can be seen as higher-level approach to imperative state-based languages.
+
+Robert Kowalski notes that the "forward chaining" rules are actually an amalgamation of two distinct uses:
+
+### Forward-chained logic rules
+
+These rules apply [Modus Ponens](https://en.wikipedia.org/wiki/Modus_ponens) repeatedly to the working memory and add deduced facts.
+
+Example:
+
+> "IF X is a man, THEN X is mortal"
+
+Uses:
+
+- Deliberation, refinement of representations.
+- Exploration of state spaces.
+- Planning if you want more control or space is at a premium (R1/XCON was a forward chaining system, which I find astonishing. This was apparently due to the desire to keep resource usage within bounds).
+   
+In [Making forward chaining relevant](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.125.4805) (1998), Fahiem Bacchus writes:
+
+> Forward chaining planners have two particularly useful properties. First, they maintain complete information about the intermediate states generated by a potential plan. This information can be utilized to provide highly effective search control, both domain independent heuristic control and even more effective domain dependent control ... The second advantage of forward chaining planners is they can support rich planning languages. The TLPlan system for example, supports the full ADL language, including functions and numeric calculations. Numbers and functions are essential for modeling many features of real planning domains, particularly resourcs and resource consumption.    
+
+How much of the above really applies is debatable. You can always write your backward-chaining planner to retain more information or to be open to configuration by a search strategy selecting module.
+
+### Forward-chaining "reactive rules" aka "stimulus-response rules"
+
+Example:
+
+> "IF you are hungry THEN eat something" 
+
+The stimulus is "hunger" (which can be read off a sensor). The response is to "eat something" (which may mean controlling an effector). There is an unstated goal, hich is to be "less hungry", which is attained by eating, but there is no deliberative phase where that goal is made explicit.
+
+Uses:
+
+- Immediate, non-deliberative agent control: `LHS` can be sensor input, `RHS` can be effector output.
+
+## "Backward chaining" in PRS
+
+Backward chaining, also called "goal-directed search", applies "goal-reduction rules" and runs the "hypothesis-driven cycle", which indicates what it is for.
+
+**Examples:**
+
+- [BDI Agents](https://en.wikipedia.org/wiki/Belief%E2%80%93desire%E2%80%93intention_software_model)
+- [MYCIN](https://en.wikipedia.org/wiki/Mycin)
+
+**Use this when:** 
+
+- Your problem looks like a "goal" that may be broken up into "subgoals", which can be solved individually. Depending on the problem, this may not be possible. The subgoals have too many interdependencies or too little structure.
+- You need to "pull in more data" on demand. For example, you ask the user `Y/N` question until you have classified an object properly, or, equivalently, until a diagnosis has been obtained.
+- When you need to plan, search, or build a proof of a goal.
+
+One can encode backward-chaining rules also as forward-chaining rules as a programming exercise. However, one should choose the representation and the computational approach that is best adapted to one's problem. That's why backward chaining exists after all.
+
+# Second box: "Logic Rule Systems" (LRS)
+
+These are systems based on some underlying logic. The system's behaviour can (at least generally) be studied independently from its implementation. 
+
+See this overview: [Stanford Encyclopedia of Philosophy: Automated Reasoning](https://plato.stanford.edu/entries/reasoning-automated/).
+
+I make a distinction between systems for "Modeling Problems in Logic" and systems for "Programming in Logic". The two are merged in textbooks on Prolog. Simple "Problems in Logic" can be directly modeled in Prolog (i.e. using Logic
+Programming) because the language is "good enough" and there is no mismatch. However, at some point you need dedicated systems for your task, and these may be quite different from Prolog. See [Isabelle](https://en.wikipedia.org/wiki/Isabelle_(proof_assistant)) or [Coq](https://en.wikipedia.org/wiki/Coq) for examples.
+
+Restricting ourselves to Prolog family of systems for "Logic Programming":
+
+## "Forward chaining" in LRS
+
+Forward-chaining is not supported by a Prolog system as such.
+
+### Forward-chained logic rules
+
+If you want to forward-chained logic rules you can write your own interpreter "on top of Prolog". This is possible because Prolog is general purpose programming language. 
+
+Here is a very silly example of forward chaining of logic rules. It would certainly be preferable to define a domain-specific language and appropriate data structures instead:
+
+```
+add_but_fail_if_exists(Fact,KB,[Fact|KB]) :- \+member(Fact,KB).
+   
+fwd_chain(KB,KBFinal,"forall x: man(x) -> mortal(x)") :-
+   member(man(X),KB),
+   add_but_fail_if_exists(mortal(X),KB,KB2),
+   !,
+   fwd_chain(KB2,KBFinal,_).
+
+fwd_chain(KB,KBFinal,"forall x: man(x),woman(y),(married(x,y);married(y,x)) -> needles(y,x)") :-
+   member(man(X),KB),
+   member(woman(Y),KB),
+   (member(married(X,Y),KB);member(married(Y,X),KB)),
+   add_but_fail_if_exists(needles(Y,X),KB,KB2),
+   !,   
+   fwd_chain(KB2,KBFinal,_).
+      
+fwd_chain(KB,KB,"nothing to deduce anymore").
+
+rt(KBin,KBout) :- fwd_chain(KBin,KBout,_).
+```
+
+Try it:
+
+```
+?- rt([man(socrates),man(plato),woman(xanthippe),married(socrates,xanthippe)],KB).
+KB = [needles(xanthippe, socrates), mortal(plato),
+      mortal(socrates), man(socrates), man(plato), 
+      woman(xanthippe), married(socrates, xanthippe)].
+```
+
+Extensions to add efficient forward-chaining to Prolog have been studied but they seem to all have been abandoned. I found:
+
+- 1989: [Adding Forward Chaining and Truth Maintenance to Prolog](https://ebiquity.umbc.edu/_file_directory_/papers/736.pdf) (PDF) (Tom_Finin, Rich Fritzson, Dave Matuszek)
+- 1997: [Efficient Support for Reactive Rules in Prolog](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.42.8430) (PDF) (Mauro Gaspari) ... the author talks about "reactive rules" but apparently means "forward-chained deliberative rules".
+- 1998: [On Active Deductive Database: The Statelog Approach](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.144.4965) (Georg Lausen, Bertram Ludäscher, Wolfgang May). 
+
+Kowalski writes: 
+
+> "Zaniolo (LDL++?) and Statelog use a situation calculus-like representation with frame axioms, and reduce Production Rules and Event-Condition-Action rules to Logic Programs. Both suffer from the frame problem."
+
+### Forward-chained reactive rules 
+
+Prolog is not really made for "reactive rules". There have been some attempts:
+
+- [LUPS : A language for updating logic programs](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.614.3282) (1999) (Moniz Pereira , Halina Przymusinska , Teodor C. Przymusinski C)
+
+The "Logic-Based Production System" (LPS) is recent and rather interesting:
+
+- [Integrating Logic Programming and Production Systems in Abductive Logic Programming Agents](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.154.6771) (Robert Kowalski, Fariba Sadri)
+- [Presentation at RR2009: Integrating Logic Programming and Production Systems in Abductive Logic Programming Agents](http://www.rr-conference.org/RR2009/rr2009/1-Kowalski-Sadri-ReconcilingLPandPS.pdf) 
+- [LPS website](http://lps.doc.ic.ac.uk/)
+
+It defines a new language where _Observations_ lead to _Forward-Chaining_ and _Backward-Chaining_ lead to _Acts_. Both "silos" are linked by _Integrity Constraints_ from [Abductive Logic Programming](https://en.wikipedia.org/wiki/Abductive_logic_programming).
+
+So you can replace a reactive rule like this:
+
+[![Reactive Rule Fire][4]][4]
+
+By something like this, which has a logic interpretation:
+
+[![One LPS Cycle][5]][5]
+
+# Third Box: "Rewrite Rule Systems" (forward-chaining)
+
+See also: [Rewriting](https://en.wikipedia.org/wiki/Rewriting).
+
+Here, I will just mention [CHR](https://en.wikipedia.org/wiki/Constraint_Handling_Rules). It is a forward-chaining system which successively rewrites elements in a working memory according to rules with match working memory elements, verify a logic guard condition , and removed/add working memory elements if the logic guard condition succeeds. 
+
+CHR can be understood as an application of a fragment of linear logic (see _"A Unified Analytical Foundation for Constraint Handling Rules"_ by Hariolf Betz).
+
+A [CHR implementation exists for SWI Prolog](https://www.swi-prolog.org/pldoc/man?section=chr). It provides backtracking capability for CHR rules and a CHR goal can be called like any other Prolog goal.
+
+Usage of CHR:
+
+- General model of computational (i.e. like Turing Machines etc.)
+- Bottom up parsing.
+- Type checking.
+- Constraint propagation in constraint logic programmning.
+- Anything that you would rather forward-chain (process bottom-up)
+  rather than backward-chain (process top-down).
+
+
+  [2]: https://i.stack.imgur.com/VIYNu.png
+  [3]: https://i.stack.imgur.com/hzZgt.png
+  [4]: https://i.stack.imgur.com/X0UR8.png
+  [5]: https://i.stack.imgur.com/9RAti.png
