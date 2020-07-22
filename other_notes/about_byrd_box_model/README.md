@@ -223,7 +223,7 @@ that the Byrd Box Model is confusing to students; why not fix it?)
 
 And thus, here is a port naming that sounds exceedingly better, at least to me:
 
-![Byrd Box Model port names](byrd_box_model_port_names.svg)
+![Byrd Box Model port names](pics/byrd_box_model_port_names.svg)
 
 ### A trace example
 
@@ -286,7 +286,7 @@ evaluating a rule or a fact
 An appoximate rendering of a clause for which the PP generate the head B-Box, and two additional B-Boxes 
 would thus be this (the `excpetion` port is not shown)
 
-![Byrd Box Model](byrd_box_model.svg)
+![Byrd Box Model](pics/byrd_box_model.svg)
 
 ## Predicate behaviour and well-behavedness
 
@@ -302,7 +302,7 @@ Note these case of predicate behaviour:
   deterministic predicate will always only say `true.` and not accept a `;` for more solutions. Generally, predicates
   of this kind perform side-effects, I/O and control. The outcome "true" really means "success in computation", with failure
   indicated by a thrown exception instead of the outcome "false". Simplest example: [`true/0`](https://eu.swi-prolog.org/pldoc/doc_for?object=true/0).
-- A **semi-deterministic** predicate ***may succeed once or fail**. In case of success, behaviour and well-behaved behaviour
+- A **semi-deterministic** predicate **may succeed once or fail**. In case of success, behaviour and well-behaved behaviour
   are as described for the deterministic predicate. On the Prolog Toplevel, a well-behaved 
   semi-deterministic predicate will either says `true.` or `false.` and not accept a `;` for more solutions. 
   Example: [`memberchk/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=memberchk/2).
@@ -324,7 +324,7 @@ even be able to know that it has ever been there.
 
 With the above, we can create a few illustrations. 
 
-![Byrd Box examples](byrd_box_examples.svg)
+![Byrd Box examples](pics/byrd_box_examples.svg)
 
 ## Term store operations
 
@@ -360,7 +360,7 @@ look like (transactional) updates of the term store:
 - If a V-Box fails, then the backtracking operation rolls the term store (which is versioned) back to the version that
   existed for the previous V-Box (or to one even earlier) and said previous V-Box is reattempted.
 
-![Term Store Versioning](term_store_versioning.svg)
+![Term Store Versioning](pics/term_store_versioning.svg)
 
 For non-elementary B-Boxes, updates on the term store may occur at any point "inside the box", just before leaving, just after
 entering, and inside of any sub-B-Box. However the paths of the execution token inside a B-Box imply some invariants:
@@ -382,7 +382,7 @@ valid at call time of the B-Box being bypassed.
 
 We can now easily show where operations on the term story happen:
 
-![byrd Box Model with term store](byrd_box_model_with_term_store.svg)
+![byrd Box Model with term store](pics/byrd_box_model_with_term_store.svg)
 
 ## More Reading
 
