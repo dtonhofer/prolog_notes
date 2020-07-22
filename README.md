@@ -48,30 +48,31 @@ Prolog is two-valued, but: [About the Truth Values](other_notes/about_truth_valu
 
 ### Depicting Terms
 
-Prolog naming and concepts are confusing. My way to name & graphically represent terms: [Terms](other_notes/depicting_terms/prolog_term_notation.svg) (needs more work)
+Prolog naming and concepts are confusing. My way to name & graphically represent terms: [Terms](other_notes/about_depicting_terms/) (needs review)
 
-## More subjects
+## More subjects, general and SWI-Prolog oriented
 
-- [About Exceptions](swipl_notes/about_exceptions) (rather complete)
 - [About the Byrd Box Model](swipl_notes/about_byrd_box_model) (rather complete)
-- [About SWI-Prolog data types](swipl_notes/about_swipl_data_types) (rather complete)
-- [SWI-Prolog datatypes](swipl_datatypes)
-- [About output formatting in SWI-Prolog](swipl_notes/about_output_formatting) (semi-complete)
-- [About DCGs](swipl_notes/about_dcgs) (just getting started)
-- [About Prolog DB operations](swipl_notes/about_prolog_db_operations) (?)
-- [About `dif/2`](swipl_notes/about_dif) (rather complete)
-- [Difference Lists](difflists/)
-- Questions on `maplist/N` are recurrent (not only on Stack Overflow), so these page collecte notes & examples:
+- [SWI-Prolog data types](swipl_notes/about_swipl_data_types) (rather complete)
+- [Exceptions](swipl_notes/about_exceptions) (rather complete)
+- [Output formatting](swipl_notes/about_output_formatting) (rather complete)
+- [How to load a library (the lynx library in this case)](swipl_notes/loading_lynx_library.md)
+- [The use of the caret `^` in` bagof/3`, `setof/3`](swipl_notes/notes_on_the_caret_used_in_bagof_goals.md)
+- [SWI-Prolog string modes](swipl_notes/swipl_string_modes.md)
+- [`dif/2`](swipl_notes/about_dif) (rather complete)
+- ["Difference Lists"](swipl_notes/about_difference_lists/)
+- Questions on `maplist/N` are recurrent and popular (not only on Stack Overflow), so these page collect notes & examples:
    - [maplist_2_examples.md](maplist/maplist_2_examples.md): Examples and major explainer for [`maplist/2`](https://www.swi-prolog.org/pldoc/man?predicate=maplist%2f2)
    - [maplist_3_examples.md](maplist/maplist_3_examples.md): Examples for [`maplist/3`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/3)
    - [maplist_4_examples.md](maplist/maplist_4_examples.md): Examples for [`maplist/4`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/4)
-- Linear fold in Prolog: [`foldl` and `foldr`](foldl_foldr/), Explainer and code
-- [Loading a library (the lynx library in this case)](swipl_notes/loading_lynx_library.md)
-- [Use of the caret ^ in` bagof/3`, `setof/3`](swipl_notes/notes_on_the_caret_used_in_bagof_goals.md)
-- [Predicates for printing & formatting](swipl_notes/output_formatting.md)
-- [SWI-Prolog string modes](swipl_notes/swipl_string_modes.md)
+- Linear "fold" in Prolog: [`foldl` and `foldr`](other_notes/about_foldl_and_foldr), Explainer and code
 
-### Code grabbag
+### Under construction
+
+- [About DCGs](swipl_notes/about_dcgs)
+- [About Prolog DB operations](swipl_notes/about_prolog_db_operations)
+
+## Code grabbag
 
 Some predicates which may be of general use can be found in the [Code grabbag](code/)
 
