@@ -5,8 +5,8 @@
 
 ## About
 
-A few examples for the predicate [`maplist/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/4) 
-from [library(apply)](https://eu.swi-prolog.org/pldoc/man?section=apply) as run with SWI-Prolog.
+A few examples for the predicate [`maplist/4`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/4) 
+from [library(apply)](https://www.swi-prolog.org/pldoc/man?section=apply) as run with SWI-Prolog.
 
 `library(apply)`: _"This module defines meta-predicates that apply a predicate on all members of a list."_
 
@@ -19,7 +19,7 @@ to first call:
 
 ## Intro
 
-The description for [`maplist/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/4) says:
+The description for [`maplist/4`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/4) says:
 
 > `maplist(:Goal, ?List1, ?List2, ?List3)`
 >
@@ -31,8 +31,8 @@ The description for [`maplist/4`](https://eu.swi-prolog.org/pldoc/doc_for?object
 
 This is somewhat pointless, but why not:
 
-- [Explainer](../../other_notes/about_foldl_foldr/linear_foldl_with_maplist4.md)
-- [Code](https://github.com/dtonhofer/prolog_notes/blob/master/foldl_foldr/maplist_foldl.pl)
+- [Explainer](../../other_notes/about_foldl_and_foldr/linear_foldl_with_maplist4.md)
+- [Code](../../other_notes/about_foldl_and_foldr/maplist_foldl.pl)
 
 ### Arbitrary packing and unpacking using the same goal
 
@@ -91,5 +91,5 @@ go :- keylist(LK),vallist(LV),sort_them(LK,LV,LO),sollist(LO).
 ```
 
 - Also take a look at [`library(pairs)`](https://www.swi-prolog.org/pldoc/man?section=pairs) for operations on key-value lists.
-- Some test code for the SWI-Prolog sorting predicates is [here](https://github.com/dtonhofer/prolog_notes/blob/master/sorting/test_sort_predicates.pl)
+- Some test code for the SWI-Prolog sorting predicates is [here](../various_code/test_sort_predicates.pl)
 
