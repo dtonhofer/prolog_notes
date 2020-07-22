@@ -120,11 +120,11 @@ make them identical: `dif(A,B)` should be be read _"fail any attempts to make A 
 
 ### What happens when `dif/2` is called
 
-![dif call](dif_call.svg)
+![dif call](pics/dif_call.svg)
 
 ### What happens after `dif/2` has been called
 
-![unifications after dif call](unifications_after_dif_call.svg)
+![unifications after dif call](pics/unifications_after_dif_call.svg)
 
 ## Some examples
 
