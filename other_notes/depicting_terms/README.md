@@ -1,3 +1,9 @@
+# Needs some review
+
+Graphical notation can still be simplifed. TO BE DONE!
+
+![Prolog term graphical notation](prolog_term_notation.svg)
+
 # Names and Symbols
 
 Trying to depict & name the Prolog structures.

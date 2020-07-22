@@ -1,57 +1,56 @@
-# prolog_notes
+# Prolog Notes
 
-Some notes taken while working on Prolog
+Some notes taken while working on Prolog (most SWI-Prolog)
+
+## A Tradition
+
+![Hiroshige: Shinagawa Station](pics/various/Hiroshige_Shinagawa_Station.jpg)
+
+_From [The Fifty-three Stations of the Tōkaidō](https://en.wikipedia.org/wiki/The_Fifty-three_Stations_of_the_T%C5%8Dkaid%C5%8D) by Utagawa Hiroshige, 1832._
 
 ## The Logic Programming Landscape
 
 ![The Logic Programming Landscape](other_notes/quick_map_of_lp_landscape/quick_map_of_lp_landscape.svg)
+
+So many *modeling languages* which are also *programming languages*, all a bit different.
 
 Missed in the above: 
 
 - [αProlog](https://homepages.inf.ed.ac.uk/jcheney/programs/aprolog/) (Currently frozen?)
 - [GOLOG](https://en.wikipedia.org/wiki/GOLOG) (Ancient, based on Situation Calculus. What's the relationship to LPS?)
 - [MProlog](https://www.mimuw.edu.pl/~nguyen/mpl.pdf) (PDF) for [Modal Logic](https://plato.stanford.edu/entries/logic-modal/)
+- NProlog: An extension of prolog with hypothetical implication. 
+   - [part 1](https://www.sciencedirect.com/science/article/pii/0743106684900293)
+   - [part 2](https://www.sciencedirect.com/science/article/pii/S0743106685800030)
 - [HYPROLOG](http://akira.ruc.dk/~henning/hyprolog/) A Logic Programming Language with Abduction and Assumptions
-- [Markov Logic Networks](https://en.wikipedia.org/wiki/Markov_logic_network) 
 - [LogicBlox](https://developer.logicblox.com/technology/)
 - [Datalog](https://en.wikipedia.org/wiki/Datalog)
-- More on [Logical Frameworks](https://en.wikipedia.org/wiki/Logical_framework)
+- [Logical Frameworks](https://en.wikipedia.org/wiki/Logical_framework)
+- [Markov Logic Networks](https://en.wikipedia.org/wiki/Markov_logic_network) -- This seems to be hot right now
+- Lambda-Prolog: [A pragmatic reconstruction of Lambda-Prolog](https://hal-enac.archives-ouvertes.fr/hal-00934033)
+- There should be something here on implementation of more general theorem provers using the very restricted top-down 
+  theorem prover (or rather, "enumerating consequence checker") of Prolog. And how do you direct search in a theorem prover anyway?
+  The NP desert is not for the faint of heart.
 
-## Rule-based Systems
+## Notes on...
 
-A very low-fidelity overview, but one needs general maps.
+### Rule-based Systems
 
-![Rule-based Systems](other_notes/fwd_and_bwd_chaining/fwd_and_bwd_chaining.svg)
-
-This an offshoot from this question on StackOverflow: [Forward and Backward Chaining](https://stackoverflow.com/questions/62376526/forward-and-backward-chaining). One error is that CHR does not do backtracking (it is "commited choice" - the backtracking is provided by the calling Prolog system). To be corrected!
+A general overview: [Rule-based Systems](other_notes/about_rule_based_systems)
 
 ### Are we working in the correct Logic?
 
-Why it's not Classical Logic: [About the Logic](other_notes/about_the_logic/)
+Prolog seems to work in classical logic, but: [About the Logic](other_notes/about_the_logic/)
 
-### About Truth Values
+### Truth values
 
-It's not really Two-Valued: [About the Truth Values](other_notes/about_truth_values/)
+Prolog is two-valued, but: [About the Truth Values](other_notes/about_truth_values/)
 
-## Rule-based Systems
+### Depicting Terms
 
-Just a general map: [About Rule-based Systems](other_notes/fwd_and_bwd_chaining/)
+Prolog naming and concepts are confusing. My way to name & graphically represent terms: [Terms](other_notes/depicting_terms/prolog_term_notation.svg) (needs more work)
 
-
-## Depicting Terms
-
-Being often confused by Prolog naming and concepts, my way to name & graphically represent terms (this is simpler than the one that went before)
-
-Remember:
-
-- Variables are clause-local.
-- Terms are global.
-
-![Term notation](other_notes/depicting_terms/prolog_term_notation.svg)
-
-It is possible to have [Attributed Variables](https://eu.swi-prolog.org/pldoc/man?section=attvar) so that goals are scheduled when variables are bound.
-
-## Subjects
+## More subjects
 
 - [About Exceptions](swipl_notes/about_exceptions) (rather complete)
 - [About the Byrd Box Model](swipl_notes/about_byrd_box_model) (rather complete)
@@ -67,16 +66,14 @@ It is possible to have [Attributed Variables](https://eu.swi-prolog.org/pldoc/ma
    - [maplist_3_examples.md](maplist/maplist_3_examples.md): Examples for [`maplist/3`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/3)
    - [maplist_4_examples.md](maplist/maplist_4_examples.md): Examples for [`maplist/4`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/4)
 - Linear fold in Prolog: [`foldl` and `foldr`](foldl_foldr/), Explainer and code
-
-#### Various
-
-These are notes on specific subjects taken while working with Prolog in general and SWI-Prolog in particular.
-
 - [Loading a library (the lynx library in this case)](swipl_notes/loading_lynx_library.md)
 - [Use of the caret ^ in` bagof/3`, `setof/3`](swipl_notes/notes_on_the_caret_used_in_bagof_goals.md)
 - [Predicates for printing & formatting](swipl_notes/output_formatting.md)
 - [SWI-Prolog string modes](swipl_notes/swipl_string_modes.md)
 
+### Code grabbag
+
+Some predicates which may be of general use can be found in the [Code grabbag](code/)
 
 ## External Resources
 
@@ -97,20 +94,4 @@ A small selection: [List of papers](other_notes/about_papers_of_interest/)
 ### Packages of Interest
 
 - https://github.com/shonfeder/tokenize - "A modest tokenization library for SWI-Prolog, seeking a balance between simplicity and flexibility."
-
-### Code grabbag
-
-Some predicates which may be of general use can be found in the [Code grabbag](code/README.md)
-
-- [`vector_nth0/3`](code/vector_nth0.pl): Retrieve in a list on multiple positions, by index.
-- [`splinter0/5`](code/splinter0.pl): Break a list into three parts based on index.
-- [`replace0/5`](code/splinter0.pl): Replace in a list based on index.
-- [`rotate_list/3`](code/rotate_list.pl): Rotate a list left or right.
-- [`vector_replace0/4`](code/vector_replace0.pl): Replace in a list on multiple positions, by index.
-
-## A Tradition
-
-![Hiroshige: Shinagawa Station](pics/various/Hiroshige_Shinagawa_Station.jpg)
-
-From [The Fifty-three Stations of the Tōkaidō](https://en.wikipedia.org/wiki/The_Fifty-three_Stations_of_the_T%C5%8Dkaid%C5%8D) by Utagawa Hiroshige, 1832.
 
