@@ -54,6 +54,7 @@ Prolog naming and concepts are confusing. My way to name & graphically represent
 
 - [About the Byrd Box Model](other_notes/about_byrd_box_model) (rather complete)
 - [SWI-Prolog data types](swipl_notes/about_swipl_data_types) (rather complete)
+- [SWI-Prolog term analysis & construction](swipl_notes/about_term_analysis_and_construction) (rather complete)
 - [Exceptions](swipl_notes/about_exceptions) (rather complete)
 - [Output formatting](swipl_notes/about_output_formatting) (rather complete)
 - [How to load a library (the lynx library in this case)](swipl_notes/loading_lynx_library.md)
