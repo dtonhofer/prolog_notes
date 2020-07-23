@@ -21,7 +21,7 @@ fi
 
 swipl=$(which swipl 2>/dev/null) || {
    echo "Didn't find the 'swipl' command -- exiting" >&2
-   exit 
+   exit
 }
 
 version=$("$swipl" --version) || {
@@ -44,7 +44,8 @@ test_files=(
    #simplest/test_throw.pl
    #simplest/test_partially_succeed.pl
    builtin_demo/test_compound_name_arguments.pl
-   builtin_demo/test_compound_name_arity.pl)
+   builtin_demo/test_compound_name_arity.pl
+   others/tests_demonstrating_units_tests.pl)
 
 for test_file in "${test_files[@]}"; do
    if [[ ! -f "$test_file" ]]; then
@@ -52,8 +53,8 @@ for test_file in "${test_files[@]}"; do
       next
    fi
    test_file_dir=$(dirname "$test_file")
-   test_file_base=$(basename "$test_file")   
-   tmp_file="output_${test_file_base}_$(date +%Y-%m-%dT%H:%M:%S).txt"   
+   test_file_base=$(basename "$test_file")
+   tmp_file="output_${test_file_base}_$(date +%Y-%m-%dT%H:%M:%S).txt"
    touch "$tmp_file"  || {
       echo "Couldn't create a temporary file to take up output -- exiting" >&2
       exit 1
@@ -66,7 +67,7 @@ for test_file in "${test_files[@]}"; do
    if [[ $res -eq 0 ]]; then
       /bin/rm "$tmp_file"
       echo >&2
-   else   
+   else
       echo " Execution failed. Output is in file '$tmp_file'" >&2
-   fi    
+   fi
 done

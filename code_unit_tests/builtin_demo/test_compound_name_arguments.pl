@@ -37,13 +37,13 @@ test("Analyze SWI-Prolog specific (named) empty dict", true([Name,Args] == [F,[a
 test("Analyze SWI-Prolog specific (named) dict with two pairs", true([Name,Args] == [F,[a,1,x,2,y]])) :-
    compound_name_arguments(a{x:1,y:2},Name,Args),
    dict_functor(F).
-            
+
 test("Assemble SWI-Prolog specific (named) empty dict", true(D == a{})) :-
    dict_functor(F),
    compound_name_arguments(D,F,[a]),
-   
+
 test("Assemble SWI-Prolog specific (named) dict with two pairs", true(D == a{x:1, y:2})) :-
    dict_functor(F),
    compound_name_arguments(D,F,[a,x,1,y,2),
-   
+
 :- end_tests(compound_name_arguments).
