@@ -4,7 +4,8 @@
 
 - *Analyzing/Constructing* a term or 
 - *Disassembling/Assembling* a term or maybe
-- *Decomposing/Composition* a term
+- *Decomposing/Composing* a term
+- Is seem to gravitate towards *Analyzing/Assembling*. OK!
 - In Clojure there is also ["Destructuring"](https://clojure.org/guides/destructuring), which is pattern-matching a term and disassembling it into parts
   like one-way unification. In Prolog this would by copy_term, followed by unification.
   - This is also how calls work in [Erlang](https://en.wikipedia.org/wiki/Erlang_(programming_language))
@@ -27,7 +28,14 @@ of the atomic terms and are tested with [`atom/1`](https://eu.swi-prolog.org/pld
 - [`compound/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=compound/1) (ISO standard)
 - [`atomic/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=atomic/1) (ISO standard)
 
+For dicts, it is best to use 
+
+- [`dict_pairs/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=dict_pairs/3)
+
+Which is more elegant than `compound_name_arguments/3`
+
 ## Overview 
+
 ![Analyzing and Constructing Terms](term_analysis_construction.png)
 
 **Other formats**
