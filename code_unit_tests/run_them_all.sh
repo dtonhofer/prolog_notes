@@ -40,10 +40,11 @@ echo "Running '$version'" >&2
 
 test_files=(
    simplest/test_succeed.pl
-   simplest/test_fail.pl
-   simplest/test_throw.pl
-   simplest/test_partially_succeed.pl
-   builtin_demo/test_compound_name_arguments.pl)
+   #simplest/test_fail.pl
+   #simplest/test_throw.pl
+   #simplest/test_partially_succeed.pl
+   builtin_demo/test_compound_name_arguments.pl
+   builtin_demo/test_compound_name_arity.pl)
 
 for test_file in "${test_files[@]}"; do
    if [[ ! -f "$test_file" ]]; then
