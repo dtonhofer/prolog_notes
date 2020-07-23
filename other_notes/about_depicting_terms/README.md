@@ -2,6 +2,13 @@
 
 Graphical notation can still be simplifed. TO BE DONE!
 
+Remember:
+
+- Variables are clause-local.
+- Terms are global.
+
+It is possible to have [Attributed Variables](https://eu.swi-prolog.org/pldoc/man?section=attvar) so that goals are scheduled when variables are bound.
+
 ![Prolog term graphical notation](pics2/prolog_term_notation.svg)
 
 # Names and Symbols
