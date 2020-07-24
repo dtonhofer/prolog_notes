@@ -1,17 +1,12 @@
-:- discontiguous(rt/1).
-
 % ===
 % Consult the code which creates strings of spaces
+% (is the file relative to the location of the consulting file or something else?)
 % ===
 
 :- consult([spaces]).
 
-% ===
-% Helpers
-% ===
-
 % ---
-% A better switch than a horrible sequence of ->/2
+% Helper: A better "switch" than an unreadable sequence of ->/2
 % ---
 
 switch([If1,Then1],[If2,Then2],[If3,Then3],Else) :-
@@ -24,7 +19,7 @@ switch([If1,Then1],[If2,Then2],[If3,Then3],Else) :-
    ;   call(Else).
 
 % ---
-% Helper to throw a (non ISO standard) "cannot happen" exception,
+% Helper: Throw a (non ISO standard) "cannot happen" exception,
 % which is used when a switch covers all the cases but you are paranoid
 % enough to fill something into the final "else" anyway
 % ---
@@ -235,5 +230,4 @@ repeatedly_patch_string(StrIn,PatchStr,StartCol,EndCol,PatchCol,StrOut) :-
 
 :- end_tests(string_patching).
 
-rt(string_patching) :- run_tests(string_patching).
 
