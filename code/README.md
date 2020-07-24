@@ -1,10 +1,14 @@
 # Code grabbag
 
-Some predicates which may be of general use.
+## Working with strings
 
-I will have to move these to an SWI-Prolog package (see also [library(prolog_pack](https://eu.swi-prolog.org/pldoc/man?section=prologpack))
+- Generate/Test/Enumerate strings of N spaces (and application of [`string_concat/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=string_concat/3))
+   - Code: [`string_of_spaces.pl`](strings/string_of_spaces.pl)
+   - Unit tests: [`string_of_spaces.plt`](strings/string_of_spaces.plt)
 
-How do I do that?
+- Convert "stuff" to string or atom (an application of [`atom_string/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=atom_string/2))
+   - Code: [`conversion.pl`](strings/conversion.pl)
+   - Unit tests: [`conversion.plt`](strings/conversion.plt)
 
 ## `vector_nth0/3`
 
