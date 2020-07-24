@@ -22,7 +22,7 @@
 % Maybe these predicates which accepts several representations of the "same thing"
 % should be thought of as operating on equivalence classes but returning a preferred
 % representative of the equivalence class depending on the argument, whereas
-% verification can work with any representative of the quivalence class!
+% verification can work with any representative of the equivalence class!
 
 :- begin_tests(atom_string_transform).
 
