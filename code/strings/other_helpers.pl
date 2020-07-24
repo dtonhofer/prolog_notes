@@ -12,6 +12,13 @@ switch([If1,Then1],[If2,Then2],[If3,Then3],Else) :-
    ;   call(Else).
 
 % ---
+% Helper: An implementation of ->/2. Pass three goals.
+% ---
+
+it_the_else(Condition,Then,Else) :- 
+   call(Condition) -> call(Then) ; call(Else).
+
+% ---
 % Helper: Throw a non-ISO standard exception which is used when a switch
 % covers all the cases but you are paranoid enough to fill something into
 % the final "else" anyway. This is not an ISO standard exception because

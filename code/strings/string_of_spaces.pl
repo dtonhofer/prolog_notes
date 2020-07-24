@@ -1,11 +1,37 @@
+:- module(heatwarp_strings,[string_of_spaces/2]).
+
+:- use_module(library(leveling)).
+:- use_module(library(conversion)).
+
 % ===
-% Generating/Recognizing/Verifying strings of spaces
+% Generating/Recognizing/Verifying "strings made of spaces"
+% string_of_spaces(?N,?Spaces)
+% N      : integer >= 0
+% Spaces : a string on output (accepts the same stuff atom_string/2 accepts on input)
 % ===
 
-:- consult([conversion]).
+string_of_spaces(N,Spaces) :-
+   nonvar(Spaces),                     % case: "check length or determine length of 'Spaces'"
+   !,
+   convert_to_string(Spaces,Str),      % make sure it's a string for "==" later
+   string_length(Str,N),               % length is now known
+   string_of_spaces(N,StrNew),         % regenerate spacey string
+   Str == StrNew.                      % must be the same (i.e. fail if Spaces is not "spacey")
+   
+string_of_spaces(N,Spaces) :-          
+   var(Spaces),nonvar(N),              % case: "generate a string"
+   !,
+   gen_string_of_spaces(N,Spaces).
+
+string_of_spaces(N,Spaces) :-
+   var(Spaces),var(N),                 % case: generate pairs
+   !,
+   between(0,inf,N),
+   gen_string_of_spaces(N,Spaces).
+
 
 % ---
-% Actually possibly larege strings generate using string_concat/3
+% Actually generate (possibly large) strings rapidly using string_concat/3.
 % Add specific cases besides length 0 and 1 for fats generation for
 % small strings.
 % ---
@@ -35,22 +61,4 @@ gen_string_of_spaces(N,Spaces) :-
 % Call this
 % ===
 
-string_of_spaces(N,Spaces) :-
-   nonvar(Spaces),                     % case: check or determine length
-   !,
-   convert_to_string(Spaces,Str),      % make sure it's a string for "==" later
-   string_length(Str,N),               % length is now known
-   string_of_spaces(N,StrNew),         % regenerate spacey string
-   Str == StrNew.                      % must be the same (i.e. fail if Spaces is not "spacey")
-   
-string_of_spaces(N,Spaces) :-          
-   var(Spaces),nonvar(N),              % case: generate a string
-   !,
-   gen_string_of_spaces(N,Spaces).
-
-string_of_spaces(N,Spaces) :-
-   var(Spaces),var(N),                 % case: generate pairs
-   !,
-   between(0,inf,N),
-   gen_string_of_spaces(N,Spaces).
 

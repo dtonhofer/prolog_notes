@@ -8,6 +8,10 @@
 
 :- consult([conversion]).
 
+% Shoudl not consult here, but use user should use load_test_files([])
+% to load .plt file associated to the file "conversion.pl" instead.
+% Doesn't work though.
+
 :- begin_tests(string_conversion).
 
 test("convert string to string", true(Str = "duh")) :-

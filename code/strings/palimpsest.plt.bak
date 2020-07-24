@@ -1,96 +1,4 @@
 % ===
-% Consult the code which creates strings of spaces
-% (is the file relative to the location of the consulting file or something else?)
-% ===
-
-:- consult([spaces]).
-
-% ---
-% Helper: A better "switch" than an unreadable sequence of ->/2
-% ---
-
-switch([If1,Then1],[If2,Then2],[If3,Then3],Else) :-
-   call(If1)
-   ->  call(Then1) 
-   ;   call(If2)
-   ->  call(Then2)
-   ;   call(If3) 
-   ->  call(Then3)
-   ;   call(Else).
-
-% ---
-% Helper: Throw a (non ISO standard) "cannot happen" exception,
-% which is used when a switch covers all the cases but you are paranoid
-% enough to fill something into the final "else" anyway
-% ---
-
-cannot_happen_error(Msg) :-
-   throw(error(cannot_happen),context(_,Msg)).
-
-% ===
-% Patching an original string "StrIn" with "PatchStr" giving a "StrOut".
-% The patching starts at (0-indexed) "PatchCol" (possibly negative) and may involve
-% overwriting characters in the middle of "StrIn", appending to "StrIn", with 
-% or without partial overwriting, or appending to "StrIn" and filling any
-% gap between the end of "StrIn" and the start of "PatchStr" at "Col" with
-% spaces.
-% ===
-
-patched_string(StrIn,PatchStr,PatchCol,StrOut) :-
-   string_length(StrIn,StrInLen),
-   string_length(PatchStr,PatchStrLen),
-   (((PatchCol + PatchStrLen =< 0) ; (PatchStrLen == 0))
-      ->
-      % nothing to do; PatchStr is too far left or empty
-      (StrOut = StrIn) 
-      ;
-      % proceed normally
-      patched_string_help1(StrIn,StrInLen,PatchStr,PatchStrLen,PatchCol,StrOut)).
- 
-patched_string_help1(StrIn,StrInLen,PatchStr,PatchStrLen,PatchCol,StrOut) :-
-   (PatchCol < 0) 
-     ->
-     % cut off any characters of PatchStr that are not visible
-     (Before is -PatchCol,
-      PatchStrLenFixed is PatchStrLen-Before,
-      sub_string(PatchStr,Before,PatchStrLenFixed,0,PatchStrFixed),
-      patched_string_help2(StrIn,StrInLen,PatchStrFixed,PatchStrLenFixed,0,StrOut))
-     ;
-     % proceed normally
-     patched_string_help2(StrIn,StrInLen,PatchStr,PatchStrLen,PatchCol,StrOut).
-    
-patched_string_help2(StrIn,StrInLen,PatchStr,PatchStrLen,PatchCol,StrOut) :-
-   PatchColFin is PatchCol+PatchStrLen,
-   switch(
-      % a suffix of StrInLen (and maybe a prefix) must be kept
-      [PatchColFin < StrInLen,
-       patched_string_with_suffix(StrIn,PatchStr,PatchCol,PatchColFin,StrOut)],
-      % only (maybe) a prefix of StrInLen must be kept
-      [PatchCol < StrInLen,
-       patched_string_without_suffix(StrIn,PatchStr,PatchCol,StrOut)],
-      % the PatchStr shall be appended to StrIn with possibly spaces in between
-      [StrInLen =< PatchCol,
-       patched_string_append(StrIn,StrInLen,PatchStr,PatchCol,StrOut)],
-      % else never happens
-      cannot_happen_error("impossible case")).
-
-patched_string_with_suffix(StrIn,PatchStr,PatchCol,PatchColFin,StrOut) :-
-   sub_string(StrIn,0,PatchCol,_,Prefix),
-   sub_string(StrIn,PatchColFin,_,0,Suffix),
-   string_concat(Prefix,PatchStr,S1),
-   string_concat(S1,Suffix,StrOut).
- 
-patched_string_without_suffix(StrIn,PatchStr,PatchCol,StrOut) :-
-   sub_string(StrIn,0,PatchCol,_,Prefix),
-   string_concat(Prefix,PatchStr,StrOut).
-
-patched_string_append(StrIn,StrInLen,PatchStr,PatchCol,StrOut) :-
-   SpaceCount is PatchCol-StrInLen,
-   spaces(SpaceCount,Spaces),
-   string_concat(StrIn,Spaces,S1),
-   string_concat(S1,PatchStr,StrOut).
-
-% ===
 % Testing string patching
 % ===
 
@@ -98,13 +6,15 @@ patched_string_append(StrIn,StrInLen,PatchStr,PatchCol,StrOut) :-
 
 :- begin_tests(string_patching).
 
-test(patching_null_string,[true(T)]) :-
+test("Overwriting the empty string",[true(T)]) :-
    Str      = "",
    PatchStr = "[perspiciatis]",
    string_length(PatchStr,PatchLen),
    StartCol is -PatchLen,
    EndCol   is 10,
+
    bagof([PatchCol,StrOut],repeatedly_patch_string(Str,PatchStr,StartCol,EndCol,PatchCol,StrOut),Bag),
+
    T = (Bag ==
    [[-14,""],                                                                                                                                                 
     [-13,"]"],                                                                                                                                                
