@@ -1,7 +1,6 @@
-:- module(heatwarp_strings,[string_of_spaces/2]).
+:- module(heavycarbon_strings_spaces,[string_of_spaces/2]).
 
-:- use_module(library(leveling)).
-:- use_module(library(conversion)).
+:- use_module(library('heavycarbon/strings/conversion.pl')).
 
 % ===
 % Generating/Recognizing/Verifying "strings made of spaces"
@@ -56,9 +55,5 @@ gen_string_of_spaces(N,Spaces) :-
    (Remainder>0
     -> (string_of_spaces(Remainder,SR), string_concat(S2,SR,Spaces))
     ;  Spaces = S2).
-
-% ===
-% Call this
-% ===
 
 

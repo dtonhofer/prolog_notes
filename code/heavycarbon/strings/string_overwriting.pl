@@ -1,10 +1,11 @@
-% ===
-% Consult the code which creates strings of spaces
-% (is the file relative to the location of the consulting file or something else?)
-% ===
+:- module(heavycarbon_strings_overwriting,
+         [string_overwriting/4,
+          ovw_helper_mid/6, 
+          ovw_helper_top/6]).
+  
+:- use_module(library('heavycarbon/strings/conversion.pl')).
 
-:- consult([string_of_spaces]).
-:- consult([other_helpers]).
+:- load_files(['heavycarbon/strings/meta_helpers_nonmodular.pl']).
 
 % ===
 % (Partially) ovwerwriting an original string "StrIn" with "OverwriteStr" giving a "StrOut".
@@ -24,14 +25,14 @@ string_overwriting(StrIn,OvwStr,OvwPos,StrOut) :-
       ->  % nothing to do; OvwStr is too far left or empty
       leveling_string(StrInSure,StrOut)
       ;   % proceed normally
-      (owv_helper_top(StrInSure,StrInLen,OvwStrSure,OvwStrLen,OvwPos,StrOutSure),
+      (ovw_helper_top(StrInSure,StrInLen,OvwStrSure,OvwStrLen,OvwPos,StrOutSure),
        leveling_string(StrOutSure,StrOut))).
 
 % ---
 % Helpers
 % --- 
 
-owv_helper_top(StrIn,StrInLen,OvwStr,OvwStrLen,OvwPos,StrOut) :-
+ovw_helper_top(StrIn,StrInLen,OvwStr,OvwStrLen,OvwPos,StrOut) :-
    if_then_else(
       % if
       (OvwPos < 0),
@@ -39,27 +40,30 @@ owv_helper_top(StrIn,StrInLen,OvwStr,OvwStrLen,OvwPos,StrOut) :-
       ((Before is -OvwPos,
         OvwStrLenFixed is OvwStrLen-Before,
         sub_string(OvwStr,Before,OvwStrLenFixed,0,OvwStrFixed),
-        owv_helper_mid(StrIn,StrInLen,OvwStrFixed,OvwStrLenFixed,0,StrOut)))
+        ovw_helper_mid(StrIn,StrInLen,OvwStrFixed,OvwStrLenFixed,0,StrOut))),
       % else proceed normally
-      (owv_helper_mid(StrIn,StrInLen,OwvStr,OwvStrLen,OvwPos,StrOut))).
+      (ovw_helper_mid(StrIn,StrInLen,OvwStr,OvwStrLen,OvwPos,StrOut))).
     
 ovw_helper_mid(StrIn,StrInLen,OvwStr,OvwStrLen,OvwPos,StrOut) :-
    OvwPosEnd is OvwPos+OvwStrLen,
    switch(
       % a suffix of StrInLen (and maybe a prefix) must be kept
-      [OvwPosEnd < StrInLen, ovw_string_with_suffix(StrIn,OvwStr,OvwPos,OvwPosEnd,StrOut)],
+      (OvwPosEnd < StrInLen), 
+      (ovw_string_with_suffix(StrIn,OvwStr,OvwPos,OvwPosEnd,StrOut)),
       % only (maybe) a prefix of StrInLen must be kept
-      [OvwPos < StrInLen,    ovw_string_without_suffix(StrIn,OvwStr,OvwPos,StrOut)],
+      (OvwPos < StrInLen),
+      (ovw_string_without_suffix(StrIn,OvwStr,OvwPos,StrOut)),
       % the OvwStr shall be appended to StrIn with possibly spaces in between
-      [StrInLen =< OvwPos,   ovw_string_append(StrIn,StrInLen,OvwStr,OvwPos,StrOut)],
+      (StrInLen =< OvwPos),
+      (ovw_string_append(StrIn,StrInLen,OvwStr,OvwPos,StrOut)),
       % else never happens
-      cannot_happen_error("impossible case")).
+      (cannot_happen_error("impossible case"))).
 
 ovw_string_with_suffix(StrIn,OvwStr,OvwPos,OvwPosEnd,StrOut) :-
    sub_string(StrIn,0,OvwPos,_,Prefix),
    sub_string(StrIn,OvwPosEnd,_,0,Suffix),
-   string_concat(Prefix,OvwStr,S),
-   string_concat(S,Suffix,StrOut).
+   string_concat(Prefix,OvwStr,SX),
+   string_concat(SX,Suffix,StrOut).
  
 ovw_string_without_suffix(StrIn,OvwStr,OvwPos,StrOut) :-
    sub_string(StrIn,0,OvwPos,_,Prefix),
@@ -67,8 +71,8 @@ ovw_string_without_suffix(StrIn,OvwStr,OvwPos,StrOut) :-
 
 ovw_string_append(StrIn,StrInLen,OvwStr,OvwPos,StrOut) :-
    SpaceCount is OvwPos-StrInLen,
-   spaces(SpaceCount,Spaces),
-   string_concat(StrIn,Spaces,S1),
-   string_concat(S1,PatchStr,StrOut).
+   string_of_spaces(SpaceCount,Spaces),
+   string_concat(StrIn,Spaces,SX),
+   string_concat(SX,OvwStr,StrOut).
 
 

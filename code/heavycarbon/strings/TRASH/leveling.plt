@@ -1,4 +1,4 @@
-:- use_module(library(leveling)).
+:- use_module(library(heavycarbon/strings/leveling)).
 
 :- begin_tests(leveling).
 

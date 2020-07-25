@@ -1,8 +1,16 @@
+:- module(heavycarbon_strings_other_helpers,
+          [switch/7, 
+           if_then_else/3,
+           cannot_happen_error/1]).
+
+:- meta_predicate switch(0,0,0,0,0,0,0).
+:- meta_predicate if_then_else(0,0,0).
+
 % ---
 % Helper: A better "switch" than an unreadable sequence of ->/2
 % ---
 
-switch([If1,Then1],[If2,Then2],[If3,Then3],Else) :-
+switch(If1,Then1,If2,Then2,If3,Then3,Else) :-
    call(If1)
    ->  call(Then1)
    ;   call(If2)
@@ -15,7 +23,7 @@ switch([If1,Then1],[If2,Then2],[If3,Then3],Else) :-
 % Helper: An implementation of ->/2. Pass three goals.
 % ---
 
-it_the_else(Condition,Then,Else) :- 
+if_then_else(Condition,Then,Else) :- 
    call(Condition) -> call(Then) ; call(Else).
 
 % ---
@@ -26,5 +34,5 @@ it_the_else(Condition,Then,Else) :-
 % ---
 
 cannot_happen_error(Msg) :-
-   throw(error(cannot_happen),context(_,Msg)).
+   throw(error(cannot_happen,context(_,Msg))).
 

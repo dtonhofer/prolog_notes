@@ -1,4 +1,6 @@
-% 2345678901234567890123456789012345678901234567890123456789012345678901234567
+:- module(heavycarbon_utils_utils,
+          [textize/3,ff/1,pp/1,fresh_tag/2]).
+
 % ============================================================================
 % 2020-05-XX
 % https://github.com/dtonhofer/prolog_notes
@@ -33,12 +35,12 @@ textize(Msg,Args,FinalText) :-
    catch(
       % happy path
       with_output_to(string(FinalText),format(Msg,ListyArgs)),
-      _Catch_all_catcher,
+      _catchall_catcher,
       catch(
          % we end up here if format/2 doesn't like what it sees; finagle something!
          (maplist([X,Buf]>>with_output_to(string(Buf),format("~q",[X])),[Msg|ListyArgs],L),
           atomic_list_concat(["Replacement Msg!"|L]," & ",FinalText)),
-         _Another_catch_all_catcher,
+         _another_catchall_catcher,
          throw("Can't happen"))).
 
 % ===
@@ -49,13 +51,19 @@ textize(Msg,Args,FinalText) :-
 % so align nicely in source code.
 % ===
 
-fresh(X) :- var(X).
-cured(X) :- nonvar(X).
+ff(X) :- var(X).     % whatever is between the parentheses is a variable (it cannot
+                     % be anything else!) and that variable
+                     % designates-a-hole-at-the-leaf-of-a-tree: 
+                     % the variable is "fresh", "unbound", "uninstantiated", "unrefined"
+
+pp(X) :- nonvar(X).  % the complement of the above; pp/1 sounds as good as anything
 
 % ===
 % Tagging, used in pre-processing arguments before they are used so that
 % the correct clause can be easily matched.
 % ===
 
-fresh_tag(X,fresh(X)) :- var(X),!.
-fresh_tag(X,cured(X)) :- nonvar(X),!.
+fresh_tag(X,ff(X)) :- var(X),!.
+fresh_tag(X,pp(X)) :- nonvar(X),!.
+
+

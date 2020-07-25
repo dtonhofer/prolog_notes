@@ -1,22 +1,20 @@
-% ===
-% Testing string patching
-% ===
-
-:- debug(repeatedly_overwrite).
+:- use_module(library('heavycarbon/strings/string_overwriting.pl')).
 
 :- begin_tests(string_overwriting).
 
 repeatedly_overwrite(range(StartPos,EndPos),io(StrIn,OverwriteStr,OverwritePos,StrOut)) :-
    nonvar(StartPos),nonvar(EndPos),nonvar(StrIn),nonvar(OverwriteStr),var(OverwritePos),var(StrOut),
    between(StartPos,EndPos,OverwritePos),
-   string_overwrite(StrIn,OverwriteStr,OverwritePos,StrOut),
+   string_overwriting(StrIn,OverwriteStr,OverwritePos,StrOut),
    debug(repeatedly_overwrite,"[~d,~q],",[OverwritePos,StrOut]).
 
 test("Repeatedly overwrite empty string",[true(T)]) :-
    OverwriteStr = "[perspiciatis]",
    string_length(OverwriteStr,OverwriteLen),
+   StartPos is -OverwriteLen,
+   EndPos is 10,
    bagof([OverwritePos,StrOut],
-         repeatedly_overwrite(range(-OverwriteLen,10),io("",OverwriteStr,OverwritePos,StrOut)),
+         repeatedly_overwrite(range(StartPos,EndPos),io("",OverwriteStr,OverwritePos,StrOut)),
          Bag),
    T = (Bag ==
    [[-14,""],
@@ -51,9 +49,10 @@ test("Repeatedly overwrite nonempty string",[true(T)]) :-
    string_length(StrIn,StrInLen),
    OverwriteStr = "[perspiciatis]",
    string_length(OverwriteStr,OverwriteLen),
+   StartPos is -OverwriteLen,
    EndPos is StrInLen+10,
    bagof([OverwritePos,StrOut],
-         repeatedly_overwrite(range(-OverwriteLen,EndPos),io("",OverwriteStr,OverwritePos,StrOut)),
+         repeatedly_overwrite(range(StartPos,EndPos),io(StrIn,OverwriteStr,OverwritePos,StrOut)),
          Bag),
    T = (Bag ==
    [[-14,"Lorem ipsum dolor sit amet, consectetur adipiscing elit"],

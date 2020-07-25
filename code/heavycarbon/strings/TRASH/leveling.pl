@@ -1,4 +1,5 @@
-:- module(heatwarp_leveling,[leveling_string/2]).
+:- module(heavycarbon_strings_leveling,
+          [leveling_string/2]).
 
 % ===
 % Suppose you generate a string "S" and have to "return it" through some
@@ -19,6 +20,6 @@
 % ===
 
 leveling_string(KnownStr,PossibleStr) :- 
-   must_be(nonvar,KnownStr), % no need to specify "string" here..
+   must_be(nonvar,KnownStr), % no need to specify "string" here, we can convert...
    atom_string(KnownStr,PossibleStr).
 

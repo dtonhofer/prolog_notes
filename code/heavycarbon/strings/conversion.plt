@@ -1,18 +1,14 @@
-% ===
-% Perform certain type conversion in an easy-on-the-programmer's mind matter
-% ===
+:- use_module(library('heavycarbon/strings/conversion.pl')).
 
-% ---
-% convert_to_string(+In,?Out)
-% ---
-
-:- consult([conversion]).
-
-% Shoudl not consult here, but use user should use load_test_files([])
-% to load .plt file associated to the file "conversion.pl" instead.
-% Doesn't work though.
+% ==============================================================================
+% Test for convert_to_string/2
+% ==============================================================================
 
 :- begin_tests(string_conversion).
+
+% ---
+% active conversion
+% ---
 
 test("convert string to string", true(Str = "duh")) :-
    convert_to_string("duh",Str).
@@ -68,11 +64,15 @@ test("fail converting dict to string",error(type_error(_,_))) :-
 
 :- end_tests(string_conversion).
 
-% ---
-% convert_to_atom(+In,?Out)
-% ---
+% ==============================================================================
+% Test for convert_to_atom/2
+% ==============================================================================
 
 :- begin_tests(atom_conversion).
+
+% ---
+% active conversion
+% ---
 
 test("convert atom to atom", true(A = duh)) :-
    convert_to_atom(duh,A).
@@ -128,5 +128,31 @@ test("fail converting dict to atom",error(type_error(_,_))) :-
 
 :- end_tests(atom_conversion).
 
+% ==============================================================================
+% Tests for "leveling"
+% ==============================================================================
 
+:- begin_tests(leveling).
 
+test("Second argument may be fresh, and necessarily takes up string", true(Out == "hello")) :-
+   leveling_string("hello",Out).
+
+test("Second argument may be fresh, and takes up stringified int", true(Out == "123")) :-
+   leveling_string(123,Out).
+
+test("Second argument may be fresh, and takes up stringified atom", true(Out == "foo")) :-
+   leveling_string(foo,Out).
+
+test("Second argument can be stated as string") :- 
+   leveling_string("hello","hello").
+
+test("Second argument can be stringified, must match first string argument: case of atom") :-
+   leveling_string("hello",hello).
+
+test("Second argument can be stringified, must match first string argument: case of integer") :-
+   leveling_string("123",123).
+
+test("Second argument can be stringified, must match: case of failure",fail) :-
+   leveling_string("hello",123).
+
+:- end_tests(leveling).
