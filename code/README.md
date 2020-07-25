@@ -141,8 +141,8 @@ rotate_list([1,2,3],+1,R) ---> R=[2,3,1].
 
 ### `vector_replace0/4`
 
-- Code: [`rotate_list.pl`](heavycarbon/utils/vector_replace0.pl)
-- Unit tests: [`rotate_list.plt`](heavycarbon/utils/vector_replace0.plt)
+- Code: [`vector_replace0.pl`](heavycarbon/utils/vector_replace0.pl)
+- Unit tests: [`vector_replace0.plt`](heavycarbon/utils/vector_replace0.plt)
 
 A "vectorized" replace-by-index using `maplist/4`, `foldl/4` and
 `library(assoc)` (association lists using AVL trees).
