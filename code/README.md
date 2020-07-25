@@ -114,7 +114,7 @@ The predicate
 replace0(+List, +N, ?NewItem, ?OldItem, ?NewList)
 ```
 
-is in the same file [`splinter0.pl`](splinter0.pl). 
+is in the same file [`splinter0.pl`](heavycarbon/utils/splinter0.pl)
 
 ## `rotate_list/3`
 
