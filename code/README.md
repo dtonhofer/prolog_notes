@@ -16,9 +16,9 @@ It is also a Prolog program, that when executed, does exactly that (for my setup
    - Unit tests: [`string_of_spaces.plt`](heavycarbon/strings/string_of_spaces.plt)
 
 - Module `heavycarbon_strings_overwriting`: Overwrite a string with another string, yielding a new string
-  (an application of [`string_concat/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=string_concat/3)
-   - Code: [`string_of_spaces.pl`](heavycarbon/strings/string_overwriting.pl)
-   - Unit tests: [`string_of_spaces.plt`](heavycarbon/strings/string_overwriting.plt)
+  (another application of [`string_concat/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=string_concat/3))
+   - Code: [`string_overwriting.pl`](heavycarbon/strings/string_overwriting.pl)
+   - Unit tests: [`string_overwriting.plt`](heavycarbon/strings/string_overwriting.plt)
 
 - Module `heavycarbon_strings_conversion`: Perform certain "type conversions", or rather "type assurances"
   in a way that's easy on the mind of the programmer. These are basically applications of
