@@ -174,19 +174,53 @@ If you just want to run unit test code for a specific module manually:
    at the Prolog Toplevel (the same as earlier, not in form of a directive):
 
    ?- assertz(file_search_path(library,'.')). 
+   
+   You can examine the currently configured library search path via:
+   
+   ?- file_search_path(library,X).
+   X = app_config(lib) ;
+   X = swi(library) ;
+   X = swi(library/clp) ;
+   X = '/home/foouser/.local/share/swi-prolog/pack/sldnfdraw/prolog' ;
+   X = pce('prolog/lib').
 
-   It is actually better to have the above, not with the path '.' but with the
+   USING THE INITIALIZATION FILE init.pl
+   - - - - - - - - - - - - - - - - - - -
+   
+   It is better to have the above, not with the path '.' but with the
    actual path, configured via a directive in the user's initialisation file so
    that the library extension operation s performed at startup fo SWI Prolog.
    
-   The file to put the directive in would probably be
-   '$HOME/.config/swi-prolog/.config'. 
+   The file containing the directive might possibly be in directory:
    
-   To find the directory, run this at the Prolog Toplevel:
+   '$HOME/.config/swi-prolog/'
+   
+   That's the case on my system (Linux/KDE). Note that .config is used by KDE,
+   it's full of stuff! And the 'swi-prolog' subdirectory already contains some cache
+   files, too.
+   
+   To find the directory on your system, run this at the Prolog Toplevel:
    
    ?- absolute_file_name(app_config(.), Dir, [file_type(directory)]).
       
    See also https://eu.swi-prolog.org/pldoc/man?section=initfile   
+ 
+   Once you know the location (and have created the directory as needed), create
+   a file called `init.pl` in that directory. Then add the following for example,
+   to complement the library search path and immediately load in a library on that
+   search path:
+   
+   |
+   |  :- assertz(file_search_path(library,'/home/foouser/my/code/repo')). 
+   |  :- use_module(library('heavycarbon/terms/clashfree_id_selection.pl')).
+   |
+   
+   Immediately less typing required!
+   
+   Also take a look at a sample user initialization file that comes with the
+   distribution:
+   
+   $SWIPL_DISTRO_DIR/lib/swipl/customize/init.pl
  
 2) Consult the ".plt" file, which is assumed to have the required 
 
