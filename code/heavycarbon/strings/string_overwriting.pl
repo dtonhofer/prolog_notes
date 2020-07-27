@@ -5,7 +5,7 @@
   
 :- use_module(library('heavycarbon/strings/conversion.pl')).
 
-:- load_files(['heavycarbon/strings/meta_helpers_nonmodular.pl']).
+:- load_files(['heavycarbon/utils/meta_helpers_nonmodular.pl']).
 
 % ===
 % (Partially) ovwerwriting an original string "StrIn" with "OverwriteStr" giving a "StrOut".

@@ -1,0 +1,376 @@
+/*
+No handling of cyclic terms (for now)
+
+It is confusing that "variables" are named terms, too. It is a confusing between the designator and the designee.
+Variables name terms. 
+
+In the following, we will make a strong distinction between variables and terms.
+
+Terms exist in the term store.
+
+Variables exist in code and name terms and subterms on the term store.
+
+Terms are recursive, so a term node is understood to be a node on the tree, whereas the term/subterm is a whole subtree, aka term tree for clarity.
+
+A hole or freshterm is an lace in the term store that holds no term as yet but is meant to hold one during computation.
+
+Holes occur only at the leaf of a term tree.
+
+A term node can also be a hole.
+
+A freshvar or an unbound var or an uninintstantated var names a hole in te term store.
+
+A term node can be atomic or compound. If it is compound and of arity at least 1 it designates further term nodes, possibly holes.
+
+Note that a term node "references" another term node as in "pointerlike reference" or "contains" another term node if one things more in concepts of trees and subtrees,
+
+Given a term tree, we will transform it into a mirrored term tree structured differently.
+
+This is a heavy duty data structure, so we will not shoehorn everything into a conceptually single term (well, it will be a single term, but...)
+
+We will use naming (as in, database indirection) for flexibility.
+
+The original term is deep-copied, the structure taken over 1:1, but each term node:
+
+References the original term node
+Is given a unique name
+That name is used as lookup in a dict to retrieve a further dict with information about that term node
+   This give us the possibility to regenerate information about a term node by replacing an entry in the dict
+   instead of excising a term node from the tree and/or using setarg! Natural nomutable state programming FTW.
+The patter nto use is the accumulator pattern: A nunmutable structure is passed down the call chain, and possible
+modified at each activation (stack frame).
+
+
+So, there is:
+
+1) lookup dict
+2) an inserter; given a lookup dict and a new value it inserts the value under a new, generated name (a number)
+
+This is pretty easy.
+
+What are the values?
+
+Use https://en.wikipedia.org/wiki/Box-drawing_character for drawing boxes
+
+They are dicts themselves, where positions are relative
+
+   ZXXXXXXXX         The text; Z is position (0,0) (row, col)
+       │                    The vertical bar starts at column V
+       │                    and uses H.1 rows until it hits the first branch
+       ├──                  Then it branches (or just bends if this is the last entry) and just goes left until it hits the next box       
+       └──                  The position of the Z of that box is given as "N steps to the right"
+
+The overall screen is divided into term tree and holes at leaves
+
+  |-------- Term tree -------|----- Holes -----|
+  |                          |    _1223
+  |                          |    _5666   
+ 
+The term tree box is itself a box
+
+In between the Term tree box and the Holes box, there may need to be an 
+exchange part where "hole sharing" is indicated.
+It needs a colum for every shared "hole" where horizontal lines merge
+into a single vertical line which is continued to the right.
+
+the vertical bar is set to the earliest occurrence of the hole
+
+*/
+
+:- consult([spaces]).
+
+% Traverse the term tree, creating a "mirror node" in a lookup dict 
+% for each node.
+
+% Case of: The "root node" of the term is a "hole" (and thus actually a leaf)
+% Style question: can the term be named with a variable called "Var" already in
+% the head w/o confusing the reader? I guess it can.
+
+mirror_term_tree(Var,Depth,DictIn,DictOut,Id) :-
+   var(Var),
+   !, 
+   % check whether an entry for "Var" exists
+   (retrieve_if_exists(DictIn,Var,Id) 
+    -> DictOut=DictIn
+    ;  enlarge_dict(var(Var),Depth,DictIn,DictOut,Id)).
+
+% Case of: The "root node" of the term is atomic (and thus actually a leaf)
+% Style question: can the term be named with a variable called "Atomic" already in
+% the head w/o confusing the reader? I guess it can.
+
+mirror_term_tree(Atomic,Depth,DictIn,DictOut,Id) :-
+   nonvar(Atomic),atomic(Atomic),
+   !,
+   enlarge_dict(atomic(Atomic),Depth,DictIn,DictOut,Id).
+
+% Case of: The "root node" of the term is compound (later there should be
+% variant printing for various compound terms)
+% Style question: can the term be named with a variable called "Compound" already in
+% the head w/o confusing the reader? I guess it can.
+
+mirror_term_tree(Compound,Depth,DictIn,DictOut,Id) :-
+   nonvar(Compound),compound(Compound),
+   !,
+   compound_name_arguments(Compound,Name,Args),
+   % first handle the child nodes
+   succ(Depth,MoreDepth),
+   mirror_args_of_compound_term(Args,MoreDepth,DictIn,DictMid,ArgIds),
+   % then handle this node
+   enlarge_dict(compound(Name,ArgIds),Depth,DictMid,DictOut,Id).
+
+% Mirror all the Terms in a list that comes from the arguments of a 
+% compound term. 
+
+mirror_args_of_compound_term([Term|Terms],Depth,DictIn,DictOut,[Id|Ids]) :-
+   mirror_term_tree(Term,Depth,DictIn,DictMid,Id),
+   mirror_args_of_compound_term(Terms,Depth,DictMid,DictOut,Ids).
+
+mirror_args_of_compound_term([],_,Dict,Dict,[]).
+ 
+% Find the entry in the Dict (which may or may not exist) which mirrors
+% variable Var (i.e. which has value "var(X)" where X and Var designate
+% the same "hole". The key of this entry in the Dict is returned in Id.
+% The predicate fails if there is no such entry.
+% Finding an entry like this may be slower than using a dedicated
+% "variable lookup" structure. Maybe. But having everything in the same
+% dict is fine too.
+
+retrieve_if_exists(Dict,Var,Id) :-
+   % decorate with "once" to stop at the first (and unique) element
+   % bagof fails if there is no solution, which is what we want
+   bagof(F, once( (get_dict(F,Dict,var(X)),X==Var) ), [Id]).
+
+% Add stuff to dict
+
+enlarge_dict(ModdedTermNode,Depth,DictIn,DictOut,Id) :-
+   clashfree_id_selection(DictIn,Id),
+   % At this point Id is a new unique Id!
+   % The value shall name:
+   % - Its own Id 
+   % - The term tree entry that is being mirrored
+   % - A (initially empty) dict wthat will be filled
+   %   as time progress (leading to new version of the dict)   
+   put_dict(Id,DictIn,mirror(Id,Depth,ModdedTermNode,_{}),DictOut).
+ 
+clashfree_id_selection(Dict,Id) :-
+   endlessly_propose_id(Id),
+   print_clash_on_redo(Id),
+   \+ get_dict(Id,Dict,_),
+   debug(clashfree,"FOUND ~q\n",[Id]),
+   !.
+      
+endlessly_propose_id(Id) :- repeat, random_between(0,0xFFFFFF,Id).
+
+print_clash_on_redo(_)  :- true.
+print_clash_on_redo(Id) :- debug(clashfree,"CLASH for ~q\n",[Id]),fail.
+
+% ---
+% Start texification
+% ---
+
+% Begin with the entries of highest "depth"
+% Assuming that all the entries of higher depth have already been handled, then:
+% Given the Id of a node, augment it with data. This transform "DictIn" to "DictOut".
+
+textify(Id,DictIn,DictOut) :-
+   get_dict_ex(Id,DictIn,mirror(Id,Depth,What,AttrDict)), % exception if not found
+   textify_casey(What,Id,DictIn,AttrDict).  % ETC
+
+% compound terms will have the node's name and underneath subterms
+
+textify_casey(compound(Name,Args),Depth,Id,DictIn,AttrDict,AttrDictOut) :-
+   length(Args,Arity),
+   with_output_to(string(Text),format("~q/~d",[Datum,Arity])),
+   string_length(Text,Length),
+   put_dict([text-Text,width-Length,heigh ... ],AttrDictIn,AttrDictOut).
+   
+
+% variables will be printed with a long line going to the right but otherwise
+% will just be 1 character
+
+textify_casey(var(X),Depth,Id,DictIn,AttrDictIn,AttrDictOut) :-
+   put_dict([text-"⨂",width-1,height-1],AttrDictIn,AttrDictOut).
+   
+% atoms will be printed as the are
+
+textify_casey(atomic(Datum),Depth,Id,DictIn,AttrDictIn,AttrDictOut) :-
+   with_output_to(string(Text),format("~q",[Datum])),
+   string_length(Text,Length),
+   put_dict([text-Text,width-Length,height-1],AttrDictIn,AttrDictOut).
+ 
+
+% ---
+% Textification structure
+% ---
+
+% - We have a dict with integer keys starting from 0 for the lines (rows).
+% - Each line, i.e. each value of the dict, is a string.
+% - The dict is called "screen{}"
+% - We need just a "poke" function which updates the screen at a certain
+%   (row,col) with a certain "string".
+
+poke(ScreenDictIn,Row,Col,Val,ScreenDictOut) :-
+   atom_string(Val,Str),            % make sure this is a string
+   assertion(integer(Col),Col>=0),
+   assertion(integer(Row),Row>=0),
+   string_length(Str,StrLen),
+   ((StrLen>0) -> 
+    poke_nonempty(ScreenDictIn,Row,Col,Str,ScreenDictOut) ; true).
+
+poke_nonempty(ScreenDictIn,Row,Col,Str,ScreenDictOut) :-
+   (get_dict(Row,ScreenDictIn,Line) 
+    -> poke_line(Line,Col,Str,NewLine)
+    ;  poke_line(""  ,Col,Str,NewLine)),
+   put_dict(Row,ScreenDictIn,NewLine,ScreeDictOut).
+
+% ---
+% Patching an original string "StrIn" with a "PatchStr" giving a "StrOut".
+% The patching starts at (0-indexed) "PatchCol" (possibly negative) and may involve
+% overwriting characters in the middle of "StrIn", appending to "StrIn", with 
+% or without partial overwriting, or appending to "StrIn" and filling any
+% gap between the end of "StrIn" and the start of "PatchStr" at "Col" with
+% spaces.
+% ---
+
+poke_line(StrIn,PatchStr,PatchCol,StrOut) :-
+   string_length(StrIn,StrInLen),
+   string_length(PatchStr,PatchStrLen),
+   ((PatchCol + PatchStrLen =< 0) ; (PatchStrLen == 0))
+    -> % nothing to do; PatchStr is too far left or empty
+       (StrOut = StrIn) 
+    ;  % proceed normally
+       poke_line_h1(StrIn,StrInLen,PatchStr,PatchStrLen,PatchCol,StrOut)).
+ 
+poke_line_h1(StrIn,StrInLen,PatchStr,PatchStrLen,PatchCol,StrOut) :-
+   (PatchCol < 0) 
+    -> % cut off any characters of PatchStr that are not visible
+       (Before is -PatchCol,
+        PatchStrLenFixed is PatchStrLen-Before,
+        sub_string(PatchStr,Before,PatchStrLenFixed,0,PatchStrFixed),
+        poke_line_h2(StrIn,StrInLen,PatchStrFixed,PatchStrLenFixed,0,StrOut))
+    ;  % proceed normally
+       poke_line_h2(StrIn,StrInLen,PatchStr,PatchStrLen,PatchCol,StrOut).
+    
+switch([If1,Then1],[If2,Then2],[If3,Then3],Else) :-
+   call(If1)
+   ->  call(Then1) 
+   ;   call(If2)
+   ->  call(Then2)
+   ;   call(If3) 
+   ->  call(Then3)
+   ;   call(Else).
+
+cannot_happen_error(Msg) :- throw(error(cannot_happen),context(_,Msg)).
+
+poke_line_h2(StrIn,StrInLen,PatchStr,PatchStrLen,PatchCol,StrOut) :-
+   PatchColFin is PatchCol+PatchStrLen,
+   switch(
+      % a suffix of StrInLen (and maybe a prefix) must be kept
+      [PatchColFin < StrInLen,
+       poke_line_with_suffix(StrIn,StrInLen,PatchStr,PatchStrLen,PatchCol,StrOut)],
+      % only (maybe) a prefix of StrInLen must be kept
+      [PatchCol < StrInLen,
+       poke_line_without_suffix(StrIn,StrInLen,PatchStr,PatchStrLen,PatchCol,StrOut)],
+      % the PatchStr shall be appended to StrIn with possibly spaces in between
+      [StrInLen =< PatchCol,
+       poke_line_append(StrIn,StrInLen,PatchStr,PatchStrLen,PatchCol,StrOut)],
+      % else never happens
+      cannot_happen_error("impossible case")).
+
+poke_line_with_suffix(StrIn,StrInLen,PatchStr,PatchStrLen,PatchCol,StrOut) :-
+   substr(StrIn,0,PatchCol,_,Prefix),
+   substr(StrIn,PatchColFin,_,0,Suffix),
+   string_concat(Prefix,PatchStr,S1),
+   string_concat(S1,Suffix,StrOut).
+ 
+poke_line_without_suffix(StrIn,StrInLen,PatchStr,PatchStrLen,PatchCol,StrOut) :-
+   substr(StrIn,0,PatchCol,_,Prefix),
+   string_concat(Prefix,PatchStr,StrOut).
+
+poke_line_append(StrIn,StrInLen,PatchStr,PatchStrLen,PatchCol,StrOut) :-
+   SpaceCount is PatchCol-StrInlen,
+   spaces(SpaceCount,Spaces),
+   string_concat(StrIn,Spaces,S1),
+   string_concat(S1,PatchStr,StrOut).
+
+:- begin_tests(string_patching).
+
+:- end_tests(string_patching).
+  
+ 
+ 
+
+
+   ColFin is Col+StrLen, % one past the end
+   (LineFin =< Col) -> poke_append(Line,Col,LineFin,Str,NewLine)
+   (Col <  LineLen,ColFin 
+   Start =  Col,
+   Stop  is Col+StrLen-1.
+
+   Col
+   Col > L -> fill then append
+   Col < L 
+
+% ---
+% Append "Str" to "Line" (with "LineFin" the 0-based column one
+% past the end of "Line"). "Str" will be appended at column
+% "StrCol" (supposed to be >= "LineFin") and spaces will be 
+% inserted between the end of "Line" and the start of "Str".
+% ---  
+
+poke_append(Line,LineFin,Str,StrCol,NewLine) :-
+   assertion(LineFin =< StrCol),
+   SpaceCount is StrCol-LineFin,
+   spaces(SpaceCount,Spaces),
+   string_concat(Line,Spaces,Line1),
+   string_concat(Line1,Str,NewLine).
+
+% ---
+% Overwrite the end of "Line" with "Str" (with "LineFin" the 0-based
+% column one past the end of "Line"). "Str" will start at 
+% "StrCol" (supposed to be < "LineFin"). "Str" is supposed to end 
+% after or at "LineFin-1", thus overwriting the end of "Line" and
+% possibly continuing past it.
+% ---
+
+poke_end(Line,LineFin,Str,StrCol,NewLine) :-
+   assertion(StrCol < LineFin),
+   assertion(string_length(Str,StrLen), LineFin =< StrCol+StrLen),   
+   sub_string(Line,0,StrCol,_,Prefix),
+   string_concat(Prefix,Str,NewLine).
+
+% ---
+% Overwrite part of "Line" with "Str". There will be a nonempty
+% suffix and a possibly empty prefix.
+% ---
+
+poke_inside(Line,LineFin,Str,StrCol,NewLine) :-
+   assertion(StrCol < LineFin),
+   StrColFin is StrCol+StrLen,
+   Remainder is LineFin - StrColFin,
+   assertion(string_length(Str,StrLen), StrCol+StrLen < LineFin),
+   sub_string(Line,0,StrCol,_,Prefix),
+   sub_string(Line,StrColFin,Remainder,_,Suffix),
+   string_concat(Prefix,Str,NewLine1),
+   string_concat(NewLine1,Suffix,NewLine).
+   
+
+
+
+:- begin_tests(term_display).
+
+   start_dict(_{}).
+
+   test(var)      :- 
+      start_dict(Dc),mirror_term_tree(_SomeVar,0,Dc,DcOut,Id), format("~q ~q\n",[DcOut,Id]).
+
+   test(atomic)   :- 
+      start_dict(Dc),mirror_term_tree("hello",0,Dc,DcOut,Id), format("~q ~q\n",[DcOut,Id]).
+
+   test(compound) :- 
+      start_dict(Dc),mirror_term_tree(f(x,g(y,h(k)),Z),0,Dc,DcOut,Id), format("~q ~q\n",[DcOut,Id]).
+ 
+:- end_tests(term_display).
+
+rt(term_display) :- run_tests(term_display).
+
