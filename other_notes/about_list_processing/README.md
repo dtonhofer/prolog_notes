@@ -39,7 +39,7 @@ then
 OutPairs = [0-0, 1-1, 2-4, 3-9].
 ```
 
-For more on this, see [Examples for the Prolog predicate `maplist/3]`(../about_maplist/maplist_3_examples.md).
+For more on this, see [Examples for the Prolog predicate `maplist/3`](../../swipl_notes/about_maplist/maplist_3_examples.md).
 
 ## Non-Pairwise processing
 
