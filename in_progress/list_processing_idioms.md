@@ -172,7 +172,7 @@ correct_order_acc_processing([I|Is],Head,Tail,D) :-
    correct_order_acc_processing(Is,Head,NewTail,Dp).
    
 correct_order_acc_processing([],_Head,Tail,_) :-
-   Tail = []. % this creates a proper lst; could also be put into head directly (maybe save a few cycles if it's here)
+   Tail = []. % this creates a proper list; could also be put into head directly (maybe save a few cycles if it's here)
 ```
 
 And thus:
