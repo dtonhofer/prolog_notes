@@ -19,7 +19,8 @@ to first call:
 ?- set_prolog_flag(answer_write_options,[max_depth(0)]).
 ````
 
-The notes regarding lambda-notation provided by [`library(yall)`](https://www.swi-prolog.org/pldoc/man?section=yall) on the page for [`maplist/2`](maplist_2_examples.md) stay relevant.
+The notes regarding lambda-notation provided by [`library(yall)`](https://www.swi-prolog.org/pldoc/man?section=yall)
+on the page for [`maplist/2`](maplist_2_examples.md) stay relevant.
 
 The description for [`maplist/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/3) says:
 
@@ -30,19 +31,24 @@ The description for [`maplist/3`](https://eu.swi-prolog.org/pldoc/doc_for?object
 Thus you have two lists, _List1_ and _List2_, and `maplist/3` will call the _Goal_ for pairwise associations of list items:
 
 ```
-   List1             [L1A, L1B, L1C, L1D, ...  
-   List2             [L2A, L2B, L2C, L2D, ...  
+   List1             [L1A,       L1B,       L1C,       L1D, ...  
+   List2             [L2A,       L2B,       L2C,       L2D, ...  
                         
    Goal called for   (L1A,L2A), (L1B,L2B), (L1C,L2C), (L1D,L2D), ...
 ```
 
-`Goal` must either be;
+The standard application is the one corresponding to the
+[`map`](https://en.wikipedia.org/wiki/Map_(higher-order_function)) operation available in functional or imperative
+programming languages: Apply a function to the list items in _List1_, and bind them to the list items in _List2_. 
+Or the reverse. Or check the function results against already bound list items. 
+
+**`Goal` must either be:**
 
 - a predicate taking two arguments more than indicated on last position: `foo` to 
   be called as `foo(L1,L2)`, `foo(x)` to be called as `foo(x,L1,L2)`, `foo(x,y)` to be called as `foo(x,y,L1,L2)` etc.
 - a lambda expression taking two arguments if one uses `library(yall)`: `[L1,L2]>>foo(L1,L2)`
 
-Additionally:
+**Additionally:**
 
 - both lists must be the same length (or one of the list must be unconstrained, i.e. be open-ended or simply a fresh variable)
 - `Goal` must succeed at every location.
@@ -64,7 +70,7 @@ false.
 false.
 ```
 
-Side-effects will occur before failure hits. It's not transactional:
+Side-effects will occur before failure hits. It's not transactional!
 
 ````
 ?- maplist([X,Y]>>((Y is 2*X),
@@ -78,7 +84,54 @@ Side-effects will occur before failure hits. It's not transactional:
 false.
 ````
 
-The standard application is the one corresponding to the [`map`](https://en.wikipedia.org/wiki/Map_(higher-order_function)) operation available in functional or imperative programming languages: Apply a function to the list items in _List1_, and bind them to the list items in _List2_. Or the reverse. Or check the function results against already bound list items. 
+**Notice this good behaviour**
+
+```
+?- maplist([X,Y]>>true,format("~w\n",[(X,Y)]),[0,1,2,3,4],[a,b,c]).
+false.
+
+?- maplist([X,Y]>>true,format("~w\n",[(X,Y)]),[a,b,c],[0,1,2,3,4]).
+false.
+```
+
+`maplist/3` gives up immediately, noticing that both instantiated list arguments are not the same length,
+instead of going through the lists until it runs out of arguments on either list. Good!
+
+**Steadfastness**
+
+A "steadfast" predicate is one which constructs a result to be bound to an argument that is a fresh variable,
+but which does _not behave differently_ if, at call time, that argument is actually instantiated (not taking 
+into consideration side-effects and optimizations). If the argument is instantiated, the beahviour is the
+same as if the result had been computed, then unified with that instantiated variable.
+
+`maplist/3` is indeed steadfast.
+
+The above is a borderline example of steadfastness. Here is one which is clearer:
+
+```
+?- maplist([X,Y]>>true,format("~w\n",[(X,Y)]),[a,b,c],1).
+false.
+```
+
+```
+?- maplist([X,Y]>>true,format("~w\n",[(X,Y)]),1,[a,b,c]).
+false.
+```
+
+Instead of lists, an integer is passed as argument 2 or argument 3. `maplist/3` _could_ throw a `domain_error` or `type_error` exception.
+Instead, it behaves as if the code were
+
+```
+?- maplist([X,Y]>>true,format("~w\n",[(X,Y)]),[a,b,c],X),X=1.
+false.
+```
+
+```
+?- maplist([X,Y]>>true,format("~w\n",[(X,Y)]),X,[a,b,c]),X=1.
+false.
+```
+
+Hopefully it detects the "need for failure" very early.
 
 ## Form of the two passed lists
 
@@ -286,7 +339,34 @@ T2 = [_3202], Prefix2 = [1, 8, 27, _3202], _3136^3#=_3202 ;
 
 ### How about cyclic lists?
 
-(TODO if I know more)
+Maplist will go on ... forever!
+
+Consider these mutually cyclic lists:
+
+```logtalk
+A=[1,2,3|B],
+B=[a,b,c|A]
+```
+
+![Mutually cyclic lists](pics/mutually_cyclic_lists.svg)
+
+Then:
+
+```logtalk
+?- A=[1,2,3|B],B=[a,b,c|A],maplist([X,Y]>>format("~q\n",[(X,Y)]),A,B).
+a,1
+b,2
+c,3
+1,a
+2,b
+3,c
+a,1
+b,2
+c,3
+...... ad infinitum
+```
+
+Beware of cyclic term graphs!
 
 ### How about lazy lists?
 
@@ -351,11 +431,34 @@ Lout = [1, 2, 3, 4, 5, 6].
 
 ### Tagging of list items
 
-A special case of "applying a function to list items" is _tagging_: adoring terms with functions symbols,
+A special case of "applying a function to list items" is _tagging_: adorning terms with functions symbols,
 or removing the function symbols. This is done to allow better pattern matching during execution, or
 carry additional information about a given term, e.g. whether it's indeed an integer.
 
-Here is a silly example:
+**Here is a simple example**
+
+```
+tag_all_elements(Es,MarkedEs) :- maplist([E,mm(E)]>>true,Es,MarkedEs).
+```
+
+Then
+
+```
+?- tag_all_elements([1,2,3],X).
+X = [mm(1), mm(2), mm(3)].
+
+?- tag_all_elements(X,[mm(1), mm(2), mm(3)]).
+X = [1, 2, 3].
+```
+
+And this predicate is exactly the same as the two-clauser:
+
+```
+tag_all_elements_oldschool([],[]).
+tag_all_elements_oldschool([E|Es],[mm(E)|Taggeds]) :- tag_all_elements_oldschool(Es,Taggeds).
+```
+
+**Here is a less simply example**
 
 ```logtalk
 % This is a "defaulty" representation. There is no way to distinguish the cases by
