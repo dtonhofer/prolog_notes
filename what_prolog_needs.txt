@@ -1,0 +1,6 @@
+A lot of things could be done by having a code preprocessor & editor support
+
+- Predicate arguments appearing in the head should be accessible by special variables like $ARG1, $ARG2 etc. 
+  Then one can have clauses which can both have structure in the head and access that structure in the body w/o the need to reconstruct it by hand.
+  foo([X,Y|Z],A,B) :- g($ARG1). 
+- HERE documents to include text blocks as you can do in Perl and other languages
