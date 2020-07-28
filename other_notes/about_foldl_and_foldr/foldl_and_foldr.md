@@ -7,11 +7,11 @@ A really simple exercise!
 
 I always confuse _foldl_ and _foldr_, so here is a way to remember:
 
-- _foldl_ ("fold left") implements the **"Laughable Recursion"**, subject to tail-call optimization.
-- _foldr_ ("fold right") implements the **"Real Recursion"**, not subject to tail-call optimization.
-
+   - _foldl_ is the "fold left" operation, folding a list from head to tail, (or a tree from root to leaves), **allowing** [tail-call optimization](https://en.wikipedia.org/wiki/Tail_call) of a recursive implementation on forward-chained lists or trees, thus "**laughably recursive**" 
+   - _foldr_ is the "fold right" operation, folding the list from tail to head (or a tree from leaves to root), **precluding** tail-call optimization of a recursive implementation on forward-chained lists or trees, thus more expensive at run-time, thus "**really recursive**"
+ 
 Note that "left recursion" has nothing to do with the "left" of _foldl_. In fact, the one
-doing "left recursion" in the sense of "immediately recursing" is _foldr_.
+doing "left recursion" in the sense of "performing a recursive call as first operation" is _foldr_.
 
 [`library(apply)`](https://www.swi-prolog.org/pldoc/man?section=apply) already has a
 [`foldl`](https://www.swi-prolog.org/pldoc/doc_for?object=foldl/4). The
