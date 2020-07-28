@@ -4,6 +4,7 @@ set -o nounset
 
 # ---
 # Command line processing
+# Accepts "--quiet" to squelch plunit ouput
 # ---
 
 quietflag=${1:-}  # first flag on command line, if it exists
@@ -43,10 +44,11 @@ test_files=(
    #simplest/test_fail.pl
    #simplest/test_throw.pl
    #simplest/test_partially_succeed.pl
+   builtin_demo/test_atom_string.pl
+   builtin_demo/test_between.pl
    builtin_demo/test_compound_name_arguments.pl
    builtin_demo/test_compound_name_arity.pl
-   builtin_demo/test_between.pl
-   builtin_demo/test_atom_string.pl
+   builtin_demo/test_length.pl   
    others/tests_demonstrating_units_tests.pl)
 
 for test_file in "${test_files[@]}"; do
