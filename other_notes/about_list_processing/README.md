@@ -1,5 +1,9 @@
 # List processing idioms
 
+![idiom](pics/idioms.png).
+
+(The above image from Stuart Sierra's presentation [Functional Design patterns in Clojure](https://www.infoq.com/presentations/Clojure-Design-Patterns/) at 04:30).
+
 Suppose you have an "input list" and an "output list", both of the same length, and with the ouput list to be constructed from the input list
 according to some algorithm. The relation between the elements need not be pairwise.
 
