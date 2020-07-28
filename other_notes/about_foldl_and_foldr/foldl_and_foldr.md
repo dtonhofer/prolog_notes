@@ -7,7 +7,10 @@ A really simple exercise!
 
 I always confuse _foldl_ and _foldr_, so here is a way to remember:
 
-   - **foldl** is the "fold left" operation, folding a list from head to tail, (or a tree from root to leaves), 
+   - **foldl** is the "fold left" operation
+      - folding 
+         - a list from head to tail
+         - or a tree from root to leaves
       - **allowing** [tail-call optimization](https://en.wikipedia.org/wiki/Tail_call) of a recursive implementation on forward-chained lists or trees,
       - thus "**laughably recursive**" 
    - **foldr** is the "fold right" operation, folding the list from tail to head (or a tree from leaves to root), 
