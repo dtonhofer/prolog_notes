@@ -77,7 +77,9 @@ Which approach is applicable to your processing evidently depends on the actual 
 
 ### Head-to-tail processing, direct
 
-This is the usual case. Create a predicate that performs a recursive call at last position and which
+This is the usual case. 
+
+**Write a predicate that performs a recursive call at last position and which:**
 
 In the head:
 
@@ -154,7 +156,7 @@ Sometimes you want to generate the ouput list in reverse order of the input list
 (in particular, when programming [`reverse/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=reverse/2))
 or when your problem's structure demands that at each activation, previous results be used for computation.
 
-Create a predicate that performs a recursive call at last position and which
+**Write a predicate that performs a recursive call at last position and which:**
 
 In the head:
 
@@ -194,48 +196,81 @@ This is subject to tail-call-optimization:
 % 40,000,015 inferences, 5.922 CPU in 5.953 seconds (99% CPU, 6754994 Lips)
 ```
 
+### Head-to-tail processing, append-to-accumulator
 
-
-
-### Using accumulator and difference list, resulting in output list in correct order
-
-If you want to use the accumulator idiom and still end up with a list in correct order, and without 
-using [reverse/2](https://eu.swi-prolog.org/pldoc/doc_for?object=reverse/2), you would use a difference list
-to efficiently append new elements to an existing (open) list. 
+This approach fixes the problem of the output list ending up in reverse order of the input list by using
+an "accumulator to which it is efficient to append", i.e. the "difference list" idiom.
 
 A difference list is represented by two variables:
 
-- One denoting the _tip_ of the list, i.e. the first list-cell.
-- One denoting the _fin_ of the list, i.e. the hole referenced by the second argument of the last list-cell, which in closed/proper lists is the `[]` atom.
+- _Tip_, denoting the _tip_ of an "open list", i.e. the first list-cell.
+- _Fin_, denoting the _fin_ of an "open list", i.e. the hole referenced by the second argument of the last list-cell.
 
-An element is easily appended to such a structure by binding the _fin_ to a new list-cell with a new last element, and using a new _fin_, which,
-again denotes the hole referenced by the second argument of the last list-cell in a new activation.
+In a "proper list" or "closed list", there is an empty list `[]` reserved symbol at the _fin_ position, (at least in SWI-Prolog).
 
-In fact the _Head_ + _Tail_ pair functions as a "accumulator with append possibilites" in this scenario.
+Empty difference list vs, difference list holding 4 elements vs proper list holding 4 elements: 
+
+![Difference List Explainer](difference_list_explainer.svg)
+
+An element is efficiently appended at the _fin_ position by binding the _fin_ to a new list-cell with a new "last element" and new "hole",
+and using a new _Fin_ variable denoting this new hole in a fresh activation.
+
+More on difference lists can be found [here](../../swipl_notes/about_difference_lists) (an update is needed though)
+
+**Write a predicate that performs a recursive call at last position and which:**
+
+In the head:
+
+- shaves-off the head of _Input_ list ;
+- receives an _Appendable Accumulator_ in the form of two variables _Tip_ and _Fin_ (note that there is no _Ouput_ variable as _Tip_ will 
+  collapse to the desired _Output_ in the base case)
+
+In the body:
+
+- computes a new element as required ;
+- **anti-prepends** (nearly the same as "appends" but the _Fin_ variable is on the _other_ side) the newly computed element to
+  the _fin_ position of the difference list, obtaining a new _fin_ position in a fresh variable _NewFin_.
+- performs a recursive tail-call with smaller-by-1 _Input_ list and a larger-by-1 appendable accumulator represented by
+  an unchanged _Tip_ and the _NewFin_.
+
+In the base case, the _Fin_ is unified with `[]`, thus transforming the open list rooted at _Tip_ into a closed list
+rooted at _Tip_, which ist the desired output. The topmost caller will find this output in the _Tip_ or _Fin_ variables
+of the initial difference list. Note that the "quality of being a difference list formed by _Tip_ and _Fin_" is not
+preserved in the top caller. When the recursion is started  _Tip_ and _Fin_ designate the same "hole" and are indeed
+a "difference list". On return, _Tip_ and _Fin_ of the top coaller both designate the same output list are are in no
+way a "difference list".
+
 
 ```logtalk
-index_elements_acc_correct(In,Out) :- 
-   correct_order_acc_processing(In,D,D,0),   % D is both the tip and fin of an empty difference list
-   Out = D.                                  % D must be freshvar, so you cannot pass Out directly 
+head_to_tail_append_to_acc(In,Out) :- 
+   head_to_tail_append_to_acc_recursor(In,X,X,0), % X must be fresh on call, and will be the desired output on return
+   Out = X.                                       % unify with "Out" only at the end in case "Out" wasn't fresh (case of verification)
 
-correct_order_acc_processing([I|Is],Head,Tail,D) :-
+head_to_tail_append_to_acc_recursor([I|Is],Tip,Fin,D) :-
    succ(D,Dp),
-   Tail = [I-D|NewTail],
-   correct_order_acc_processing(Is,Head,NewTail,Dp).
+   Fin = [I-D|NewFin], % anti-prepend
+   head_to_tail_append_to_acc_recursor(Is,Tip,NewFin,Dp).
    
-correct_order_acc_processing([],_Head,Tail,_) :-
-   Tail = []. % this creates a proper list; could also be put into head directly (maybe save a few cycles if it's here)
+head_to_tail_append_to_acc_recursor([],_,Fin,_) :-
+   Fin = []. % this creates a proper list at Tip; could also be put into head directly (maybe save a few cycles then)
 ```
 
-And thus:
+The output list will be in reverse order as the input list:
 
 ```text
-?- index_elements_acc_correct([a,b,c,d,e,f,g],Out).
+?- head_to_tail_append_to_acc([a,b,c,d,e,f,g],Out).
 Out = [a-0, b-1, c-2, d-3, e-4, f-5, g-6].
+```
+
+This is subject to tail-call-optimization:
+
+```text
+?-  time((bagof(N,between(1,10000000,N),Bag), head_to_tail_append_to_acc(Bag,Out))).
+% 40,000,015 inferences, 6.237 CPU in 6.265 seconds (100% CPU, 6413850 Lips)
 ```
 
 ## Non-Pairwise processing, tail-to-head of input list
 
-
+(more to follow)
  
    
