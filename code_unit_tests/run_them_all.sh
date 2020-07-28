@@ -30,7 +30,7 @@ version=$("$swipl" --version) || {
    exit 1
 }
 
-echo "Running '$version'" >&2
+echo "We are using this: '$version'" >&2
 
 # ---
 # Listing files to execute
