@@ -11,11 +11,14 @@ I always confuse _foldl_ and _foldr_, so here is a way to remember:
       - folding 
          - a list from head to tail
          - or a tree from root to leaves
-      - **allowing** [tail-call optimization](https://en.wikipedia.org/wiki/Tail_call) of a recursive implementation on forward-chained lists or trees,
-      - thus "**laughably recursive**" 
-   - **foldr** is the "fold right" operation, folding the list from tail to head (or a tree from leaves to root), 
-      - **precluding** tail-call optimization of a recursive implementation on forward-chained lists or trees, thus more expensive at run-time,
-      - thus "**really recursive**"
+      - allowing [tail-call optimization](https://en.wikipedia.org/wiki/Tail_call) of a recursive implementation on forward-chained lists or trees,
+      - thus "laughably recursive" 
+   - **foldr** is the "fold right" operation
+      - folding 
+         - a list from tail to head
+         - or a tree from leaves to root
+      - precluding tail-call optimization of a recursive implementation on forward-chained lists or trees
+      - thus more expensive at run-time, and "**really recursive**"
  
 Note that the term _"left recursion"_ has nothing to do with the _"left"_ of _"fold left"_. 
 "Left recursion" means "performing a recursive call as first operation" in the activation. The 
@@ -240,7 +243,6 @@ Out = ((((starter*d)*c)*b)*a)
 ### The implementation of linear _foldr_, called `foo_foldr/4`:
 
 ```logtalk
-
 foo_foldr(Foldy,[Item|Items],Starter,AccUp) :-    % case of nonempty list
    !,                                             % GREEN CUT for determinism
    foo_foldr(Foldy,Items,Starter,AccUpPrev),
