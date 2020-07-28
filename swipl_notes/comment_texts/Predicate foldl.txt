@@ -1,0 +1,59 @@
+Predicate foldl: https://eu.swi-prolog.org/pldoc/doc_for?object=foldl/4
+
+## Example
+
+Creating a list of integers 0..5:
+
+==
+?- length(List,6),  % create a list of 6 fresh variables
+   foldl(
+      [Item,XCur,XNext]>>(succ(XCur,XNext),Item=XCur), % predicate in yall notation  
+      List,0,_XFinal).
+
+List = [0, 1, 2, 3, 4, 5],
+_XFinal = 6.
+==
+
+well, in this case it's still easier to just do
+
+==
+?- bagof(X,between(0,5,X),List).
+List = [0, 1, 2, 3, 4, 5].
+==
+
+## Explainer
+
+I had some fun explaining and writing a =foldl/4= and =foldr/4=, complete with test cases.
+
+A markdown page with lots of text, implementations and unit tests is here: 
+
+[**Linear `foldl` and `foldr` in Prolog**](https://github.com/dtonhofer/prolog_notes/tree/master/other_notes/about_foldl_and_foldr)
+
+Directly from that page, the implementation of `foldr` on a list (missing in library(apply)):
+
+==
+foo_foldr(Foldy,[Item|Items],Starter,AccUp) :-    % case of nonempty list
+   !,                                             % GREEN CUT for determinism
+   foo_foldr(Foldy,Items,Starter,AccUpPrev),
+   call(Foldy,Item,AccUpPrev,AccUp).
+
+foo_foldr(_,[],Starter,AccUp) :-                  % empty list: bounce Starter "upwards" into AccUp
+   AccUp=Starter.                                 % unification not in head for clarity
+==
+
+
+This also includes a (completely pointless) implementation of =foldl/4= based on =maplist/5=. 
+
+Also good to peruse: The Wikipedia entry on "linear folds": https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Linear_folds
+
+## Naming
+
+Note that V0 is an "accumulator", transformed as the iteration over the list proceeds, eventually appearing in its final 
+
+A more general case would be "multi-accumulator":
+
+==
+foldl(:Goal, +List, +V0, -V, +W0, -W, +K0, -K)
+==
+
+One can of course pack the multiple accumulators into a single one.
