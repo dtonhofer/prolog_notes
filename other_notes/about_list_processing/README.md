@@ -214,7 +214,7 @@ In a "proper list" or "closed list", there is an empty list `[]` reserved symbol
 
 Empty difference list vs, difference list holding 4 elements vs proper list holding 4 elements: 
 
-![Difference List Explainer](difference_list_explainer.svg)
+![Difference List Explainer](pics/difference_list_explainer.svg)
 
 An element is efficiently appended at the _fin_ position by binding the _fin_ to a new list-cell with a new "last element" and new "hole",
 and using a new _Fin_ variable denoting this new hole in a fresh activation.
