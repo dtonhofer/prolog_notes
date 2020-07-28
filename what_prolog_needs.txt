@@ -1,0 +1,7 @@
+A lot of things could be done by having a code preprocessor & editor support
+
+- Predicate arguments appearing in the head should be accessible by special variables like $ARG1, $ARG2 etc. 
+  Then one can have clauses which can both have structure in the head and access that structure in the body w/o the need to reconstruct it by hand.
+  foo([X,Y|Z],A,B) :- g($ARG1). 
+- HERE documents to include text blocks to output elegantly as you can do in Perl and other languages (but you would also need string interpolation to make this really useful)
+- Local naming contexts so that helper predicates are only visible to and can only be called from their "master predicates" (and so that helper predicates can be identified as helper predicates. This can be achived by some naming convention for predicate names. Or maybe modules need to be made hierarchical.
