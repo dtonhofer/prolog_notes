@@ -5,6 +5,18 @@ according to some algorithm. The relation between the elements need not be pairw
 
 It is also possible that both lists are given and that you want to check that "output list" is indeed the result of constructing input list.
 
+Note there is the special group of "folding" processing, where one "folds" a list (or another structure like atree) into a single atomic value.
+More on this [here](../about_foldl_and_foldr)
+
+
+            folding ---> fold/[4-7] of library(apply)
+ 
+  ----+---> pairwise processing ---> use maplist/3
+      |     
+      +---> non-pairwise processing ----+----> from head to tail ---> shave-off and prepend in head of clause
+                                        | 
+                                        +----+ from tail to head 
+      
 ## Pairwise processing
 
 If the processing is pairwise, then you do not need to write your own predicate. Using the
@@ -41,7 +53,7 @@ OutPairs = [0-0, 1-1, 2-4, 3-9].
 
 For more on this, see [Examples for the Prolog predicate `maplist/3`](../../swipl_notes/about_maplist/maplist_3_examples.md).
 
-## Non-Pairwise processing
+## Non-Pairwise processing, head-to-tail of input list
 
 The elements of the output list may have a more complicated relationship to the elements of the input list. For example,
 at the ouput value at pos _i_ may be the sum of input values at position _j < i_. Or the output value at posiition _i_ may
@@ -59,6 +71,7 @@ This is the usual case. Create a predicate that performs a recursive call at las
 
 This is subject to tail-call optimization (i.e. transformation by the compiler into a loop) because the last action taken is
 the recursive call. The construction of the ouptut list is performed (here, `[I-D|Os]` is done when the present call is made!
+See also "[Tail recursion modulo cons](https://en.wikipedia.org/wiki/Tail_call#Tail_recursion_modulo_cons)".
 
 ```logtalk
 index_elements(In,Out) :- correct_order_processing(In,Out,0).
@@ -135,7 +148,7 @@ And thus:
 Out = [g-6, f-5, e-4, d-3, c-2, b-1, a-0].
 ```
 
-Note that this is (probably) subject to tail-optimization, but uses a lot of structure on the global stack:
+Note that this is (probably) subject to tail-optimization, but uses more structure on the global stack:
 
 ```text
 ?- bagof(N,between(1,10000000,N),Bag), index_elements_reverse(Bag,Out).
@@ -181,6 +194,9 @@ And thus:
 ?- index_elements_acc_correct([a,b,c,d,e,f,g],Out).
 Out = [a-0, b-1, c-2, d-3, e-4, f-5, g-6].
 ```
+
+## Non-Pairwise processing, tail-to-head of input list
+
 
  
    
