@@ -5,7 +5,11 @@ according to some algorithm. The relation between the elements need not be pairw
 
 It is also possible that both lists are given and that you want to check that "output list" is indeed the result of constructing input list.
 
-We will not further consider the processing of a list into an "atomic" thing or structure. These are the "folding" operations. More on these [here](../about_foldl_and_foldr)
+![List processing idioms](pics/list_processing_idioms.svg)
+
+The above in [graphml format](pics/list_processing_idioms.graphml), [PNG format](pics/list_processing_idioms.png).
+
+We will not further consider the processing of a list into an "atomic" thing or structure. These are the "folding" operations. More on these [here](../about_foldl_and_foldr).
                 
 ## Pairwise processing
 
