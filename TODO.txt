@@ -1,0 +1,10 @@
+- Reading:
+
+- Read Philip Wadler's "How to Declare an Imperative"
+- Read Przymusinski's "Well-Founded and Stationary Models of Logic Programs"
+
+- Coding:
+
+- Write a maplist that can deal with list of varying length
+- Write a program to find cycles in a term graph and describe it (some newly invented vocabulary comes with this)
+- Fix JPL's DCG to parse/generate Java class names
