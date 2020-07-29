@@ -65,6 +65,7 @@ test_files=(
    builtin_demo/test_is_list.pl
    builtin_demo/test_atom_codes.pl
    builtin_demo/test_dicts.pl
+   builtin_demo/test_atom_chars.pl
    )
 
 # TODO: Output files should be put into a temporary directory
