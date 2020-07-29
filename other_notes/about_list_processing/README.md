@@ -277,8 +277,36 @@ This is subject to tail-call-optimization:
 % 40,000,015 inferences, 6.237 CPU in 6.265 seconds (100% CPU, 6413850 Lips)
 ```
 
+**Going tipless**
+
+In fact, unless the computation needs to have access to the whole list (which may well be necessary, but
+let's suppose not), one doesn't need to pass _Tip_ in the recursive call at all. Instead of a "difference list",
+we just need the _Fin_, designating at each activation the hole to fill with the next listbox:
+
+```logtalk
+head_to_tail_append_to_acc_without_tip(In,Out) :- 
+   head_to_tail_append_to_acc_without_tip_recursor(In,TipFin,0),   % TipFin must be fresh on call, and will be the desired output on return
+   Out = TipFin.                                                   % unify with "Out" only at the end in case "Out" wasn't fresh (case of verification)
+
+head_to_tail_append_to_acc_without_tip_recursor([I|Is],Fin,D) :-
+   succ(D,Dp),
+   Fin = [I-D|NewFin], % anti-prepend
+   head_to_tail_append_to_acc_without_tip_recursor(Is,NewFin,Dp).
+   
+head_to_tail_append_to_acc_without_tip_recursor([],Fin,_) :-
+   Fin = []. % this creates a proper list at Tip; could also be put into head directly (maybe save a few cycles then)
+```
+
+It sure works:
+
+```text
+?- head_to_tail_append_to_acc_without_tip([a,b,c,d,e,f,g],Out).
+Out = [a-0, b-1, c-2, d-3, e-4, f-5, g-6].
+```
+
+
 ## Non-Pairwise processing, tail-to-head of input list
 
-(more to follow)
+(more to follow, in time...)
  
    
