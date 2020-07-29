@@ -1,3 +1,6 @@
+% A bunch of unit tests which explains the behaviour of is_list/1
+% https://eu.swi-prolog.org/pldoc/doc_for?object=is_list/1
+
 :- begin_tests(is_list).
 
 give_me_cyclic(L) :- L = [1,2,3|L].
