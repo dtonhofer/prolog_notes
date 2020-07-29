@@ -2,6 +2,8 @@
 *** https://eu.swi-prolog.org/pldoc/doc_for?object=must_be/2
 ***
 
+## When to use must_be?
+
 This predicate should be used exclusively to perform contract checks and assertion checks, i.e. to inspect the current computational state of the running program.
 
 Because it only does two things, Succeed or Throw:
@@ -19,17 +21,17 @@ of check for erroneous arguments "early". But as usual, it depends. Including on
 
 Jan Wielemaker writes: 
 
-   - must_be/2 is not optimized in any way. It is no more and no less than a cheap and explicit way to add type checks intended primarily for public APIs of libraries. Some people tend to stick it in everywhere. That may seriously slow down the code. I almost never use it in cases where built-in predicates do a reasonable job anyway.
+   - _must_be/2 is not optimized in any way. It is no more and no less than a cheap and explicit way to add type checks intended primarily for public APIs of libraries. Some people tend to stick it in everywhere. That may seriously slow down the code. I almost never use it in cases where built-in predicates do a reasonable job anyway._
 
 Eric Taucher writes:
 
-   - If the must_be/2 is used during development to keep me from making dumb mistakes like passing an empty variable then I leave them in until I know the predicate is working for the production code then strip them out by hand.
-   - If the must_be/2 is used for code that is checking for resources like a file or database connection that must exist for the code to work then I leave them in, even for the production code.
-   - However if during development they are acting as a guard and I want the code to halt as soon as the problem is found but then work as guard with a silent fail once it is in production, I use must_be/2 during development and then change them to is_of_type/2 once the code is production quality.
-   - There are more scenarios but you should start to get the idea that the goal is to get code that works correctly in production, what happens in development is not set in stone.
-   - The reverse process also has uses: If production code has a problem or I did not write the code and want to understand it, I bring the code back in for development, change is_of_type/2 to must_be/2, add additional must_be/2 and other such changes."
+   - _If the must_be/2 is used during development to keep me from making dumb mistakes like passing an empty variable then I leave them in until I know the predicate is working for the production code then strip them out by hand._
+   - _If the must_be/2 is used for code that is checking for resources like a file or database connection that must exist for the code to work then I leave them in, even for the production code._
+   - _However if during development they are acting as a guard and I want the code to halt as soon as the problem is found but then work as guard with a silent fail once it is in production, I use must_be/2 during development and then change them to is_of_type/2 once the code is production quality._
+   - _There are more scenarios but you should start to get the idea that the goal is to get code that works correctly in production, what happens in development is not set in stone._
+   - _The reverse process also has uses: If production code has a problem or I did not write the code and want to understand it, I bring the code back in for development, change is_of_type/2 to must_be/2, add additional must_be/2 and other such changes._
 
----
+## Disabling must_be calls for production use
 
 Note that one can "disable assertions" in other programming languages, and if they have been used properly, disabling them should not change program semantics.
 
@@ -41,19 +43,21 @@ Before loading the application:
 user:goal_expansion(must_be(_,_), true).
 ==
 
----
+## What's missing
 
 The predicate seems to be missing a *third argument*: any context information which might be of interest to the whoever is handling the exception. A must_be/3 might be nice. 
 
 The ISO Standard exception, (which is not particularly flexible) allows an =Extra= term in the exception term error(type_error(_,_),Extra) or error(instantiation_error,Extra). Could be used here.
 
-----
+## Various type-testing approaches
 
-Finally, comparing various type-testing approaches **with a bit of test code**: https://bit.ly/2Zha7Xy_prolog
+Finally, comparing various type-testing approaches [**with a bit of test code**](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/comment_texts/unit_tests_for_must_be.pl)
 
   - Default approach which fails silently if the answer is "don't know"
   - "Sufficiently instantiated" approach which throws if the answer is "don't know"
   - must_be/2 approach which throws unless the answer is "yes, the type matches" (can be used on predicate entry to check whether a contract regarding input arguments is being upheld)
   - can_be/2 approach which throws only if the answer is "it's never going to be that type" (can be used on predicate entry to check whether a contract regarding output arguments is being upheld: is it possible to bind a term of a certain type to that argument later on?) 
 
+See also "Type tests in Prolog" by Markus Triska
+https://youtu.be/ZIv0G4b1xBQ?t=123
 

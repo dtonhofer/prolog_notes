@@ -16,28 +16,97 @@
 
 make_analyzable(NodeIn,NodeOut,LookupNodes) :-
    copy_term(NodeIn,NodeOut),               % Create a deep copy of the structure reachable from NodeIn with "fresh holes"; unify it with NodeCopied.    
-   split_edges([NodeOut],_{},LookupNodes).  % Split all edges of NodeOut; there is no output as this is done "in place"; however a node lookup structure (dict) is created
+   split_edges([NodeOut]).                  % Split all edges of NodeOut; there is no output as this is done "in place"
                                             % Note the change in perspective: Formerly, there was "the graph reachable from NodeOut", now we take the Nodes
                                             % one-by-one as they appear in the list at arg1 position, only considering the children; starting at the entry node NodeOut
+                                            % As we side-effect the term store, there seems to mysteriously be no output.
 
 % ---
-% Analysis
+% Split all discoverable edges
 % ---
 
-split_edges([N|Ns],Lin,Lout) :-
-   var(N),!,
+% termination condition: no further nodes to process
+
+split_edges([]).            
+
+% a hole or atomic? Nothing to do! Proceed to next node in the list.
+  
+split_edges([N|Ns]) :- 
+   (var(N);atomic(N)),!,
+   split_edges(Ns).
+
+% compound but not a dict? (dict is a problem, and so is is_dict/1; to be examined!)
+% split edges to chil nodes, if this hasn't been done already
+
+split_edges([N|Ns]) :- 
+   compound(N),\+is_dict(N),!,
+   split_edges_to_children(N,Ns,ExtendedNs), % doing this immediately covers the case where one of the children of N is N itself - this WILL be detected!
+   split_edges(ExtendedNs). 
+
+% ---
+% Split all edges from compound node N to its child nodes
+% If it turns out that the egdes to the child nodes have already been split, nothing happens at all!
+% ---
+
+split_edges_to_children(N,Ns,ExtendedNs) :- 
+   compound_name_arguments(N,_Name,Args),
+   split_edges_to_children_2(Args,'>>',SplittedArgs,MoreNs,Case), % the '>' is just there for clarity to separate Input and Outpt - an experiment!!
+   Case == accept 
+   -> inject_splitted_args(N,SplittedArgs),
+      append(MoreNs,Ns,ExtendedNs).
+   ;
+      ExtendedNs=Ns.
+
+% ---
+% Helper
+% ---
+
+% Compound of arity 0; no args, nothing to do
+
+split_edges_to_children_2([],'>>',[],[],accept) :- !.
+
+% Compound of arity >= 1.
+% These children may already have been split off, but we need to find out!
+% If we encounter a SplitterNode with name '⇊', we know the nodes have already been split off!
+% If we encounter a compound node with a name different from '⇊', we know the nodes have not yet been split off
+% Nodes that are atomic or holes are left as is, we don't bother to insert splitter nodes.
+% We are using the atom '⇊' as the name of the node found on a split edge to
+% avoid clashes. Note that this node only has one child: the original argument node! 
+
+split_edges_to_children_2([A|As],Ns,'>>',[A|SplittedArgs],ExtendedNs,YN) :-
+   (var(A);atomic(A)),!,
+   split_edges_to_children_2(As,Ns,'>>',SplittedArgs,ExtendedNs,YN).
+
+split_edges_to_children_2([A|As],Ns,'>>',[],Ns,reject) :-
+   compound(A),\+is_dict(A),compound_name_arity(A,'⇊',_),!. % terminate recursion early
+
+split_edges_to_children_2([A|As],Ns,'>>',['⇊'(A)|SplittedArgs],[A|ExtendedNs],YN) :- % A appears in ExtendedNs will be examined later!
+   compound(A),\+is_dict(A),!,
+   assertion(\+compound_name_arity(A,'⇊',_)),
+   split_edges_to_children_2(As,Ns,'>>',SplittedArgs,ExtendedNs,YN).
    
 
-split_edges(Nodes).
-split_edges([N|Ns]) :- atomic(N),!,analyze(Nodes).
-split_edges([N|Ns]) :- compound(N),!,analyze_compound(Node,SubNodes),append(SubNodes,Nodes,MoreNodes),analyze(MoreNodes).
+
+
+   
+ 
+   split_edges_to_children_2(As,Ns,'>>',ExtendedNs).
+
+
+'⇊'(_)|_],Ns,'>>',Ns) :- !,
+   assertion(maplist([A]>>(atomic(A);compound_name_arity(A,'⇊',_)),Args)).
+
+% Default case: Compound of arity >= 1, and first node is not a node that has been
+% inserted into a split edge. So none of the edges has been split, and we need to split them.
+
+split_edges_to_children_2(Args,Ns,'>>',ExtendedNs) :-
+   assertion(Args = [A|As]), 
+   assertion(maplist([A]>>(atomic(A);\+compound_name_arity(A,'⇊',_)),Args)),
+   maplist([A,'⇊'(A)]>>true,Args,SplitterNodes),
+   append(SplitterNodes,Ns,ExtendedNs).
 
 
 
-
-analyze_compound(Node,NewlyMarkedSubnodes) :-
-   compound_name_arguments(Node,Name,Args),
-   analyze_compound_2(Node,Name,Args,'>',MarkedArgs),   
    fixup_compound(MarkedArgs,Node,NewlyMarkedSubnodes).
 
 fixup_compound([],_,[]).
@@ -49,20 +118,6 @@ setargs_to_marked_args(Node,[MA|MAs],I) :-
    setargs_to_marked_args(Node,MAs,Ip).
 
 setargs_to_marked_args(Node,[],_).
-
-% Compound of arity 0; nothing to do; no subnodes!
-
-analyze_compound_2(_Node,_Name,[],'>',[]) :- !.
-
-% Compound of arity >= 1, but first node has been marked already,
-% so ALL of the nodes have been marked - nothing to do.
-
-analyze_compound_2(_Node,_Name,[mm(_)|_],'>',[]) :- !.
-
-% Default: case: Compound of arity >= 1, and first node has **not** been 
-% marked already, so NONE of the nodes has been marked - mark them all
-
-analyze_compound_2(_Node,_Name,Args,'>',MarkedArgs) :- maplist([X,mm(X)]>>true,Args,MarkedArgs).
 
 
 
