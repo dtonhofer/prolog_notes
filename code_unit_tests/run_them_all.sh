@@ -66,6 +66,7 @@ test_files=(
    builtin_demo/test_atom_codes.pl
    builtin_demo/test_dicts.pl
    builtin_demo/test_atom_chars.pl
+   builtin_demo/test_length_against_iso_prolog_wg17.pl
    )
 
 # TODO: Output files should be put into a temporary directory
