@@ -36,7 +36,7 @@ However, that predicate is not satisfying. Although it throws if it has to work 
 
 Unit test illustrating these ideas: 
 
-[unit_tests_for_must_be.pl](/code/unit_tests_for_must_be.pl)
+[`unit_tests_for_must_be.pl`](unit_tests_for_must_be.pl)
 
 The unit test code is also liked from the page for the SWI-Prolog predicate [`must_be/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=must_be/2).
 
