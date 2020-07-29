@@ -1,6 +1,18 @@
 #!/bin/bash
 
+# ===
+# Run Prolog "plunit" test blocks found in files listed in this very script.
+# This script passes https://www.shellcheck.net/
+# ronerycoder@gluino.name
+# ===
+
 set -o nounset
+
+# ---
+# Get the directory of this script
+# ---
+
+mydir=$(dirname "$0")
 
 # ---
 # Command line processing
@@ -51,15 +63,19 @@ test_files=(
    builtin_demo/test_compound_name_arity.pl
    builtin_demo/test_length.pl   
    builtin_demo/test_is_list.pl
+   builtin_demo/test_atom_codes.pl
    )
 
+# TODO: Output files should be put into a temporary directory
+
 for test_file in "${test_files[@]}"; do
-   if [[ ! -f "$test_file" ]]; then
+   test_file_q="$mydir/$test_file"
+   if [[ ! -f "$test_file_q" ]]; then
       echo "Skipping '$test_file' because there is no such file" >&2
-      next
+      continue
    fi
-   test_file_dir=$(dirname "$test_file")
-   test_file_base=$(basename "$test_file")
+   # test_file_dir=$(dirname "$test_file_q")
+   test_file_base=$(basename "$test_file_q")
    tmp_file="output_${test_file_base}_$(date +%Y-%m-%dT%H:%M:%S).txt"
    touch "$tmp_file"  || {
       echo "Couldn't create a temporary file to take up output -- exiting" >&2
@@ -67,7 +83,7 @@ for test_file in "${test_files[@]}"; do
    }
    echo -n "Running '$test_file'" >&2
    # Call halt with exit value 0 on success, exit value 1 on failure
-   "$swipl" -g "$quietgoal , (run_tests -> halt(0) ; halt(1))" "$test_file" 1>"$tmp_file" 2>&1
+   "$swipl" -g "$quietgoal , (run_tests -> halt(0) ; halt(1))" "$test_file_q" 1>"$tmp_file" 2>&1
    res=$?
    echo -n "...return value is $res." >&2
    if [[ $res -eq 0 ]]; then
@@ -77,3 +93,4 @@ for test_file in "${test_files[@]}"; do
       echo " Execution failed. Output is in file '$tmp_file'" >&2
    fi
 done
+
