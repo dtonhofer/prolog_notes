@@ -7,7 +7,9 @@ to all the `plunit` blocks found in listed files. For now, the files have to be 
 there is no automatic collection.
 
 - `simplest` - Simplest possible unit tests to demonstrate unit testing.
-- `builtin_demo` - Unit test for some SWI-Prolog built-in predicates
+- `builtin_demo` - Unit test for some SWI-Prolog built-in predicates. These are useful for documentation as they say a
+  lot more than a long description in prose and they have a formalized, clear format. Plus, they are executable. 
+  Use unit tests for documentation!
 
 
 
