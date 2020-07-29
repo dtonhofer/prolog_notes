@@ -14,7 +14,11 @@ It is also possible that both lists are given and that you want to check that "o
 The above in [graphml format](pics/list_processing_idioms.graphml), [PNG format](pics/list_processing_idioms.png).
 
 We will not further consider the processing of a list into an "atomic" thing or structure. These are the "folding" operations. More on these [here](../about_foldl_and_foldr).
-                
+
+## TODO
+
+I missed list processing via DCGs; need to add some code to show how that is done..
+
 ## Pairwise processing
 
 If the processing is pairwise (on every position, the element of the input list is related to the element of 
