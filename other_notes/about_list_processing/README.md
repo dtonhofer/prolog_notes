@@ -250,17 +250,24 @@ way a "difference list".
 
 
 ```logtalk
+% X must be fresh on call, and will be the desired output on return
+% X is unified with "Out" only at the end -- in case "Out" wasn't fresh (case of verification)
+
 head_to_tail_append_to_acc(In,Out) :- 
-   head_to_tail_append_to_acc_recursor(In,X,X,0), % X must be fresh on call, and will be the desired output on return
-   Out = X.                                       % unify with "Out" only at the end in case "Out" wasn't fresh (case of verification)
+   head_to_tail_append_to_acc_recursor(In,X,X,0), 
+   Out = X.                                       
 
 head_to_tail_append_to_acc_recursor([I|Is],Tip,Fin,D) :-
    succ(D,Dp),
-   Fin = [I-D|NewFin], % anti-prepend
+   Fin = [I-D|NewFin],                                     % "anti-prepend"
    head_to_tail_append_to_acc_recursor(Is,Tip,NewFin,Dp).
    
+% This creates a proper list accessible at any "Tip" of the activation
+% records on-stack, in particular at "X". The unificatoin could also be put into 
+% the head directly (maybe save a few cycles then)
+
 head_to_tail_append_to_acc_recursor([],_,Fin,_) :-
-   Fin = []. % this creates a proper list at Tip; could also be put into head directly (maybe save a few cycles then)
+   Fin = []. 
 ```
 
 The output list will be in reverse order as the input list:
@@ -284,17 +291,22 @@ let's suppose not), one doesn't need to pass _Tip_ in the recursive call at all.
 we just need the _Fin_, designating at each activation the hole to fill with the next listbox:
 
 ```logtalk
+% "TipFin" must be fresh on call, and will be the desired output on return
+% TipFin is unified with "Out" only at the end -- in case "Out" wasn't fresh (case of verification)
+
 head_to_tail_append_to_acc_without_tip(In,Out) :- 
-   head_to_tail_append_to_acc_without_tip_recursor(In,TipFin,0),   % TipFin must be fresh on call, and will be the desired output on return
-   Out = TipFin.                                                   % unify with "Out" only at the end in case "Out" wasn't fresh (case of verification)
+   head_to_tail_append_to_acc_without_tip_recursor(In,TipFin,0),   
+   Out = TipFin.                                                   
 
 head_to_tail_append_to_acc_without_tip_recursor([I|Is],Fin,D) :-
    succ(D,Dp),
    Fin = [I-D|NewFin], % anti-prepend
    head_to_tail_append_to_acc_without_tip_recursor(Is,NewFin,Dp).
    
-head_to_tail_append_to_acc_without_tip_recursor([],Fin,_) :-
-   Fin = []. % this creates a proper list at Tip; could also be put into head directly (maybe save a few cycles then)
+% This creates a proper list accessible at the topmost caller's "TipFin";
+% The unification of the "hole" with "[]" is done in the head directly
+
+head_to_tail_append_to_acc_without_tip_recursor([],[],_).
 ```
 
 It sure works:
