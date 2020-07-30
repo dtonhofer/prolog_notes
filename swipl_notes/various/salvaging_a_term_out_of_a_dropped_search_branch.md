@@ -1,4 +1,4 @@
-# Smuggling your term out of a dropped search tree branch
+# Salvaging a term out of a dropped search branch
 
 In a normal situation ending in a successful call, one gets to see terms assigned to variables as the computation succeeds and "drops out"
 at the bottom of the depth-first search tree (unlike in other programming languages, where one is trained to see a call as coming "back up"
