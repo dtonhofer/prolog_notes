@@ -13,6 +13,7 @@ A lot of things could be done by having a code preprocessor & editor support. Th
   (and so that helper predicates can be identified as helper predicates). This can be achived by some naming convention for
   predicate names with some additional enforcement, e.g. hierarchical names for the helper predicates: `master$helper(..) :- ....`
   Or maybe modules need to be made hierarchical.
+- A way to automatically extract the signature of a module (including comments etc.)
 
 ## This smells: False vs. Exceptions
 
