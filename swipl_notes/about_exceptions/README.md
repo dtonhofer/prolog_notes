@@ -61,11 +61,11 @@ How do we get a backtrace and how does the exception term have to look to get on
 The backtrace is filled in according to SWI-Prolog conventions because the ISO Standard has nothing to say about this. 
 
 SWI-Prolog wants the second argument of the `error/2` term (given in the ISO standard as `Imp_def`) to look
-like `context/2`, more precise like `context(Location,Message)`. If `Location` is fresh and the catch is performed
+like `context(Location,Message)`. If `Location` is fresh and the catch is performed
 by [`catch_with_backtrace/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=catch_with_backtrace/3) (which happens
-either explicity in code or at the latest possible time at the Prolog Toplevel), then the position of `Location`
-is filled with a backtrace (as implemented by `library()`). The `Message` is generally a cleartext message (string or
-atom).
+either explicity in code or at the latest possible time at the Prolog Toplevel), `Location`
+is filled with a backtrace (as implemented by `library(prolog_stack)`  in file `swipl/lib/swipl/library/prolog_stack.pl`).
+The `Message` is generally a cleartext message (string or atom).
 
 Take this program:
 
