@@ -4,7 +4,7 @@ In a normal situation ending in a successful call, one gets to see terms assigne
 at the bottom of the depth-first search tree (unlike in other programming languages, where one is trained to see a call as coming "back up"
 from nested calls, here, the tree stays instantiated, ready to provide a next solution, and we are really "dropping out" at the bottom).
 
-![simple straightforward call](pics/simple_straightforward_call.svg)
+![simple straightforward call](pics/simple_straightforward_call_illustration.svg)
 
 Normal call:
 
