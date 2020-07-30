@@ -7,13 +7,20 @@
 % be fixed in the Prolog runtime at some considerable cost of complexity.)
 %
 % We will just "consult" this file from any module that needs the predicates,
-% thus creating "local copies" of said predicates in each module.
+% thus creating "local copies" of said predicates in that module.
 %
 % (What does the compiler do with unused in-module code?)
 
 % ---
 % A better "switch" than an unreadable sequence of ->/2
 % ---
+
+switch(If1,Then1,If2,Then2,Else) :-
+   call(If1)
+   ->  call(Then1)
+   ;   call(If2)
+   ->  call(Then2)
+   ;   call(Else).
 
 switch(If1,Then1,If2,Then2,If3,Then3,Else) :-
    call(If1)

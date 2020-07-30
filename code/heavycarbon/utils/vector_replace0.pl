@@ -1,4 +1,7 @@
-:- module(vector_replace0,[vector_replace0/4]).
+:- module(vector_replace0,
+          [
+             vector_replace0/4
+          ]).
 
 % ============================================================================
 % 2020-04-XX

@@ -1,20 +1,11 @@
 :- module(heavycarbon_utils_utils,
-          [textize/3,ff/1,pp/1,fresh_tag/2]).
+          [
+            textize/3      % textize(Msg,Args,FinalText): leniently generate text, like format/2
+           ,fresh/1,       % fresh(Term): an alias for var(Term) 
+           ,stale/1,       % stale(Term): an alias for nonvar(Term)
+           ,fresh_tag/2    % fresh_tag(X,Tagged) tags X with fresh/1 or stale/1 for further processing
+          ]).
 
-% ============================================================================
-% 2020-05-XX
-% https://github.com/dtonhofer/prolog_notes
-% ----------------------------------------------------------------------------
-% This is free and unencumbered software released into the public domain.
-%
-% Anyone is free to copy, modify, publish, use, compile, sell, or
-% distribute this software, either in source code form or as a compiled
-% binary, for any purpose, commercial or non-commercial, and by any
-% means.
-%
-% For more information, please refer to <http://unlicense.org/>
-% ============================================================================
-% VERSION: Sun 10 May 12:43:19 CEST 2020
 % ============================================================================
 % Various pieces of code that may be useful
 % ============================================================================
@@ -46,24 +37,22 @@ textize(Msg,Args,FinalText) :-
 % ===
 % This fixes one of my pet peeves of Prolog: var(X) is badly named. It should
 % fresh(X) or freshvar(X), because we are not testing whether X is a variable (we
-% know *that*), but whether it references a fresh (as yet unconstrained) term!
-% fresh/1 and cured/1 sound better to me, they also have same number of characters,
-% so align nicely in source code.
+% know *that*), but whether it references a fresh (as yet unconstrained/uninstantiated)
+% term, i.e. a "hole". 
 % ===
 
-ff(X) :- var(X).     % whatever is between the parentheses is a variable (it cannot
-                     % be anything else!) and that variable
-                     % designates-a-hole-at-the-leaf-of-a-tree: 
-                     % the variable is "fresh", "unbound", "uninstantiated", "unrefined"
+fresh(X) :- var(X).     % whatever is between the parentheses is a variable (it cannot
+                        % be anything else!) and that variable designates a "hole":
+                        % the variable is "fresh", "unbound", "uninstantiated", "unrefined"
 
-pp(X) :- nonvar(X).  % the complement of the above; pp/1 sounds as good as anything
+stale(X) :- nonvar(X).  % the complement of the fresh/1
 
 % ===
 % Tagging, used in pre-processing arguments before they are used so that
 % the correct clause can be easily matched.
 % ===
 
-fresh_tag(X,ff(X)) :- var(X),!.
-fresh_tag(X,pp(X)) :- nonvar(X),!.
+fresh_tag(X,fresh(X)) :- var(X),!.
+fresh_tag(X,stale(X)) :- nonvar(X).
 
 

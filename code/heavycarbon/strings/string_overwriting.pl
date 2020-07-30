@@ -1,11 +1,13 @@
 :- module(heavycarbon_strings_overwriting,
-         [string_overwriting/4,
-          ovw_helper_mid/6, 
-          ovw_helper_top/6]).
+          [
+             string_overwriting/4
+            ,ovw_helper_mid/6
+            ,ovw_helper_top/6
+          ]).
   
 :- use_module(library('heavycarbon/strings/conversion.pl')).
 
-:- load_files(['heavycarbon/utils/meta_helpers_nonmodular.pl']).
+:- load_files(['heavycarbon/support/meta_helpers_nonmodular.pl']).  % not a module, just predicates
 
 % ===
 % (Partially) ovwerwriting an original string "StrIn" with "OverwriteStr" giving a "StrOut".

@@ -1,18 +1,8 @@
-:- module(splinter0,[splinter0/5,replace0/5]).
-
-% ============================================================================
-% 2020-04-XX
-% https://github.com/dtonhofer/prolog_notes
-% ----------------------------------------------------------------------------
-% This is free and unencumbered software released into the public domain.
-%
-% Anyone is free to copy, modify, publish, use, compile, sell, or
-% distribute this software, either in source code form or as a compiled
-% binary, for any purpose, commercial or non-commercial, and by any
-% means.
-%
-% For more information, please refer to <http://unlicense.org/>
-% ============================================================================
+:- module(splinter0,
+          [
+              splinter0/5   % splinter0(List, N, Prefix, Element, Suffix)
+ 
+          ]).
 
 % ============================================================================
 % "Splinter a List by index, 0-based"
@@ -20,12 +10,6 @@
 %   splinter0(+List, +N, ?Prefix, ?Element, ?Suffix)
 %   splinter0(?List, ?N, +Prefix, +Element, +Suffix)
 %
-% This also gives us for free:
-%
-% "Replace item in a list by index, 0-based"
-%
-%   replace0(+List, +N, ?NewElement, ?OldElement, ?NewList)
-% ============================================================================
 % Given a List and an index N into the list (N from 0 to N-1),
 % splinter a list at position N into:
 %
@@ -50,14 +34,6 @@
 %
 % - a negative index causes a throw
 % - an out-of-bounds positive or 0 index causes failure
-% ============================================================================
-% HOWTO
-%
-% Put this code into file a "splinter0.pl"
-% Load on Prolog REPL: [splinter0].
-% Run unit tests: ?- rt.
-% ============================================================================
-
 % ============================================================================
 % Consider the following possibilites:
 % 1 = nonvar at that argument place
@@ -86,21 +62,9 @@
 % [0 . 0 . 1] - Not enough info to limit length of list
 % ============================================================================
 
-% ---
-% main entry point
-% ---
-
 splinter0(List, N, Prefix, Element, Suffix) :-
     ground_flags([List, N, Prefix, Element, Suffix], GroundFlags),
     splinter0_dispatch(GroundFlags, List, N, Prefix, Element, Suffix).
-
-% ---
-% splinter0 gives us replace0/5 immediately
-% ---
-
-replace0(List, N, NewItem, OldItem, NewList) :-
-   splinter0(List, N, Prefix, OldItem, Suffix),
-   append([Prefix, [NewItem], Suffix], NewList).
 
 % ---
 % Handle cases depending on what variables are ground/nonground
