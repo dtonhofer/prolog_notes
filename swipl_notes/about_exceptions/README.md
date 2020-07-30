@@ -1,10 +1,6 @@
 # SWI-Prolog Exceptions
 
-This page is referenced from the comment on the SWI-Prolog manual page for [`throw/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=throw/1)
-
-## Pointers
-
-### Pages of interest in the SWI-Prolog manual
+## Pages of interest in the SWI-Prolog manual
 
   - [`library(error)`](https://eu.swi-prolog.org/pldoc/man?section=error) - Has a description of exception meanings & usage
   - [Chapter 4.10: Exception handling](https://eu.swi-prolog.org/pldoc/man?section=exception)
@@ -20,7 +16,7 @@ This page is referenced from the comment on the SWI-Prolog manual page for [`thr
   - [A.14 library(debug): Print debug messages and test assertions](https://eu.swi-prolog.org/pldoc/man?section=debug)
      - [assertion/1](https://eu.swi-prolog.org/pldoc/doc_for?object=assertion/1)
 
-### Some reading
+## Some reading
 
   - [Coding Guidelines for Prolog](https://arxiv.org/abs/0911.2899) offers a bit of commentary on _when_ to throw, but does not go further.
 
@@ -45,6 +41,127 @@ Another non-ISO standard exception term is thrown by [`dict_pairs/3`](https://eu
 (and probably other dict-handling predicates): `error(duplicate_key(Key),Context)`.
 
 Note that the above exceptions terms use a non-standard formal term but retain the structure of the ISO standard exception term.
+
+## "It actually works"
+
+As the page for [`throw/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=throw/1) says:
+
+> ISO demands that `throw/1` make a copy of `Exception`, walk up the stack to a `catch/3` call, backtrack 
+> and try to unify the copy of `Exception` with `Catcher`.
+
+It not only "makes a copy", but "makes a copy that survives backtracking to the catch point" as otherwise
+one would never see the values bound to the variables that can be found in the catcher term. It's quite "un-Prolog-y" in fact.
+
+See also: [Salvaging a term out of a dropped search branch](../about_salvaging_a_term_out_of_a_dropped_search_branch)
+
+## Catch with backtrace
+
+How do we get a backtrace and how does the exception term have to look to get one?
+
+The backtrace is filled in according to SWI-Prolog conventions because the ISO Standard has nothing to say about this. 
+
+SWI-Prolog wants the second argument of the `error/2` term (given in the ISO standard as `Imp_def`) to look
+like `context/2`, more precise like `context(Location,Message)`. If `Location` is fresh and the catch is performed
+by [`catch_with_backtrace/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=catch_with_backtrace/3) (which happens
+either explicity in code or at the latest possible time at the Prolog Toplevel), then the position of `Location`
+is filled with a backtrace (as implemented by `library()`). The `Message` is generally a cleartext message (string or
+atom).
+
+Take this program:
+
+```prolog
+call0(ExceptionTerm) :- 
+   call1(ExceptionTerm).
+   
+call1(ExceptionTerm) :- 
+   call2(ExceptionTerm).
+   
+call2(ExceptionTerm) :- 
+   throw(ExceptionTerm).
+```
+
+Enable debugging to keep the compiler from optimizing-away stack frames. 
+
+```text
+?- debug.
+```
+
+Let's study the behaviour of "backtrace generation" by `catch_with_backtrace/3` with various forms of `ExceptionTerm`. We will let the
+exception be caught at the Prolog Toplevel, which uses that predicate.
+
+### Non-ISO-standard exception term without placeholder
+
+No backtrace is generated, there is minimal printing at toplevel:
+
+```text
+?- call0("deep in a search tree").
+ERROR: Unhandled exception: "deep in a search tree"
+```
+
+### Quasi-ISO-standard exception term `error(_,_)`
+
+An exception term that looks like `error(_,_)` matches the ISO Standard basic format, although the requirements
+regarding the formal term on the first position have to be followed too for full compliance.
+
+The second argument is set to `context(B,_)` where `B` contains a backtrace.
+
+The toplevel tries validly to print something in the first line, but has to admit that it found an `Unknown error term`:
+
+```text
+[debug]  ?- call0(error("deep in a search tree",Context)).
+
+ERROR: Unknown error term: "deep in a search tree"
+ERROR: In:
+ERROR:   [13] throw(error("deep in a search tree",_4126))
+ERROR:   [12] call2(error("deep in a search tree",_4156)) at user://1:14
+ERROR:   [11] call1(error("deep in a search tree",_4186)) at user://1:11
+ERROR:   [10] call0(error("deep in a search tree",_4216)) at user://1:8
+ERROR:    [9] <user>
+   Exception: (13) throw(error("deep in a search tree", _3266)) ? Exception details
+==
+```
+
+Asking for "exception details" using `m` reveals that `Context` has been filled in with a 
+term `context(prolog_stack(Frames),_)` as the exception term looks as follows:
+
+```text
+error("deep in a search tree",
+      context(
+         prolog_stack([
+            frame(13,call(system:throw/1),throw(error("deep in a search tree",_4126))),
+            frame(12,clause(<clause>(0x1a7ef30),4),call2(error("deep in a search tree",_4156))),
+            frame(11,clause(<clause>(0x1a9ccd0),4),call1(error("deep in a search tree",_4186))),
+            frame(10,clause(<clause>(0x1a368c0),4),call0(error("deep in a search tree",_4216))),
+            frame(9,clause(<clause>(0x18f7450),3),'$toplevel':toplevel_call(user:user: ...))]),_4082))
+```
+
+### Quasi-ISO-standard exception term with SWI-Prolog context term `error(_,context(_,_))`
+
+The same as above, we just have SWI-Prolog specific `context/2` subterm already in the
+ISO-standard specific `error/2` term. 
+
+We can put a generic message in the second argument of `context/2`. In this example, a String:
+
+```text
+[debug]  ?- call0(error("deep in a search tree",context(_,"get me outta here"))).
+ERROR: Unknown error term: "deep in a search tree" (get me outta here)
+```
+
+### ISO-standard exception term with SWI-Prolog context term `error(IsoFormal,context(_,_))` 
+
+As above, backtrace and all, except that now error message generation is correct as it is based on the 
+list of valid ISO formal terms:
+
+```text
+[debug]  ?- call0(error(instantiation_error,context(_,"get me outta here"))).
+ERROR: Arguments are not sufficiently instantiated (get me outta here)
+ERROR: In:
+ERROR:   [13] throw(error(instantiation_error,context(_3028,"get me outta here")))
+ERROR:   [12] call2(error(instantiation_error,context(_3064,"get me outta here"))) at user://1:14
+ERROR:   [11] call1(error(instantiation_error,context(_3100,"get me outta here"))) at user://1:11
+ERROR:   [10] call0(error(instantiation_error,context(_3136,"get me outta here"))) at user://1:8
+ERROR:    [9] <user>
+```
 
 ## Throwing ISO-Standard exceptions 
 
@@ -406,6 +523,40 @@ Only the `Context` term can be used.
 The ISO-Standard stipulates that atoms chosen from a restricted set must appear in certain positions of `Formal`. This
 is unnecessarily restrictive as there is no way the ISO-Standard can list all the possible atoms and information may well have have to 
 carried in terms more complex than atoms. Additionally the intended meaning of the listed atoms is undescribed and in some cases is obscure.
+
+### Overbearing formalization puts cart before horse
+
+When you write the part of a predicate that verifies whether the predicate's contract is being respected,
+i.e. whether the arguments are usable, it may be difficult to even decide between whether you are in presence
+of a "type error" or a "domain error" and even trying to do so may force you to perform inelegant code contortions.
+And in the end **you don't care**! Because what will the caller (or even the programmer) actually do with that
+information? In fact, detailed information is most likely only of interest to predicates "very near" the throw point,
+and they can set up their own task-specific convention.
+
+What anyone and anything somewhat interested in catching and handling the exception wants is:
+
+- That part of the predicate's contract was violated on entry
+- Maybe some information about the argument or the argument tuple that cause offense ("which arguments and what were their values")
+- Maybe an indication on what to do next, which the thrower might have an idea about
+
+And that's it. This leads to an error term like for example:
+
+```
+error(contract_violation(_{ what:vector_length_larger_than_1,
+                            where:entry(foo/2),
+                            args:[Arg1,Arg2,Arg3], 
+                            msg:"The three args must be a complex vector of length ~1" }).
+```
+
+This is relaxingly informative but even allowed according to the ISO standard. Moreover the formal would have to
+be name `contract_nonviolation`. But of course the thrower wants to tell us about a "contract violation", 
+not that it wants to see a "contract nonviolation" ... of course it does. Cognitively, that is *also* backwards.
+
+It should be up to the code which catches the exception to decide whether this is a domain error or type error, but it
+probably won't even want to. 
+
+And note: What will the catching predicate do with that? Probably trash everything and ask the user for guidance. It always comes
+down to "trash everything and then ask around".
 
 ### Missing possibilities.
 
