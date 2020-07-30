@@ -106,6 +106,7 @@ Conventions
    :- use_module(library('heavycarbon/utils/between_with_step.pl')).
    :- use_module(library('heavycarbon/utils/rotate_list.pl')).
    :- use_module(library('heavycarbon/utils/splinter0.pl')).
+   :- use_module(library('heavycarbon/utils/replace0.pl')).
  
 /*
 
