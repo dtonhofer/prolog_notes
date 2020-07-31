@@ -64,6 +64,28 @@ true.
 true.
 ```
 
+Now you can query:
+
+```
+?- difflist_length([1,2,3]-[],L).
+L = 3.
+
+?- difflist_length([1,2|X]-X,L).
+L = 2.
+
+?- difflist_length(X-X,L).
+L = 0.
+
+?- difflist_length(DL,4).
+DL = [_14654, _14660, _14666, _14672|_14674]-_14674.
+
+?- openlist_length(OL,4).
+OL = [_16098, _16104, _16110, _16116|_15832].
+
+?- openlist_length([1,2,3|_],L).
+L = 3.
+```
+
 ## Sly difflist length computation
 
 (TODO: Review)
