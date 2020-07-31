@@ -618,19 +618,19 @@ and all exceptions are described by clauses of the predicate `exc_desc/4`
 
 Instead of writing:
 
-```prolog
+```text
 foo(X,Y) :- X<0,throw(error(contract_error(arg1,X),context(_,"The first argument must be >= 0"))).
 ```
 
 which becomes hard to read and maintain if there are lots of `throw` instructions, one writes
 
-```prolog
+```text
 foo(X,Y) :- X<0,throwme(foo,parameter_wrong(arg1,X)).
 ```
 
 And one adds an _exception descriptor_ for the desired somewhere at the end of the source file, easily inspectable and updateable:
 
-```prolog
+```text
 exc_desc(foo,parameter_wrong(Where,What),  % lookup values found in the throwme/2 call
          _,                                % "location" that will be in the context term on 1st position
          contract_error(Where,What),       % "formal" term of the exception (here, non-ISO standard)
@@ -639,7 +639,7 @@ exc_desc(foo,parameter_wrong(Where,What),  % lookup values found in the throwme/
 
 One can of course try variations, e.g with dynamic messages:
 
-```prolog
+```text
 exc_desc(foo,parameter_wrong(Where,What),  % lookup values found in the throwme/2 call
          _,                                % "location" that will be in the context term on 1st position
          contract_error(Where,What),       % "formal" term of the exception (here, non-ISO standard)
@@ -654,7 +654,7 @@ file with [`include/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=include/1
 This is because the `exc_desc/5` clauses should module-specific and not be exported, so if this _were_ a module, `throwme/2` 
 could not access the module-internal `exc_desc/5` clauses.
 
-- [`throwme_nonmodular.pl`](../../../code/heavycarbon/support/throwme_nonmodular.pl)
+- [`throwme_nonmodular.pl`](../../code/heavycarbon/support/throwme_nonmodular.pl)
 
 **Making sure the `throwme/2` calls are correct**
 
