@@ -7,12 +7,12 @@
 % Sun 12 Apr 21:39:05 UTC 2020
 % ---
 % This is free and unencumbered software released into the public domain.
-% 
+%
 % Anyone is free to copy, modify, publish, use, compile, sell, or
 % distribute this software, either in source code form or as a compiled
 % binary, for any purpose, commercial or non-commercial, and by any
 % means.
-% 
+%
 % For more information, please refer to <http://unlicense.org/>
 % ==============================================================================
 % vector_nth0(+Indexes,+List,?Elements)
@@ -42,10 +42,10 @@
 
 vector_nth0(Indexes,List,Elements) :-
    % Make sure at least one of "Indexes" and "Elements" is a "nonvar"
-   % and that lengths are equal. This actually **constructs** lists of 
+   % and that lengths are equal. This actually **constructs** lists of
    % fresh variables if "Indexes" or "Elements" is "var"
-   (nonvar(Elements) 
-       -> (length(Elements,L),length(Indexes,L)) 
+   (nonvar(Elements)
+       -> (length(Elements,L),length(Indexes,L))
     ;
     nonvar(Indexes)
        -> (length(Indexes,L),length(Elements,L))

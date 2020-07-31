@@ -1,7 +1,7 @@
 :- module(splinter0,
           [
               splinter0/5   % splinter0(List, N, Prefix, Element, Suffix)
- 
+
           ]).
 
 % ============================================================================

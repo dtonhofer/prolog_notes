@@ -12,12 +12,12 @@
 
 % ============================================================================
 % Relate a "difference list" and its length.
-% 
-% Vocabulary: 
-% 
+%
+% Vocabulary:
+%
 % This is made a bit more complicated because there are two views of the list
 % - The abstract one where a list is a sort of datastructure containing a
-%   sequence of elements, where you can add or remove an element at the 
+%   sequence of elements, where you can add or remove an element at the
 %   front.
 % - The more detailed one where the list is a specific form of graph, with
 %   chained listboxes each referencing a single element and the rest of the
@@ -46,7 +46,7 @@
 %                                      ~  "a hole"
 %
 % A list's "tip" is the first listbox.
-% A list's "fin" is the last listbox. 
+% A list's "fin" is the last listbox.
 %
 % A list's "head" is the first element of the list, i.e. list content.
 % A list's "tail" is the smaller list created by shaving off the head.
@@ -59,7 +59,7 @@
 %
 % A "prefix" of a list is a sublist encompassing N>=0 consecutive elements,
 % including the head. (The empty prefix encompasses no elements).
-% 
+%
 % A "suffix" of a list is a sublist encompassing N>=0 consecutive elements
 % including the "last". (The empty suffix encompasses no elements).
 %
@@ -84,12 +84,12 @@
 %              ** will cause a exception during consistency checking
 %
 % ============================================================================
-% BUGS:  
+% BUGS:
 %
-% - Cyclic list handling is not supported. 
+% - Cyclic list handling is not supported.
 %   While an "open list" cannot be cyclic, a cyclic structure may
 %   be passed, which would be bad.
-%          
+%
 % - A fat chunk of the code is actually about parameter checking.
 %   There should be a "raw" version just going ahead w/o checks,
 %   which would be easier to explain and digest. OTOH, the
@@ -97,7 +97,7 @@
 %   by themselves.
 % ============================================================================
 
-difflist_length(Difflist,Length) :- 
+difflist_length(Difflist,Length) :-
    difflist_length(Difflist,Length,_,_).
 
 difflist_length(Difflist,Length,Listtype,Intention) :-
@@ -113,14 +113,14 @@ difflist_length(Difflist,Length,Listtype,Intention) :-
       templatize(Difflist,Length),
       (Difflist=Tip-Fin,analyze(Tip,Fin,Length,Listtype))).
 
-openlist_length(Tip,Length) :- 
+openlist_length(Tip,Length) :-
    switch_throw_on_default(
       (fresh(Tip),fresh(Length)),
          (Length=0),                                    % more or less reasonable
       (fresh(Tip),stale(Length)),
          (difflist_length(DL,Length),DL=Tip-_Fin),      % generate an open list of the given length
       stale(Tip),
-         (contract_checking(length(Length)), 
+         (contract_checking(length(Length)),
           walk_openlist_backbone_finless(Tip,1,Length))). % determine or verify length
 
 % ---
@@ -131,7 +131,7 @@ const__listtypes([open,closed]).
 const__intentions([templatize,verify,determine,verify_determine]).
 
 % ---
-% Contract verification. Always call the same predicate contract_checking/2 
+% Contract verification. Always call the same predicate contract_checking/2
 % to avoid too many names but "tag" any value first to allow distinction.
 % This performs generic verification to see whether the received arguments are
 % indeed "inside the allowed domain". Exceptions are thrown if not.
@@ -180,7 +180,7 @@ argument_tagging(Difflist,Length,Listtype,TggDifflist,TggLength,TggListtype) :-
    fresh_tag(Difflist , TggDifflist),
    fresh_tag(Length   , TggLength),
    fresh_tag(Listtype , TggListtype).
- 
+
 % ---
 % consistency_checking(TggDifflist,TggLength,TggListtype,Intention)
 % Ensure consistency of received parameters.
@@ -233,7 +233,7 @@ templatize(Difflist,Length) :-
    ),
    Tip=Fin,                                               % empty difflist
    templatize_construct(Length,Fin,FinOut),               % append Length freshvars
-   Difflist=Tip-FinOut. 
+   Difflist=Tip-FinOut.
 
 templatize_construct(Length,Fin,FinOut) :-
    Length>0,!,
@@ -279,7 +279,7 @@ analyze(Tip,Fin,Len,closed) :-
 
 % Neither a closed list nor a difference list. Could be anything!
 
-analyze(_Tip,_Fin,_,_) :- 
+analyze(_Tip,_Fin,_,_) :-
    throwme(analysis,bad_structure).
 
 % ---
@@ -297,10 +297,10 @@ walk_openlist_backbone([_|Xs],Fin,Shunt,Shunt) :-
    fresh(Xs),!,              % the end of the backbone of the open list!
    unless(Xs == Fin,throwme(analysis,bad_structure_at_fin)).
 
-walk_openlist_backbone([],_,_,_) :- 
+walk_openlist_backbone([],_,_,_) :-
    throwme(analysis,closed_list_at_fin).
 
-walk_openlist_backbone(X,_,_,_) :- 
+walk_openlist_backbone(X,_,_,_) :-
    throwme(analysis,not_a_listbox(X)).
 
 % ---
@@ -323,27 +323,27 @@ walk_openlist_backbone_finless([_|Xs],Len,Out) :-
 walk_openlist_backbone_finless([_|Xs],Shunt,Shunt) :-
    fresh(Xs),!.
 
-walk_openlist_backbone_finless([],_,_) :- 
+walk_openlist_backbone_finless([],_,_) :-
    throwme(analysis,closed_list).
 
-walk_openlist_backbone_finless(X,_,_) :- 
+walk_openlist_backbone_finless(X,_,_) :-
    throwme(analysis,not_a_listbox(X)).
 
 % ---
 % Exception descriptors
 % ---
 
-exc_desc(analysis,bad_structure_at_fin, 
+exc_desc(analysis,bad_structure_at_fin,
          _,
          analysis(difflist_structure(nonmatching_fin)),
          "Bad 'difference list' -- The reached 'fin' and the actual 'fin' are not the same").
 
-exc_desc(analysis,closed_list_at_fin, 
+exc_desc(analysis,closed_list_at_fin,
          _,
          analysis(difflist_structure(closed_list)),
          "Bad 'difference list' -- The given 'tip' actually designates a closed list").
 
-exc_desc(analysis,closed_list, 
+exc_desc(analysis,closed_list,
          _,
          analysis(closed_list),
          "Bad 'open list' -- it's actually a closed list").
@@ -385,7 +385,7 @@ exc_desc(consistency_checking,difflist_stale_but(Type,Length,Intention),
          Msg) :-
    textize("'difflist' is stale, but 'length' = «~q», 'listtype' = «~q», 'intention' = «~q»",[Length,Type,Intention],Msg).
 
-exc_desc(analysis,bad_structure, 
+exc_desc(analysis,bad_structure,
          _,
          analysis(difflist_structure),
          "Bad 'difference list' -- the structure is wrong").

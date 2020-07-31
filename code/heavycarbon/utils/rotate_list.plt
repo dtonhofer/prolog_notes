@@ -1,6 +1,6 @@
 :- use_module(library('heavycarbon/utils/rotate_list.pl')).
 
-:- begin_tests(rotate_list).        
+:- begin_tests(rotate_list).
 
 test(empty1) :- rotate_list([], 0,R), R=[].
 test(empty2) :- rotate_list([], 1,R), R=[].

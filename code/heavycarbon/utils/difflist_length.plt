@@ -1,7 +1,7 @@
 :- use_module(library('heavycarbon/utils/difflist_length.pl')).
 
 :- use_module(library('heavycarbon/support/utils.pl')).
-  
+
 :- begin_tests(difflist_length).
 
 % ---
@@ -65,7 +65,7 @@ test("intention determine", true(Intention==determine)) :-
 % Bad guess at intention. In fact, intention should always be fresh.
 % ---
 
-test("intention bad guess 1", error(consistency(difflist_nonfresh,type(closed),length(3),intention(determine)),_)) :- 
+test("intention bad guess 1", error(consistency(difflist_nonfresh,type(closed),length(3),intention(determine)),_)) :-
    difflist_length([1,2,3]-[],3,closed,determine).
 
 test("intention bad guess 2", error(consistency(difflist_nonfresh,type(_),length(3),intention(verify)),_)) :-
@@ -90,7 +90,7 @@ test("templatize difflist of length 0, 2 args") :-
    difflist_length(DL,0),
    DL=X-X,fresh(X).
 
-test("templatize various difflists, 4 args", true(T)) :- 
+test("templatize various difflists, 4 args", true(T)) :-
    bagof(DL,L^(
       between(0,4,L),
       difflist_length(DL,L,open,templatize), % build
@@ -102,7 +102,7 @@ test("templatize various difflists, 4 args", true(T)) :-
                [_C0,_C1,_C2|X3]-X3,
                [_D0,_D1,_D2,_D3|X4]-X4]).
 
-test("templatize various difflists, 2 args", true(T)) :- 
+test("templatize various difflists, 2 args", true(T)) :-
    bagof(DL,L^(
       between(0,4,L),
       difflist_length(DL,L), % build

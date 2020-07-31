@@ -6,7 +6,7 @@
 % ===
 % replace0/5 is simply based on splinter0/5
 %
-% "Replace operation at 0-based position "N" in "List" with "NewItem", 
+% "Replace operation at 0-based position "N" in "List" with "NewItem",
 %  gives "NewList", with the old item in "OldItem"
 % ===
 

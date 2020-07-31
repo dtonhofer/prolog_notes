@@ -82,9 +82,9 @@
 %             - ...and the toplevel makes assumptions about how to print it.
 %             !! Note that this means that the predicate no longer throws
 %                ISO standard error(domain_error(_,_),_). This may or may not be
-%                acceptable to the caller. 
+%                acceptable to the caller.
 %             !! In Unit test code, we then need to
-%                use the "throws" feature instead of the "error" feature to 
+%                use the "throws" feature instead of the "error" feature to
 %                catch the exception.
 % ============================================================================
 

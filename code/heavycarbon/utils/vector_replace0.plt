@@ -8,7 +8,7 @@ test(empty)  :- vector_replace0([],[],LO,RPs),
 test(nop_op) :- vector_replace0([a,b,c,d],[],LO,RPs),
                 LO=[a,b,c,d],RPs=[].
 
-test(one)    :- vector_replace0([a],[0-xxx],LO,RPs),        
+test(one)    :- vector_replace0([a],[0-xxx],LO,RPs),
                 LO=[xxx],RPs=[0-a].
 
 test(two)    :- vector_replace0([a,b,c,d],[3-y,1-x],LO,RPs),
