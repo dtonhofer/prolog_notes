@@ -22,7 +22,7 @@ If the difflist does not follow difflist structure conventions, an excpetion wil
 
 To try it out, download these files:
 
-- [`difflist_length.pl`](../../../code/heavycarbon/utils/difflist_length.pl) - Core predicates (in a module)
+- [`difflist_length.pl`](../../../code/heavycarbon/utils/difflist_length.pl) - Core predicates (in a module); includes tons of commentary
 - [`difflist_length.plt`](../../../code/heavycarbon/utils/difflist_length.plt) - Unit tests (plunit blocks)
 
 And the support predicates in:
