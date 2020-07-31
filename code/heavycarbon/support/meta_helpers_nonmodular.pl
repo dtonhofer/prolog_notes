@@ -31,12 +31,35 @@ switch(If1,Then1,If2,Then2,If3,Then3,Else) :-
    ->  call(Then3)
    ;   call(Else).
 
+switch_throw_on_default(If1,Then1,If2,Then2,If3,Then3) :-
+   call(If1)
+   ->  call(Then1)
+   ;   call(If2)
+   ->  call(Then2)
+   ;   call(If3)
+   ->  call(Then3)
+   ;   throw(error(programming_error,context(_,"default case of switch; should not happen"))).
+
 % ---
 % An implementation of ->/2. Pass three goals.
 % ---
 
 if_then_else(Condition,Then,Else) :- 
    call(Condition) -> call(Then) ; call(Else).
+
+% ---
+% An implementation of ->/2 with an "else" that's true. Pass two goals.
+% ---
+
+if_then(Condition,Then) :- 
+   call(Condition) -> call(Then) ; true.
+
+% ---
+% An implementation of ->/2 with an inverted logic
+% ---
+
+unless(Condition,Then) :- 
+   call(Condition) -> true ; call(Then).
 
 % ---
 % Throw a non-ISO standard exception which is used when a switch

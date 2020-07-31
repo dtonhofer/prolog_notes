@@ -91,22 +91,29 @@ Conventions
    directory path (here in variable ${basename}) is given to Prolog but
    without the ".pl" suffix. (This doesn't work for ".plt" files though).
 
-   (A listing of all the "use_module" instructions in code files can be
-   had using: grep --no-filename use_module * 2>/dev/null | sort | uniq)
+   A listing of all the "use_module" instructions in code files can be
+   had using:
+
+   | 
+   | grep -R --no-filename use_module . 2>/dev/null | sort | uniq
+   |
 
    Here are the currently valid use_module/1 calls found in source code:
   
 */
 
-   :- use_module(library('heavycarbon/strings/conversion.pl')).
-   :- use_module(library('heavycarbon/strings/string_of_spaces.pl')).
-   :- use_module(library('heavycarbon/strings/string_overwriting.pl')).
-   :- use_module(library('heavycarbon/utils/vector_nth0.pl')).
-   :- use_module(library('heavycarbon/utils/vector_replace0.pl')).
-   :- use_module(library('heavycarbon/utils/between_with_step.pl')).
-   :- use_module(library('heavycarbon/utils/rotate_list.pl')).
-   :- use_module(library('heavycarbon/utils/splinter0.pl')).
-   :- use_module(library('heavycarbon/utils/replace0.pl')).
+:- use_module(library('heavycarbon/strings/conversion.pl')).
+:- use_module(library('heavycarbon/strings/string_of_spaces.pl')).
+:- use_module(library('heavycarbon/strings/string_overwriting.pl')).
+:- use_module(library('heavycarbon/support/utils.pl')).
+:- use_module(library('heavycarbon/terms/clashfree_id_selection.pl')).
+:- use_module(library('heavycarbon/utils/between_with_step.pl')).
+:- use_module(library('heavycarbon/utils/difflist_length.pl')).
+:- use_module(library('heavycarbon/utils/replace0.pl')).
+:- use_module(library('heavycarbon/utils/rotate_list.pl')).
+:- use_module(library('heavycarbon/utils/splinter0.pl')).
+:- use_module(library('heavycarbon/utils/vector_nth0.pl')).
+:- use_module(library('heavycarbon/utils/vector_replace0.pl')).
  
 /*
 
@@ -131,17 +138,16 @@ Conventions
    If you need to load file that have no module declaration into your module:
 
    | 
-   | :- load_files(['heavycarbon/strings/meta_helpers_nonmodular.pl']).
+   | :- include(library('heavycarbon/strings/meta_helpers_nonmodular.pl')).
    | 
 
-   As for use_module/2, the relative filename is relative to the library
-   search path.
+   load_files/1 could alos be once, but then you can load the file only
+   once!
 
-   This may be the case if you want to pull in code "textually". Use this in
-   preference to include/1.
+   As for use_module/2, the relative filename is relative to the library
+   search path if you tag (enclose) the filename with library/1.
 
    See https://eu.swi-prolog.org/pldoc/man?predicate=include/1
-
    See https://eu.swi-prolog.org/pldoc/doc_for?object=load_files/2
   
 3) For each module, unit test code can be found in a file with the same basename
@@ -160,7 +166,9 @@ Conventions
   
    Directives can now be issued to load all tests from module-associated ".plt"
    files, and then run them: 
-  
+ 
+   (Is there a way to dynamically list the valid .pl/.plt associations?)
+ 
 */
 
    :- load_test_files([]).
@@ -250,6 +258,9 @@ If you just want to run unit test code for a specific module manually:
 
    Sometimes Prolog gets confused and you have to quit-restart.
    This is why it's good to keep command sequences in script files.
+
+   Calling make. will also sometimes re-run the test as if you had executed
+   run_all_tests. But not always (not sure when).
 
 If you want to run unit test code for a loaded modules
 ------------------------------------------------------ 

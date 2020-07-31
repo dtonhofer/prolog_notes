@@ -1,8 +1,8 @@
 :- module(heavycarbon_utils_utils,
           [
             textize/3      % textize(Msg,Args,FinalText): leniently generate text, like format/2
-           ,fresh/1,       % fresh(Term): an alias for var(Term) 
-           ,stale/1,       % stale(Term): an alias for nonvar(Term)
+           ,fresh/1        % fresh(Term): an alias for var(Term) 
+           ,stale/1        % stale(Term): an alias for nonvar(Term)
            ,fresh_tag/2    % fresh_tag(X,Tagged) tags X with fresh/1 or stale/1 for further processing
           ]).
 
@@ -26,12 +26,12 @@ textize(Msg,Args,FinalText) :-
    catch(
       % happy path
       with_output_to(string(FinalText),format(Msg,ListyArgs)),
-      _catchall_catcher,
+      _Catchall_catcher,
       catch(
          % we end up here if format/2 doesn't like what it sees; finagle something!
          (maplist([X,Buf]>>with_output_to(string(Buf),format("~q",[X])),[Msg|ListyArgs],L),
           atomic_list_concat(["Replacement Msg!"|L]," & ",FinalText)),
-         _another_catchall_catcher,
+         _Another_catchall_catcher,
          throw("Can't happen"))).
 
 % ===
