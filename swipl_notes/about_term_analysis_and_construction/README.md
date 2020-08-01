@@ -63,62 +63,61 @@ Which is more elegant than `compound_name_arguments/3`
 
 In O'Keefe's **"The Craft of Prolog"** (MIT Press, 1990), we read on p. 145:
 
-> The first is the meta-logical operations `functor/3` and `arg/3`, particularly the latter. A word of warning here: 
-> it is almost always a bad idea to use `=../2`. Do not use `=../2` to locate a particular argument of some term. 
+The first is the meta-logical operations `functor/3` and `arg/3`, particularly the latter. A word of warning here: 
+it is almost always a bad idea to use `=../2`. Do not use `=../2` to locate a particular argument of some term. 
 
 For example, instead of 
 
-==
+```text
 Term =.. [_F,_,ArgTwo|_]
-==
+```
 
 you should write
 
-==
+```text
 arg(2, Term, ArgTwo)
-==
+```
 
-You will find it easier to get the explicit number "2" right than
-to write the correct number of "don't care" variables in the call to =../2.
+You will find it easier to get the explicit number "2" right than to write the correct 
+number of "don't care" variables in the call to `=../2`.
 
-Other people reading your program will find the call to arg/3 a much clearer expression of your intent. Your program will also be more efficient. Even if you need to locate several arguments of a term, it is clearer and more efficient to write
+Other people reading your program will find the call to `arg/3` a much clearer expression of your intent.
+Your program will also be more efficient. Even if you need to locate several arguments of a term, it is 
+clearer and more efficient to write
 
-==
+```text
 arg(1, Term, First),
 arg(3, Term, Third),
 arg(4, Term, Fourth)
-==
+```
 
 than to write
 
-==
+```text
 Term =.. [_,First,_,Third,Fourth|_]
-==
+```
 
-Do not use '=..'/2 when you know the functor. (That 
-is, when you know both the function symbol and the arity.)
-
-[Note: The correct term today is "predicate indicator" with the "functor" just the name of the predicate; for which I recommend just usin "predicate name" in any case]
+Do not use `../2` when you know the functor. (That is, when you know both the function symbol and the arity.)
 
 For example, one Prolog programmer actually wrote the following code:
 
-==
+```text
 add_date(OldItem, Date, NewItem) :- 
    OldItem =.. [item, Type, Ship, Serial],
    NewItem =.. [item,Type,Ship,Serial,Date].
-==
+```
 
 This could have been expressed more clearly and more efficiently as
 
-==
+```text
 add_date(OldItem, Date, NewItem) :-
    OldItem = item(Type,Ship,Serial),
    NewItem = item(Type,Ship,Serial,Date).
-==
+```
 
 or, even better, as
 
-==
+```text
 add_date(item(Type,Ship,Serial),Date,item(Type,Ship,Serial,Date)).
-==
---------
+```
+
