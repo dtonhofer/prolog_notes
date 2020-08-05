@@ -189,62 +189,6 @@ maplist([A,mm(A)]>>true,Args,Marks).
 % Future: Additionally compress the tree, finding equal subgraphs (there are bound to be some!)
 % This can be easily done by hashing from the leaves upwards
 
-% 234567890123456789012345678901234567890123456789012345678901234567890123456789
-
-
-const(max_id,10000000).
-
-
-dtg_mirror(EntryNode,DictOut,Id) :-
-   dtg_mirror(EntryNode,0,mirror{},DictOut,Id).
-
-% ===
-% Traverse the DTG, creating a "mirror node" in a lookup dict for each term node
-% At each node, extend "DictIn" to "DictOut", carrying the new information.
-% Also refine a symbolic "Id" which is the identifier of the mirror node in the
-% dict. 
-% ===
-
-% Case of: The "entry node" is a "hole" (and thus a leaf)
-
-dtg_mirror(EntryNode,Depth,DictIn,DictOut,Id) :-
-   var(EntryNode),!,
-   if_then_else(
-      (find_hole(DictIn,EntryNode,Id)),
-      (DictOut=DictIn),                                           % it exists already!
-      (enlarge_dict(hole,EntryNode,Depth,DictIn,DictOut,Id))). % it's new!
-
-% Case of: The "entry node" is atomic (and thus a leaf)
-% At this point, we don't care whether there already is an identical entry. Maybe later.
-% This means all the mirrored leaves are used by at most 1 mirrored compound.
-
-dtg_mirror(EntryNode,Depth,DictIn,DictOut,Id) :-
-   atomic(EntryNode),!,
-   enlarge_dict(atomic,EntryNode,Depth,DictIn,DictOut,Id).
-
-% Case of: The "entry node" is compound 
-
-dtg_mirror(EntryNode,Depth,DictIn,DictOut,Id) :-
-   compound(EntryNode),!,
-   compound_name_arguments(EntryNode,Name,Args),
-   % The child nodes may include this very node (a cycle of length 1) 
-   % So we have to upgrade the dict twice: once with an incomplete entry
-   % because the child nodes are not known yet; once with a complete entry
-   % once the child nodes are all known.
-   % OTOH, we can't detect the cycle yet :-(
-   length(Args,ArgsLength),
-   enlarge_dict(compound,Name,ArgsLength,EntryNode,Depth,DictIn,Dict2,Id),
-   succ(Depth,MoreDepth),
-   dtg_mirror_args(Args,MoreDepth,Dict2,Dict3,ArgIds),
-   fix_dict(compound,ArgIds,Id,Dict3,DictOut).
-
-% Mirror the term graphs formed at each argument of a compound term
-
-dtg_mirror_args([Arg|Args],Depth,DictIn,DictOut,[Id|Ids]) :-
-   dtg_mirror(Arg,Depth,DictIn,DictMid,Id),
-   dtg_mirror_args(Args,Depth,DictMid,DictOut,Ids).
-
-dtg_mirror_args([],_,Dict,Dict,[]).
  
 % ===
 % Dict upversioning
@@ -259,51 +203,10 @@ dtg_mirror_args([],_,Dict,Dict,[]).
 % 234567890123456789012345678901234567890123456789012345678901234567890123456789
 
 
-% Dict contains
-% Id ---> hole(X,Depth)  easily unifiable, var(X) is true
-% Id ---> atomic(Id,Depth,Original,_{}) 
-% Id ---> compound(Id,Depth,Name,[Args],Original,_{})
-
-find_hole(Dict,Hole,Id) :-
-   assertion(var(Hole)),
-   % Decorate with "once" to stop at the first (and unique) element.
-   % bagof/3 fails if there is no solution, which is what we want!
-   bagof(IdFound, once( (get_dict(IdFound,Dict,hole(X,_)),X==Hole) ), [Id]).
-
-enlarge_dict(hole,Hole,Depth,DictIn,DictOut,Id) :-
-   assertion(var(Hole)),
-   const(max_id,MaxId),
-   clashfree_id_selection(DictIn,Id,MaxId),
-   put_dict(Id,DictIn,hole(Hole,Depth),DictOut).
- 
-enlarge_dict(atomic,Atomic,Depth,DictIn,DictOut,Id) :-
-   assertion(atomic(Atomic)),
-   const(max_id,MaxId),
-   clashfree_id_selection(DictIn,Id,MaxId),
-   put_dict(Id,DictIn,atomic(Id,Depth,Atomic,_{}),DictOut).
- 
-enlarge_dict(compound,Name,ArgsLength,Compound,Depth,DictIn,DictOut,Id) :-
-   assertion(compound(Compound)),
-   const(max_id,MaxId),
-   clashfree_id_selection(DictIn,Id,MaxId),
-   put_dict(Id,DictIn,compound(Id,Depth,Name,placeholder(ArgsLength),Compound,_{}),DictOut).
-
-fix_dict(compound,ArgIds,Id,DictIn,DictOut) :-
-   get_dict(Id,DictIn,
-      compound(Id,Depth,Name,placeholder(_ArgsLength),Compound,DataDict),
-      DictOut,
-      compound(Id,Depth,Name,ArgIds,Compound,DataDict)).
-
-% ===
-% Textification
-% ===
-
 % Sort entried by decreasing depth
 
 depth_sorted(Dict,List) :-
    collect(Dict,List).
-
-collect(
 
 
 
