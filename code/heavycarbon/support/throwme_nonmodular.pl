@@ -5,6 +5,10 @@
 % This is not a module! This file is "consulted" in any module that needs
 % it, thus creating "local copies" of the predicates in that module.
 %
+% Add this directive invoking include/1
+%
+% :- include(library('heavycarbon/support/throwme_nonmodular.pl')).
+%
 % Code using this will declare "exception descriptors" as described below,
 % and invoke throwme/2 with the approprite "LookupPred" and "LookupTerm".
 % One then just needs to maintain or tune the "exception descriptors" to

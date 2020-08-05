@@ -9,6 +9,10 @@
 % We will just "consult" this file from any module that needs the predicates,
 % thus creating "local copies" of said predicates in that module.
 %
+% Pull it in as follows:
+%
+% :- include(library('heavycarbon/support/meta_helpers_nonmodular.pl')).
+%
 % (What does the compiler do with unused in-module code?)
 
 % ---
