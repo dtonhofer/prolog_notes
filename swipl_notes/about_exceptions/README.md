@@ -605,61 +605,7 @@ throw_mystyle_existence_error(Pred,Type,Term,ExCode) :-
 
 ## Good ideas
 
-### Good idea: Avoiding cleartext errors littering you code: Take #1
-
-To collect the cleartext error messages outside of the `throw/1` calls, just do this:
-
-```
-% Set up some informative atoms, and make them retrievable by code
-
-exception_code(e01,changing_from_start_to_end_but_step_is_zero).
-exception_code(e02,going_to_plus_infinity_but_step_is_zero).
-exception_code(e03,going_to_plus_infinity_but_step_is_negative).
-exception_code(e04,going_to_minus_infinity_but_step_is_zero).
-exception_code(e05,going_to_minus_infinity_but_step_is_positive).
-exception_code(e06,decreasing_from_start_to_end_but_step_is_positive).
-exception_code(e07,increasing_from_start_to_end_but_step_is_negative).
-```
-
-Then we can do simple throws like these, advantageously replacing those of `library(error)`:
-
-```
-% ===
-% Predicates that throw. "Pred" is generally the predicate descriptor of the
-% predicate from where the throw originates.
-% ===
-
-throw_instantiation_error(Pred,ExCode) :-
-   (exception_code(ExCode,ExText) -> true ; (ExText = ExCode)),
-   throw(error(instantiation_error,context(Pred,ExText))).
-
-throw_domain_error(Pred,Type,Term,ExCode) :-
-   (exception_code(ExCode,ExText) -> true ; (ExText = ExCode)),
-   throw(error(domain_error(Type,Term),context(Pred,ExText))).
-
-throw_type_error(Pred,Type,Term,ExCode) :-
-   (exception_code(ExCode,ExText) -> true ; (ExText = ExCode)),
-   throw(error(type_error(Type,Term),context(Pred,ExText))).
-
-throw_existence_error(Pred,Type,Term,ExCode) :-
-   (exception_code(ExCode,ExText) -> true ; (ExText = ExCode)),
-   throw(error(existence_error(Type,Term),context(Pred,ExText))).
-
-throw_permission_error(Pred,Action,Type,Term,ExCode) :-
-   (exception_code(ExCode,ExText) -> true ; (ExText = ExCode)),
-   throw(error(permission_error(Action,Type,Term),context(Pred,ExText))).
-
-% This is not ISO but we need it.
-% It replaces throwing a system_error with parameters which is
-% also not ISO, and also incorrect: system_error should be used when
-% the harddisk crashes, not when the assertion fails.
-
-throw_state_error(Pred,ExCode) :-
-   (exception_code(ExCode,ExText) -> true ; throw(ExText = ExCode)),
-   throw(error(state_error,context(Pred,ExText))).
-```
-
-### Good idea: Avoiding cleartext errors littering you code: Take #2 (better!)
+### Good idea: Avoiding cleartext errors littering you code, aka "Throwing in Style"
 
 This is a more flexible proposal (made for the Prolog-Java bridge 
 [JPL](https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/jpl.html%27))).
@@ -670,122 +616,45 @@ and all exceptions are described by clauses of the predicate `exc_desc/4`
 
 **All exception code is thrown via calls to `throwme/2`**
 
-For example (from JPL):
+Instead of writing:
 
-```prolog
-jpl_get_static(Type, ClassObj, Fname, Vx) :-
-    (   atom(Fname)             % assume it's a field name
-    ->  true
-    ;   var(Fname)
-    ->  throwme(jpl_get_static,arg2_is_var)
-    ;   throwme(jpl_get_static,arg2_is_bad(Fname))
-    ),
-  ....
+```text
+foo(X,Y) :- X<0,throw(error(contract_error(arg1,X),context(_,"The first argument must be >= 0"))).
 ```
 
-The code and description for `throwme/2` is as follows:
+which becomes hard to read and maintain if there are lots of `throw` instructions, one writes
 
-```prolog
-% ===
-% throwme(+LookupPred,+LookupTerm)
-%
-% Predicate called to throw an exception.
-%
-% LookupPred :
-%    What predicate is throwing; this is an atom (a keyword), not a
-%    predicate indicator.
-%
-% LookupTerm :
-%    A term, possibly compound, that is both user-readable (but still
-%    abstract) as well as a way for passing values that can be inserted into
-%    the "formal" term, which will be inserted into the exception term,
-%    which will be thrown.
-% ===
-
-throwme(LookupPred,LookupTerm) :-
-   findall([Location,Formal,MsgTxt],exc_desc(LookupPred,LookupTerm,Location,Formal,MsgTxt),Bag),
-   length(Bag,BagLength),
-   throwme_h1(BagLength,Bag,LookupPred,LookupTerm).
-
-throwme_h1(0,_,LookupPred,LookupTerm) :-
-   with_output_to(atom(Txt),format("Did not find an exception descriptor for LookupPred = ~q, LookupTerm = ~q", [LookupPred,LookupTerm])),
-   throw(error(programming_error,context(_,Txt))). % resolutely non-ISO standard
-
-throwme_h1(1,[[Location,Formal,MsgTxt]],_,_) :-
-   throw(error(Formal,context(Location,MsgTxt))).
-
-throwme_h1(Count,_,LookupPred,LookupTerm) :-
-   with_output_to(atom(Txt),format("Found ~d exception descriptors for LookupPred = ~q, LookupTerm = ~q", [Count,LookupPred,LookupTerm])),
-   throw(error(programming_error,context(_,Txt))). % resolutely non-ISO standard
+```text
+foo(X,Y) :- X<0,throwme(foo,parameter_wrong(arg1,X)).
 ```
 
-**All exceptions are described by clauses of the predicate `exc_desc/4`**
+And one adds an _exception descriptor_ for the desired somewhere at the end of the source file, easily inspectable and updateable:
 
-Each clause of `exc_desc/4` works essentially as a data record (in other programming languages, one
-would stash these records into a "data record holder" like a map; but a Prolog program essentially
-_is_ a map, so let's be direct).
-
-Here is the description of `exc_desc/4`, followed by two examples as called by the code snippet given above:
-
-```prolog
-% ===
-% exc_desc(+LookupPred,+LookupTerm,?Location,?Formal,?MsgTxt)
-% ===
-% Descriptors for exceptions.
-%
-% The first two arguments are used for lookup.
-%
-% LookupPred :
-%    What predicate is throwing; this is an atom (a keyword), not a
-%    predicate indicator.
-%
-% LookupTerm :
-%    A term, possibly compound, that is both user-readable (but still
-%    abstract) as well as a way for passing values that can be inserted into
-%    the "formal" term, which will be inserted into the exception term,
-%    which will be thrown.
-%
-% The three last arguments are output values which are use to construct
-% the exception term that will be thrown.
-%
-% Note in particular that "Location" is a predicate indicator, and
-% it provides lesst information than the "LookupPred" key. For example,
-% if an exception is thrown from a specific clause that deals with static
-% fields, the "LookupPred" may be a clause-specific key, but the
-% "Location" will be the generic predicate indicator of the predicate:
-%
-% exc_desc(jpl_call_static,no_such_method(M),
-%          jpl_call/4,
-%          existence_error(method,M),
-%          'some text')
-%
-% The "MsgTxt" is a user-readable message. For now, it is not constructed
-% (using format/3 calls) inside of exc_desc/5, nor is internationalization
-% supported for that matter. In some cases, the "MsgTxt" is passed in
-% inside "LookupTerm" and unification-picked out of there into arg 5.
-%
-% The "Formal" is exactly the "formal" term that will used in the exception
-% term, and it is built by just unification doing pick/put with the
-% LookupTerm. Constructing a "formal" term is not an exact science: The provided
-% information is shoehorned into "formal" terms that _look_ like ISO standard
-% formal terms but are not really because they do not necessarily have the
-% intended semantics and definitely do not carry the allowed atoms listed
-% in the ISO standard. Unfortunately ISO standard exceptions are far too
-% rigid in specification.
-% ---
-
-exc_desc(jpl_get_static,arg2_is_var,
-         jpl_get/3,
-         instantiation_error,
-         '2nd arg must be bound to an atom naming a public field of the class').
-
-exc_desc(jpl_get_static,arg2_is_bad(F),
-         jpl_get/3,
-         type_error(field_name,F),
-         '2nd arg must be an atom naming a public field of the class').
+```text
+exc_desc(foo,parameter_wrong(Where,What),  % lookup values found in the throwme/2 call
+         _,                                % "location" that will be in the context term on 1st position
+         contract_error(Where,What),       % "formal" term of the exception (here, non-ISO standard)
+         '1st arg must be >= 0').          % cleartext message that will be in the context term on 2nd position
 ```
 
-Now one can start to think about dynamically creating messages and perfoming internationalization.
+One can of course try variations, e.g with dynamic messages:
+
+```text
+exc_desc(foo,parameter_wrong(Where,What),  % lookup values found in the throwme/2 call
+         _,                                % "location" that will be in the context term on 1st position
+         contract_error(Where,What),       % "formal" term of the exception (here, non-ISO standard)
+         Msg) :-
+   textize("1st arg must be >= 0 but is ~d",[What],Msg).
+```
+
+The basic file to pull in is here, it contains further explanations. It is actually not a module, you have to include the
+file with [`include/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=include/1) into those modules which use it, duplication the
+(small) code.
+
+This is because the `exc_desc/5` clauses should module-specific and not be exported, so if this _were_ a module, `throwme/2` 
+could not access the module-internal `exc_desc/5` clauses.
+
+- [`throwme_nonmodular.pl`](../../code/heavycarbon/support/throwme_nonmodular.pl)
 
 **Making sure the `throwme/2` calls are correct**
 
