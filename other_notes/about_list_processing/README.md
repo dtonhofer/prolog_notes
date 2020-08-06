@@ -15,11 +15,27 @@ The above in [graphml format](pics/list_processing_idioms.graphml), [PNG format]
 
 We will not further consider the processing of a list into an "atomic" thing or structure. These are the "folding" operations. More on these [here](../about_foldl_and_foldr).
 
-## TODO
+## TODO and freestly comments
 
 - I missed list processing via DCGs; need to add some code to show how that is done..
 - The applicaton which uses a Dict as accumulator-pattern also needs some illustration.
 - And `foldl` is another nice example of accumulator usage, just doing it via a metacall
+- And with Dicts, our Accumulators acquire new power. In fact, when one uses dicts, Accumulator style
+  f(AccIn,AccOut) is needed - the accumulator cannot be extended "in place" or extended by unification
+  "in the head". One has to create a new accumulator from the old one using the ill-named
+  [`get_dict/5`](https://eu.swi-prolog.org/pldoc/doc_for?object=get_dict/5) or similar. The
+  code stlye is more functional than usual.
+  
+Using dicts as accumulator also turbocharges the possibilities one has of returning a set of results:
+
+For example, from a clause that handles recursion-termination, where a lot of stuff is packed into the final "accumulator", `Out`
+in a relatively clean way (of course, one ould also use a list-of-pairs):
+
+```prolog
+generate_stats(CountLimit,CountLimit,Stats,Out) :-
+   compute_frequencies(Stats,CountLimit,Frequencies),
+   Out = out{stats:Stats,stop_reason:limit_reached,count:CountLimit,frequencies:Frequencies}.
+```
 
 ## Pairwise processing
 
