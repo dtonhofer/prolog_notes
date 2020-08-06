@@ -7,9 +7,9 @@
 :- include(library('heavycarbon/support/throwme_nonmodular.pl')).
 
 % ============================================================================
-% Randomly select a key from a dict, where the dict values indicate 
+% Randomly select a key from a dict, where the dict values indicate
 % relative probability of selection by a string of stars
-% 
+%
 % Use this module with:
 %
 % :- use_module(library('heavycarbon/utils/randomly_select.pl')).
@@ -45,13 +45,13 @@ randomly_select(
 % Determining length of a list of '*' and summing over a list of such strings
 % ---
 
-stars(N) --> ['*'],!,stars(Nm),{succ(Nm,N)}. 
+stars(N) --> ['*'],!,stars(Nm),{succ(Nm,N)}.
 stars(N) --> [_],!,stars(N).
 stars(0) --> [].
 
 % ---
 % Transform a dict with "keyword:'*****'" entries into a list
-% with "keyword-cumul" entries where "cumul" is the cumulative 
+% with "keyword-cumul" entries where "cumul" is the cumulative
 % number of stars up and including "keyword".
 % ---
 
@@ -93,7 +93,7 @@ retrieve([K-Cumul|CumulPairs],R,Selected) :-
 
 randomly_select(SelDict,Selected) :-
    assertion(is_dict(SelDict)),
-   build_cumulative_list(SelDict,CumulPairs,Total),
+   build_cumulative_list(SelDict,CumulPairs,Total), % TODO: this should be cached or tabled
    debug(randomly_select,"CumulPairs is ~q and the Total is ~q",[CumulPairs,Total]),
    unless(Total > 0,throwme(randomly_select,total_is_zero(SelDict))),
    random_between(1,Total,R),

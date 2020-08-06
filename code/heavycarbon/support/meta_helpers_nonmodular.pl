@@ -52,6 +52,14 @@ if_then_else(Condition,Then,Else) :-
    call(Condition) -> call(Then) ; call(Else).
 
 % ---
+% Reification of an outcome. Pass a Goal and the Thing to be unified with Out
+% if the Goal succeeds and the Thing to be unified with Out of the Goal fails
+% ---
+
+reify_outcome(Condition,TrueThing,FalseThing,Out) :-
+   call(Condition) -> (Out = TrueThing) ; (Out = FalseThing).
+
+% ---
 % An implementation of ->/2 with an "else" that's true. Pass two goals.
 % ---
 

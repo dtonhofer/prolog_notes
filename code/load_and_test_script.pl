@@ -106,14 +106,15 @@ Conventions
 :- use_module(library('heavycarbon/strings/string_of_spaces.pl')).
 :- use_module(library('heavycarbon/strings/string_overwriting.pl')).
 :- use_module(library('heavycarbon/support/utils.pl')).
-:- use_module(library('heavycarbon/terms/clashfree_id_selection.pl')).
 :- use_module(library('heavycarbon/utils/between_with_step.pl')).
+:- use_module(library('heavycarbon/utils/clashfree_id_selection.pl')).
 :- use_module(library('heavycarbon/utils/difflist_length.pl')).
 :- use_module(library('heavycarbon/utils/replace0.pl')).
 :- use_module(library('heavycarbon/utils/rotate_list.pl')).
 :- use_module(library('heavycarbon/utils/splinter0.pl')).
 :- use_module(library('heavycarbon/utils/vector_nth0.pl')).
 :- use_module(library('heavycarbon/utils/vector_replace0.pl')).
+:- use_module(library('heavycarbon/utils/randomly_select.pl')).
  
 /*
 
