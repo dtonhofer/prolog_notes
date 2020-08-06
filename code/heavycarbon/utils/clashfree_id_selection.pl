@@ -7,30 +7,29 @@
           ]).
 
 % ============================================================================
-% Generate a new integer Id that doesn't exist as key in the passed Dict yet.
-% This will mostly succeed on first try!
-% ----------------------------------------------------------------------------
+% Generate a new integer "Id" that doesn't exist as key in the passed Dict
+% yet. This will mostly succeed on first try!
+%
+% Use this module with:
+%
+% :- use_module(library('heavycarbon/utils/clashfree_id_selection.pl')).
 %
 % Switch on debugging output:
 %
-% ?-
-%   debug(clashfree).
+% ?- debug(clashfree).
 %
 % Example usage on the command line:
 %
-% ?-
-%   Dict0=_{},MaxId=200,
-%   clashfree_id_selection(Dict0,Id1,MaxId),   % get a random id from [0..MaxKey] not yet in "DictIn"
-%   put_dict(Id1,Dict0,x,Dict1),               % store Id in DictIn, giving "DictOut"
-%   clashfree_id_selection(Dict1,Id2,MaxId).   % get another random Id not yet in "DictOut"
+% ?- Dict0=_{},MaxId=200,
+%    clashfree_id_selection(Dict0,Id1,MaxId),   % get a random id from [0..MaxKey] not yet in "DictIn"
+%    put_dict(Id1,Dict0,x,Dict1),               % store Id in DictIn, giving "DictOut"
+%    clashfree_id_selection(Dict1,Id2,MaxId).   % get another random Id not yet in "DictOut"
 %
 % or simpler
 %
-% ?-
-%   Dict0=_{},MaxId=200,
-%   insert_with_clashfree_id(Dict0,x,Dict1,Id1,MaxId),
-%   insert_with_clashfree_id(Dict1,y,Dict2,Id2,MaxId).
-%
+% ?- Dict0=_{},MaxId=200,
+%    insert_with_clashfree_id(Dict0,x,Dict1,Id1,MaxId),
+%    insert_with_clashfree_id(Dict1,y,Dict2,Id2,MaxId).
 % ============================================================================
 
 clashfree_id_selection(Dict,Id,MaxId) :-
