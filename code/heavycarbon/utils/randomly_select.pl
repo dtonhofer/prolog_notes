@@ -21,13 +21,13 @@
 % For example:
 /*
 
-  randomly_select(
+randomly_select(
      _{
-       proper_list : ''                % selection probability = 0
-      ,open_list   : '*****'           % selection probability = 5/24
-      ,borked_list : '***'             % selection probability = 3/24
-      ,compound    : '**********'      % selection probability = 10/24
-      ,dict        : '******'},        % selection probability = 6/24
+       alfa     : ''               % selection probability = 0
+      ,bravo    : '*****'          % selection probability = 5/24
+      ,charlie  : '***'            % selection probability = 3/24
+      ,echo     : '**********'     % selection probability = 10/24
+      ,foxtrott : '******'},       % selection probability = 6/24
      Selected).
 
 */
