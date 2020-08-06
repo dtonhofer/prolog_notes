@@ -15,7 +15,7 @@ The above in [graphml format](pics/list_processing_idioms.graphml), [PNG format]
 
 We will not further consider the processing of a list into an "atomic" thing or structure. These are the "folding" operations. More on these [here](../about_foldl_and_foldr).
 
-## TODO and freestly comments
+## TODO and freestyle comments
 
 - I missed list processing via DCGs; need to add some code to show how that is done..
 - The applicaton which uses a Dict as accumulator-pattern also needs some illustration.
