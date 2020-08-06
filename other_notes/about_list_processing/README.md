@@ -17,7 +17,8 @@ We will not further consider the processing of a list into an "atomic" thing or 
 
 ## TODO
 
-I missed list processing via DCGs; need to add some code to show how that is done..
+- I missed list processing via DCGs; need to add some code to show how that is done..
+- The applicaton which uses a Dict as accumulator-pattern also needs some illustration.
 
 ## Pairwise processing
 
