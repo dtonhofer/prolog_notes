@@ -60,8 +60,8 @@ Dealing in formulas is the domain of theorem provers.
 
 Well there is no way to distinguish:
 
-- Holes which are *meant to be filled in* (using unification) during computation with witnesses
-- Holes which are *subject to manipulation* (also using unification) during computation and which should NOT be filled in
+- Holes which are *meant to be filled in* (using unification) during computation with witnesses ("I know nothing about that argument, find something!")
+- Holes which are *subject to manipulation* (also using unification) during computation and which should NOT be filled in ("this argument is a hole, do something with it")
 
 This leads to ambiguity in predicate semantics.
 
@@ -91,6 +91,71 @@ openlist_last(?Olist,?Last) - is too weak for meaningful answer
 ```
 
 Ok, I will be looking out for more examples.
+
+## Not a predicate
+
+It could also be that there is a mixing of two levels: 
+
+- The modeling logic dealing in logic, programming and term
+- The structural level, dealing in constructing terms, manipulating holes etc. for optimization purposes
+
+A predicate like 
+
+```
+openlist_append(Olist,Element,NewFin)
+```
+
+which takes an open list `Olist` (either empty, in which case it is a hole, or nonempty, in which case it is a list backbone
+ending in a hole instead of `[]`), an `Element` to append, and "returns" `NewFin`, the name of the new terminal hole at the
+backbone's end. Note how weird this is from a logic perspective. You cannot really say this predicate relates 
+`(Olist,Element,NewFin)` in any way. In fact you can chain this call:
+
+(this is based on module `openlist_append`) 
+
+```
+openlist_append(Olist,Element,NewFin0),
+openlist_append(Olist,Element,NewFin1),
+openlist_append(Olist,Element,NewFin2)
+```
+
+and `Olist` gets longer and longer (more specific/more refined) at each call, the generational nature of data structure refinement
+becomes evident. It works like a forging hammer.
+
+Is this different from
+
+```
+mother(jane,julie).
+?- mother(X,julie),mother(X,julie),mother(X,julie).
+```
+
+Yes it is. In the above, `X` attains a stable value after the first call. There is a fixpoint. Not so for `openlist_append/2`-
+
+Note that you have to use distinct `NewFin` variables. If they are the same, the third calls won't terminate
+because the second call caused the list to become cyclic.
+
+Taking the first call, on entry, `NewFin0` designates a holes. On return, it designates another hole, namely the
+Fin of the just-constructed openlist. What happened to the original hole? It got abandoned or fused away?
+
+Actually this works:
+
+```
+Hole0=_,           % the only way to "declare a freshvar"
+NewFin0=_,         % the only way to "declare a freshvar"
+Hole0\==NewFin0,   % not the same hole
+Hole0=NewFin0,     % fuse the two holes 
+Hole0==NewFin0,    % the same hole
+Listbox=[foo|_],   % same as openlist_append(Olist,foo,NewFin0), % inside: OldFin=[foo|NewFin0]
+Listbox=[_|NewFin0],
+Hole0==NewFin0.    % still the same hole even thought NewFin0 has changed
+```
+
+So it got "fused away". The "identity" between `Hole0` and `NewFin0` has not been broken. This makes sense because
+unification is symmetric, not an assignment (you cannot break a prior unification by unifying with another term) 
+
+As there is no assignment, just "fuse" it does not really make sens to ask whether `NewFin0` is the same hole as earlier or not.
+It must be! Very different semantics from actually dealing with references.
+It is better to think about how many other holes have been recruited (fused into) the same hole afterwards. The hole
+can't split either once fused, its a bit like gravity.
 
 ## Related
 
