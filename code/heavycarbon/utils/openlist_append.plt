@@ -77,3 +77,42 @@ test("fail getting the last element from a borked openlist: cyclic",error(type_e
 
 :- end_tests(openlist_last).
 
+% ---
+% Recognizing an openlist
+% ---
+
+:- begin_tests(is_openlist).
+
+test("a freshvar is an openlist") :- 
+   is_openlist(_).
+ 
+test("check an openlist of length 1") :-
+   is_openlist([foo|_]).
+
+test("check an openlist of length 1 with freshvar as first element") :-
+   is_openlist([_|_]).
+
+test("check an openlist of length 3") :-
+   is_openlist([1,2,foo|_]).
+
+test("check openlist of length 3 containing only freshvar elements") :-
+   is_openlist([_,_,_|_]).
+
+test("not an openlist: atom", fail) :-
+   is_openlist(foo).
+
+test("not an openlist: proper list", fail) :-
+   is_openlist([1,2,3,4]).
+
+test("not an openlist: empty proper list", fail) :-
+   is_openlist([]).
+
+test("not an openlist: badly terminated list", fail) :-
+   is_openlist([1,2,3|4]).
+
+test("not an openlist: cyclic structure", fail) :-
+   X=[1,2,3|X],is_openlist(X).
+
+:- end_tests(is_openlist).
+ 
+ 

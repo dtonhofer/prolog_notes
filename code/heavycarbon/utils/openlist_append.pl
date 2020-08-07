@@ -3,6 +3,7 @@
                openlist_append/3   % openlist_append(Olist,Element,NewFin)
               ,openlist_append/2   % openlist_append(Olist,Element) no interest in NewFin
               ,openlist_last/2     % openlist_last(+Olist,?Last)
+              ,is_openlist/1       % is_openlist(+Olist) 
           ]).
 
 :- include(library('heavycarbon/support/throwme_nonmodular.pl')).
@@ -124,6 +125,18 @@ openlist_last_nonempty(Olist,Last) :-
    !,
    Olist=[_|More], % could be done in the guard, but that sounds wrong
    openlist_last_nonempty(More,Last).
+
+% ===
+% Checking whether something is an openlist. A freshvar _is_ considered
+% an openlist. Never throws; semidet.
+% This is based on getting the "last" element out of an openlist.
+% ===
+
+is_openlist(Olist) :-
+   if_then_else(
+      var(Olist), % if it's an empty openlist
+      true,       % then yes
+      (acyclic_term(Olist),openlist_last_nonempty(Olist,_))).
 
 % ===
 % Exception descriptors
