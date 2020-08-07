@@ -1,6 +1,34 @@
-## Random notes taken while coding
+# Random notes taken while coding
 
 None of these may be based in reality or be good ideas.
+
+## Local naming contexts
+
+Wouldn't it be cool if one had this:
+
+```
+cumulative_2([K-V|Pairs,TotalStars,[K-CumulV|Cumul]) :-
+   % Keep the Chars inside!
+   Chars^{
+     atom_chars(V,Chars),
+     phrase(stars(StarsCount),Chars),
+   }
+   TotalStars #= StarsCount + TotalStarsLower,
+   cumulative_2(Pairs,TotalStarsLower,Cumul).
+```
+
+```
+cumulative_2([K-V|Pairs,TotalStars,[K-CumulV|Cumul]) :-
+   % Make StarsCount and V "connect to their context"
+   StarsCount&V&{
+     atom_chars(V,Chars),
+     phrase(stars(StarsCount),Chars),
+   }
+   TotalStars #= StarsCount + TotalStarsLower,
+   cumulative_2(Pairs,TotalStarsLower,Cumul).
+```
+
+It's another way of writing a separate predicate of course..
 
 ## Guard Handling
 
@@ -74,8 +102,21 @@ Metacalls made from Module X should really be able to see predicates of Module X
 - Do not be afraid to add task-specific mini-predicates! But Prolog should support attaching these to the predicates where they are used.
 - Helper predicates: add a _2 etc.
 
+## Truth value reification
 
+When is it appropriate to not succeed/fail a predicate but to deterministcially succed and return the truth value as an atom `true`, `false`
+(and possibly `unknown`, although that cannot be called unlike the others, for de-reification). In this case "predicate success" means
+"computation success", not query success.
 
+Maybe wehn you don't need to backtrack or don't want to have the control construct `->`? 
 
-   
+# Meta-predicates
+
+Using meta-predicates is quite helpful as it de-litters the code (especially getting rid of the ugly and unreadable `->`).
+Prolog is on the same level of possibilites as LISP/Clojure for that (in fact, whole goals can be moved around as structures,
+but there is problem as there is no problem Lambda abstraction, but we have yall, but does it always work?). Also good for
+expressing intentions.
+
+The "programming communnity" does not seem to use metapredicates often though.
+
 
