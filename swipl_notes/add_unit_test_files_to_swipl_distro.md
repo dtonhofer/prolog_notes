@@ -17,7 +17,15 @@ The `README` in that directory says
 >          the file and the predicate should succeed without output if
 >          the test succeeds.
                    
-All the files are named `test_${subject}.pl`, e.g. `test_sort.pl`.
+All the files are named `test_${subject}.pl`, e.g. `test_sort.pl` (**note: not `test_sort.plt`**)
+
+To be clarified: should these be called .pl or .plt? Should they be modules or is the module approach only used here?
+
+The manual for [`plunit`](https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/plunit.html%27)) says:
+
+> Test-units can be embedded in normal Prolog source-files. Alternatively, tests for a source-file can be 
+> placed in another file alongside the file to be tested. Test files use the extension .plt. The predicate
+> load_test_files/1 can load all files that are related to source-files loaded into the current project. 
 
 Let's examine `test_sort.pl`
 
