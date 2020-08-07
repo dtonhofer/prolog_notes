@@ -1,0 +1,54 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=is_list/1
+
+## Doc error
+
+"a term with functor `[|]` and arity 2" is slightly incorrect.
+
+The functor _is_ `[|]` / 2 i.e. the functor includes the arity.
+
+The [ISO definition](https://stackoverflow.com/questions/49898738/is-this-prolog-terminology-correct-fact-rule-procedure-predicate) says "functor: An identifier together with an arity."
+
+Better:
+
+"a term with name/identifier `[|]` and arity 2"
+
+## Unit tests
+
+Some unit tests for this predicate: 
+
+[`test_is_list.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/code_unit_tests/builtin_demo/test_is_list.pl)
+
+## Checking for an openlist
+
+As used in "difference lists", an **open list** has a "hole" at the last position (denoted by a variable), what I call "Fin", instead of the "empty list" atomic constant:
+
+==
+List1    = [1,2,3|[]]
+List2    = [1,2,3]      % same as List1
+OpenList = [1,2,3|_]    % freshvar at Fin position
+OpenList = [1,2,3|Fin]  % name the freshvar
+==
+
+Like this. 
+
+   - **proper/closed list** on the left
+   - **open list** on the right
+
+==
+List ------->[|]                  [|]<-------------- OpenList
+            /   \                /   \
+           1    [|]             1    [|]
+               /   \                /   \
+              2    [|]             2    [|]
+                  /   \                /   \
+                 3     []             3   ~hole~ <--- Fin
+==
+
+A predicate `is_openlist/1` can be found here: 
+
+[`openlist_append.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/openlist_append.pl)
+
+with unit tests:
+
+[`openlist_append.plt`](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/openlist_append.plt)
+
