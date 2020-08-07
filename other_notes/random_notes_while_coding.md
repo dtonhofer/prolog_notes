@@ -1,6 +1,34 @@
-## Random notes taken while coding
+# Random notes taken while coding
 
 None of these may be based in reality or be good ideas.
+
+## Local naming contexts
+
+Wouldn't it be cool if one had this:
+
+```
+cumulative_2([K-V|Pairs,TotalStars,[K-CumulV|Cumul]) :-
+   % Keep the Chars inside!
+   Chars^{
+     atom_chars(V,Chars),
+     phrase(stars(StarsCount),Chars),
+   }
+   TotalStars #= StarsCount + TotalStarsLower,
+   cumulative_2(Pairs,TotalStarsLower,Cumul).
+```
+
+```
+cumulative_2([K-V|Pairs,TotalStars,[K-CumulV|Cumul]) :-
+   % Make StarsCount and V "connect to their context"
+   StarsCount&V&{
+     atom_chars(V,Chars),
+     phrase(stars(StarsCount),Chars),
+   }
+   TotalStars #= StarsCount + TotalStarsLower,
+   cumulative_2(Pairs,TotalStarsLower,Cumul).
+```
+
+It's another way of writing a separate predicate of course..
 
 ## Guard Handling
 
