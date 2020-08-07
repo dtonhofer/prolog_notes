@@ -15,12 +15,6 @@ const(id_range,1000,9999).
 % To be added: Find cycles using
 % https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm
 
-% ===
-% Generate a random term
-% ===
-
-%%% TO BE DONE
-
 % ============================================================================
 % Regenerate a term from its MirrorDict, the term being rooted at "Id"
 % ============================================================================
