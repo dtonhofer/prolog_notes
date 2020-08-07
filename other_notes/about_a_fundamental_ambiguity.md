@@ -154,8 +154,8 @@ unification is symmetric, not an assignment (you cannot break a prior unificatio
 
 As there is no assignment, just "fuse" it does not really make sens to ask whether `NewFin0` is the same hole as earlier or not.
 It must be! Very different semantics from actually dealing with references.
-It is better to think about how many other holes have been recruited (fused into) the same hole afterwards. The hole
-can't split either once fused, its a bit like gravity.
+It is better to think about how many other holes have been recruited (fused into) the same hole afterwards. 
+Calling a predicate may recruit more holes into one. A hole can't split either once fused, its a bit like gravity.
 
 ## Related
 
