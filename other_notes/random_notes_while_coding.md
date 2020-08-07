@@ -91,6 +91,4 @@ expressing intentions.
 
 The "programming communnity" does not seem to use metapredicates often though.
 
-but it seems programmers do not like 
-   
 
