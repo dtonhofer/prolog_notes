@@ -30,6 +30,32 @@ cumulative_2([K-V|Pairs,TotalStars,[K-CumulV|Cumul]) :-
 
 It's another way of writing a separate predicate of course..
 
+## Local naming contexts (would that be hoierachical modules?)
+
+One should be able to create a naming context for helper predicates:
+They should only be visible from the "master predicate". Constricting
+scope is always win. In fact, Prolog should generally make it easier
+to add helper predicates. However, this demands specific support from
+the editor.
+
+## Are cyclic terms taken seriously
+
+If they are, there should be a built-in to "break a cycle" into a linear
+cycle-less graph so that a graphy with cycles can be safely examined.
+
+## Prolog is like taking a hike along the crest of a mountain
+
+You have to follow the small path of truth (computational success and domain/type adequacy) 
+while left and right vats abysses of falseness open up (computational failure and domain/type inadequacy)
+Still, do not check every single step in detail!
+
+## Don't try to throw for this and that unless you need precise exception messages
+
+It is generally easier to write a predicate which fails radically and in carefree fashion
+when it gets "stuff it cannot digest". You can then wrap that predicate into a predicte
+which throws if the wrapped predicaste fails. You will not get detailed exceptions, but
+at least the code is readable and low-maintenance.
+
 ## Guard Handling
 
 Should fresh variables in the guard be able to "bleed out" into the rest of the clause?
@@ -110,7 +136,7 @@ When is it appropriate to not succeed/fail a predicate but to deterministcially 
 
 Maybe wehn you don't need to backtrack or don't want to have the control construct `->`? 
 
-# Meta-predicates
+## Meta-predicates
 
 Using meta-predicates is quite helpful as it de-litters the code (especially getting rid of the ugly and unreadable `->`).
 Prolog is on the same level of possibilites as LISP/Clojure for that (in fact, whole goals can be moved around as structures,
@@ -119,4 +145,97 @@ expressing intentions.
 
 The "programming communnity" does not seem to use metapredicates often though.
 
+## Compiler warnings
+
+- The compiler should probably warn if predicate names differ in capitalization only
+- Compiler does not warn here: `MiDict.get_dict(Id)` even if `MiDict` is fresh. It should.
+
+## Add must_be, but in assertions
+
+Of course you can always compile-out the must-be's .. but why not have them in assertions?
+
+## Assertions should have a hierarchical topic structure, like debugs
+
+So that you can switch them off by sector.
+
+Or, as this is logic, one may even use a more general goal to decide whether an assertion is on-topic or not.
+
+## Accumulator generation naming
+
+Name them AccIn, AccOut in the argument list
+
+Name them Acc0, Acc1, Acc2 etc in a clause. This is easily recognizable by eye scan.
+
+## The Prolog stlye guid by Covington should be in an annotable Wiki
+
+Currently the Prolog style guide is a dead document ... buried in a PDF like a scientific paper. What a tragedy!
+
+## Modules should be small 
+
+Currently modules are overly fat. I don't know why. Weird tradition.
+
+## Hierarchical Module system
+
+There needs to be a study for Module Best Practice in e.g. the Java world (inlcuding OSGi), CIAO Prolog etc.
+
+Should Modules be like objects or classes?
+
+## Add helper predicates to make intention clear
+
+Even if they are just a name indicating intention and calling another predicate with a less clear name.
+
+Again, editor support for such operaions would be a great help.
+
+## Make Call arguments directly available
+
+Arguments appearing in the head should be accessible by special variables like `$ARG1`, `$ARG2` etc. 
+With this, Then one can write clauses which can both have structure in the head (for unification) and which can 
+access that structure in the body w/o  the need to reconstruct it by hand: `foo([X,Y|Z],A,B) :- g($ARG1).` instead of `foo([X,Y|Z],A,B) :- g([X,Y|Z]).`
+
+## Add HERE documents
+
+[HERE documents](https://en.wikipedia.org/wiki/Here_document) to embed text blocks to output elegantly in code. 
+(but you would also need string interpolation to make this really useful)
+
+## Extract Module info
+
+A way to automatically extract the signature of a module (including comments etc.)
+
+## This smells: False vs. Exceptions
+
+Failing a predicate and exiting from a predicate via an exception are wto sides of the same coin. An exception can be seen as a "super-fail"
+which backtracks not to the preceding activation on-stack but to the catch marker on stack, which can be rather "far away". This way of
+backtracking can also transmit information to the catch point, essentially saving something from the pocket univers that is being completely
+obliterated as state is being rolled back, something that a "standard fail" cannot do.
+
+Here the two aspects of Prolog, which are modeling on one hand and computing on the other hand rub against each other.
+
+- A "fail" signals the failure of a query against some modeling problem (as in "is joshua the father of abraham?", you want to fail,
+  not to "super-fail"). I is practically certain that a "fail" results from a failure of unification, including a lack of
+  appropriately matching head or else an explicit call to fail (which includes `\+`)
+- A "super fail" signals the failure of a computation (e.g. because an expectation on types was violated). If you have a "super fail"
+  while doing a quewry against your modeling problem, something is wrong with your implementation. Note that practically the only response
+  to "super fail/exception" is to cut off a whole subsystem (e.g. shut down the I/O activity, closing files etc), reinitialize and
+  hope that a reattempt will succeed (in fact, I have the suspicion that "exceptions" are actually a "punt the problem to the coder"
+  approach to avoid having to identify (and have proper support for) module boundaries that can be declaratively labeled as "corrupted"
+  and thrown away on "exceptional conditions".
+
+Prolog however, often uses "fail" to signal problems in computation, not allowing good info to reach the caller or debugger.
+
+On the other hand, "super fails" are awkward to use.
+
+In any case, something is not right about having these two ways of breaking off computation. Maybe there should just be
+a "labeled false" carrying some information about what could not be solved in modeling or what went wrong in computing.
+And no exceptins at all.
+
+As an aside, Wikipedia states in [Exception Handling: Criticism](https://en.wikipedia.org/wiki/Exception_handling#Criticism)
+
+> Exception handling is often not handled correctly in software, especially when there are multiple sources of exceptions;
+> data flow analysis of 5 million lines of Java code found over 1300 exception handling defects.[15] Citing multiple
+> prior studies by others (1999–2004) and their own results, Weimer and Necula wrote that a significant problem with
+> exceptions is that they "create hidden control-flow paths that are difficult for programmers to reason about".
+
+I can attest to the failure of proper exception handling in Java; it would be interesting to make a study of exception handling
+in Prolog (or proper control flow handling per se).
+~                                                                     
 
