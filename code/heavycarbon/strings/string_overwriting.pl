@@ -1,20 +1,40 @@
 :- module(heavycarbon_strings_overwriting,
           [
-             string_overwriting/4
-            ,ovw_helper_mid/6
-            ,ovw_helper_top/6
+             string_overwriting/4  % string_overwriting(StrIn,OvwStr,OvwPos,StrOut) 
+            %,ovw_helper_mid/6
+            %,ovw_helper_top/6
           ]).
   
 :- use_module(library('heavycarbon/strings/conversion.pl')).
-
-:- load_files(['heavycarbon/support/meta_helpers_nonmodular.pl']).  % not a module, just predicates
+:- include(library('heavycarbon/support/meta_helpers_nonmodular.pl')).
 
 % ===
-% (Partially) ovwerwriting an original string "StrIn" with "OverwriteStr" giving a "StrOut".
-% The overwriting starts at (0-indexed) "OverwritePos" (possibly negative) and may involve
-% overwriting characters in the middle of "StrIn", appending to "StrIn", with or without
-% partial overwriting, or appending to "StrIn" and filling any gap between the end of
-% "StrIn" and the start of "OverwriteStr" at "OverwritePos" with spaces.
+% (Partially) ovwerwrite an original string "StrIn" with "OvwStr" (the "overwrite string"),
+% giving a "StrOut".
+% The overwriting starts at (0-indexed) "OverwritePos" (possibly negative, which is 
+% interpreted as "further to the left", NOT "index from the end of the "StrIn" leftwards).
+% Overwriting may involve overwriting characters in the middle of "StrIn", appending to
+% "StrIn", with or without partial overwriting, or appending to "StrIn" and filling any gap
+% between the end of "StrIn" and the start of "OverwriteStr" at "OverwritePos" with spaces.
+%
+% Example of overwriting "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
+% with "[perspiciatis]" at various indexes:
+%
+%  -6   "iciatis]sum dolor sit amet, consectetur adipiscing elit"
+%  -5   "piciatis]um dolor sit amet, consectetur adipiscing elit"
+%  -4   "spiciatis]m dolor sit amet, consectetur adipiscing elit"
+%  -3   "rspiciatis] dolor sit amet, consectetur adipiscing elit"
+%  40   "Lorem ipsum dolor sit amet, consectetur [perspiciatis]t"
+%  41   "Lorem ipsum dolor sit amet, consectetur a[perspiciatis]"
+%  42   "Lorem ipsum dolor sit amet, consectetur ad[perspiciatis]"
+%  43   "Lorem ipsum dolor sit amet, consectetur adi[perspiciatis]"
+%  44   "Lorem ipsum dolor sit amet, consectetur adip[perspiciatis]"
+%  45   "Lorem ipsum dolor sit amet, consectetur adipi[perspiciatis]"
+%  55   "Lorem ipsum dolor sit amet, consectetur adipiscing elit[perspiciatis]"
+%  56   "Lorem ipsum dolor sit amet, consectetur adipiscing elit [perspiciatis]"
+%  57   "Lorem ipsum dolor sit amet, consectetur adipiscing elit  [perspiciatis]"
+%  58   "Lorem ipsum dolor sit amet, consectetur adipiscing elit   [perspiciatis]"
+%  59   "Lorem ipsum dolor sit amet, consectetur adipiscing elit    [perspiciatis]"
 % ===
 
 string_overwriting(StrIn,OvwStr,OvwPos,StrOut) :-
