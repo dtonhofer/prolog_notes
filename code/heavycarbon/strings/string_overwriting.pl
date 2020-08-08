@@ -1,16 +1,45 @@
 :- module(heavycarbon_strings_overwriting,
           [
-             string_overwriting/4  % string_overwriting(StrIn,OvwStr,OvwPos,StrOut) 
-            %,ovw_helper_mid/6
-            %,ovw_helper_top/6
+             string_overwriting/4  % string_overwriting(+StrIn,+OvwStr,+OvwPos,?StrOut) 
           ]).
   
 :- use_module(library('heavycarbon/strings/conversion.pl')).
-:- include(library('heavycarbon/support/meta_helpers_nonmodular.pl')).
+:- include(library('heavycarbon/support/meta_helpers_nonmodular.pl')). % Not a module, just (meta) predicates
+
+% == TODO ==
+% 
+% 1) string_overwriting/4 should maybe be called string_overwrite/4 because 
+%    it smells like a function
+% 2) string_overwriting/4 can be easily used for left-justfication of text:
+%    string_overwriting("          ","Hello",1,X) refines X to " Hello    "
+%    To be added:
+%    Something to easily perform right-justification of text
+%    Something to easily perform center-justification of text
+%    Something to easily perform justification of text at a given position 
+%    (e.g. to align decimal numbers at their ".")
+%    Allow string_overwriting/4 to also extend the "string to be overwritten"
+%    ON THE LEFT, not only on the RIGHT, and allow cutting it off ON THE RIGHT
+%    not only on the LEFT.
+%    All of that is not difficult, just annoying to do. 
+%    A good interface would be:
+%
+%    string_overwriting(StrIn,OvwStr,RefPos,StrOut,Format)
+%
+%    where Format is:
+%
+%    ->   RefPos counted from left, negative is further to the left, beyond character 0 
+%    <-   RefPos counted from right, negative is further to the right, beyond character length(StrIn)-1
+%    <>   RefPos is middle of StrIn
+%    <CH> OverwriteStr is center on onee of its characters, e.g. "."
+%    [    Cut on the left instead of allowing the string to grow there
+%    ]    Cut on the right instead of allowing the string to grow there
+%
+%    Then one could have format strings like: "[->" or "[<-]" or "[<.>]" etc.
 
 % ===
 % (Partially) ovwerwrite an original string "StrIn" with "OvwStr" (the "overwrite string"),
 % giving a "StrOut".
+%
 % The overwriting starts at (0-indexed) "OverwritePos" (possibly negative, which is 
 % interpreted as "further to the left", NOT "index from the end of the "StrIn" leftwards).
 % Overwriting may involve overwriting characters in the middle of "StrIn", appending to
@@ -38,9 +67,9 @@
 % ===
 
 string_overwriting(StrIn,OvwStr,OvwPos,StrOut) :-
-   must_be(integer,OvwPos),               % will throw of non-integer  
-   convert_to_string(StrIn,StrInSure),    % will throw if conversion impossible
-   convert_to_string(OvwStr,OvwStrSure),  % will throw if conversion impossible
+   must_be(integer,OvwPos),               % will throw of non-integer (should this be inside an assertion?)
+   convert_to_string(StrIn,StrInSure),    % will throw if conversion-to-string impossible (i.e. this is pretty lenient)
+   convert_to_string(OvwStr,OvwStrSure),  % will throw if conversion-to.string impossible (i.e. this is pretty lenient)
    string_length(StrInSure,StrInLen),
    string_length(OvwStrSure,OvwStrLen),
    (((OvwPos + OvwStrLen =< 0) ; (OvwStrLen == 0))
