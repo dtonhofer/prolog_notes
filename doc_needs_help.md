@@ -12,3 +12,4 @@
 - https://eu.swi-prolog.org/pldoc/doc_for?object=compound_name_arguments/3
 - https://eu.swi-prolog.org/pldoc/doc_for?object=arg/3 Better Args
 - https://eu.swi-prolog.org/pldoc/doc_for?object=setarg/3
+- https://eu.swi-prolog.org/pldoc/doc_for?object=repeat/0
