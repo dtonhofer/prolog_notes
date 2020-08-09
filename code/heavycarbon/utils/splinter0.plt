@@ -16,17 +16,17 @@ longlist([a,b,c,d,e,f,g,h]).
 % Positive but out of bounds index causes failure.
 % Arguments too unconstrained throws.
 
-test(negative_index,[throws(error(_,_))]) :- splinter0([a,b],-1,_,_,_).
-test(empty_list_oob1,[fail])              :- splinter0([],0,_,_,_).
-test(empty_list_oob2,[fail])              :- splinter0([],1,_,_,_).
-test(nonempty_list_oob,[fail])            :- splinter0([a,b],2,_,_,_).
-test(too_much_freedom,[throws(_)])        :- splinter0(_List,_N,_Prefix,_Element,_Suffix).
+test("negative index",[throws(error(_,_))]) :- splinter0([a,b],-1,_,_,_).
+test("empty list oob1",[fail])              :- splinter0([],0,_,_,_).
+test("empty list oob2",[fail])              :- splinter0([],1,_,_,_).
+test("nonempty list oob",[fail])            :- splinter0([a,b],2,_,_,_).
+test("too much_freedom",[throws(_)])        :- splinter0(_List,_N,_Prefix,_Element,_Suffix).
 
 % ---
 % "List and N known"
 % ---
 
-test(list_and_N_known) :-
+test("case of: list and N known") :-
    longlist(List),
    length(List,ListLen),
    succ(N_max,ListLen),
@@ -43,7 +43,7 @@ list_and_N_known(List,N) :-
 % "List and prefix known"
 % ---
 
-test(list_and_prefix_known) :-
+test("case of: list and prefix known") :-
    longlist(List),
    Prefix=[a,b,c,d],
    splinter0(List,N,Prefix,Element,Suffix),
@@ -51,10 +51,17 @@ test(list_and_prefix_known) :-
    length(Prefix,N).
 
 % ---
-% "List and suffix known"
+% "List and suffix known" (foreach with added cut)
 % ---
 
-test(list_and_suffix_known) :-
+% Mystery: 
+% In 8.3.4, there is no open choicepoint
+% But in SWI Prolog 8.3.5, this code leaves a final
+% choicepoint open apparently at the "append/2" in 
+% extract_a_suffix (hence a cut after that append/2), but
+% running that append at the toplevel does nothing of the sort.
+
+test("case of: list and suffix known (foreach, added cut)") :-
    longlist(List),
    length(List,ListLen),
    succ(SuffixLen_max,ListLen),
@@ -68,15 +75,38 @@ list_and_suffix_known(List,SuffixLen) :-
    append([Prefix_out,[Element_out],Suffix],List),
    length(Prefix_out,N_out).
 
-extract_a_suffix(List,SuffixLen,Suffix_out) :-
-   length(Suffix_out,SuffixLen),
-   append([_,Suffix_out],List).
+extract_a_suffix(List,SuffixLen,Suffix) :-
+   length(Suffix,SuffixLen),
+   append([_,Suffix],List),
+   !. % The cut of mystery!
+
+% ---
+% "List and suffix known" (forall, no cut)
+% ---
+
+test("case of: list and suffix known (forall, no cut)") :-
+   longlist(List),
+   length(List,ListLen),
+   succ(SuffixLen_max,ListLen),
+   forall(between(0,SuffixLen_max,SuffixLen),list_and_suffix_known_cutless(List,SuffixLen)).
+
+list_and_suffix_known_cutless(List,SuffixLen) :-
+   extract_a_suffix_cutless(List,SuffixLen,Suffix),
+   splinter0(List,N_out,Prefix_out,Element_out,Suffix),
+   debug(splinter_test,"List=~w Suffix=~w ==> ~w ~w ~w\n",[List,Suffix,Prefix_out,Element_out,N_out]),
+   % test consists in checking the spec!
+   append([Prefix_out,[Element_out],Suffix],List),
+   length(Prefix_out,N_out).
+
+extract_a_suffix_cutless(List,SuffixLen,Suffix) :-
+   length(Suffix,SuffixLen),
+   append([_,Suffix],List).
 
 % ---
 % "prefix and suffix known"
 % ---
 
-test(prefix_and_suffix_known) :-
+test("case of: prefix and suffix known") :-
    longlist(List),
    length(List,ListLen),
    succ(N_max,ListLen),
@@ -94,7 +124,7 @@ prefix_and_suffix_known(List,N) :-
 % "suffix and N known"
 % ---
 
-test(suffix_and_N_known) :-
+test("case of: suffix and N known") :-
    splinter0(L,3,FL,E,[f,g,h]),
    E  = e,
    FL = [x,y,z],
@@ -104,7 +134,7 @@ test(suffix_and_N_known) :-
 % only list known
 % ---
 
-test(only_list_known) :-
+test("case of: only list known") :-
    bagof([N,Prefix,Element,Suffix],splinter0([a,b,c,d],N,Prefix,Element,Suffix),Bag),
    Bag = [[0, [], a, [b, c, d]],
           [1, [a], b, [c, d]],
