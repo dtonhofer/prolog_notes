@@ -18,6 +18,8 @@ in a list, or not think about the case of the freshvar at argument position Z.
 
 Without test cases, you are toast!
 
+https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/plunit.html%27)
+
 ## Local naming contexts
 
 Wouldn't it be cool if one had this:
