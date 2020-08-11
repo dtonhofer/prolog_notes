@@ -20,6 +20,14 @@ Without test cases, you are toast!
 
 https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/plunit.html%27)
 
+## What's the Poodle's Kernel of a clause?
+
+Maybe it's setting up network of connections between the variables, through which data flows upon a call.
+
+But it's clumsily done as the connections are not apparent, how can one make this more visible. 
+
+Quite possibly linear text is absolutely not the right representation for logic programs. 
+
 ## Local naming contexts
 
 Wouldn't it be cool if one had this:
