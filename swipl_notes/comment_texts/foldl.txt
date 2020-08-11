@@ -35,6 +35,13 @@ Thus, with [`library(yall)`](https://www.swi-prolog.org/pldoc/man?section=yall)
 Out = 'Begin:abcd'.
 ==
 
+and in particular with the empty input list:
+
+==
+?- foldl([Element,FromLeft,ToRight]>>atom_concat(FromLeft,Element,ToRight),[],'Begin:',Out).
+Out = 'Begin:'.
+==
+
 or, exactly the same:
 
 ==
@@ -66,6 +73,36 @@ well, in this case it's still easier to just do
 ?- bagof(X,between(0,5,X),List).
 List = [0, 1, 2, 3, 4, 5].
 ==
+
+## Another example
+
+If you have a list containing atoms `true` and `false`, check whether it contains only `true`:
+
+==
+andify_rightwards(true,true,true).
+andify_rightwards(true,false,false).
+andify_rightwards(false,true,false).
+andify_rightwards(false,false,false).
+
+all_true(List) :-
+    foldl([E,FromLeft,ToRight]>>once(andify_rightwards(FromLeft,E,ToRight)),List,true,Out),
+   Out == true.
+==
+
+Check whether it contains only `false`:
+
+==
+andify_negation_rightwards(true,false,true).
+andify_negation_rightwards(true,true,false).
+andify_negation_rightwards(false,true,false).
+andify_negation_rightwards(false,false,false).
+
+all_false(List) :-
+   foldl([E,FromLeft,ToRight]>>once(andify_negation_rightwards(FromLeft,E,ToRight)),List,true,Out),
+   Out == true.
+==
+
+Simple!
 
 ## Long-ish Explainer
 

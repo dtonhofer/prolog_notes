@@ -60,6 +60,13 @@ reify_outcome(Condition,TrueThing,FalseThing,Out) :-
    call(Condition) -> (Out = TrueThing) ; (Out = FalseThing).
 
 % ---
+% Simpler reification to just the truth value
+% ---
+
+reify(Goal,Truth) :-
+   if_then_else(call(Goal),(Truth=true),(Truth=false)).
+
+% ---
 % An implementation of ->/2 with an "else" that's true. Pass two goals.
 % ---
 
