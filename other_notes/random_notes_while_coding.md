@@ -2,6 +2,22 @@
 
 None of these may be based in reality or be good ideas.
 
+## Write your test cases
+
+Without test cases, you are toast!
+
+Compared to imperative programs, and even functional programs, the fact 
+that a predicate can be run in "several different ways" (unless you stick
+to functional style, which may be good practice in certain cases) demands
+that you code test cases for these "several cases".
+
+Plus you have no typing, and a variable can fresh or not and unfication
+makes data flow in both ways in one operation. A lot of things are going on
+and you may actually miss a good part of the edge cases, or wrapping results
+in a list, or not think about the case of the freshvar at argument position Z.
+
+Without test cases, you are toast!
+
 ## Local naming contexts
 
 Wouldn't it be cool if one had this:
