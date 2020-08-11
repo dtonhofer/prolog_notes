@@ -28,6 +28,12 @@ But it's clumsily done as the connections are not apparent, how can one make thi
 
 Quite possibly linear text is absolutely not the right representation for logic programs. 
 
+I also notice how in logic one discusses logic system but apart from mentioning unification, there is no discussion about inter-variable dataflow.
+
+In Prolog, everything is about inter-variable dataflow and the logic is trivial, and force-fit into whatever not-quite
+logic operatîon we are doing currently. Maybe Prolog should be 
+designated a language of "Dataflow Programming" rather than of "Logic Programming". It actually would make a lot of sense.
+
 ## Local naming contexts
 
 Wouldn't it be cool if one had this:
