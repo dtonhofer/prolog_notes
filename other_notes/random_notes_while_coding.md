@@ -239,3 +239,31 @@ I can attest to the failure of proper exception handling in Java; it would be in
 in Prolog (or proper control flow handling per se).
 ~                                                                     
 
+## Deprecation markers
+
+That would be nice. 
+
+## IPC in Prolog
+
+How is it done? If there are multiple threads or engines running? 
+
+The native model would be to have a channel onto which one writes terms which cause a predicate to be run on arrival.
+
+Do "waiting threads" make sense even? Maybe not. Need to study this model.
+
+Haha solution: Send message to a Java ActiveMqeue via JPL. 
+
+## Shellcheck
+
+Prolog needs a "shellcheck". That linter is worth gold.
+
+## Functo the word
+
+According to the ISO standard, the "predicate" is the same as "functor": predicate symbol + arity (not _quite_ the predicate signature).
+
+I do think functor should no longer be used.
+
+## Modes
+
+https://stackoverflow.com/questions/19268558/meaning-of-instantiation-mode-indicators-in-arguments-of-prolog-predicates
+
