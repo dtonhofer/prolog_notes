@@ -4,6 +4,7 @@
            ,jpl_tt_en_primitive_at_toplevel//1
            ,jpl_tt_en_void_in_array//1
            ,jpl_tt_en_void_at_toplevel//1
+           ,jpl_nonempty_atom_of_digits//1 
            ,jpl_java_boolean_literal/1
            ,jpl_java_null_literal/1
            ,jpl_java_keyword/1
@@ -86,6 +87,27 @@ jpl_tt_en_primitive_at_toplevel(primitive(float))   --> `float`,!.
 jpl_tt_en_primitive_at_toplevel(primitive(int))     --> `int`,!.
 jpl_tt_en_primitive_at_toplevel(primitive(long))    --> `long`,!.
 jpl_tt_en_primitive_at_toplevel(primitive(short))   --> `short`.
+
+% ---
+% Grab the longest nonempty sequence of digits
+% https://eu.swi-prolog.org/pldoc/man?section=basics
+% ---
+
+% transform a list of char codes to an atom consisting only of digits
+
+jpl_nonempty_atom_of_digits(D) --> { atom(D),!,atom_codes(D,Ns) },
+                                   jpl_nonempty_digits(Ns).
+
+jpl_nonempty_atom_of_digits(D) --> { var(D),! },
+                                   jpl_nonempty_digits(Ns),
+                                   { atom_codes(D,Ns) }.
+
+% collect a list of char codes corresponding to digits
+ 
+jpl_nonempty_digits([N|Ns]) --> jpl_single_digit(N), jpl_nonempty_digits(Ns), !.
+jpl_nonempty_digits([N])    --> jpl_single_digit(N).
+
+jpl_single_digit(N)         --> [N], { memberchk(N,`0123456789`) }. % hopefully the compiler optimizes this!?
 
 % ---
 % Certain java keywords that may not occur as java identifier

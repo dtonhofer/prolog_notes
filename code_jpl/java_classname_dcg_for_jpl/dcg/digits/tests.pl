@@ -1,11 +1,8 @@
 :- use_module('trivials.pl').
 :- use_module('entityname.pl').
-:- use_module('orig_jpl.pl').
-
-:- use_module(library('heavycarbon/support/fold_support.pl')).
-
 
 :- include(library('heavycarbon/support/meta_helpers_nonmodular.pl')).
+:- use_module(library('heavycarbon/support/fold_support.pl')).
 
 recognize_atom_to_atom(In,Rest,DcgGoal,Out) :- 
    assertion(nonvar(In)),
@@ -47,6 +44,27 @@ recognize_atom_to_compound(In,Rest,DcgGoal,Out) :-
 
 
 
+
+% ---------
+
+:- begin_tests(digits).
+
+test("digits 12345",true(Out == '12345'))
+   :- recognize_atom_to_atom('12345','',jpl_nonempty_atom_of_digits,Out).
+
+test("digits 0",true(Out == '0'))
+   :- recognize_atom_to_atom('0','',jpl_nonempty_atom_of_digits,Out).
+
+test("no digits",fail)
+   :- recognize_atom_to_atom('',_,jpl_nonempty_atom_of_digits,_).
+
+test("not digits",fail)
+   :- recognize_atom_to_atom('foo',_,jpl_nonempty_atom_of_digits,_).
+
+test("digits with rest",true([Out,Rest] == ['0123','foo']))
+   :- recognize_atom_to_atom('0123foo',Rest,jpl_nonempty_atom_of_digits,Out).
+
+:- end_tests(digits).
 
 % ---------
 
@@ -226,70 +244,8 @@ test("array of void",fail) :-
 test("array of java.lang.String",true(Out == array(array(class([java, lang], ['String']))))) :-
    recognize_atom_to_compound('[[Ljava.lang.String;','',jpl_typeterm_entityname,Out).
 
+
 :- end_tests(jpl_entity_is_array).
-
-% -----
-
-% :- debug(java_identifier).
-
-
-deprimitive(primitive(X),X) :- !.
-
-deprimitive(X,X) :- 
-   atomic(X),!.
-
-deprimitive(X,Y) :- 
-   compound(X), 
-   compound_name_arguments(X,N,Args), 
-   maplist([I,O]>>deprimitive(I,O),Args,ArgsNew), 
-   compound_name_arguments(Y,N,ArgsNew).
-
-run_both(X,OutNew,OutOld) :- 
-   reify(recognize_atom_to_compound(X,'',jpl_typeterm_entityname, StructNew),SuccessNew),
-   reify(recognize_atom_to_compound(X,'',jpl_type_classname_1,    StructOld),SuccessOld),
-   if_then((SuccessNew == true),(deprimitive(StructNew,StructNewDP))),
-   outcome(SuccessNew,StructNewDP,OutNew),
-   outcome(SuccessOld,StructOld,OutOld),
-   if_then_else(
-      call(SuccessNew),
-      (debug(cmp_old_new,"~q : New   : ~q",[X,StructNew]),
-       debug(cmp_old_new,"~q : NewDP : ~q",[X,StructNewDP])),
-      (debug(cmp_old_new,"~q : New failed",[X]))),
-   if_then_else(
-      call(SuccessOld),
-      (debug(cmp_old_new,"~q : Old   : ~q",[X,StructOld])),
-      (debug(cmp_old_new,"~q : Old failed",[X]))).
-
-outcome(true,Struct,success(Struct)).
-outcome(false,_,    failure).
-
-:- debug(cmp_old_new).
-
-:- begin_tests(comparing_old_and_new).
-
-test("comparing 1" ,[blocked("Old response makes no sense"),true(OutNew == OutOld)]) :- run_both('int',OutNew,OutOld).    % Old: class([],[int])   ???
-test("comparing 2" ,[blocked("Old response makes no sense"),true(OutNew == OutOld)]) :- run_both('float',OutNew,OutOld).  % Old: class([],[float]) ???
-test("comparing 3" ,[blocked("Old response makes no sense"),true(OutNew == OutOld)]) :- run_both('void',OutNew,OutOld).   % Old: class([],[void])  ???
-test("comparing 4" ,true(OutNew == OutOld)) :- run_both('java.lang.Integer',OutNew,OutOld).
-test("comparing 5" ,true(OutNew == OutOld)) :- run_both('integer',OutNew,OutOld). % The class called "integer"
-
-test("comparing 6" ,true(OutNew == OutOld)) :- run_both('[D',OutNew,OutOld).
-test("comparing 7" ,true(OutNew == OutOld)) :- run_both('[[[[[I',OutNew,OutOld).
-test("comparing 8" ,true(OutNew == OutOld)) :- run_both('[[J',OutNew,OutOld).
-test("comparing 9" ,true(OutNew == OutOld)) :- run_both('[[Ljava.lang.String;',OutNew,OutOld).
-test("comparing 10",true(OutNew == OutOld)) :- run_both('java.lang.String',OutNew,OutOld).
-test("comparing 11",true(OutNew == OutOld)) :- run_both('Foo',OutNew,OutOld).
-test("comparing 12",true(OutNew == OutOld)) :- run_both('foo.bar.baz.Foo',OutNew,OutOld).
-test("comparing 13",true(OutNew == OutOld)) :- run_both('foo.bar.baz.Foo$Quux',OutNew,OutOld).
-
-test("comparing 14") :- run_both('foo.bar.baz.Foo$',success(OutNew),success(OutOld)),
-                        OutNew == class([foo,bar,baz],['Foo$']), 
-                        OutOld == class([foo,bar,baz],['Foo','']). % WRONG
-
-test("comparing 15") :- run_both('foo.bar.baz.$Foo',success(OutNew),failure), % OLD FAILS
-                        OutNew == class([foo,bar,baz],['$Foo']).
-
-:- end_tests(comparing_old_and_new).
 
 
 
