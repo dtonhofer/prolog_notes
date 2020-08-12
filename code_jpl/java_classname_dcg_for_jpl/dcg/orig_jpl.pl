@@ -1,7 +1,8 @@
 :- module(orig_jpl, 
    [ 
-     jpl_type_classname_1//2,
-     jpl_type_findclassname//2
+      jpl_type_classname_1//1
+     ,jpl_type_findclassname//1
+     ,jpl_type_descriptor_1//1
    ]).
 
 % jpl_type_alfa(0'$) -->        % presumably not allowed
@@ -52,13 +53,13 @@ jpl_type_class_parts([C|Cs]) -->
     jpl_type_class_part(C), jpl_type_inner_class_parts(Cs).
 
 
-jpl_type_classname_1(T,dotty) -->
+jpl_type_classname_1(T) -->
     jpl_type_bare_classname(T),
     !.
-jpl_type_classname_1(T,dotty) -->
+jpl_type_classname_1(T) -->
     jpl_type_array_classname(T),
     !.
-jpl_type_classname_1(T,dotty) -->
+jpl_type_classname_1(T) -->
     jpl_type_primitive(T).
 
 
@@ -97,9 +98,9 @@ jpl_type_dotted_package_parts([]) -->
 
 
 
-jpl_type_findclassname(T,slashy) -->
+jpl_type_findclassname(T) -->
     jpl_type_bare_class_descriptor(T).
-jpl_type_findclassname(T,slashy) -->
+jpl_type_findclassname(T) -->
     jpl_type_array_descriptor(T).
 
 
