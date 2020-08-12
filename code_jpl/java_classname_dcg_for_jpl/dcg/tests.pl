@@ -27,21 +27,21 @@ recognize_atom_to_atom(In,Rest,DcgGoal,Out) :-
    phrase(DcgGoalCompleted,InCodes,RestCodes),   
    atom_codes(Rest,RestCodes). % this instantiates or unifies/compares
 
-recognize_atom_to_compound(In,Rest,DcgGoal,Out) :- 
+recognize_atom_to_compound(In,Rest,DcgGoal,Out,Mode) :- 
    assertion(nonvar(In)),
    var(Out), % Out not yet set; transfer it back to caller in the end
    !,
    atom_codes(In,InCodes),
-   compound_name_arguments(DcgGoalCompleted,DcgGoal,[Out]), % will fill Out with atom
+   compound_name_arguments(DcgGoalCompleted,DcgGoal,[Out,Mode]), % will fill Out with atom
    phrase(DcgGoalCompleted,InCodes,RestCodes),
    atom_codes(Rest,RestCodes). % this instantiates or unifies/compares
  
-recognize_atom_to_compound(In,Rest,DcgGoal,Out) :- 
+recognize_atom_to_compound(In,Rest,DcgGoal,Out,Mode) :- 
    assertion(nonvar(In)),
    nonvar(Out), % Out already set; pass OutCodes to recognizing goal
    !,
    atom_codes(In,InCodes),
-   compound_name_arguments(DcgGoalCompleted,DcgGoal,[Out]), % will consult Out
+   compound_name_arguments(DcgGoalCompleted,DcgGoal,[Out,Mode]), % will consult Out
    phrase(DcgGoalCompleted,InCodes,RestCodes),   
    atom_codes(Rest,RestCodes). % this instantiates or unifies/compares
 
@@ -134,13 +134,13 @@ test("java type identifier DOES NOT stop at '$'",true([Out,Rest] == ['foo$bar','
 :- begin_tests(jpl_typeterm_entityname).
 
 test("entityname is just 'int': integer primitive",true(Out == primitive(int))) :-
-   recognize_atom_to_compound('int','',jpl_typeterm_entityname,Out).
+   recognize_atom_to_compound('int','',jpl_typeterm_entityname,Out,dotty).
 
 test("entityname is just 'void': void primitive",true(Out == primitive(void))) :-
-   recognize_atom_to_compound('void','',jpl_typeterm_entityname,Out).
+   recognize_atom_to_compound('void','',jpl_typeterm_entityname,Out,dotty).
 
 test("entityname is actually 'integer', which is a class called 'integer', which is ok!",true(Out == class([],[integer]))) :-
-   recognize_atom_to_compound('integer','',jpl_typeterm_entityname,Out).
+   recognize_atom_to_compound('integer','',jpl_typeterm_entityname,Out,dotty).
 
 :- end_tests(jpl_typeterm_entityname).
 
@@ -182,10 +182,10 @@ test(9,true(Runs == ['$$alfa','$bravo','$$charlie','$$$'])) :-
 :- begin_tests(jpl_binary_classname_without_dollar).
 
 test("simple classname",true(Out == class([],[foo]))) :-
-   recognize_atom_to_compound('foo','',jpl_tt_en_binary_classname,Out).
+   recognize_atom_to_compound('foo','',jpl_binary_classname,Out,dotty).
 
 test("qualified classname",true(Out == class([alfa,bravo,charlie],[foo]))) :-
-   recognize_atom_to_compound('alfa.bravo.charlie.foo','',jpl_tt_en_binary_classname,Out).
+   recognize_atom_to_compound('alfa.bravo.charlie.foo','',jpl_binary_classname,Out,dotty).
 
 :- end_tests(jpl_binary_classname_without_dollar).
 
@@ -197,16 +197,16 @@ test("qualified classname",true(Out == class([alfa,bravo,charlie],[foo]))) :-
 :- begin_tests(jpl_binary_classname_with_dollar).
 
 test("qualified inner member type",true(Out == class([alfa,bravo,charlie],[foo,bar]))) :-
-   recognize_atom_to_compound('alfa.bravo.charlie.foo$bar','',jpl_tt_en_binary_classname,Out).
+   recognize_atom_to_compound('alfa.bravo.charlie.foo$bar','',jpl_binary_classname,Out,dotty).
 
 test("qualified inner anonymous type",true(Out == class([alfa,bravo,charlie],[foo,'01234']))) :-
-   recognize_atom_to_compound('alfa.bravo.charlie.foo$01234','',jpl_tt_en_binary_classname,Out).
+   recognize_atom_to_compound('alfa.bravo.charlie.foo$01234','',jpl_binary_classname,Out,dotty).
 
 test("qualified inner local class",true(Out == class([alfa,bravo,charlie],[foo,'01234bar']))) :-
-   recognize_atom_to_compound('alfa.bravo.charlie.foo$01234bar','',jpl_tt_en_binary_classname,Out).
+   recognize_atom_to_compound('alfa.bravo.charlie.foo$01234bar','',jpl_binary_classname,Out,dotty).
 
 test("qualified inner member type, deep",true(Out == class([alfa,bravo,charlie],[foo,bar,baz,quux]))) :-
-   recognize_atom_to_compound('alfa.bravo.charlie.foo$bar$baz$quux','',jpl_tt_en_binary_classname,Out).
+   recognize_atom_to_compound('alfa.bravo.charlie.foo$bar$baz$quux','',jpl_binary_classname,Out,dotty).
 
 :- end_tests(jpl_binary_classname_with_dollar).
 
@@ -215,16 +215,16 @@ test("qualified inner member type, deep",true(Out == class([alfa,bravo,charlie],
 :- begin_tests(jpl_entity_is_array).
 
 test("array of double",true(Out == array(primitive(double)))) :-
-   recognize_atom_to_compound('[D','',jpl_typeterm_entityname,Out).
+   recognize_atom_to_compound('[D','',jpl_typeterm_entityname,Out,dotty).
 
 test("array of array of integer",true(Out == array(array(primitive(int))))) :-
-   recognize_atom_to_compound('[[I','',jpl_typeterm_entityname,Out).
+   recognize_atom_to_compound('[[I','',jpl_typeterm_entityname,Out,dotty).
 
 test("array of void",fail) :-
-   recognize_atom_to_compound('[[V','',jpl_typeterm_entityname,_).
+   recognize_atom_to_compound('[[V','',jpl_typeterm_entityname,_,dotty).
 
 test("array of java.lang.String",true(Out == array(array(class([java, lang], ['String']))))) :-
-   recognize_atom_to_compound('[[Ljava.lang.String;','',jpl_typeterm_entityname,Out).
+   recognize_atom_to_compound('[[Ljava.lang.String;','',jpl_typeterm_entityname,Out,dotty).
 
 :- end_tests(jpl_entity_is_array).
 
@@ -244,9 +244,13 @@ deprimitive(X,Y) :-
    maplist([I,O]>>deprimitive(I,O),Args,ArgsNew), 
    compound_name_arguments(Y,N,ArgsNew).
 
-run_both(X,OutNew,OutOld) :- 
-   reify(recognize_atom_to_compound(X,'',jpl_typeterm_entityname, StructNew),SuccessNew),
-   reify(recognize_atom_to_compound(X,'',jpl_type_classname_1,    StructOld),SuccessOld),
+old_call_by_mode(slashy,jpl_type_findclassname).
+old_call_by_mode(dotty,jpl_type_classname_1).
+
+run_both(X,OutNew,OutOld,Mode) :- 
+   reify(recognize_atom_to_compound(X,'',jpl_typeterm_entityname,StructNew,Mode),SuccessNew),
+   old_call_by_mode(Mode,OldCall),
+   reify(recognize_atom_to_compound(X,'',OldCall,StructOld,Mode),SuccessOld),
    if_then((SuccessNew == true),(deprimitive(StructNew,StructNewDP))),
    outcome(SuccessNew,StructNewDP,OutNew),
    outcome(SuccessOld,StructOld,OutOld),
@@ -258,7 +262,9 @@ run_both(X,OutNew,OutOld) :-
    if_then_else(
       call(SuccessOld),
       (debug(cmp_old_new,"~q : Old   : ~q",[X,StructOld])),
-      (debug(cmp_old_new,"~q : Old failed",[X]))).
+      (debug(cmp_old_new,"~q : Old failed",[X]))),
+   call(once(SuccessNew;SuccessOld)). % at least one must have succeeded
+   
 
 outcome(true,Struct,success(Struct)).
 outcome(false,_,    failure).
@@ -267,27 +273,39 @@ outcome(false,_,    failure).
 
 :- begin_tests(comparing_old_and_new).
 
-test("comparing 1" ,[blocked("Old response makes no sense"),true(OutNew == OutOld)]) :- run_both('int',OutNew,OutOld).    % Old: class([],[int])   ???
-test("comparing 2" ,[blocked("Old response makes no sense"),true(OutNew == OutOld)]) :- run_both('float',OutNew,OutOld).  % Old: class([],[float]) ???
-test("comparing 3" ,[blocked("Old response makes no sense"),true(OutNew == OutOld)]) :- run_both('void',OutNew,OutOld).   % Old: class([],[void])  ???
-test("comparing 4" ,true(OutNew == OutOld)) :- run_both('java.lang.Integer',OutNew,OutOld).
-test("comparing 5" ,true(OutNew == OutOld)) :- run_both('integer',OutNew,OutOld). % The class called "integer"
+test("dotty/comparing #1" ,[blocked("Old response makes no sense"),true(OutNew == OutOld)]) :- run_both('int',OutNew,OutOld,dotty).    % Old: class([],[int])   ???
+test("dotty/comparing #2" ,[blocked("Old response makes no sense"),true(OutNew == OutOld)]) :- run_both('float',OutNew,OutOld,dotty).  % Old: class([],[float]) ???
+test("dotty/comparing #3" ,[blocked("Old response makes no sense"),true(OutNew == OutOld)]) :- run_both('void',OutNew,OutOld,dotty).   % Old: class([],[void])  ???
 
-test("comparing 6" ,true(OutNew == OutOld)) :- run_both('[D',OutNew,OutOld).
-test("comparing 7" ,true(OutNew == OutOld)) :- run_both('[[[[[I',OutNew,OutOld).
-test("comparing 8" ,true(OutNew == OutOld)) :- run_both('[[J',OutNew,OutOld).
-test("comparing 9" ,true(OutNew == OutOld)) :- run_both('[[Ljava.lang.String;',OutNew,OutOld).
-test("comparing 10",true(OutNew == OutOld)) :- run_both('java.lang.String',OutNew,OutOld).
-test("comparing 11",true(OutNew == OutOld)) :- run_both('Foo',OutNew,OutOld).
-test("comparing 12",true(OutNew == OutOld)) :- run_both('foo.bar.baz.Foo',OutNew,OutOld).
-test("comparing 13",true(OutNew == OutOld)) :- run_both('foo.bar.baz.Foo$Quux',OutNew,OutOld).
+test("old call is wrong #1")   :- run_both('foo.bar.baz.Foo$',success(OutNew),success(OutOld),dotty),
+                                  OutNew == class([foo,bar,baz],['Foo$']), 
+                                  OutOld == class([foo,bar,baz],['Foo','']). % OLD IS WRONG
 
-test("comparing 14") :- run_both('foo.bar.baz.Foo$',success(OutNew),success(OutOld)),
-                        OutNew == class([foo,bar,baz],['Foo$']), 
-                        OutOld == class([foo,bar,baz],['Foo','']). % WRONG
+test("failure on old call #2") :- run_both('foo.bar.baz.$Foo',success(OutNew),failure,dotty), % OLD FAILS
+                                  OutNew == class([foo,bar,baz],['$Foo']).
 
-test("comparing 15") :- run_both('foo.bar.baz.$Foo',success(OutNew),failure), % OLD FAILS
-                        OutNew == class([foo,bar,baz],['$Foo']).
+test("dotty/comparing 01" , true(OutNew == OutOld)) :- run_both('java.lang.Integer',OutNew,OutOld,dotty).
+test("dotty/comparing 02" , true(OutNew == OutOld)) :- run_both('integer',OutNew,OutOld,dotty). % The class called "integer"
+test("dotty/comparing 03" , true(OutNew == OutOld)) :- run_both('[D',OutNew,OutOld,dotty).
+test("dotty/comparing 04" , true(OutNew == OutOld)) :- run_both('[[[[[I',OutNew,OutOld,dotty).
+test("dotty/comparing 05" , true(OutNew == OutOld)) :- run_both('[[J',OutNew,OutOld,dotty).
+test("dotty/comparing 06" , true(OutNew == OutOld)) :- run_both('[[Ljava.lang.String;',OutNew,OutOld,dotty).
+test("dotty/comparing 07" , true(OutNew == OutOld)) :- run_both('java.lang.String',OutNew,OutOld,dotty).
+test("dotty/comparing 08" , true(OutNew == OutOld)) :- run_both('Foo',OutNew,OutOld,dotty).
+test("dotty/comparing 09" , true(OutNew == OutOld)) :- run_both('foo.bar.baz.Foo',OutNew,OutOld,dotty).
+test("dotty/comparing 10" , true(OutNew == OutOld)) :- run_both('foo.bar.baz.Foo$Quux',OutNew,OutOld,dotty).
+
+test("slashy/comparing 01" , true(OutNew == OutOld)) :- run_both('java/lang/Integer',OutNew,OutOld,slashy).
+test("slashy/comparing 02" , true(OutNew == OutOld)) :- run_both('integer',OutNew,OutOld,slashy). % The class called "integer"
+test("slashy/comparing 03" , true(OutNew == OutOld)) :- run_both('[D',OutNew,OutOld,slashy).
+test("slashy/comparing 04" , true(OutNew == OutOld)) :- run_both('[[[[[I',OutNew,OutOld,slashy).
+test("slashy/comparing 05" , true(OutNew == OutOld)) :- run_both('[[J',OutNew,OutOld,slashy).
+test("slashy/comparing 06" , true(OutNew == OutOld)) :- run_both('[[Ljava/lang/String;',OutNew,OutOld,slashy).
+test("slashy/comparing 07" , true(OutNew == OutOld)) :- run_both('java/lang/String',OutNew,OutOld,slashy).
+test("slashy/comparing 08" , true(OutNew == OutOld)) :- run_both('Foo',OutNew,OutOld,slashy).
+test("slashy/comparing 09" , true(OutNew == OutOld)) :- run_both('foo/bar/baz/Foo',OutNew,OutOld,slashy).
+test("slashy/comparing 10" , true(OutNew == OutOld)) :- run_both('foo/bar/baz/Foo$Quux',OutNew,OutOld,slashy).
+
 
 :- end_tests(comparing_old_and_new).
 

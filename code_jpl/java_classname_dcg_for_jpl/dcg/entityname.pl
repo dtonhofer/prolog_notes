@@ -1,6 +1,6 @@
 :- module(entityname, [
-    jpl_typeterm_entityname//1
-   ,jpl_tt_en_binary_classname//1 
+    jpl_typeterm_entityname//2
+   ,jpl_binary_classname//2
    ,messy_dollar_split/2
    ]).
 
@@ -92,13 +92,39 @@
 % java.lang.Void
 % ===
 
+% ===
+%! jpl_findclassname_type_descriptor/1
+%
+% Map a name expected by JNI's FindClass method to a Prolog-side
+% typedescriptor
+%
+% See https://docs.oracle.com/en/java/javase/14/docs/specs/jni/functions.html#findclass
+%
+% ~~~
+%     Findclassname                   Prolog-side Type Term
+%         Atom <-----------------------------> Term
+%     java/util/Date                 class([java,util],['Date'])
+% ~~~
+%
+% Previously (pre 2020-08) called: `jpl_type_findclassname//1`
+% Now called:                      `jpl_findclassname_typedescriptor//1`
+% Called from:                     `jpl_type_to_findclassname/2`
+% ===
+
+% ---
+% THE TOP
 % We can be pretty precise here regarding what will be found as term
 % instead of "just T" as argument. This also helps in documentation.
+% For JNI, we can switch to "slashy" mode instead of the "dotty" mode.
+% ---
 
-jpl_typeterm_entityname(class(Ps,Cs))    --> jpl_tt_en_binary_classname(class(Ps,Cs)),!.
-jpl_typeterm_entityname(array(T))        --> jpl_tt_en_array_of_entityname(array(T)),!.
-jpl_typeterm_entityname(primitive(P))    --> jpl_tt_en_primitive_at_toplevel(primitive(P)),!.  
-jpl_typeterm_entityname(primitive(void)) --> jpl_tt_en_void_at_toplevel(primitive(void)).
+jpl_typeterm_entityname(class(Ps,Cs),Mode)  --> jpl_binary_classname(class(Ps,Cs),Mode),!.
+jpl_typeterm_entityname(array(T),Mode)      --> jpl_array_of_entityname(array(T),Mode),!.
+
+% do the following ever occur?
+
+jpl_typeterm_entityname(primitive(P),_)     --> jpl_primitive_at_toplevel(primitive(P)),!.  
+jpl_typeterm_entityname(primitive(void),_)  --> jpl_void_at_toplevel(primitive(void)).
 
 % ---
 % The "binary classname" (i.e. the classname as it appears in binaries) as
@@ -107,25 +133,25 @@ jpl_typeterm_entityname(primitive(void)) --> jpl_tt_en_void_at_toplevel(primitiv
 % https://docs.oracle.com/javase/specs/jls/se14/html/jls-13.html#jls-13.1
 % which points to the "fully qualified name" and "canonical name"
 % https://docs.oracle.com/javase/specs/jls/se14/html/jls-6.html#jls-6.7
+% For JNI, we can switch to "slashy" mode instead of the "dotty" mode.
 % ---
 
-% possibly empty dotted package parts followed by nonempty class parts
-jpl_tt_en_binary_classname(class(Ps,Cs)) --> jpl_tt_en_dotted_package_parts(Ps), jpl_tt_en_class_parts(Cs).
+jpl_binary_classname(class(Ps,Cs),Mode) --> jpl_package_parts(Ps,Mode), jpl_class_parts(Cs).
 
 % ---
-% The fully qualified name of the package (which may be empty if it is the
+% The qualified name of the package (which may be empty if it is the
 % unnamed package). This is a series of Java identifiers separated by dots.
-% Here, the dot separating the package parts from the class parts is included.
 % "The fully qualified name of a named package that is not a subpackage of a
 % named package is its simple name." ... "A simple name is a single identifier."
 % https://docs.oracle.com/javase/specs/jls/se14/html/jls-6.html#jls-6.7
+% Note that the last '.' is not considered a separator towards the subsequent
+% class parts but as a terminator of the package parts sequence (it's a view 
+% less demanding of backtracking)
 % ---
 
-% a possibly empty sequence of dotted package parts
-% note that the last '.' is not considered a separator towards the subsequent class parts
-% but as a terminator of the package parts sequence (it's a view less demanding of backtracking)
-jpl_tt_en_dotted_package_parts([A|As]) --> jpl_java_identifier(A), `.`, !, jpl_tt_en_dotted_package_parts(As).
-jpl_tt_en_dotted_package_parts([])     --> [].
+jpl_package_parts([A|As],dotty)  --> jpl_java_identifier(A), `.`, !, jpl_package_parts(As,dotty).
+jpl_package_parts([A|As],slashy) --> jpl_java_identifier(A), `/`, !, jpl_package_parts(As,slashy).
+jpl_package_parts([],_)          --> [].
 
 % ---
 % The class parts of a class name (everything beyond the last dot
@@ -148,7 +174,7 @@ jpl_tt_en_dotted_package_parts([])     --> [].
 % But the original JPL code does, so we keep this practice and hope it works.
 % ---
 
-jpl_tt_en_class_parts(Parts) --> jpl_java_type_identifier(A),{ messy_dollar_split(A,Parts) }.
+jpl_class_parts(Parts) --> jpl_java_type_identifier(A),{ messy_dollar_split(A,Parts) }.
 
 % Heuristic: Only a '$' flanked to the left by a valid character
 % that is a non-dollar and to the right by a valid character that
@@ -186,42 +212,19 @@ triple_process([_,C,''],Run,Runs,[[C|Run]|Runs]) :- !.
 
 triple_process([_,''],Run,Runs,[Run|Runs]).
 
-
-/*
-jpl_tt_en_class_parts([A|As]) --> `$`, jpl_java_type_identifier(A), `$`, !, jpl_tt_en_inner_class_parts(As).
-jpl_tt_en_class_parts([A])    --> jpl_java_type_identifier(A).
-
-jpl_tt_en_inner_class_parts([A|As]) --> jpl_tt_en_inner_class_part(A), `$`, !, jpl_tt_en_inner_class_parts(As).
-jpl_tt_en_inner_class_parts([A])    --> jpl_tt_en_inner_class_part(A).
-
-% subclassing the inner class part
-% to be done: the binary name of a type variable declared by a generic method
-% to be done: the binary name of a type variable declared by a generic constructor
-% https://docs.oracle.com/javase/specs/jls/se14/html/jls-8.html#jls-8.4.4
-jpl_tt_en_inner_class_part(A) --> jpl_tt_en_member_type(A),!.
-jpl_tt_en_inner_class_part(A) --> jpl_tt_en_local_class(A),!.
-jpl_tt_en_inner_class_part(A) --> jpl_tt_en_anonymous_type(A).
-
-jpl_tt_en_member_type(A)     --> jpl_java_type_identifier(A).
-jpl_tt_en_local_class(A)     --> jpl_nonempty_atom_of_digits(DG), jpl_java_type_identifier(TI), { atom_concat(DG,TI,A) }.
-jpl_tt_en_anonymous_type(A)  --> jpl_nonempty_atom_of_digits(A).
-*/
-
 % ---
-% jpl_tt_en_array_of_entityname//1
+% jpl_array_of_entityname//1
 % Described informally at Javadoc for Class.getName()
 % ---
 
-jpl_tt_en_array_of_entityname(array(T)) --> `[`, jpl_tt_en_entityname_in_array(T).
+jpl_array_of_entityname(array(T),Mode) --> `[`, jpl_entityname_in_array(T,Mode).
 
 % ---
-% jpl_tt_en_array_of_entityname//1
+% jpl_array_of_entityname//1
 % Described informally at Javadoc for Class.getName()
 % ---
 
-jpl_tt_en_entityname_in_array(T) --> `L`, jpl_tt_en_binary_classname(T), `;`.
-jpl_tt_en_entityname_in_array(T) --> jpl_tt_en_array_of_entityname(T).
-jpl_tt_en_entityname_in_array(T) --> jpl_tt_en_primitive_in_array(T).
-% array of void is actually rejected by the compiler; I tested it
-% jpl_tt_en_entityname_in_array(T) --> jpl_tt_en_void_in_array(T).
+jpl_entityname_in_array(T,Mode) --> `L`, jpl_binary_classname(T,Mode), `;`.
+jpl_entityname_in_array(T,Mode) --> jpl_array_of_entityname(T,Mode).
+jpl_entityname_in_array(T,_)    --> jpl_primitive_in_array(T).
 

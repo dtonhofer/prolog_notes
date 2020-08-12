@@ -1,9 +1,8 @@
 :- module(trivials,
           [
-            jpl_tt_en_primitive_in_array//1
-           ,jpl_tt_en_primitive_at_toplevel//1
-           ,jpl_tt_en_void_in_array//1
-           ,jpl_tt_en_void_at_toplevel//1
+            jpl_primitive_in_array//1
+           ,jpl_primitive_at_toplevel//1
+           ,jpl_void_at_toplevel//1
            ,jpl_java_boolean_literal/1
            ,jpl_java_null_literal/1
            ,jpl_java_keyword/1
@@ -45,47 +44,40 @@ jpl_java_identifier_part_chars([C|Cs]) --> [C], { jpl_java_identifier_part_char(
 jpl_java_identifier_part_chars([])     --> [].
 
 % ---
-% jpl_tt_en_void_in_array//1
+% jpl_void_at_toplevel//1
 % No description found for this; empirical
 % ---
 
-jpl_tt_en_void_in_array(primitive(void))    --> `V`.
+jpl_void_at_toplevel(primitive(void)) --> `void`.
 
 % ---
-% jpl_tt_en_void_at_toplevel//1
-% No description found for this; empirical
-% ---
-
-jpl_tt_en_void_at_toplevel(primitive(void)) --> `void`.
-
-% ---
-% jpl_tt_en_primitive_in_array//1
+% jpl_primitive_in_array//1
 % Described informally in Javadoc for Class.getName()
 % https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/lang/Class.html#getName()
 % ---
 
-jpl_tt_en_primitive_in_array(primitive(boolean)) --> `Z`,!.
-jpl_tt_en_primitive_in_array(primitive(byte))    --> `B`,!.
-jpl_tt_en_primitive_in_array(primitive(char))    --> `C`,!.
-jpl_tt_en_primitive_in_array(primitive(double))  --> `D`,!.
-jpl_tt_en_primitive_in_array(primitive(float))   --> `F`,!.
-jpl_tt_en_primitive_in_array(primitive(int))     --> `I`,!.
-jpl_tt_en_primitive_in_array(primitive(long))    --> `J`,!.
-jpl_tt_en_primitive_in_array(primitive(short))   --> `S`.
+jpl_primitive_in_array(primitive(boolean)) --> `Z`,!.
+jpl_primitive_in_array(primitive(byte))    --> `B`,!.
+jpl_primitive_in_array(primitive(char))    --> `C`,!.
+jpl_primitive_in_array(primitive(double))  --> `D`,!.
+jpl_primitive_in_array(primitive(float))   --> `F`,!.
+jpl_primitive_in_array(primitive(int))     --> `I`,!.
+jpl_primitive_in_array(primitive(long))    --> `J`,!.
+jpl_primitive_in_array(primitive(short))   --> `S`.
 
 % ---
-% jpl_tt_en_primitive_at_toplevel//1
+% jpl_primitive_at_toplevel//1
 % These are just the primitive names!
 % ---
 
-jpl_tt_en_primitive_at_toplevel(primitive(boolean)) --> `boolean`,!.
-jpl_tt_en_primitive_at_toplevel(primitive(byte))    --> `byte`,!.
-jpl_tt_en_primitive_at_toplevel(primitive(char))    --> `char`,!.
-jpl_tt_en_primitive_at_toplevel(primitive(double))  --> `double`,!.
-jpl_tt_en_primitive_at_toplevel(primitive(float))   --> `float`,!.
-jpl_tt_en_primitive_at_toplevel(primitive(int))     --> `int`,!.
-jpl_tt_en_primitive_at_toplevel(primitive(long))    --> `long`,!.
-jpl_tt_en_primitive_at_toplevel(primitive(short))   --> `short`.
+jpl_primitive_at_toplevel(primitive(boolean)) --> `boolean`,!.
+jpl_primitive_at_toplevel(primitive(byte))    --> `byte`,!.
+jpl_primitive_at_toplevel(primitive(char))    --> `char`,!.
+jpl_primitive_at_toplevel(primitive(double))  --> `double`,!.
+jpl_primitive_at_toplevel(primitive(float))   --> `float`,!.
+jpl_primitive_at_toplevel(primitive(int))     --> `int`,!.
+jpl_primitive_at_toplevel(primitive(long))    --> `long`,!.
+jpl_primitive_at_toplevel(primitive(short))   --> `short`.
 
 % ---
 % Certain java keywords that may not occur as java identifier
