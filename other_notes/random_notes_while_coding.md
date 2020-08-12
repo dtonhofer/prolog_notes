@@ -2,6 +2,27 @@
 
 None of these may be based in reality or be good ideas.
 
+## What is this escaping syntax
+
+```
+?- X=($).
+X =  ($).
+
+?- atom(($)).
+true.
+
+?- ($) == '$'.
+true.
+
+?- (x) == 'x'.
+true.
+
+?- (() == '('.
+ERROR: Syntax error: Illegal start of term
+```
+
+Why even have it?
+
 ## Write your test cases
 
 Without test cases, you are toast!
