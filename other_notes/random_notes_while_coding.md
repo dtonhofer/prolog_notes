@@ -14,14 +14,15 @@ true.
 ?- ($) == '$'.
 true.
 
-?- (x) == 'x'.
+?- atom($).
 true.
 
-?- (() == '('.
-ERROR: Syntax error: Illegal start of term
+?- X=$.
+|    (waits)
 ```
 
-Why even have it?
+`$` is special.
+
 
 ## Write your test cases
 
