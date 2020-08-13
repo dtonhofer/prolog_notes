@@ -26,10 +26,10 @@ test("generate slashy typedesc 03", true(Out == double)) :-
 How about
 
 ```
+:- begin_tests(generate_slashy_typedesc).
+
 $txt  = "generate slashy typedesc".
 $what = new_slashy.
-
-:- begin_tests(generate_slashy_typedesc).
 
 test("$txt 01", true(Out == int)) :-
    generate(int,$what,Out).
