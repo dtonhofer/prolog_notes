@@ -20,6 +20,13 @@ set_prolog_flag(backtrace_depth,100).         % prints more tacktrace
 set_prolog_flag(backtrace_goal_depth,10).     % prints more of the terms (e.g. depth of lists in arguments)
 ```
 
+Also of interest:
+
+```
+set_prolog_flag(answer_write_options,[max_depth(0)]).
+set_prolog_flag(debugger_write_options,[max_depth(0)]).
+```
+
 See also:
 
 https://eu.swi-prolog.org/pldoc/man?section=flags
