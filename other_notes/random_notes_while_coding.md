@@ -2,6 +2,114 @@
 
 None of these may be based in reality or be good ideas.
 
+## Local naming contexts with constants
+
+Would so cool
+
+Instead of this, which becomes extremely annoying when source gets large:
+
+```
+:- begin_tests(generate_slashy_typedesc).
+
+test("generate slashy typedesc 01", true(Out == int)) :-
+   generate(int,new_slashy,Out).
+
+test("generate slashy typedesc 02", true(Out == void)) :-
+   generate(void,new_slashy,Out).
+
+test("generate slashy typedesc 03", true(Out == double)) :-
+   generate(double,new_slashy,Out).
+   
+:- end_tests(generate_slashy_typedesc).
+```
+
+How about
+
+```
+:- begin_tests(generate_slashy_typedesc).
+
+$txt  = "generate slashy typedesc".
+$what = new_slashy.
+
+test("$txt 01", true(Out == int)) :-
+   generate(int,$what,Out).
+
+test("$txt 02", true(Out == void)) :-
+   generate(void,$what,Out).
+
+test("$txt 03", true(Out == double)) :-
+   generate(double,$what,Out).
+   
+:- end_tests(generate_slashy_typedesc).
+```
+
+## An example of symmetry breakdown in a DCG 
+
+If Prolog were more adapt at managing constraints & relationship, this mess could be avoided and one would 
+just need a single rule to transfrom from list of codes to atoms and vice-versa:
+
+```
+% ---
+% For direct handling of an identifier, we suffer symmetry breakdown.
+% ---
+
+jpl_java_id_raw(A) --> { atom(A),! },  % guard
+                       { atom_codes(A,[C|Cs]),
+                         jpl_java_id_start_char(C) },
+                       [C],
+                       jpl_java_id_part_chars(Cs). 
+
+% building X from the character code list
+
+jpl_java_id_raw(X) --> { var(X),! },  % guard
+                       [C],
+                       { jpl_java_id_start_char(C) },
+                       jpl_java_id_part_chars(Cs),
+                       { atom_codes(X,[C|Cs]) }.
+                       
+jpl_java_id_part_chars([C|Cs]) --> [C], { jpl_java_id_part_char(C) } ,!, jpl_java_id_part_chars(Cs).
+jpl_java_id_part_chars([])     --> [].
+```
+
+## Printing terms in full while debugging
+
+https://swi-prolog.discourse.group/t/is-there-a-way-to-make-the-stacktrace-print-terms-in-full/2720
+
+```
+:- create_prolog_flag(backtrace,            true, [type(boolean), keep(true)]).
+:- create_prolog_flag(backtrace_depth,      20,   [type(integer), keep(true)]).
+:- create_prolog_flag(backtrace_goal_depth, 3,    [type(integer), keep(true)]).
+:- create_prolog_flag(backtrace_show_lines, true, [type(boolean), keep(true)]).
+```
+
+How you do it:
+
+```
+set_prolog_flag(backtrace_depth,100).         % prints more tacktrace
+set_prolog_flag(backtrace_goal_depth,10).     % prints more of the terms (e.g. depth of lists in arguments)
+```
+
+Also of interest:
+
+```
+set_prolog_flag(answer_write_options,[max_depth(0)]).
+set_prolog_flag(debugger_write_options,[max_depth(0)]).
+```
+
+See also:
+
+https://eu.swi-prolog.org/pldoc/man?section=flags
+
+## Naming is a problem
+
+For a language dealing with predicates which relate "thing A" to "thing B", it's concerning that there is no specical character or convention
+for forming the predicate name "thingA_related_to_thingB" like "thingA⊗thingB" (and for some reasons of typing, ASCII is still prevalent)
+
+## Something like module friend declarations would be nice
+
+Modules export predicates not because client code needs them but because they are
+called by test code. This is a usual problem but how to solve it?
+
 ## What is this escaping syntax
 
 ```
