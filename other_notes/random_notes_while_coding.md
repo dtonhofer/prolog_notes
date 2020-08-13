@@ -13,6 +13,17 @@ https://swi-prolog.discourse.group/t/is-there-a-way-to-make-the-stacktrace-print
 :- create_prolog_flag(backtrace_show_lines, true, [type(boolean), keep(true)]).
 ```
 
+How you do it:
+
+```
+set_prolog_flag(backtrace_depth,100).         % prints more tacktrace
+set_prolog_flag(backtrace_goal_depth,10).     % prints more of the terms (e.g. depth of lists in arguments)
+```
+
+See also:
+
+https://eu.swi-prolog.org/pldoc/man?section=flags
+
 ## Naming is a problem
 
 For a language dealing with predicates which relate "thing A" to "thing B", it's concerning that there is no specical character or convention
