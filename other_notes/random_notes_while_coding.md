@@ -2,6 +2,11 @@
 
 None of these may be based in reality or be good ideas.
 
+## Something like module friend declarations would be nice
+
+Modules export predicates not because client code needs them but because they are
+called by test code. This is a usual problem but how to solve it?
+
 ## What is this escaping syntax
 
 ```
