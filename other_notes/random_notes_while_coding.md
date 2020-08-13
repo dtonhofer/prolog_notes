@@ -2,6 +2,11 @@
 
 None of these may be based in reality or be good ideas.
 
+## Naming is a problem
+
+For a language dealing with predicates which relate "thing A" to "thing B", it's concerning that there is no specical character or convention
+for forming the predicate name "thingA_related_to_thingB" like "thingA⊗thingB" (and for some reasons of typing, ASCII is still prevalent)
+
 ## Something like module friend declarations would be nice
 
 Modules export predicates not because client code needs them but because they are
