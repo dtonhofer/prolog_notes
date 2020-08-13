@@ -2,6 +2,75 @@
 
 None of these may be based in reality or be good ideas.
 
+## Local naming contexts with constants
+
+Would so cool
+
+Instead of this, which becomes extremely annoying when source gets large:
+
+```
+:- begin_tests(generate_slashy_typedesc).
+
+test("generate slashy typedesc 01", true(Out == int)) :-
+   generate(int,new_slashy,Out).
+
+test("generate slashy typedesc 02", true(Out == void)) :-
+   generate(void,new_slashy,Out).
+
+test("generate slashy typedesc 03", true(Out == double)) :-
+   generate(double,new_slashy,Out).
+   
+:- end_tests(generate_slashy_typedesc).
+```
+
+How about
+
+```
+$txt  = "generate slashy typedesc".
+$what = new_slashy.
+
+:- begin_tests(generate_slashy_typedesc).
+
+test("$txt 01", true(Out == int)) :-
+   generate(int,$what,Out).
+
+test("$txt 02", true(Out == void)) :-
+   generate(void,$what,Out).
+
+test("$txt 03", true(Out == double)) :-
+   generate(double,$what,Out).
+   
+:- end_tests(generate_slashy_typedesc).
+```
+
+## An example of symmetry breakdown in a DCG 
+
+If Prolog were more adapt at managing constraints & relationship, this mess could be avoided and one would 
+just need a single rule to transfrom from list of codes to atoms and vice-versa:
+
+```
+% ---
+% For direct handling of an identifier, we suffer symmetry breakdown.
+% ---
+
+jpl_java_id_raw(A) --> { atom(A),! },  % guard
+                       { atom_codes(A,[C|Cs]),
+                         jpl_java_id_start_char(C) },
+                       [C],
+                       jpl_java_id_part_chars(Cs). 
+
+% building X from the character code list
+
+jpl_java_id_raw(X) --> { var(X),! },  % guard
+                       [C],
+                       { jpl_java_id_start_char(C) },
+                       jpl_java_id_part_chars(Cs),
+                       { atom_codes(X,[C|Cs]) }.
+                       
+jpl_java_id_part_chars([C|Cs]) --> [C], { jpl_java_id_part_char(C) } ,!, jpl_java_id_part_chars(Cs).
+jpl_java_id_part_chars([])     --> [].
+```
+
 ## Printing terms in full while debugging
 
 https://swi-prolog.discourse.group/t/is-there-a-way-to-make-the-stacktrace-print-terms-in-full/2720
