@@ -2,6 +2,17 @@
 
 None of these may be based in reality or be good ideas.
 
+## Printing terms in full while debugging
+
+https://swi-prolog.discourse.group/t/is-there-a-way-to-make-the-stacktrace-print-terms-in-full/2720
+
+```
+:- create_prolog_flag(backtrace,            true, [type(boolean), keep(true)]).
+:- create_prolog_flag(backtrace_depth,      20,   [type(integer), keep(true)]).
+:- create_prolog_flag(backtrace_goal_depth, 3,    [type(integer), keep(true)]).
+:- create_prolog_flag(backtrace_show_lines, true, [type(boolean), keep(true)]).
+```
+
 ## Naming is a problem
 
 For a language dealing with predicates which relate "thing A" to "thing B", it's concerning that there is no specical character or convention
