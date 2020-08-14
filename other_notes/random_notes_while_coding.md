@@ -429,3 +429,12 @@ I do think functor should no longer be used.
 
 https://stackoverflow.com/questions/19268558/meaning-of-instantiation-mode-indicators-in-arguments-of-prolog-predicates
 
+What's the "typing notation" if one uses it? Jan writes:
+
+> There are a good deal of type notations around in the Prolog world, most of which are fairly similar.
+> SWI-Prolog for now accepts any term as a type description for documentation. For this purpose
+> I would not worry too much, just create a set of mode descriptions for all built-in and library 
+> predicates based on some invented type description that seems to fit the purpose. The formal meaning
+> can be decided later. Having a consistent machine readable set makes it fairly easy to automatically
+> modify the descriptions later as well.
+
