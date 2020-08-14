@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# TODO: automatically get the latest hamcrest and junit jars from
+# https://mvnrepository.com/artifact/org.hamcrest/hamcrest/
+# https://mvnrepository.com/artifact/junit/junit/
+
 # ===========================================================================
 # swiprologpull.sh
 #
