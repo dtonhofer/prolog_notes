@@ -1,0 +1,84 @@
+Introduction and tutorials:
+
+   - [DCG Primer](https://www.metalevel.at/prolog/dcg) by Markus Triska
+   - [DCG Tutorial](http://www.pathwayslms.com/swipltuts/dcg) by Anne Ogborn
+   - Wikipedia: [Definite Clause Grammar](https://en.wikipedia.org/wiki/Definite_clause_grammar) (has more references)
+   - In his manual: [DCG basic utilities](https://eu.swi-prolog.org/pldoc/doc/_SWI_/library/dcg/basics.pl)
+
+Also take a look at
+
+   - Wikipedia: [Attribute Grammar](https://en.wikipedia.org/wiki/Attribute_grammar) 
+
+And maybe
+
+   - [Package EDCG](https://www.swi-prolog.org/pack/list?p=edcg) which implements Van Roy's Extended DCGs from "A useful extension to Prolog’s Definite Clause Grammar notation.", SIGPLAN notices, 24(11):132–134, November 1989.
+
+Markus Triska writes in his DCG primer:
+
+Consider using DCGs if you are:
+   - describing a list
+   - reading from a file
+   - passing around a state representation that only a few predicates actually use or modify.
+
+In every serious Prolog program, you will find many opportunities to use DCGs due
+to some subset of the above reasons.
+
+## Pass through `phrase`!
+
+Although currently the current implementation adds predicates names after the DCG rules with two additional arguments, one should not rely on this and call those generated predicates directly.
+
+Markus Triska writes:
+
+> In principle though, it would be possible to compile DCGs completely
+> differently to Prolog code, or not compile them at all, and for this
+> reason you should always use `phrase/[2,3]` to invoke a DCG: It keeps
+> your code completely portable, no matter how DCGs are actually
+> implemented in your system.
+
+## A simple, arbitrary example
+
+Generate or test strings obeying the Perl Regex `(ab)*`
+
+   - Code: [`ab_dcg.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/prolog_exercises/ab_dcg/ab_dcg.pl)
+   - Test: [`test_ab_dcg.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/prolog_exercises/ab_dcg/test_ab_dcg.pl)
+  
+**Generate**
+
+```
+?- phrase_acceptable(T,6).
+T = abababababab ;
+false.
+```
+
+**Check/Recognize**
+
+```
+?- phrase_acceptable("ababab",N).
+N = 3 ;
+false.
+```
+
+**Enumerate**
+
+```
+?- phrase_acceptable(T,N).
+T = '',
+N = 0 ;
+T = ab,
+N = 1 ;
+T = abab,
+N = 2 ;
+T = ababab,
+N = 3 ;
+T = abababab,
+N = 4 
+...
+```
+
+## Another example
+
+Pick a prefix of a nonempty sequence of digits out of an atom:
+
+   - Code: [`digits_dcg.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/prolog_exercises/digits_dcg/digits_dcg.pl)
+   - Test: [`test_digits_dcg.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/prolog_exercises/digits_dcg/test_digits_dcg.pl)
+
