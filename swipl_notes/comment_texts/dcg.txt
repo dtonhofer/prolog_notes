@@ -1,3 +1,5 @@
+https://eu.swi-prolog.org/pldoc/man?section=DCG
+
 Introduction and tutorials:
 
    - [DCG Primer](https://www.metalevel.at/prolog/dcg) by Markus Triska
