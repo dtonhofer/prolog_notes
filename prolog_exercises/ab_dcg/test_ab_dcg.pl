@@ -1,5 +1,8 @@
 :- use_module(['ab_dcg.pl']).
 
+% load with ?- [test_ab_dcg].
+% run with  ?- run_tests.
+
 :- begin_tests(ab_dcg).
 
 test(generate,true(Bag == ['abababababab']))  :- 

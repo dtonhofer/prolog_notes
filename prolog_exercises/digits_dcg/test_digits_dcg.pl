@@ -1,5 +1,8 @@
 :- use_module('digits_dcg.pl').
 
+% load with ?- [test_digits_dcg].
+% run with  ?- run_tests.
+
 recognize(InAtom,DigitsAtom,RestAtom,DcgGoal) :- 
    assertion(atom(InAtom)),
    atom_codes(InAtom,InCodes),
