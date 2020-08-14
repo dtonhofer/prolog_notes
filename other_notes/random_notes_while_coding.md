@@ -2,6 +2,72 @@
 
 None of these may be based in reality or be good ideas.
 
+## More typing:
+
+At least type against enum types. to makes sure that: X if one of `[foo,bar,baz]`.
+
+## Additional constraints in the head would be nice
+
+For new, all additional checks past unification are in guard clauses.
+
+Would nice to somehwo directly state in-head:
+
+- Argument at position X must be nonvar
+- Argument at position X must be var
+
+There is an inherent assymetry between calling a predicate with a freshvar at position X and calling it with a tagged freshvar `x(X)` .
+The latter moves you away from the "anything goes" approach where you can no longer distinguish between "a correct structure was
+passed that unified with the structure in the head" and "a freshavar was passed that got instantiated to the head structure with
+resistance". `x(X)` is a kind of poor man's typing.
+
+Actually, I'm practically thinking that calling with a freshvar at *any* position is, in fact, an error.
+
+One should also say "this is a freshvar that you are supposed to manipulate, do NOT fill it". 
+
+## When should arguments be moved to a compound term
+
+Suppose the first argument can only take 
+Calls like `foo(bar,X)` vs `foo_bar(X)`. 
+
+## What names shall be used when dealing with DCGs?
+
+You have a list (generally, either a list of characters or a list of character codes, but it may also be a list of arbitrary other things) and want to:
+
+- Check it against a DCG (i.e. the DCG call fails or succeeds): *check* or *verify* or *recognize*
+- Generate a (not necessarily isomorphic) structure, often an Abstract Syntax Tree, from it: *deserialize* or *generate*
+
+You have a structure and want to generate alist from it (generally either a list of characters or a list of character codes):
+
+- *serialize*
+
+In fact, DCGs are about list processing in general, so the above are just the most usual cases
+
+There is also confusion in the community about whether the two "hidden list arguments" of a DCG are supposed to be called a "difference list" 
+or an "accumulator".
+
+Well, they do not even LOOK like a "difference list" (it's not that Arg0 is the tip of an open list and Arg1 the fin ("hole") at the end of that list),
+and they do not form a single list. In fact, one argument is the tip of input list (which can have elements shave off or tacked on at its tip)
+and the other is the final result of processing (which becomes the "rest" if one shaves off enough elements). This is undoubtedly an accumulator pattern.
+So I will call the pair of lists the accumulator.  
+
+## What names shall be used when dealing with predicates?
+
+- *construct*, *generate*, *enumerate* if the predicate gives witnesses on backtracking
+- *generate ex nihilo* 
+- *verify*, *check*, *recognize* for `is_x(X)` predicates
+   - *test* is also ok but should be reserved for testing
+   - Should predicates be even called `is_x(X)`? It's the name of a function. Just `x(X)` should do.
+      
+## Dicts should be more prevalent
+
+If Dicts can be forced to conform to a certain typing (e.g. have a restricted set of keys),
+the compiler should be able to process Dicts in predicate calls into far more efficient "direct argument calls".
+
+## Types lead to efficiency
+
+Prolog throws a lot of optimization potential out of the window by not having "types" (or whatever kind) as these can be
+used by the compiler to rearrange code. 
+
 ## Local naming contexts with constants
 
 Would so cool
@@ -104,6 +170,8 @@ https://eu.swi-prolog.org/pldoc/man?section=flags
 
 For a language dealing with predicates which relate "thing A" to "thing B", it's concerning that there is no specical character or convention
 for forming the predicate name "thingA_related_to_thingB" like "thingA⊗thingB" (and for some reasons of typing, ASCII is still prevalent)
+
+I will use "thingA_rel_thingB" ... exspecially for DCGs.
 
 ## Something like module friend declarations would be nice
 
