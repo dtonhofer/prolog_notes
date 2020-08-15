@@ -25,6 +25,7 @@ charlie(X) :- (var(X); (atom(X),memberchk(X,[foo,bar,baz]))),...,(var(X); (atom(
 
 But: 
 
+- it's easier to read and write, so it will actually get used (going cognitively easy on the programmer is a bit factor of success)
 - clause indexing could profit from having sharper head acceptance criteria; this is why they are really reduced to "a set of values"
 - so could the progammer
 - so could any linter
