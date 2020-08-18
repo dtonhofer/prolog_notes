@@ -15,3 +15,5 @@
 - https://eu.swi-prolog.org/pldoc/doc_for?object=repeat/0
 - https://eu.swi-prolog.org/pldoc/doc_for?object=split_string/4
 - https://github.com/dtonhofer/prolog_notes/issues/1
+- https://eu.swi-prolog.org/pldoc/man?section=testassertion
+- https://eu.swi-prolog.org/pldoc/man?predicate=call/1

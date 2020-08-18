@@ -2,27 +2,33 @@
 
 None of these may be based in reality or be good ideas.
 
-## More typing:
+## Additional constraints in the head, part #1
 
-At least type against enum types. to makes sure that: X if one of `[foo,bar,baz]`.
+One should be able to state that certain variables take only atoms from a given set:
 
-## Additional constraints in the head would be nice
+ - _`X` if one of `[foo,bar,baz]`_ : at call time, `X` cannot be a freshvar and must at call time be from `[foo,bar,baz]`
+ 
+Possible syntax which introduces a constraint block directly after the head:
 
-For new, all additional checks past unification are in guard clauses.
+```
+charlie(X),    X:{foo,bar,baz}    :- ....  % I will only accept foo, bar or baz at position X
+                                           % If X is a fresh and instantiated, it can only be {foo,bar,baz}
+                                           
+charlie(f(X)), X:{foo,bar,baz}    :- ....  % Similarly to above, just inside a function symbol.
+```
 
-Would nice to somehwo directly state in-head:
+This is equivalent to adding a guard on entry and on exit:
 
-- Argument at position X must be nonvar
-- Argument at position X must be var
+```
+charlie(X) :- (var(X); (atom(X),memberchk(X,[foo,bar,baz]))),...,(var(X); (atom(X),memberchk(X,[foo,bar,baz]))).
+```
 
-There is an inherent assymetry between calling a predicate with a freshvar at position X and calling it with a tagged freshvar `x(X)` .
-The latter moves you away from the "anything goes" approach where you can no longer distinguish between "a correct structure was
-passed that unified with the structure in the head" and "a freshavar was passed that got instantiated to the head structure with
-resistance". `x(X)` is a kind of poor man's typing.
+But: 
 
-Actually, I'm practically thinking that calling with a freshvar at *any* position is, in fact, an error.
-
-One should also say "this is a freshvar that you are supposed to manipulate, do NOT fill it". 
+- it's easier to read and write, so it will actually get used (going cognitively easy on the programmer is a bit factor of success)
+- clause indexing could profit from having sharper head acceptance criteria; this is why they are really reduced to "a set of values"
+- so could the progammer
+- so could any linter
 
 ## When should arguments be moved to a compound term
 
