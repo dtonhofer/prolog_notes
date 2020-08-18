@@ -1,0 +1,114 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/plunit.html%27)
+
+## Examples
+
+Some example code:
+
+[`tests_demonstrating_units_tests.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/code_unit_tests/simplest/tests_demonstrating_units_tests.pl)
+
+## Suggestions (IMHO)
+
+**Use a good explanatory string to label your test case, instead of an obscure atomic label:**
+
+==
+test("no redo, choicepoint left open") :- throw_on_redo(1).
+==   
+
+instead of
+
+==
+test(one) :- throw_on_redo(1).
+==
+
+**If the test expression gets complex, move it out of the head and build it in the body:**
+
+(Of course, sometimes you don't have such an expression, e.g. if you test `var(X)`)
+   
+==
+test("collect them yourself, built a test expression, test in the head", [true(T)]) :-   
+   bagof(X,nondeterminism(X),Bag),
+   T = (Bag == [1,2]).
+==
+
+## Usefully interwork with assertions
+
+See https://eu.swi-prolog.org/pldoc/man?section=testassertion
+
+You can have multiple assertions in a test body which do fail the test but do not break off computation (unlike in non-test code):
+
+==
+:- debug(assertion_info).
+  
+:- begin_tests(assertion_test).
+
+test(0) :-
+   assertion(true),
+   debug(assertion_info,"Now past succeeded assertion",[]).
+
+test(1) :-
+   assertion(false),
+   debug(assertion_info,"Now past single failed assertion",[]).
+
+test(2) :-
+   X = 2,
+   assertion(float(X)),
+   assertion(X > 3),
+   debug(assertion_info,"Now past two failed assertions",[]).
+
+:- end_tests(assertion_test).
+==
+
+Then
+
+==
+?- run_tests.
+% PL-Unit: assertion_test 
+% Now past succeeded assertion
+.
+ERROR: /home/user/test_assertion.pl:9:
+        test 1: assertion failed
+        Assertion: false
+% Now past single failed assertion
+A
+ERROR: /home/user/test_assertion.pl:13:
+        test 2: assertion failed
+        Assertion: float(2)
+ERROR: /home/user/test_assertion.pl:13:
+        test 2: assertion failed
+        Assertion: 2>3
+% Now past two failed assertions
+A done
+% 3 assertions failed
+% 2 tests failed
+% 1 tests passed
+false.
+==
+
+## Good to read: Why `==` instead of `=` is preferable
+
+https://swi-prolog.discourse.group/t/little-testing-tip/1371
+
+## Special magic is this box
+
+Note that this does not obey usual Prolog semantics:
+
+==
+test(two_all,all(M=[1,1])) :- member(M,[1,1,3]),M=1.
+==
+
+I suppose the right-hand side is wrapped in a findall/3 of M. 
+
+## If your test fails your bindings will be trashed
+
+==
+test(one,[error(Formal)]) :-    % this catches the exception term thrown by must_be/2
+   Formal = domain_error(_,_),  % this is not thrown by the next instruction
+   must_be(integer,foo).
+==
+
+This test succeeds, even though `domain_error(_,_)` is not thrown by `must_be/2`,
+and so (at first sight) is not expected to be caught.
+
+However, the failure rolls back the binding to T.... so the `catch` catches anything.
+
+

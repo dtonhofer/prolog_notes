@@ -1,0 +1,160 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=assertion/1
+
+## Example
+
+Running `assertion(false)` on the Prolog toplevel directly gives:
+
+==
+?- assertion(false).
+ERROR: Assertion failed: user:false
+  [12] backtrace(10) at /usr/local/logic/swipl/lib/swipl/library/prolog_stack.pl:487
+  [11] prolog_debug:assertion_failed(fail,user:false) at /usr/local/logic/swipl/lib/swipl/library/debug.pl:328
+  [10] prolog_debug:assertion(user:false) at /usr/local/logic/swipl/lib/swipl/library/debug.pl:316
+   [9] <user>
+true.
+
+[trace]  ?- nodebug.
+true.
+?- 
+==
+
+Running the following code non-interactively (i.e. from a loaded file), using catch_with_backtrace/3 instead of just catch/3
+
+==
+main :- 
+   catch_with_backtrace(assertion(false),H,writeln(H)).
+
+:- main.
+==
+
+gives
+
+==
+ERROR: /home/user/test.pl:6:
+ERROR:    Assertion failed: user:false
+  [42] backtrace(10) at ...
+  [41] prolog_debug:assertion_failed(fail,user:false) at ...
+  [40] prolog_debug:assertion(user:false) at ...
+  [39] catch(user:assertion(false),_13924,user:writeln(_13954)) at ...
+  [38] catch_with_backtrace(user:assertion(false),_14008,user:writeln(_14038)) at ...
+  [37] main at ...
+  [36] catch(user:main,error(_14148,_14150),system:'$exception_in_directive'(...)) at ...
+  [35] '$execute_directive_3'(main) at ...
+  [30] '$load_file'('/home/calvin/ass2.pl','/home/calvin/ass2.pl',_14270,[expand(false),...]) at ...
+  [29] setup_call_catcher_cleanup(...
+==
+
+## See also
+
+  - See also must_be/2
+  - Here's how CIAO Prolog does it: https://ciao-lang.org/ciao/build/doc/ciao.html/assertions_doc.html
+     - ... and there is a corresponding package for SWI-Prolog: https://eu.swi-prolog.org/pack/list?p=assertions
+
+## No message text
+
+It **might** be nice if this predicate also took a second argument (possibly a goal) to generate a text for the exception so as to inform the user in a more detailed fashion concerning the failure. Similar for Java: [14.10. The assert Statement](https://docs.oracle.com/javase/specs/jls/se14/html/jls-14.html#jls-14.10). 
+
+However, this is not planned to be added for now.
+
+## Disabling assertions
+
+You need to rewrite them using goal_expansion/2. 
+
+For example, load and execute:
+
+==
+:- debug(assertion_info).
+
+% ---
+% plunit test code
+% ---
+
+foo(X) :- bar(X).
+bar(X) :- baz(X).
+baz(X) :- quux(X).
+
+quux(X) :-
+   assertion(X > 0),
+   debug(assertion_info,"Now past assertion",[]).
+==
+
+On the command line:
+
+==
+?- [ass].
+true.
+
+?- quux(1).
+% Now past assertion
+true.
+
+?- quux(-1).
+ERROR: Assertion failed: user:(-1>0)
+==
+
+Now add this to `[user]`:
+
+```
+goal_expansion(assertion(G),true) :- format("Replaced assertion: ~q\n",[assertion(G)]).
+```
+
+then loading the above program again:
+
+```
+?- [ass].
+Replaced assertion: assertion(_20756>0)
+true.
+
+?- quux(-1).
+% Now past assertion
+true.
+
+?- quux(1).
+% Now past assertion
+true.
+```
+
+More complex body to goal_expansion/2 will also allow you to disable assertions on a per-module basis for example.
+
+## Source
+
+- The assertion-handling source is in lib/swipl/library/debug.pl`
+- The message printing source is in `/usr/local/logic/swipl/lib/swipl/boot/messages.pl`
+
+The assertion-handling source is a bit esoteric:
+
+==
+assertion(G) :-
+    \+ \+ catch(G,
+                Error,
+                assertion_failed(Error, G)),
+
+    !.
+assertion(G) :-
+    assertion_failed(fail, G),
+    assertion_failed.               % prevent last call optimization.
+
+assertion_failed(Reason, G) :-
+    prolog:assertion_failed(Reason, G),
+    !.
+assertion_failed(Reason, _) :-
+    assertion_rethrow(Reason),
+    !,
+    throw(Reason).
+assertion_failed(Reason, G) :-
+    print_message(error, assertion_failed(Reason, G)),
+    backtrace(10),
+    (   current_prolog_flag(break_level, _) % interactive thread
+    ->  trace
+    ;   throw(error(assertion_error(Reason, G), _))
+    ).
+
+assertion_failed.
+
+assertion_rethrow(time_limit_exceeded).
+assertion_rethrow('$aborted').
+==
+
+
+
+

@@ -48,7 +48,7 @@ set -o nounset
 
 perso_github_account=https://github.com/dtonhofer
 swipl_github_account=https://github.com/SWI-Prolog
-system_install_dir=/sur/local/logic
+system_install_dir=/usr/local/logic
 toplevel_dir_fq="$HOME/_WORK_ON_PROLOG/swiplmaking5"  # where to put stuff locally
 
 url_and_dir() {
@@ -75,6 +75,14 @@ url_and_dir() {
       echo "In url_and_dir(): Don't know how to handle key '$key'" >&2
       exit 1
    esac
+}
+
+# ===========================================================================
+# Trim a string. This still doesn't exist in bash?
+# ===========================================================================
+
+trim() {
+   echo "$1" | awk '{gsub(/^[ \t]+| [ \t]+$/,""); print $1 }'
 }
 
 # ===========================================================================
@@ -195,7 +203,7 @@ clone() {
    local work_dir_fq="$toplevel_dir_fq/$finality"
 
    if [[ ! -d "$work_dir_fq" ]]; then
-      echo "Directory '$work_dir_fq' does not exist -- creating" >&2
+      echo "Work directory '$work_dir_fq' does not exist -- creating" >&2
       mkdir -p "$work_dir_fq" # Make with parent; no need to check whether it worked; we will try to cd to it in any case
    fi
 
@@ -219,9 +227,9 @@ clone() {
       exit 1
    }
 
-   url=$(echo "$url_and_dir" | cut --field=1 --delimiter='|')
-   target_dir=$(echo "$url_and_dir" | cut --field=2 --delimiter='|')
-   modules_yesno=$(echo "$url_and_dir" | cut --field=3 --delimiter='|')
+   url=$(echo "$url_and_dir" | cut --field=1 --delimiter='|'           ); url=$(trim "$url")
+   target_dir=$(echo "$url_and_dir" | cut --field=2 --delimiter='|'    ); target_dir=$(trim "$target_dir") 
+   modules_yesno=$(echo "$url_and_dir" | cut --field=3 --delimiter='|' ); modules_yesno=$(trim "$modules_yesno")
    target_dir_fq="$work_dir_fq/$target_dir"
 
    # Break off if the target dir already exists
@@ -352,8 +360,8 @@ copy() {
    local infra_dir
    local forked_dir
    
-   infra_dir=$(echo "$url_and_dir_infra" | cut --field=2 --delimiter='|')
-   forked_dir=$(echo "$url_and_dir_forked" | cut --field=2 --delimiter='|')
+   infra_dir=$(echo "$url_and_dir_infra" | cut --field=2 --delimiter='|')   ; infra_dir=$(trim "$infra_dir") 
+   forked_dir=$(echo "$url_and_dir_forked" | cut --field=2 --delimiter='|') ; forked_dir=$(trim "$forked_dir")
 
    local exit_now=
 
@@ -480,7 +488,7 @@ build() {
    }
 
    local infra_dir
-   infra_dir=$(echo "$url_and_dir_infra" | cut --field=2 --delimiter='|')
+   infra_dir=$(echo "$url_and_dir_infra" | cut --field=2 --delimiter='|'); infra_dir=$(trim "$infra_dir")
    if [[ ! -d "$infra_dir" ]]; then
       echo "The 'infrastructure' (target) directory '$work_dir_fq/$infra_dir' does not exist -- exiting" >&2
       exit 1
@@ -511,7 +519,7 @@ build() {
    local install_location=
    local install_dir_fq=
 
-   install_location=$(echo "$url_and_dir_infra" | cut --field=4 --delimiter='|')
+   install_location=$(echo "$url_and_dir_infra" | cut --field=4 --delimiter='|') ; install_location=$(trim "$install_location")
 
    if [[ $install_location == locally ]]; then
       # relative directory based on version string
@@ -621,6 +629,15 @@ build() {
    # test
 
    ctest -j 4  # Run tests concurrently 4-fold. See "man ctest" or "ctest --help"
+
+   if [[ $? != 0 ]]; then
+      echo "The test failed!" >&2
+      echo "More info in directory $(pwd)/Testing/Temporary/" >&2
+      tree "Testing/Temporary" >&2
+      local logfile="$(pwd)/Testing/Temporary/LastTest.log"
+      echo "Check file '$logfile'" >&2
+      exit 1
+   fi
 
    # Maybe install
    # What happens if the installation directory exists? Is it replaced?
