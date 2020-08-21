@@ -20,7 +20,7 @@
           <y:Geometry height="40.0" width="255.0" x="305.0514796696317" y="540.9713341804322"/>
           <y:Fill color="#99CCFF" color2="#FF0000" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="192.0390625" x="31.48046875" y="11.015625">jpl_typeterm_rel_entityname//2<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="177.61328125" x="38.693359375" y="11.015625">jpl_entityname_rel_jpltype//2<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -161,7 +161,6 @@ Slashy mode, as used by JNI findclass:
    https://docs.oracle.com/en/java/javase/14/docs/specs/jni/functions.html#findclass</y:NodeLabel>
           <y:StyleProperties>
             <y:Property class="java.lang.Byte" name="com.yworks.flowchart.style.orientation" value="0"/>
-            <y:Property class="java.lang.Byte" name="LAYER_STYLE_PROPERTY_KEY" value="1"/>
           </y:StyleProperties>
         </y:GenericNode>
       </data>
@@ -181,7 +180,6 @@ Slashy mode, as used by JNI findclass:
           </y:NodeLabel>
           <y:StyleProperties>
             <y:Property class="java.lang.Byte" name="com.yworks.flowchart.style.orientation" value="0"/>
-            <y:Property class="java.lang.Byte" name="LAYER_STYLE_PROPERTY_KEY" value="1"/>
           </y:StyleProperties>
         </y:GenericNode>
       </data>
@@ -365,7 +363,7 @@ because it's called
           <y:Geometry height="40.0" width="255.0" x="553.7439091486658" y="790.0788691232524"/>
           <y:Fill color="#00FF00" color2="#00FF00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="31.9375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="180.203125" x="37.39843749999994" y="4.03125">jpl_primitive_at_toplevel//1
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="31.9375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="180.203125" x="37.3984375" y="4.03125">jpl_primitive_at_toplevel//1
 (builds term primitive(Atom))<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
@@ -382,7 +380,7 @@ because it's called
           <y:Geometry height="40.0" width="255.0" x="553.7439091486658" y="884.0788691232524"/>
           <y:Fill color="#00FF00" color2="#00FF00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="31.9375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="180.203125" x="37.39843749999994" y="4.03125">jpl_void_at_toplevel//1
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="31.9375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="180.203125" x="37.3984375" y="4.03125">jpl_void_at_toplevel//1
 (builds term primitive(Atom))<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
@@ -475,7 +473,7 @@ An attempt at parsing these may fail!<y:LabelModel>
           <y:Geometry height="67.13951136574326" width="243.90458838690995" x="246.5469587039389" y="970.9260317970183"/>
           <y:Fill color="#FF6600" transparent="false"/>
           <y:BorderStyle hasColor="false" raised="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="45.90625" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="192.900390625" x="25.502098880954975" y="10.616630682871573">Not sure these are ever used
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="45.90625" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="192.900390625" x="25.502098880954975" y="10.616630682871687">Not sure these are ever used
 as they don't designate classes
 but primitives<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
@@ -558,7 +556,7 @@ but primitives<y:LabelModel>
           <y:Geometry height="74.26724269377382" width="291.5517255400255" x="-399.4197899195256" y="351.91025984978324"/>
           <y:Fill color="#FF6600" color2="#FF6600" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="45.90625" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="256.462890625" x="17.544417457512736" y="14.180496346886912">jpl_entityname_codes_rel_typeterm(Cs, T)
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="45.90625" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="242.037109375" x="24.757308082512736" y="14.180496346886912">jpl_entityname_codes_rel_jpltype(Cs, T)
 -----------
 (Cs is a list of character codes)<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
@@ -576,10 +574,9 @@ but primitives<y:LabelModel>
           <y:Geometry height="105.97571975202038" width="255.0" x="-716.8216281236766" y="336.05602132065997"/>
           <y:Fill color="#FF6600" color2="#FF6600" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="87.8125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="227.25390625" x="13.873046875" y="9.08160987601019">jpl_classname_to_type(CN, T)
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="73.84375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="227.25390625" x="13.873046875" y="16.06598487601019">jpl_classname_to_type(CN, T)
 -----------
-CN: set at call
-T: instantiated to a term by call
+Java entityname -&gt; JPL type
 
 (checks &amp; updates classname cache)<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
@@ -597,7 +594,7 @@ T: instantiated to a term by call
           <y:Geometry height="67.13951136574326" width="255.0" x="-716.8216281236766" y="463.67039993555824"/>
           <y:Fill color="#FF6600" color2="#FF6600" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="31.9375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="171.296875" x="41.8515625" y="17.601005682871687">jpl_class_to_type(Ref, Type)
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="31.9375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="171.296875" x="41.8515625" y="17.60100568287163">jpl_class_to_type(Ref, Type)
 -----------<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
@@ -612,12 +609,11 @@ T: instantiated to a term by call
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.process">
           <y:Geometry height="74.26724269377377" width="255.0" x="-716.8216281236766" y="231.7887786268862"/>
-          <y:Fill color="#FF6600" color2="#FF6600" transparent="false"/>
+          <y:Fill color="#FF6600" color2="#99CC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="59.875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="213.671875" x="20.6640625" y="7.196121346886912">jpl_type_to_classname(T, CN)
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="45.90625" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="180.63671875" x="37.181640625" y="14.180496346886855">jpl_type_to_classname(T, CN)
 -----------
-T: set at call
-CN: instantiated to an atom by call<y:LabelModel>
+JPL type -&gt; Java entityname<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -633,35 +629,15 @@ CN: instantiated to an atom by call<y:LabelModel>
           <y:Geometry height="74.26724269377377" width="243.90458838690995" x="-375.59622134296785" y="196.29398828381125"/>
           <y:Fill color="#FFFF99" color2="#FFFF99" transparent="false"/>
           <y:BorderStyle color="#000000" type="dashed" width="1.0"/>
-          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="31.9375" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="l" textColor="#000000" verticalTextPosition="bottom" visible="true" width="225.40234375" x="4.0" y="21.164871346886912">Previously named:
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="31.9375" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="l" textColor="#000000" verticalTextPosition="bottom" visible="true" width="225.40234375" x="4.0" y="21.164871346886883">Previously named:
 jpl_classname_chars_to_type(Cs, Tr),</y:NodeLabel>
           <y:StyleProperties>
             <y:Property class="java.lang.Byte" name="com.yworks.flowchart.style.orientation" value="0"/>
-            <y:Property class="java.lang.Byte" name="LAYER_STYLE_PROPERTY_KEY" value="1"/>
           </y:StyleProperties>
         </y:GenericNode>
       </data>
     </node>
     <node id="n36">
-      <data key="d6">
-        <y:GenericNode configuration="com.yworks.flowchart.process">
-          <y:Geometry height="74.26724269377377" width="255.0" x="-1035.6973587462944" y="231.78877862688626"/>
-          <y:Fill color="#FF6600" color2="#FF6600" transparent="false"/>
-          <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="59.875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="213.671875" x="20.6640625" y="7.196121346886855">jpl_type_to_nicename(T, NN)
------------
-T: set at call
-CN: instantiated to an atom by call<y:LabelModel>
-              <y:SmartNodeLabelModel distance="4.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
-            </y:ModelParameter>
-          </y:NodeLabel>
-        </y:GenericNode>
-      </data>
-    </node>
-    <node id="n37">
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.process">
           <y:Geometry height="40.0" width="255.0" x="-716.8216281236766" y="1233.751590663642"/>
@@ -677,11 +653,11 @@ CN: instantiated to an atom by call<y:LabelModel>
         </y:GenericNode>
       </data>
     </node>
-    <node id="n38">
+    <node id="n37">
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.process">
-          <y:Geometry height="74.26724269377377" width="255.0" x="-705.8077340110125" y="664.1375349428213"/>
-          <y:Fill color="#FF6600" color2="#FF6600" transparent="false"/>
+          <y:Geometry height="74.26724269377377" width="255.0" x="-716.8216281236766" y="664.1375349428214"/>
+          <y:Fill color="#FF6600" color2="#339966" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="59.875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="220.57421875" x="17.212890625" y="7.196121346886912">jpl_type_to_findclassname(T, FCN)
 -----------
@@ -696,13 +672,13 @@ FCN: instantiated to an atom by call<y:LabelModel>
         </y:GenericNode>
       </data>
     </node>
-    <node id="n39">
+    <node id="n38">
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.process">
           <y:Geometry height="74.26724269377382" width="291.5517255400255" x="-399.4197899195256" y="664.1375349428213"/>
           <y:Fill color="#FF6600" color2="#FF6600" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="45.90625" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="274.19921875" x="8.676253395012736" y="14.180496346886912">jpl_findclassname_codes_rel_typeterm(Cs, T)
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="45.90625" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="259.7734375" x="15.889144020012736" y="14.180496346886912">jpl_findclassname_codes_rel_jpltype(Cs, T)
 -----------
 (Cs is a list of character codes)<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
@@ -714,14 +690,13 @@ FCN: instantiated to an atom by call<y:LabelModel>
         </y:GenericNode>
       </data>
     </node>
-    <node id="n40">
-      <data key="d5"/>
+    <node id="n39">
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="1886.793003494283" width="30.0" x="0.31611340533709154" y="-279.7164100971303"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="13.0" y="941.3965017471417">
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="13.0" y="941.3965017471415">
             <y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
@@ -730,6 +705,60 @@ FCN: instantiated to an atom by call<y:LabelModel>
             </y:ModelParameter>
           </y:NodeLabel>
           <y:Shape type="rectangle3d"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n40">
+      <data key="d6">
+        <y:GenericNode configuration="com.yworks.flowchart.process">
+          <y:Geometry height="74.26724269377377" width="255.0" x="-956.786348022025" y="806.8417898856426"/>
+          <y:Fill color="#FF6600" color2="#FF6600" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="157.404296875" x="48.7978515625" y="28.149246346886912">jpl_type_to_class(T, RefA)<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n41">
+      <data key="d5"/>
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="30.0" width="30.0" x="-645.51648" y="154.0428586268862"/>
+          <y:Fill color="#FFCC00" transparent="false"/>
+          <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="58.28125" x="-14.140625" y="6.015625">Exported<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:Shape type="diamond"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n42">
+      <data key="d5"/>
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="30.0" width="30.0" x="-566.10464" y="154.0428586268862"/>
+          <y:Fill color="#FFCC00" transparent="false"/>
+          <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="45.90625" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="85.0234375" x="-27.51171875" y="-7.953125">There is 
+a plunit block
+for this<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:Shape type="diamond"/>
         </y:ShapeNode>
       </data>
     </node>
@@ -1139,7 +1168,6 @@ slashy<y:LabelModel>
       </data>
     </edge>
     <edge id="e38" source="n31" target="n0">
-      <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="135.1382092333759" sy="8.1792590511061" tx="0.0" ty="0.0"/>
@@ -1158,7 +1186,6 @@ dotty mode<y:LabelModel>
       </data>
     </edge>
     <edge id="e39" source="n32" target="n31">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1169,7 +1196,6 @@ dotty mode<y:LabelModel>
       </data>
     </edge>
     <edge id="e40" source="n33" target="n31">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1180,7 +1206,6 @@ dotty mode<y:LabelModel>
       </data>
     </edge>
     <edge id="e41" source="n34" target="n31">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1191,7 +1216,6 @@ dotty mode<y:LabelModel>
       </data>
     </edge>
     <edge id="e42" source="n31" target="n35">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1201,8 +1225,7 @@ dotty mode<y:LabelModel>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e43" source="n36" target="n34">
-      <data key="d9"/>
+    <edge id="e43" source="n36" target="n27">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1212,19 +1235,7 @@ dotty mode<y:LabelModel>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e44" source="n37" target="n27">
-      <data key="d9"/>
-      <data key="d10">
-        <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-          <y:BendStyle smoothed="false"/>
-        </y:PolyLineEdge>
-      </data>
-    </edge>
-    <edge id="e45" source="n39" target="n0">
-      <data key="d9"/>
+    <edge id="e44" source="n38" target="n0">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="72.07696399830598" sy="26.726062738246014" tx="0.0" ty="0.0"/>
@@ -1243,8 +1254,7 @@ slashy mode<y:LabelModel>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e46" source="n38" target="n39">
-      <data key="d9"/>
+    <edge id="e45" source="n37" target="n38">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1254,8 +1264,7 @@ slashy mode<y:LabelModel>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e47" source="n29" target="n29">
-      <data key="d9"/>
+    <edge id="e46" source="n29" target="n29">
       <data key="d10">
         <y:QuadCurveEdge straightness="0.1">
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -1263,6 +1272,36 @@ slashy mode<y:LabelModel>
             <y:Point x="1303.2354733163922" y="1262.7672594098408"/>
             <y:Point x="1268.9682306226184" y="1208.4447077509535"/>
           </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+        </y:QuadCurveEdge>
+      </data>
+    </edge>
+    <edge id="e47" source="n40" target="n37">
+      <data key="d9"/>
+      <data key="d10">
+        <y:QuadCurveEdge straightness="0.1">
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+        </y:QuadCurveEdge>
+      </data>
+    </edge>
+    <edge id="e48" source="n41" target="n34">
+      <data key="d9"/>
+      <data key="d10">
+        <y:QuadCurveEdge straightness="0.1">
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+        </y:QuadCurveEdge>
+      </data>
+    </edge>
+    <edge id="e49" source="n42" target="n34">
+      <data key="d9"/>
+      <data key="d10">
+        <y:QuadCurveEdge straightness="0.1">
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
         </y:QuadCurveEdge>
