@@ -3,6 +3,8 @@
 
 /*
 
+When stringy.pl uses direct calls to "->" operator:
+
 ?- run_tests.
 % PL-Unit: string_overwrite_performance
 Looping calls to string_overwrite using runs
@@ -11,6 +13,20 @@ Looping calls to string_overwrite using chars
 % 237,865,722 inferences, 41.849 CPU in 42.014 seconds (100% CPU, 5683895 Lips)
 . done
 % test passed
+true.
+
+When string.pl uses switch/N metapredicate instead of direct calls to "-"> operator:
+
+This is clearly slower!
+
+?- run_tests.
+% PL-Unit: string_overwrite_performance
+Looping calls to string_overwrite using runs
+% 33,882,723 inferences, 9.349 CPU in 9.389 seconds (100% CPU, 3624050 Lips)
+Looping calls to string_overwrite using chars
+% 243,198,262 inferences, 42.585 CPU in 42.746 seconds (100% CPU, 5710842 Lips)
+. done
+% All 15 tests passed
 true.
 
 */

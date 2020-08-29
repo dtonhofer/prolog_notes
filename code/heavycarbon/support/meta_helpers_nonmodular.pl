@@ -14,9 +14,15 @@
 % :- include(library('heavycarbon/support/meta_helpers_nonmodular.pl')).
 %
 % (What does the compiler do with unused in-module code?)
+%
 
 % ---
 % A better "switch" than an unreadable sequence of ->/2
+%
+% IT'S SLOW!
+% Note that using this instead of directly-inlined "->" slows down a program markedly!
+% 30% slowdown if there are lots of these calls is not impossible. In the end, 
+% these must be replaced by term rewriting.
 % ---
 
 switch(If1,Then1,If2,Then2,Else) :-

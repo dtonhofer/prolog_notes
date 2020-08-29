@@ -7,6 +7,8 @@
       ,stringy_ensure/3  % string_ensure(S,SX,W)            SX is the stringy thing S with type W
    ]).
 
+:- include(library('heavycarbon/support/meta_helpers_nonmodular.pl')). % Not a module, just (meta) predicates
+
 % This is a nice exercise in thinking about how to approach writing
 % Prolog predicates that give information on failure.
 
@@ -39,7 +41,7 @@
 
 stringy(X) :-
    ground(X),
-   (atom(X);string(X);number(X)),!.
+   (atom(X);string(X);number(X)),!. % terminal ! to make this deterministic
 
 % ---
 % This is not needed a atom_length/2 and string_length/2 works for both strings
@@ -50,16 +52,11 @@ stringy(X) :-
 % ---
 
 stringy_length(S,L) :-
-   atom(S)
-   -> atom_length(S,L)    % arg checking is left to atom_length/2
-   ;
-   string(S)
-   -> string_length(S,L)  % arg checking is left to to string_length/2
-   ;
-   ground(S)
-   -> string_length(S,L)  % neither an atom nor a string; arbitrarily leave it to string_length/2, which may throw or not
-   ;
-   domain_error(_,_).     % placeholder throw; don't bother with ISO; TODO
+   switch(
+      atom(S),    atom_length(S,L),    % arg checking is left to atom_length/2    
+      string(S),  string_length(S,L),  % arg checking is left to to string_length/2   
+      ground(S),  string_length(S,L),  % neither an atom nor a string; arbitrarily leave it to string_length/2, which may throw or not   
+      domain_error(_,_)).              % placeholder throw; don't bother with getting this exception ISO-correct; TODO throw your own
 
 % ---
 % This is not needed as atom_length/2 and string_length/2 work for both strings
@@ -78,34 +75,23 @@ stringy_length(S,L) :-
 % ---
 
 stringy_chars(S,Chars,Want) :-
-   stringy(S)
-   -> stringy_chars_when_S_is_stringy(S,Chars,Want)
-   ;
-   var(S)
-   -> stringy_chars_when_S_is_var(S,Chars,Want)
-   ;
-   domain_error(_,_).     % placeholder throw; don't bother with ISO; TODO
+   switch(
+      stringy(S)  , stringy_chars_when_S_is_stringy(S,Chars,Want),
+      var(S)      , stringy_chars_when_S_is_var(S,Chars,Want),
+      domain_error(_,_)).      % placeholder throw
 
 stringy_chars_when_S_is_stringy(S,Chars,Want) :-
-   atom(S)
-   -> (Want=atom,atom_chars(S,Chars))
-   ;
-   string(S)
-   -> (Want=string,string_chars(S,Chars))
-   ;
-   (Want=other,string_chars(S,Chars)). % neither an atom nor a string (e.g. integer); try string_chars
+   switch(
+      atom(S)     , (Want=atom,atom_chars(S,Chars)),
+      string(S)   , (Want=string,string_chars(S,Chars)),
+      (Want=other,string_chars(S,Chars))). % neither an atom nor a string (e.g. integer); try string_chars
 
 stringy_chars_when_S_is_var(S,Chars,Want) :-
-   Want==atom
-   -> atom_chars(S,Chars)
-   ;
-   Want==string
-   -> string_chars(S,Chars)
-   ;
-   var(Want)
-   -> (Want=string,string_chars(S,Chars)) % force to string processing
-   ;
-   domain_error(_,_).     % placeholder throw; don't bother with ISO; TODO
+   switch(
+      Want==atom   , atom_chars(S,Chars),
+      Want==string , string_chars(S,Chars),
+      var(Want)    , (Want=string,string_chars(S,Chars)), % force to string processing
+      domain_error(_,_)).     % placeholder throw
 
 % ---
 % Concatenate mode: concatenate two stringy things into a third, which shall have the type given
@@ -117,37 +103,24 @@ stringy_chars_when_S_is_var(S,Chars,Want) :-
 % ---
 
 stringy_concat(S1,S2,SX,Want) :-
-   stringy(SX)
-   -> stringy_concat_when_SX_is_stringy(S1,S2,SX,Want)
-   ;
-   var(SX)
-   -> stringy_concat_when_SX_is_var(S1,S2,SX,Want)
-   ;
-   type_error(_,_).  % ISO levels of awkward, don't bother
+   switch(
+      stringy(SX) , stringy_concat_when_SX_is_stringy(S1,S2,SX,Want),
+      var(SX)     , stringy_concat_when_SX_is_var(S1,S2,SX,Want),
+      type_error(_,_)).  % placeholder throw
 
 stringy_concat_when_SX_is_var(S1,S2,SX,Want) :-
-   Want==atom
-   -> atom_concat(S1,S2,SX)
-   ;
-   Want==string
-   -> string_concat(S1,S2,SX)
-   ;
-   domain_error(_,_).  % ISO levels of awkward, don't bother
+   switch(
+      Want==atom   , atom_concat(S1,S2,SX),
+      Want==string , string_concat(S1,S2,SX),
+      domain_error(_,_)).  % ISO levels of awkward, don't bother
 
 stringy_concat_when_SX_is_stringy(S1,S2,SX,Want) :-
-   Want==atom
-   -> atom_concat(S1,S2,SX)
-   ;
-   Want==string
-   -> string_concat(S1,S2,SX)
-   ;
-   (var(Want),atom(SX))
-   -> (Want=atom,atom_concat(S1,S2,SX))
-   ;
-   var(Want) % don't even test the type of SX
-   -> (Want=string,string_concat(S1,S2,SX))
-   ;
-   domain_error(_,_).  % ISO levels of awkward, don't bother
+   switch(
+      Want==atom           , atom_concat(S1,S2,SX),
+      Want==string         , string_concat(S1,S2,SX),
+      (var(Want),atom(SX)) , (Want=atom,atom_concat(S1,S2,SX)),
+      var(Want)            , (Want=string,string_concat(S1,S2,SX)),   % don't even test the type of SX
+      domain_error(_,_)).  % ISO levels of awkward, don't bother
 
 % ---
 % Transforming a string thing S into the stringy thing SX, which shall have
@@ -155,11 +128,17 @@ stringy_concat_when_SX_is_stringy(S1,S2,SX,Want) :-
 % ---
 
 stringy_ensure(S,SX,Want) :-
-   Want==atom
-   -> atom_concat(S,'',SX)   % is this expensive?
-   ;
-   Want==string
-   -> string_concat(S,"",SX) % is this expensive?
-   ;
-   domain_error(_,_).  % ISO levels of awkward, don't bother
+   stringy_ensure_fast(S,SX,Want).
+ 
+stringy_ensure_fast(S,SX,Want) :-
+   switch(
+      Want==atom   , atom_concat('',S,SX),  
+      Want==string , string_concat("",S,SX), 
+      domain_error(_,_)).  % ISO levels of awkward, don't bother
 
+stringy_ensure_slow(S,SX,Want) :-
+   switch(
+      Want==atom   , atom_concat(S,'',SX),   % apparently a bit slower than the above (maybe)
+      Want==string , string_concat(S,"",SX), % apparently a bit slower than the above (maybe)
+      domain_error(_,_)).  % ISO levels of awkward, don't bother
+ 
