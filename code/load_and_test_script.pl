@@ -104,7 +104,7 @@ Conventions
 
 :- use_module(library('heavycarbon/strings/conversion.pl')).
 :- use_module(library('heavycarbon/strings/string_of_spaces.pl')).
-:- use_module(library('heavycarbon/strings/string_overwriting.pl')).
+:- use_module(library('heavycarbon/strings/string_overwrite.pl')).
 :- use_module(library('heavycarbon/support/utils.pl')).
 :- use_module(library('heavycarbon/utils/between_with_step.pl')).
 :- use_module(library('heavycarbon/utils/openlist_append.pl')).

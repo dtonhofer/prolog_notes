@@ -1,10 +1,11 @@
 :- module(heavycarbon_strings_string_overwrite,
    [
-      overwrite_using_chars/7  % overwrite_using_chars(Lower,Upper,UpperPos,CutLeft,CutRight,Result,Want)
-      overwrite_using_runs/7   % overwrite_using_runs(Lower,Upper,UpperPos,CutLeft,CutRight,Result,Want)         
+       overwrite_using_chars/7  % overwrite_using_chars(Lower,Upper,UpperPos,CutLeft,CutRight,Result,Want)
+      ,overwrite_using_runs/7   % overwrite_using_runs(Lower,Upper,UpperPos,CutLeft,CutRight,Result,Want)         
    ]).
 
 :- use_module(library('heavycarbon/strings/stringy.pl')).
+:- use_module(library('heavycarbon/strings/string_of_spaces.pl')).
 
 % ==============================================================================
 % Overwrite a string/atom "Lower" with another string/atom "Upper"

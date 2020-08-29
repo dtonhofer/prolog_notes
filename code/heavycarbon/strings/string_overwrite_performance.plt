@@ -1,4 +1,19 @@
 :- use_module(library('heavycarbon/strings/string_overwrite.pl')).
+:- use_module(library('heavycarbon/strings/stringy.pl')).
+
+/*
+
+?- run_tests.
+% PL-Unit: string_overwrite_performance 
+Looping calls to string_overwrite using runs
+% 28,637,889 inferences, 7.443 CPU in 7.477 seconds (100% CPU, 3847478 Lips)
+Looping calls to string_overwrite using chars
+% 237,865,722 inferences, 41.849 CPU in 42.014 seconds (100% CPU, 5683895 Lips)
+. done
+% test passed
+true.
+
+*/
 
 % :- debug(performance).
 
@@ -60,7 +75,7 @@ test("Looping") :-
    format("Looping calls to string_overwrite using runs\n",[]),
    time(loop(overwrite_using_runs)),
    format("Looping calls to string_overwrite using chars\n",[]),
-   time(loop(overwrite_using_chars).
+   time(loop(overwrite_using_chars)).
 
 :- end_tests(string_overwrite_performance).
 

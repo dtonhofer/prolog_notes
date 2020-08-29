@@ -1,4 +1,5 @@
 :- use_module(library('heavycarbon/strings/string_overwrite.pl')).
+:- use_module(library('heavycarbon/strings/stringy.pl')).
 
 % :- debug(repeatedly_overwrite).
 
@@ -291,43 +292,43 @@ repeatedly_overwrite_lorem_ipsum_with_empty_string_no_cutting(Goal,T) :-
         [16,"Lorem ipsum     "]]).
 
 test("Char-by-Char 1",[true(T)]) :- 
-   repeatedly_overwrite_the_empty_string(overwrite_char_by_char,T).
+   repeatedly_overwrite_the_empty_string(overwrite_using_chars,T).
 
 test("Runs 1",[true(T)]) :- 
    repeatedly_overwrite_the_empty_string(overwrite_using_runs,T).
 
 test("Char-by-Char 2",[true(T)]) :- 
-   repeatedly_overwrite_lorem_ipsum_no_cutting(overwrite_char_by_char,T).
+   repeatedly_overwrite_lorem_ipsum_no_cutting(overwrite_using_chars,T).
 
 test("Runs 2",[true(T)]) :- 
    repeatedly_overwrite_lorem_ipsum_no_cutting(overwrite_using_runs,T).
 
 test("Char-by-Char 3",[true(T)]) :- 
-   repeatedly_overwrite_lorem_ipsum_cutting_upper(overwrite_char_by_char,T).
+   repeatedly_overwrite_lorem_ipsum_cutting_upper(overwrite_using_chars,T).
 
 test("Runs 3",[true(T)]) :- 
    repeatedly_overwrite_lorem_ipsum_cutting_upper(overwrite_using_runs,T).
 
 test("Char-by-Char 4",[true(T)]) :- 
-   repeatedly_overwrite_lorem_ipsum_cutting_lower(overwrite_char_by_char,T).
+   repeatedly_overwrite_lorem_ipsum_cutting_lower(overwrite_using_chars,T).
 
 test("Runs 4",[true(T)]) :- 
    repeatedly_overwrite_lorem_ipsum_cutting_lower(overwrite_using_runs,T).
 
 test("Char-by-Char 5",[true(T)]) :- 
-   repeatedly_overwrite_lorem_ipsum_cutting_both_sides(overwrite_char_by_char,T).
+   repeatedly_overwrite_lorem_ipsum_cutting_both_sides(overwrite_using_chars,T).
 
 test("Runs 5",[true(T)]) :- 
    repeatedly_overwrite_lorem_ipsum_cutting_both_sides(overwrite_using_runs,T).
 
 test("Char-by-Char 6",[true(T)]) :- 
-   repeatedly_overwrite_lorem_ipsum_with_empty_string_cutting_both_sides(overwrite_char_by_char,T).
+   repeatedly_overwrite_lorem_ipsum_with_empty_string_cutting_both_sides(overwrite_using_chars,T).
 
 test("Runs 6",[true(T)]) :- 
    repeatedly_overwrite_lorem_ipsum_with_empty_string_cutting_both_sides(overwrite_using_runs,T).
  
 test("Char-by-Char 7",[true(T)]) :- 
-   repeatedly_overwrite_lorem_ipsum_with_empty_string_no_cutting(overwrite_char_by_char,T).
+   repeatedly_overwrite_lorem_ipsum_with_empty_string_no_cutting(overwrite_using_chars,T).
 
 test("Runs 7",[true(T)]) :- 
    repeatedly_overwrite_lorem_ipsum_with_empty_string_no_cutting(overwrite_using_runs,T).

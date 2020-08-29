@@ -155,7 +155,7 @@ stringy_concat_when_SX_is_stringy(S1,S2,SX,Want) :-
 % ---
 
 stringy_ensure(S,SX,Want) :-
-   (Want==atom
+   Want==atom
    -> atom_concat(S,'',SX)   % is this expensive?
    ;
    Want==string
