@@ -2,6 +2,88 @@
 
 None of these may be based in reality or be good ideas.
 
+## Function vs non-function
+
+Often computation is function-like:
+
+```
+  f(X1,X2,X3) --> Y
+  
+   Input space:      Output space:
+   3 dimensions      1 dimension
+   
+       X1 ----+
+              |       
+       X2 ----+---------> Y 
+              |       
+       X3 ----+
+```
+
+where `X1`, `X2`, `X3` are fully known and `Y` can be computed from it.
+
+This is often straightforward (there is a good algorithm, often fast) and meshes will with the functional approach.
+
+Sometimes computation is search-like:
+
+```
+  inv_f(Y) --> [[X1,X2,X3],... ]
+
+  
+   Input space:      Output space:
+   1 dimension       3 dimensions, multiple solutions
+   
+                     +---> X1  
+                     | 
+        Y------------+---> X2 
+                     |        
+                     +---> X3
+```
+  
+where `Y` is fully known and a set of `[X1,X2,X3]` (possibly infinitely large) can be computed from it.  
+
+This is mappable to a constraint where `X1,X2,X3` are sought so that they fulfill a constraint, in this
+case, `f(X1,X2,X3) = Y`
+
+This is often arduous and involves search, possibly in large spaces. Sometimes it is impossible (cryptography running backwards).
+
+If `f` is based on table-like predicate definitions, both directions work well, otherwise not so well.
+
+Computation of `inv_f(Y)` can be mapped into the functional paradigm by having a function return `[X1,X2,X3]` and a continuation.
+
+In Prolog functions `f` and `inv_f` may be merged into a single predicate, which checks the passed variables 
+and then either branches to the code for the function direction or for the search direction (possible several different code
+blocks are needed if there are multiple cases of variables being fresh or not).
+
+There should be more language support for that (in particular, some way of mapping arguments to a "case value" that can
+be exploited by the compiler; writing arbitrary guards `var(X),nonvar(Y)` etc. that are checked post-head-unification is tedious and fails "too late".
+
+A related problem is multiple predicates where there should be only one:
+
+```
+atomic_concat/3
+atomic_list_concat/2
+atomic_list_concat/3
+```
+
+Each of those is chosen by the programmer depending on specific needs.
+
+Why not just have a single
+
+```
+atomic_concat/3
+```
+
+and let the compiler deduce which one is the most appropriate? Does the compiler have enough information?
+Does the user have to provide assertions to give it more? (Note that typing statements are in fact
+assertions in another form, and we don't have those)
+
+This is also the case for
+
+- append/2`  as in `append([[1,2,3],[4,5,6]],List) --> List = [1, 2, 3, 4, 5, 6].`  - Not efficient but general & practical
+- append/3`  as in `append([1,2,3],[4,5,6],List)   --> List = [1, 2, 3, 4, 5, 6].`  - Efficient but a special case
+
+There should be no need to even choose between those. It's supposed to be a high-level language!
+
 ## Additional constraints in the head, part #1
 
 One should be able to state that certain variables take only atoms from a given set:

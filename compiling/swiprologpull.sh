@@ -626,7 +626,17 @@ build() {
 
    ninja
 
-   # test
+   # Test
+   # Note that the logfile is just re-written at the end; maybe we should delete it right here first?
+
+   local logfile="Testing/Temporary/LastTest.log"
+
+   if [[ -f "$logfile" ]]; then
+      echo "-------" >&2
+      echo "There already is a logfile '$logfile' -- deleting it" >&2
+      echo "-------" >&2
+      /bin/rm "$logfile"
+   fi 
 
    ctest -j 4  # Run tests concurrently 4-fold. See "man ctest" or "ctest --help"
 
@@ -634,11 +644,17 @@ build() {
       echo "The test failed!" >&2
       echo "More info in directory $(pwd)/Testing/Temporary/" >&2
       tree "Testing/Temporary" >&2
-      local logfile="$(pwd)/Testing/Temporary/LastTest.log"
-      echo "Check file '$logfile'" >&2
+      echo "Check file '$(pwd)/${logfile}'" >&2
       exit 1
    fi
+   
+   # Always grep for ERROR even in case of success
 
+   if [[ -f "$logfile" ]]; then
+      grep ERROR "$logfile"
+      grep WARN "$logfile"
+   fi
+ 
    # Maybe install
    # What happens if the installation directory exists? Is it replaced?
 
