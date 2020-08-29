@@ -1,20 +1,27 @@
-:- module(heavycarbon_strings_spaces,[string_of_spaces/2]).
+:- module(heavycarbon_strings_spaces,
+   [
+      string_of_spaces/2  % string_of_spaces(N,Spaces)
+   ]).
 
-:- use_module(library('heavycarbon/strings/conversion.pl')).
+:- use_module(library('heavycarbon/strings/stringy.pl')).
 
-% ===
+% TODO: There should be something similar for atoms
+
+% ==============================================================================
 % Generating/Recognizing/Verifying "strings made of spaces"
+%
 % string_of_spaces(?N,?Spaces)
+%
 % N      : integer >= 0
 % Spaces : a string on output (accepts the same stuff atom_string/2 accepts on input)
-% ===
+% ==============================================================================
 
 string_of_spaces(N,Spaces) :-
    nonvar(Spaces),                     % case: "check length or determine length of 'Spaces'"
    !,
-   convert_to_string(Spaces,Str),      % make sure it's a string for "==" later
+   stringy_ensure(Spaces,Str,string),  % make sure it's a string for "==" later; may throw
    string_length(Str,N),               % length is now known
-   string_of_spaces(N,StrNew),         % regenerate spacey string
+   string_of_spaces(N,StrNew),         % regenerate spacey string for comparison 
    Str == StrNew.                      % must be the same (i.e. fail if Spaces is not "spacey")
    
 string_of_spaces(N,Spaces) :-          
@@ -23,11 +30,10 @@ string_of_spaces(N,Spaces) :-
    gen_string_of_spaces(N,Spaces).
 
 string_of_spaces(N,Spaces) :-
-   var(Spaces),var(N),                 % case: generate pairs
+   var(Spaces),var(N),                 % case: "generate pairs"
    !,
    between(0,inf,N),
    gen_string_of_spaces(N,Spaces).
-
 
 % ---
 % Actually generate (possibly large) strings rapidly using string_concat/3.
@@ -55,5 +61,4 @@ gen_string_of_spaces(N,Spaces) :-
    (Remainder>0
     -> (string_of_spaces(Remainder,SR), string_concat(S2,SR,Spaces))
     ;  Spaces = S2).
-
 
