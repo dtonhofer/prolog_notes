@@ -301,6 +301,20 @@ This exception is pointlessly deficient in information carrying capacity and the
 Thrown with [instantiation_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=instantiation_error/1). The argument passed
 to `instantiation_error/1` is just for future extensions and remains unused.
 
+Note that this exception is often used to express something completely different:
+
+```
+?- atom_length(X,12).
+ERROR: Arguments are not sufficiently instantiated
+ERROR: In:
+ERROR:   [10] atom_length(_1192,12)
+ERROR:    [9] <user>
+```
+
+The exception says that "arguments are not sufficiently instantiated", which is true on a low level. But what
+it actually should say is that `atom_length/2` _cannot work in the direction +Length->-Atom_, which is the
+real high-level message that should be given. But there isn't even an ISO exception to express that.
+
 #### Uninstantiation error
 
 An argument or one of its components is instantiated, and an uninstantiated argument or argument component is required.  
