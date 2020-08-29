@@ -1,7 +1,7 @@
 :- module(heavycarbon_strings_string_overwrite,
    [
        overwrite_using_chars/7  % overwrite_using_chars(Lower,Upper,UpperPos,CutLeft,CutRight,Result,Want)
-      ,overwrite_using_runs/7   % overwrite_using_runs(Lower,Upper,UpperPos,CutLeft,CutRight,Result,Want)         
+      ,overwrite_using_runs/7   % overwrite_using_runs(Lower,Upper,UpperPos,CutLeft,CutRight,Result,Want)
    ]).
 
 :- use_module(library('heavycarbon/strings/stringy.pl')).
@@ -25,7 +25,7 @@
 %
 % One which does run-of-character processing and is a bit hairy, but fast.
 % ==============================================================================
- 
+
 % ===
 % Using chars
 % ===
@@ -54,8 +54,8 @@ collect(Pos,EndPos,_,_,_,_,_,Fin,Fin) :-
 collect(Pos,EndPos,UpperPos,UpperEnd,UpperChars,LowerChars,LowerLen,Fin,FinalFin) :-
    Pos < EndPos,
    !,
-   ((UpperPos=<Pos, Pos<UpperEnd) 
-    -> 
+   ((UpperPos=<Pos, Pos<UpperEnd)
+    ->
     (Index is Pos-UpperPos,nth0(Index,UpperChars,Char)) % use "upper" character if possible
     ;
     (0=<Pos, Pos<LowerLen)
@@ -84,9 +84,9 @@ overwrite_using_runs(Lower,Upper,UpperPos,CutLeft,CutRight,Result,Want) :-
    filler_between_end_of_lower_and_start_of_upper(UpperPos,LowerLen,CutRight,R5,R6,Want),
    upper_completely_or_partially_on_the_right(Upper,UpperPos,UpperLen,UpperEnd,LowerLen,CutRight,R6,Result,Want).
 
-   
+
 upper_completely_or_partially_on_positions_below_position0(Upper,UpperPos,UpperEnd,CutLeft,Rnew,Want) :-
-   (CutLeft == true ; 0 =< UpperPos) 
+   (CutLeft == true ; 0 =< UpperPos)
    ->
    stringy_ensure("",Rnew,Want) % do nothing except returning the empty string/atom
    ;
@@ -95,14 +95,14 @@ upper_completely_or_partially_on_positions_below_position0(Upper,UpperPos,UpperE
     stringy_ensure(Run,Rnew,Want)).  % gives what we "Want"
 
 filler_between_end_of_upper_and_position0(UpperEnd,CutLeft,Rprev,Rnew,Want) :-
-   (CutLeft == true ; 0 =< UpperEnd) 
+   (CutLeft == true ; 0 =< UpperEnd)
    ->
    (Rnew=Rprev) % do nothing
    ;
    (Len is -UpperEnd,
     string_of_spaces(Len,Run),              % gives a string
     stringy_concat(Rprev,Run,Rnew,Want)).   % gives what we "Want"
-   
+
 lower_visible_between_position0_and_start_of_upper(UpperPos,LowerLen,Lower,Rprev,Rnew,Want) :-
    (UpperPos =< 0 ; LowerLen == 0)
    ->
@@ -114,7 +114,7 @@ lower_visible_between_position0_and_start_of_upper(UpperPos,LowerLen,Lower,Rprev
 
 upper_covering_lower(Upper,UpperPos,UpperEnd,LowerLen,Rprev,Rnew,Want) :-
    (UpperEnd =< 0 ; LowerLen =< UpperPos)
-   -> 
+   ->
    (Rnew=Rprev) % do nothing
    ;
    (StartPos      is max(0,UpperPos),
@@ -126,16 +126,16 @@ upper_covering_lower(Upper,UpperPos,UpperEnd,LowerLen,Rprev,Rnew,Want) :-
 
 lower_visible_between_end_of_upper_and_end_of_lower(Lower,UpperEnd,LowerLen,Rprev,Rnew,Want) :-
    (LowerLen =< UpperEnd)
-   -> 
+   ->
    (Rnew=Rprev) % do nothing
    ;
    (Len is min(LowerLen,LowerLen-UpperEnd),
     StartPos is max(0,UpperEnd),
     sub_atom(Lower,StartPos,Len,_,Run),   % gives an atom
     stringy_concat(Rprev,Run,Rnew,Want)). % gives what we "Want"
- 
+
 filler_between_end_of_lower_and_start_of_upper(UpperPos,LowerLen,CutRight,Rprev,Rnew,Want) :-
-   (UpperPos =< LowerLen ; CutRight == true) 
+   (UpperPos =< LowerLen ; CutRight == true)
    ->
    (Rnew=Rprev) % do nothing
    ;
@@ -144,7 +144,7 @@ filler_between_end_of_lower_and_start_of_upper(UpperPos,LowerLen,CutRight,Rprev,
     stringy_concat(Rprev,Run,Rnew,Want)).  % gives what we "Want"
 
 upper_completely_or_partially_on_the_right(Upper,UpperPos,UpperLen,UpperEnd,LowerLen,CutRight,Rprev,Rnew,Want) :-
-   (UpperEnd =< LowerLen ; CutRight == true) 
+   (UpperEnd =< LowerLen ; CutRight == true)
    ->
    (Rnew=Rprev) % do nothing
    ;

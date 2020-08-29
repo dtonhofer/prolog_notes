@@ -2,7 +2,7 @@
 
 :- begin_tests(string_of_spaces).
 
-test("generate a short string", true(Str == "     ")) :- 
+test("generate a short string", true(Str == "     ")) :-
    string_of_spaces(5,Str).
 
 test("generate a long string", true(Str == "               ")) :-

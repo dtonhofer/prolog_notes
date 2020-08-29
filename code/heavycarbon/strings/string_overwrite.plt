@@ -18,24 +18,24 @@ repeatedly_overwrite(
 
 repeatedly_overwrite_the_empty_string(Goal,T) :-
    Upper = "XxX",
-   stringy_length(Upper,UpperLen), 
-   StartPos is -UpperLen-1, 
+   stringy_length(Upper,UpperLen),
+   StartPos is -UpperLen-1,
    EndPos is 1,
    bagof([UpperPos,Result],
          repeatedly_overwrite(
             range(StartPos,EndPos),
-            goal(Goal), 
+            goal(Goal),
             strings("",Upper),
             cutflags(false,false),
             out(UpperPos,Result),
             aux(string)), % result shall be string, not atom
          Bag),
    T = (Bag ==
-   [[-4,"XxX "],                                                                                                      
-    [-3,"XxX"],                                                                                                       
-    [-2,"XxX"],                                                                                                       
-    [-1,"XxX"],                                                                                                       
-    [0,"XxX"],                                                                                                        
+   [[-4,"XxX "],
+    [-3,"XxX"],
+    [-2,"XxX"],
+    [-1,"XxX"],
+    [0,"XxX"],
     [1," XxX"]]).
 
 repeatedly_overwrite_lorem_ipsum_no_cutting(Goal,T) :-
@@ -54,7 +54,7 @@ repeatedly_overwrite_lorem_ipsum_no_cutting(Goal,T) :-
             out(UpperPos,Result),
             aux(string)), % result shall be string, not atom
          Bag),
-   T = (Bag ==  
+   T = (Bag ==
    [[-17,"[perspiciatis]   Lorem ipsum"],
     [-16,"[perspiciatis]  Lorem ipsum"],
     [-15,"[perspiciatis] Lorem ipsum"],
@@ -104,7 +104,7 @@ repeatedly_overwrite_lorem_ipsum_cutting_upper(Goal,T) :-
             out(UpperPos,Result),
             aux(string)), % result shall be string, not atom
          Bag),
-   T = (Bag == 
+   T = (Bag ==
    [[-17,"[perspiciatis]   Lorem ipsum"],
     [-16,"[perspiciatis]  Lorem ipsum"],
     [-15,"[perspiciatis] Lorem ipsum"],
@@ -154,34 +154,34 @@ repeatedly_overwrite_lorem_ipsum_cutting_lower(Goal,T) :-
             out(UpperPos,Result),
             aux(string)), % result shall be string, not atom
          Bag),
-   T = (Bag == 
-   [[-15,"Lorem ipsum"],                                                                                              
-    [-14,"Lorem ipsum"],                                                                                              
-    [-13,"]orem ipsum"],                                                                                              
-    [-12,"s]rem ipsum"],                                                                                              
-    [-11,"is]em ipsum"],                                                                                              
-    [-10,"tis]m ipsum"],                                                                                              
-    [-9,"atis] ipsum"],                                                                                               
-    [-8,"iatis]ipsum"],                                                                                               
-    [-7,"ciatis]psum"],                                                                                               
-    [-6,"iciatis]sum"],                                                                                               
-    [-5,"piciatis]um"],                                                                                               
-    [-4,"spiciatis]m"],                                                                                               
-    [-3,"rspiciatis]"],                                                                                               
-    [-2,"erspiciatis]"],                                                                                              
-    [-1,"perspiciatis]"],                                                                                             
-    [0,"[perspiciatis]"],                                                                                             
-    [1,"L[perspiciatis]"],                                                                                            
-    [2,"Lo[perspiciatis]"],                                                                                           
-    [3,"Lor[perspiciatis]"],                                                                                          
-    [4,"Lore[perspiciatis]"],                                                                                         
-    [5,"Lorem[perspiciatis]"],                                                                                        
-    [6,"Lorem [perspiciatis]"],                                                                                       
-    [7,"Lorem i[perspiciatis]"],                                                                                      
-    [8,"Lorem ip[perspiciatis]"],                                                                                     
-    [9,"Lorem ips[perspiciatis]"],                                                                                    
-    [10,"Lorem ipsu[perspiciatis]"],                                                                                  
-    [11,"Lorem ipsum[perspiciatis]"],                                                                                 
+   T = (Bag ==
+   [[-15,"Lorem ipsum"],
+    [-14,"Lorem ipsum"],
+    [-13,"]orem ipsum"],
+    [-12,"s]rem ipsum"],
+    [-11,"is]em ipsum"],
+    [-10,"tis]m ipsum"],
+    [-9,"atis] ipsum"],
+    [-8,"iatis]ipsum"],
+    [-7,"ciatis]psum"],
+    [-6,"iciatis]sum"],
+    [-5,"piciatis]um"],
+    [-4,"spiciatis]m"],
+    [-3,"rspiciatis]"],
+    [-2,"erspiciatis]"],
+    [-1,"perspiciatis]"],
+    [0,"[perspiciatis]"],
+    [1,"L[perspiciatis]"],
+    [2,"Lo[perspiciatis]"],
+    [3,"Lor[perspiciatis]"],
+    [4,"Lore[perspiciatis]"],
+    [5,"Lorem[perspiciatis]"],
+    [6,"Lorem [perspiciatis]"],
+    [7,"Lorem i[perspiciatis]"],
+    [8,"Lorem ip[perspiciatis]"],
+    [9,"Lorem ips[perspiciatis]"],
+    [10,"Lorem ipsu[perspiciatis]"],
+    [11,"Lorem ipsum[perspiciatis]"],
     [12,"Lorem ipsum [perspiciatis]"]]).
 
 repeatedly_overwrite_lorem_ipsum_cutting_both_sides(Goal,T) :-
@@ -200,7 +200,7 @@ repeatedly_overwrite_lorem_ipsum_cutting_both_sides(Goal,T) :-
             out(UpperPos,Result),
             aux(string)), % result shall be string, not atom
          Bag),
-   T = (Bag == 
+   T = (Bag ==
    [[-4,"Lorem ipsum"],
     [-3,"Lorem ipsum"],
     [-2,"~orem ipsum"],
@@ -235,7 +235,7 @@ repeatedly_overwrite_lorem_ipsum_with_empty_string_cutting_both_sides(Goal,T) :-
             out(UpperPos,Result),
             aux(string)), % result shall be string, not atom
          Bag),
-   T = (Bag == 
+   T = (Bag ==
        [[-1,"Lorem ipsum"],
         [0,"Lorem ipsum"],
         [1,"Lorem ipsum"],
@@ -267,15 +267,15 @@ repeatedly_overwrite_lorem_ipsum_with_empty_string_no_cutting(Goal,T) :-
             out(UpperPos,Result),
             aux(string)), % result shall be string, not atom
          Bag),
-   T = (Bag == 
+   T = (Bag ==
        [[-5,"     Lorem ipsum"],
-        [-4,"    Lorem ipsum"],                                                                                           
-        [-3,"   Lorem ipsum"],                                                                                            
-        [-2,"  Lorem ipsum"],                                                                                             
-        [-1," Lorem ipsum"],                                                                                              
-        [0,"Lorem ipsum"],                                                                                                
-        [1,"Lorem ipsum"],                                                                                                
-        [2,"Lorem ipsum"],                                                                                                
+        [-4,"    Lorem ipsum"],
+        [-3,"   Lorem ipsum"],
+        [-2,"  Lorem ipsum"],
+        [-1," Lorem ipsum"],
+        [0,"Lorem ipsum"],
+        [1,"Lorem ipsum"],
+        [2,"Lorem ipsum"],
         [3,"Lorem ipsum"],
         [4,"Lorem ipsum"],
         [5,"Lorem ipsum"],
@@ -291,46 +291,46 @@ repeatedly_overwrite_lorem_ipsum_with_empty_string_no_cutting(Goal,T) :-
         [15,"Lorem ipsum    "],
         [16,"Lorem ipsum     "]]).
 
-test("Char-by-Char 1",[true(T)]) :- 
+test("Char-by-Char 1",[true(T)]) :-
    repeatedly_overwrite_the_empty_string(overwrite_using_chars,T).
 
-test("Runs 1",[true(T)]) :- 
+test("Runs 1",[true(T)]) :-
    repeatedly_overwrite_the_empty_string(overwrite_using_runs,T).
 
-test("Char-by-Char 2",[true(T)]) :- 
+test("Char-by-Char 2",[true(T)]) :-
    repeatedly_overwrite_lorem_ipsum_no_cutting(overwrite_using_chars,T).
 
-test("Runs 2",[true(T)]) :- 
+test("Runs 2",[true(T)]) :-
    repeatedly_overwrite_lorem_ipsum_no_cutting(overwrite_using_runs,T).
 
-test("Char-by-Char 3",[true(T)]) :- 
+test("Char-by-Char 3",[true(T)]) :-
    repeatedly_overwrite_lorem_ipsum_cutting_upper(overwrite_using_chars,T).
 
-test("Runs 3",[true(T)]) :- 
+test("Runs 3",[true(T)]) :-
    repeatedly_overwrite_lorem_ipsum_cutting_upper(overwrite_using_runs,T).
 
-test("Char-by-Char 4",[true(T)]) :- 
+test("Char-by-Char 4",[true(T)]) :-
    repeatedly_overwrite_lorem_ipsum_cutting_lower(overwrite_using_chars,T).
 
-test("Runs 4",[true(T)]) :- 
+test("Runs 4",[true(T)]) :-
    repeatedly_overwrite_lorem_ipsum_cutting_lower(overwrite_using_runs,T).
 
-test("Char-by-Char 5",[true(T)]) :- 
+test("Char-by-Char 5",[true(T)]) :-
    repeatedly_overwrite_lorem_ipsum_cutting_both_sides(overwrite_using_chars,T).
 
-test("Runs 5",[true(T)]) :- 
+test("Runs 5",[true(T)]) :-
    repeatedly_overwrite_lorem_ipsum_cutting_both_sides(overwrite_using_runs,T).
 
-test("Char-by-Char 6",[true(T)]) :- 
+test("Char-by-Char 6",[true(T)]) :-
    repeatedly_overwrite_lorem_ipsum_with_empty_string_cutting_both_sides(overwrite_using_chars,T).
 
-test("Runs 6",[true(T)]) :- 
+test("Runs 6",[true(T)]) :-
    repeatedly_overwrite_lorem_ipsum_with_empty_string_cutting_both_sides(overwrite_using_runs,T).
- 
-test("Char-by-Char 7",[true(T)]) :- 
+
+test("Char-by-Char 7",[true(T)]) :-
    repeatedly_overwrite_lorem_ipsum_with_empty_string_no_cutting(overwrite_using_chars,T).
 
-test("Runs 7",[true(T)]) :- 
+test("Runs 7",[true(T)]) :-
    repeatedly_overwrite_lorem_ipsum_with_empty_string_no_cutting(overwrite_using_runs,T).
 
 :- end_tests(string_overwrite).

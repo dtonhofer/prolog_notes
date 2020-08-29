@@ -4,7 +4,7 @@
 /*
 
 ?- run_tests.
-% PL-Unit: string_overwrite_performance 
+% PL-Unit: string_overwrite_performance
 Looping calls to string_overwrite using runs
 % 28,637,889 inferences, 7.443 CPU in 7.477 seconds (100% CPU, 3847478 Lips)
 Looping calls to string_overwrite using chars
@@ -20,7 +20,7 @@ true.
 :- begin_tests(string_overwrite_performance).
 
 % ---
-% Use tabling to cache the "list of chars" 
+% Use tabling to cache the "list of chars"
 % ---
 
 :- table prepare_list_of_chars/2.
@@ -32,7 +32,7 @@ prepare_list_of_chars(Chars,L) :-
 % ---
 % Random string of characters, creates an atom of string
 % ---
- 
+
 create_random_string(S,Len,Want) :-
    length(Selected,Len),
    prepare_list_of_chars(Chars,L),
@@ -44,14 +44,14 @@ create_random_string(S,Len,Want) :-
 % Actual overwriting
 % ---
 
-overwrite(Lower,Upper,UpperPos,UpperPosStop,CutLeft,CutRight,Goal,Want) :- 
-   UpperPos =< UpperPosStop,!, 
+overwrite(Lower,Upper,UpperPos,UpperPosStop,CutLeft,CutRight,Goal,Want) :-
+   UpperPos =< UpperPosStop,!,
    call(Goal,Lower,Upper,UpperPos,CutLeft,CutRight,Result,Want),
    debug(performance,"~q ~q ~d --> ~q",[Lower,Upper,UpperPos,Result]),
    UpperPosNext is UpperPos+1,
    overwrite(Lower,Upper,UpperPosNext,UpperPosStop,CutLeft,CutRight,Goal,Want).
- 
-overwrite(_,_,UpperPos,UpperPosStop,_,_,_,_) :- 
+
+overwrite(_,_,UpperPos,UpperPosStop,_,_,_,_) :-
    UpperPos > UpperPosStop.
 
 % ---
@@ -79,7 +79,7 @@ test("Looping") :-
 
 :- end_tests(string_overwrite_performance).
 
-   
+
 
 
 

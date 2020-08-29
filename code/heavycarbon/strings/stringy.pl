@@ -10,23 +10,23 @@
 % This is a nice exercise in thinking about how to approach writing
 % Prolog predicates that give information on failure.
 
-% TODO: Capture "wrong direction" problems right at entry and throw. 
+% TODO: Capture "wrong direction" problems right at entry and throw.
 %       Throw early while the semantics of the problem are still visible is good,
 %       even if it slows down the program. Hell, wrap things in assertions if you must,
 %       so the code can be removed later.
 % TODO: Better exceptions using throwme/2. The ISO throwers are inadequate.
-% TODO: Replace -> by meta-predicates. Test slowdown. 
+% TODO: Replace -> by meta-predicates. Test slowdown.
 % TODO: Add some test cases
 
 % ==============================================================================
 % A few very simple predicates that try to make "manipulation of strings"
-% and "manipulation of atoms" a bit more uniform. 
+% and "manipulation of atoms" a bit more uniform.
 %
 % In particular, in SWI Prolog there currently function-like predicates
 % taking strings or atoms as input (they are converted as needed)
 % and generating either strings or atoms as output depending on the name of
 % the predicate. Here, the selection of whether the output should be a
-% string or an atom is made using a third atom argument, which is either 
+% string or an atom is made using a third atom argument, which is either
 % 'string' or 'atom'
 % ==============================================================================
 
@@ -44,7 +44,7 @@ stringy(X) :-
 % ---
 % This is not needed a atom_length/2 and string_length/2 works for both strings
 % and atoms, but it removes the specificity of using atom_length/2 or
-% string_length/2 from the program text. 
+% string_length/2 from the program text.
 %
 % This only works in direction +S -> -L. May throw.
 % ---
@@ -63,12 +63,12 @@ stringy_length(S,L) :-
 
 % ---
 % This is not needed as atom_length/2 and string_length/2 work for both strings
-% and atoms, but it removes specificity of using atom_chars/2 or string_chars/2 
+% and atoms, but it removes specificity of using atom_chars/2 or string_chars/2
 % from the program text.
 %
 % This works both in directions:
 %
-% (+S->-Chars | -Want) (preferentially), where "Want" is unified with 'string' or 
+% (+S->-Chars | -Want) (preferentially), where "Want" is unified with 'string' or
 % 'atom' or% "other" depending on the type of S.
 %
 % (+Chars->-S | +Want), where "Want" determines whether you get a string or an
@@ -83,7 +83,7 @@ stringy_chars(S,Chars,Want) :-
    ;
    var(S)
    -> stringy_chars_when_S_is_var(S,Chars,Want)
-   ; 
+   ;
    domain_error(_,_).     % placeholder throw; don't bother with ISO; TODO
 
 stringy_chars_when_S_is_stringy(S,Chars,Want) :-

@@ -17,7 +17,7 @@ test("convert atom to string", true(Str == "foo")) :-
    convert_to_string(foo,Str).
 
 % But what floating-point printing style is really used???
-test("convert float to string", true(Str == "1.2345")) :- 
+test("convert float to string", true(Str == "1.2345")) :-
    convert_to_string(1.2345,Str).
 
 test("convert int to string", true(Str == "12345")) :-
@@ -53,13 +53,13 @@ test("fail verifying atom to string",fail) :-
    convert_to_string(foo,"oof").
 
 % If Prolog were more hardcore, this would work with a type constraint on _In & _Out
-test("fail converting freshvar to string",error(instantiation_error)) :- 
+test("fail converting freshvar to string",error(instantiation_error)) :-
    convert_to_string(_In,_Out).
- 
-test("fail converting list of stuff to string",error(type_error(_,_))) :- 
+
+test("fail converting list of stuff to string",error(type_error(_,_))) :-
    convert_to_string([aaa,bbb],_).
 
-test("fail converting dict to string",error(type_error(_,_))) :- 
+test("fail converting dict to string",error(type_error(_,_))) :-
    convert_to_string(foo{},_).
 
 :- end_tests(string_conversion).
@@ -81,7 +81,7 @@ test("convert string to atom", true(A == foo)) :-
    convert_to_atom("foo",A).
 
 % But what floating-point printing style is really used???
-test("convert float to atom", true(A == '1.2345')) :- 
+test("convert float to atom", true(A == '1.2345')) :-
    convert_to_atom(1.2345,A).
 
 test("convert int to atom", true(A == '12345')) :-
@@ -117,13 +117,13 @@ test("fail verifying atom to atom",fail) :-
    convert_to_atom(foo,oof).
 
 % If Prolog were more hardcore, this would work with a type constraint on _In & _Out
-test("fail converting freshvar to atom",error(instantiation_error)) :- 
+test("fail converting freshvar to atom",error(instantiation_error)) :-
    convert_to_atom(_In,_Out).
- 
-test("fail converting list of stuff to atom",error(type_error(_,_))) :- 
+
+test("fail converting list of stuff to atom",error(type_error(_,_))) :-
    convert_to_atom([aaa,bbb],_).
 
-test("fail converting dict to atom",error(type_error(_,_))) :- 
+test("fail converting dict to atom",error(type_error(_,_))) :-
    convert_to_atom(foo{},_).
 
 :- end_tests(atom_conversion).
@@ -143,7 +143,7 @@ test("Second argument may be fresh, and takes up stringified int", true(Out == "
 test("Second argument may be fresh, and takes up stringified atom", true(Out == "foo")) :-
    leveling_string(foo,Out).
 
-test("Second argument can be stated as string") :- 
+test("Second argument can be stated as string") :-
    leveling_string("hello","hello").
 
 test("Second argument can be stringified, must match first string argument: case of atom") :-

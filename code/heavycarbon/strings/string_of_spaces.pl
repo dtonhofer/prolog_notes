@@ -21,10 +21,10 @@ string_of_spaces(N,Spaces) :-
    !,
    stringy_ensure(Spaces,Str,string),  % make sure it's a string for "==" later; may throw
    string_length(Str,N),               % length is now known
-   string_of_spaces(N,StrNew),         % regenerate spacey string for comparison 
+   string_of_spaces(N,StrNew),         % regenerate spacey string for comparison
    Str == StrNew.                      % must be the same (i.e. fail if Spaces is not "spacey")
-   
-string_of_spaces(N,Spaces) :-          
+
+string_of_spaces(N,Spaces) :-
    var(Spaces),nonvar(N),              % case: "generate a string"
    !,
    gen_string_of_spaces(N,Spaces).
