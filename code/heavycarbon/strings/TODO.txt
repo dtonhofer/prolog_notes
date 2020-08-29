@@ -1,0 +1,2 @@
+- Add justify left/right/middle and by character
+- Fix the placeholder exceptions.
