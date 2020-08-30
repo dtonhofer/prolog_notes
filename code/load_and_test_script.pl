@@ -103,6 +103,7 @@ Conventions
 */
 
 :- use_module(library('heavycarbon/strings/conversion.pl')).
+:- use_module(library('heavycarbon/strings/stringy.pl')).
 :- use_module(library('heavycarbon/strings/string_of_spaces.pl')).
 :- use_module(library('heavycarbon/strings/string_overwrite.pl')).
 :- use_module(library('heavycarbon/strings/justify.pl')).

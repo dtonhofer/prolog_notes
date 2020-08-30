@@ -78,7 +78,7 @@ stringy_chars(S,Chars,Want) :-
    switch(
       stringy(S)  , stringy_chars_when_S_is_stringy(S,Chars,Want),
       var(S)      , stringy_chars_when_S_is_var(S,Chars,Want),
-      domain_error(_,_)).      % placeholder throw
+      domain_error(stringy_chars,bad_value)).      % placeholder throw; replace by throwme
 
 stringy_chars_when_S_is_stringy(S,Chars,Want) :-
    switch(
@@ -91,7 +91,7 @@ stringy_chars_when_S_is_var(S,Chars,Want) :-
       Want==atom   , atom_chars(S,Chars),
       Want==string , string_chars(S,Chars),
       var(Want)    , (Want=string,string_chars(S,Chars)), % force to string processing
-      domain_error(_,_)).     % placeholder throw
+      domain_error(stringy_chars,bad_value)).      % placeholder throw; replace by throwme
 
 % ---
 % Concatenate mode: concatenate two stringy things into a third, which shall have the type given
