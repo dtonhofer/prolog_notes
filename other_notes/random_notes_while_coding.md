@@ -2,6 +2,74 @@
 
 None of these may be based in reality or be good ideas.
 
+## Again, no fear about:
+
+- Creating small modules
+- Mercilessly adding assertions (they can always be rewritten later automatically). It is easier to comment them out than to add them later or look for bugs due to badly understood requirements not caught by missing runtime checks. There already is no typing, why hurt onself?
+- In fact there should be a specific assertion for checking data flow direction.
+
+## Prolog should have a built-in truth value reification
+
+As in:
+
+```
+reify(odd(Width),OddWidth),
+reify((stringy_length(Text,TextLen),odd(TextLen)),OddText), 
+```
+
+Why do I need to program this out?
+
+## Predicate arguments should be named
+
+Every modern production system has named parameters. Why not have them here? Slow? Well, why spare the compiler??
+
+## Don't care values
+
+Passing a `_` as don't care parameter is okay!
+
+## No fear of assertions
+
+They are quite flexible. One can pack them into dedicated predicates (wasn't there a Clojure Spec like declaration language for Prolog somewhere)
+
+```
+assertions_intro_for_justify(Text,Width,How,Want,Offset) :-
+   assertion(stringy(Text)),
+   assertion(integer(Width), Width >= 0)),
+   assertion(var(How);memberchk(How,[left,right,center,center_left,center_right]), % var -> left
+   assertion(var(Want);memberchk(Want,[atom,string])).                             % var -> string
+   assertion(var(Offset);integer(Offset)),                                         % var -> 0
+   assertion(var(CutLeft);memberchk(CutLeft,[true,false])),                        % var -> true
+   assertion(var(CutRight);memberchk(CutRight,[true,false])),                      % var -> true
+```
+
+Much more flexible than the `must_be/2` predicates. The`must_be/2` are brittle, there is always something not right or something is missing.
+
+If you can do meta-calls as above, why go back to C-stlye individual parameter checking?
+
+It is recommended to do `must_be/2` calls over assertions but the only reason I can see why one would **that** is "speed" and maybe "expection formatting". It's not worth it.
+
+But for real goodness, the assertions need access to the name of the variables. Again, Prolog should allow direct access to the current predicate/clause/line in the source.
+
+## Get the VAR out of the head, for god's sake
+
+Again, Prolog needs a way to specify that an arg in the head CANNOT BE an unbound variable (in effect, I want to fail the predicate if it is unbound, not accidentally unify the unbound variable). How is it possible that still doesn't exist after 40+ years?
+
+## I despise ISO Exceptions more and more
+
+ISO Exceptions are extremely lousy, brittle and constraining. 
+
+**Have no compunction about avoid avoiding them!**
+
+The only problem is printing of the exception at the toplevel. But nobody ever complains that you shouldn't create new exceptions in Java because the toplevel printing doesn't cater for those!!
+
+It is a false problem, actually, an implementation problem: Prolog is not OO, so finding the right code to print an exception's parameters is "hard". If you need that, **"the exception should carry a printing method with it.** This is a high-level language, goddamit it.
+  
+## Using dicts for option ferrying.
+
+Sometimes one need to transfer a bunch of options. SWI-Prolog dicts are exceelent for that. They also make clear in why way data flows. They are much more immutable functional structures than logical/refinement strcuture.
+
+Performance problem? Fell, hell. Give it to the compiler.
+  
 ## Function vs non-function
 
 Often computation is function-like:
