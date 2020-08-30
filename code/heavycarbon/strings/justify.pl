@@ -95,11 +95,11 @@ justify_helper(center,Prefer,Text,Width,Offset,CutLeft,CutRight,Result,Want) :-
 %                             ActualOffset := (Width-1)/2 - (TextLen-1)/2 + Correction + (user-requested offset)
 % ---
 
-:- debug(actual_offset).
+% :- debug(actual_offset).
 
 actual_offset(IsOddTextLen,IsOddWidth,TextLen,Width,Offset,Prefer,ActualOffset) :-
    correction(Prefer,IsOddTextLen,IsOddWidth,Correction),
-   debug(actual_offset,"TextLen = ~d ~q  Width = ~d ~q",[TextLen,IsOddTextLen,Width,IsOddWidth]),
+   % debug(actual_offset,"TextLen = ~d ~q  Width = ~d ~q",[TextLen,IsOddTextLen,Width,IsOddWidth]),
    (IsOddWidth   -> (HalfWidth    is (Width-1)/2)   ; (HalfWidth    is Width/2)), assertion(integer(HalfWidth)),
    (IsOddTextLen -> (HalfTextLen  is (TextLen-1)/2) ; (HalfTextLen  is TextLen/2)), assertion(integer(HalfTextLen)),
    ActualOffset is (HalfWidth - HalfTextLen + Correction + Offset).

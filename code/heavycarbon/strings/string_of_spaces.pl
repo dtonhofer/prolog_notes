@@ -4,10 +4,11 @@
    ]).
 
 :- use_module(library('heavycarbon/strings/stringy.pl')).
+:- include(library('heavycarbon/support/meta_helpers_nonmodular.pl')). % Not a module, just (meta) predicates
 
-% This predicate deserves to be tabled!
+% This predicate deserves to be tabled, but if you do that, the program doesn't return
 
-:- table string_of_spaces/2.
+% :- table string_of_spaces/2.
 
 % TODO: There should be something similar for atoms
 
@@ -37,7 +38,7 @@ string_of_spaces(N,Spaces) :-
    var(Spaces),var(N),                 % case: "generate pairs"
    !,
    between(0,inf,N),
-   gen_string_of_spaces(N,Spaces).
+   if_then_else(gen_string_of_spaces(N,Spaces),true,throw("Problem in gen_string_of_spaces/2")). 
 
 % ---
 % Actually generate (possibly large) strings rapidly using string_concat/3.
