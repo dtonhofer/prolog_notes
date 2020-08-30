@@ -5,6 +5,10 @@
 
 :- use_module(library('heavycarbon/strings/stringy.pl')).
 
+% This predicate deserves to be tabled!
+
+:- table string_of_spaces/2.
+
 % TODO: There should be something similar for atoms
 
 % ==============================================================================
