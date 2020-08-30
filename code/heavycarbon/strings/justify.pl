@@ -1,6 +1,9 @@
 :- module(heavycarbon_strings_justify,
    [
-    justify_left/5    % justify_left(Text,Width,Result,Want,Nocheck)
+    justify_left/3    % justify_left(Text,Width,Result)
+   ,justify_right/3   % justify_right(Text,Width,Result)
+   ,justify_center/3  % justify_center(Text,Width,Result)
+   ,justify_left/5    % justify_left(Text,Width,Result,Want,Nocheck)
    ,justify_right/5   % justify_right(Text,Width,Result,Want,Nocheck)
    ,justify_center/5  % justify_center(Text,Width,Result,Want,Nocheck)
    ,justify/10        % justify(Text,Width,How,CutLeft,CutRight,Prefer,Offset,Result,Want,Nocheck)
@@ -11,14 +14,41 @@
 :- use_module(library('heavycarbon/strings/string_of_spaces.pl')). 
 :- use_module(library('heavycarbon/strings/string_overwrite.pl')). 
 
-% The little predicate may be called a lot of times, so let's not become too slow when coding!
-% (This is not currently the case, there are meta-calls in there and checks and everything.)
-
-% TODO: Test cases!
-
 % ---
-% Simpler calls
+% NOTE!!
+% The little predicate may be called a lot of times (e.g. when formatting tables), so let's not become
+% too slow when running it!
+% (This is not currently the case, there are meta-calls in there and checks and everything. Oh well,
+% why have GHz CPUs when you can't use them!)
 % ---
+
+% ===
+% Simple calls that don't check and always return strings
+%
+% Text     : The text to justify (spaces will be added)
+% Width    : The width of the field in which the text shall be justified (an integer >= 0)
+% Result   : The Result, a string (not an atom)
+% ===
+
+justify_left(Text,Width,Result) :-
+   justify(Text,Width,left,_,_,_,_,Result,string,false).
+
+justify_right(Text,Width,Result) :-
+   justify(Text,Width,right,_,_,_,_,Result,string,false).
+
+justify_center(Text,Width,Result) :-
+   justify(Text,Width,center,_,_,_,_,Result,string,false).
+
+% ===
+% Simple calls with reduced parameter count
+%
+% Text     : The text to justify (spaces will be added)
+% Width    : The width of the field in which the text shall be justified (an integer >= 0)
+% Result   : The Result, an atom or a string depending on 'Want'
+%
+% Want     : One of 'atom' or 'string' to indicate what the "Result" should be. No default is accepted.
+% Nocheck  : Bypass assertions on intro (if they haven't been compiled-out already). If 'true', then bypass. Anything else, including _: do not bypass.
+% ===
 
 justify_left(Text,Width,Result,Want,Nocheck) :-
    justify(Text,Width,left,_,_,_,_,Result,Want,Nocheck).
@@ -29,8 +59,10 @@ justify_right(Text,Width,Result,Want,Nocheck) :-
 justify_center(Text,Width,Result,Want,Nocheck) :-
    justify(Text,Width,center,_,_,_,_,Result,Want,Nocheck).
 
-% ---
+% ===
 % Perform text justification, the whole enchilada.
+%
+% Prolog abosolutely needs name-based parameter passing. Productions systems traditionally have them....
 %
 % Text     : The text to justify (spaces will be added)
 % Width    : The width of the field in which the text shall be justified (an integer >= 0)
@@ -42,7 +74,7 @@ justify_center(Text,Width,Result,Want,Nocheck) :-
 % Offset   : An offset to apply in any case. For a positive value: When How == 'left', move rightwards, When How == 'right', move leftwards, When How == 'center', move leftwards. Leave at _ for 0.
 % Nocheck  : Bypass assertions on intro (if they haven't been compiled-out already). If 'true', then bypass. Anything else, including _: do not bypass.
 % Result   : The Result, an atom or a string depending on 'Want'
-% ---
+% ===
 
 justify(Text,Width,How,CutLeft,CutRight,Prefer,Offset,Result,Want,Nocheck) :-
    unless((Nocheck == true),assertions_intro_for_justify(Text,Width,How,CutLeft,CutRight,Prefer,Offset,Want)),
