@@ -6,10 +6,6 @@
 :- use_module(library('heavycarbon/strings/stringy.pl')).
 :- include(library('heavycarbon/support/meta_helpers_nonmodular.pl')). % Not a module, just (meta) predicates
 
-% This predicate deserves to be tabled, but if you do that, the program doesn't return
-
-% :- table string_of_spaces/2.
-
 % TODO: There should be something similar for atoms
 
 % ==============================================================================
@@ -19,6 +15,26 @@
 %
 % N      : integer >= 0
 % Spaces : a string on output (accepts the same stuff atom_string/2 accepts on input)
+%
+% Another way of "generating a string" is: 
+%
+%    length(Codes, N),
+%    maplist(=(0'\s), Codes),
+%    string_codes(Codes, String).
+%
+% The corresponding check is:
+%
+%    string_codes(Codes, String).
+%    maplist(=(0'\s), Codes),
+%
+% Another way of checking is:
+%
+%    split_string(Spaces, "", " ", [""]).
+%
+% Another way of generating is:
+%
+%    format(string(Spaces), '~t~*|', [2]).
+%
 % ==============================================================================
 
 string_of_spaces(N,Spaces) :-
