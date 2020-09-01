@@ -21,7 +21,7 @@ Why do I need to program this out?
 
 ## Predicate arguments should be named
 
-Every modern production system has named parameters. Why not have them here? Slow? Well, why spare the compiler??
+Every modern production system has named parameters. Why not have them here? Well, why spare the compiler? OTOH, we now do have dicts.
 
 ## Don't care values
 
@@ -577,6 +577,25 @@ Again, editor support for such operaions would be a great help.
 Arguments appearing in the head should be accessible by special variables like `$ARG1`, `$ARG2` etc. 
 With this, Then one can write clauses which can both have structure in the head (for unification) and which can 
 access that structure in the body w/o  the need to reconstruct it by hand: `foo([X,Y|Z],A,B) :- g($ARG1).` instead of `foo([X,Y|Z],A,B) :- g([X,Y|Z]).`
+
+Jan wielemaker writes:
+
+> The normal Prolog idiom is
+> 
+> ```
+> f(A1, A2) :-
+>     A1 = h(X),
+>     A2 = h(Y),
+>     foo(A1, A2).
+> ```
+>
+> Currently the price is that this stops this clause to be considered for clause indexing. That
+> should hopefully change at some point. Technically it should be not to hard what you propose.
+> I have my doubt it is worth breaking the uniformity for this reason. Note that (also not implemented),
+> the implementation could detect compound arguments being passed to subgoals and simply pass the term
+> rather than building it again.
+>
+> Ideally one (or both) of these optimizations should be implemented.
 
 ## Add HERE documents
 
