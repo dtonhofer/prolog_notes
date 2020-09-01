@@ -12,9 +12,10 @@
 % Generating/Recognizing/Verifying "strings made of spaces"
 %
 % string_of_spaces(?N,?Spaces)
+%   N      : integer >= 0
+%   Spaces : a string on output (accepts the same stuff atom_string/2 accepts on input)
 %
-% N      : integer >= 0
-% Spaces : a string on output (accepts the same stuff atom_string/2 accepts on input)
+% ------------------------------------------------------------------------------
 %
 % Another way of "generating a string" is: 
 %
@@ -22,19 +23,18 @@
 %    maplist(=(0'\s), Codes),
 %    string_codes(Codes, String).
 %
-% The corresponding check is:
+% Or even like this:
+%
+%    format(string(Spaces), '~t~*|', [2]).  % two spaces
+%
+% Another way of checking whether a string contains spaces only is:
 %
 %    string_codes(Codes, String).
 %    maplist(=(0'\s), Codes),
 %
-% Another way of checking is:
+% Or even like this:
 %
 %    split_string(Spaces, "", " ", [""]).
-%
-% Another way of generating is:
-%
-%    format(string(Spaces), '~t~*|', [2]).
-%
 % ==============================================================================
 
 string_of_spaces(N,Spaces) :-
