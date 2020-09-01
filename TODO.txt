@@ -1,3 +1,6 @@
+- More coding
+  - Export the values from time/1 instead of dumping them to STDERR (see the statistics.pl file)
+   
 - Reading:
    - Read Philip Wadler's "How to Declare an Imperative"
    - ..and also that paper on Delimited Continuations
