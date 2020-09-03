@@ -704,7 +704,7 @@ throw_existence_error(Pred,Type,Term,ExCode,Options) :
      - [`catch/3`](https://www.swi-prolog.org/pldoc/doc_for?object=catch/3)
      - [`throw/1`](https://www.swi-prolog.org/pldoc/doc_for?object=throw/1)
      - [`catch_with_backtrace/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=catch_with_backtrace/3)
-     - [Urgeny of exceptions](https://eu.swi-prolog.org/pldoc/man?section=urgentexceptions)
+     - [Urgency of exceptions](https://eu.swi-prolog.org/pldoc/man?section=urgentexceptions)
      - [Debugging and exceptions](https://eu.swi-prolog.org/pldoc/man?section=debugexceptions)
      - [The exception term](https://eu.swi-prolog.org/pldoc/man?section=exceptterm)
      - [Printing messages](https://eu.swi-prolog.org/pldoc/man?section=printmsg) (from exceptions, but can be used more generally)
