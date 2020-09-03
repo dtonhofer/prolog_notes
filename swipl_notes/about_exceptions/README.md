@@ -707,8 +707,6 @@ throw_existence_error(Pred,Type,Term,ExCode,Options) :
      - [Urgency of exceptions](https://eu.swi-prolog.org/pldoc/man?section=urgentexceptions)
      - [Debugging and exceptions](https://eu.swi-prolog.org/pldoc/man?section=debugexceptions)
      - [The exception term](https://eu.swi-prolog.org/pldoc/man?section=exceptterm)
-     - [Printing messages](https://eu.swi-prolog.org/pldoc/man?section=printmsg) (from exceptions, but can be used more generally)
-     - [The exception term](https://www.swi-prolog.org/pldoc/man?section=exceptterm)
   - [B.6 Hooks using the exception predicate](https://eu.swi-prolog.org/pldoc/man?section=exception3)
   - [A.14 library(debug): Print debug messages and test assertions](https://eu.swi-prolog.org/pldoc/man?section=debug)
      - [assertion/1](https://eu.swi-prolog.org/pldoc/doc_for?object=assertion/1)
@@ -716,4 +714,6 @@ throw_existence_error(Pred,Type,Term,ExCode,Options) :
      - [`term_message//1`](https://www.swi-prolog.org/pldoc/doc/_SWI_/boot/messages.pl?show=src#term_message//1).
      - This is file `${DISTRO}/lib/swipl/boot/messages.pl`
      - See also this report about `jpl.pl` by Jan Burse: [Issue#59](https://github.com/SWI-Prolog/packages-jpl/issues/59)
-     - [Tutorial](http://www.pathwayslms.com/swipltuts/message/index.html) on printing messages by Anne Ogborn.
+  - [Printing messages](https://eu.swi-prolog.org/pldoc/man?section=printmsg) from exceptions, but can be used more generally. See 
+    also Anne Ogborn's [Tutorial](http://www.pathwayslms.com/swipltuts/message/index.html) on printing messages
+     
