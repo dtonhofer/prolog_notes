@@ -784,7 +784,7 @@ For building/rebuilding
       
 - build docu        : Configure-Build-Test-Install the distro meant for testing documentation.
                       If a build already exists, it is removed.
-- rebuild doc       : Same as above, without removal of existing build.
+- rebuild docu      : Same as above, without removal of existing build.
 
 - build jpl         : Configure-Build-Test-Install the distro meant for testing jpl.
                       If a build already exists, it is removed.
