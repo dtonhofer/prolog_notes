@@ -1,5 +1,7 @@
 # SWI-Prolog Exceptions
 
+_References to the SWI-Prolog manual pages and more are collected at the tail end of this page._
+
 ## Throwing exceptions 
 
 Predicate [`throw/1`](https://www.swi-prolog.org/pldoc/doc_for?object=throw/1) takes a single argument, the _exception term_:
