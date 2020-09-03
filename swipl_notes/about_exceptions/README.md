@@ -1,30 +1,5 @@
 # SWI-Prolog Exceptions
 
-## Pages of interest in the SWI-Prolog manual
-
-  - [`library(error)`](https://eu.swi-prolog.org/pldoc/man?section=error) - Has a description of exception meanings & usage
-  - [Chapter 4.10: Exception handling](https://eu.swi-prolog.org/pldoc/man?section=exception)
-     - [`catch/3`](https://www.swi-prolog.org/pldoc/doc_for?object=catch/3)
-     - [`throw/1`](https://www.swi-prolog.org/pldoc/doc_for?object=throw/1)
-     - [`catch_with_backtrace/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=catch_with_backtrace/3)
-     - [Urgeny of exceptions](https://eu.swi-prolog.org/pldoc/man?section=urgentexceptions)
-     - [Debugging and exceptions](https://eu.swi-prolog.org/pldoc/man?section=debugexceptions)
-     - [The exception term](https://eu.swi-prolog.org/pldoc/man?section=exceptterm)
-     - [Printing messages](https://eu.swi-prolog.org/pldoc/man?section=printmsg) (from exceptions, but can be used more generally)
-     - [The exception term](https://www.swi-prolog.org/pldoc/man?section=exceptterm)
-  - [B.6 Hooks using the exception predicate](https://eu.swi-prolog.org/pldoc/man?section=exception3)
-  - [A.14 library(debug): Print debug messages and test assertions](https://eu.swi-prolog.org/pldoc/man?section=debug)
-     - [assertion/1](https://eu.swi-prolog.org/pldoc/doc_for?object=assertion/1)
-  - Code which translates exception terms to cleartext messages (generally on the Prolog Toplevel), via DCG:  
-     - [`term_message//1`](https://www.swi-prolog.org/pldoc/doc/_SWI_/boot/messages.pl?show=src#term_message//1).
-     - This is file `${DISTRO}/lib/swipl/boot/messages.pl`
-     - See also this report about `jpl.pl` by Jan Burse: [Issue#59](https://github.com/SWI-Prolog/packages-jpl/issues/59)
-     - [Tutorial](http://www.pathwayslms.com/swipltuts/message/index.html) on printing messages by Anne Ogborn.
-     
-## Some reading
-
-  - [Coding Guidelines for Prolog](https://arxiv.org/abs/0911.2899) offers a bit of commentary on _when_ to throw, but does not go further.
-
 ## Throwing exceptions 
 
 Predicate [`throw/1`](https://www.swi-prolog.org/pldoc/doc_for?object=throw/1) takes a single argument, the _exception term_:
@@ -710,3 +685,33 @@ throw_existence_error(Pred,Type,Term,ExCode,Options) :
    ;
    fail. % actually unnecessary to write this, but it's good for the next programmer
 ```
+## Reading
+
+### Coding guidelines say nothing
+
+[Coding Guidelines for Prolog](https://arxiv.org/abs/0911.2899) offers a bit of commentary on _when_ to throw, but does not go further.
+
+### An alternative to Exceptions
+
+[Package 'condition'](https://eu.swi-prolog.org/pack/list?p=condition) provides a _Condition_ system as in Common Lisp. (I haven't tried it yet)
+   
+### Pages of interest in the SWI-Prolog manual
+
+  - [`library(error)`](https://eu.swi-prolog.org/pldoc/man?section=error) - Has a description of exception meanings & usage
+  - [Chapter 4.10: Exception handling](https://eu.swi-prolog.org/pldoc/man?section=exception)
+     - [`catch/3`](https://www.swi-prolog.org/pldoc/doc_for?object=catch/3)
+     - [`throw/1`](https://www.swi-prolog.org/pldoc/doc_for?object=throw/1)
+     - [`catch_with_backtrace/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=catch_with_backtrace/3)
+     - [Urgeny of exceptions](https://eu.swi-prolog.org/pldoc/man?section=urgentexceptions)
+     - [Debugging and exceptions](https://eu.swi-prolog.org/pldoc/man?section=debugexceptions)
+     - [The exception term](https://eu.swi-prolog.org/pldoc/man?section=exceptterm)
+     - [Printing messages](https://eu.swi-prolog.org/pldoc/man?section=printmsg) (from exceptions, but can be used more generally)
+     - [The exception term](https://www.swi-prolog.org/pldoc/man?section=exceptterm)
+  - [B.6 Hooks using the exception predicate](https://eu.swi-prolog.org/pldoc/man?section=exception3)
+  - [A.14 library(debug): Print debug messages and test assertions](https://eu.swi-prolog.org/pldoc/man?section=debug)
+     - [assertion/1](https://eu.swi-prolog.org/pldoc/doc_for?object=assertion/1)
+  - Code which translates exception terms to cleartext messages (generally on the Prolog Toplevel), via DCG:  
+     - [`term_message//1`](https://www.swi-prolog.org/pldoc/doc/_SWI_/boot/messages.pl?show=src#term_message//1).
+     - This is file `${DISTRO}/lib/swipl/boot/messages.pl`
+     - See also this report about `jpl.pl` by Jan Burse: [Issue#59](https://github.com/SWI-Prolog/packages-jpl/issues/59)
+     - [Tutorial](http://www.pathwayslms.com/swipltuts/message/index.html) on printing messages by Anne Ogborn.
