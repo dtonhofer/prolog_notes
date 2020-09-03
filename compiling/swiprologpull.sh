@@ -4,6 +4,8 @@
 # https://mvnrepository.com/artifact/org.hamcrest/hamcrest/
 # https://mvnrepository.com/artifact/junit/junit/
 
+# set -x # Uncomment for tracing information
+
 # ===========================================================================
 # This is free and unencumbered software released into the public domain.
 # 
@@ -74,7 +76,7 @@ set -o nounset
 perso_github_account=https://github.com/dtonhofer
 swipl_github_account=https://github.com/SWI-Prolog
 system_install_dir=/usr/local/logic
-toplevel_dir_fq="$HOME/_WORK_ON_PROLOG/swiplmaking5"  # where to put stuff locally
+toplevel_dir_fq="$HOME/_WORK_ON_PROLOG/swiplmaking6"  # where to put stuff locally
 
 url_and_dir() {
    local finality=${1:-}                  # "jpl" or "docu" or "system"
@@ -219,8 +221,8 @@ clone() {
          exit 1
       fi
    else
-      # Which repo makes no sense if we are cloning for a system-wide build
-      which_repo=
+      # Which repo makes no sense if we are cloning for a system-wide build. Set it to "infra"
+      which_repo=infra
    fi
   
    # cd to finality-dependent subdir
@@ -664,22 +666,38 @@ build() {
       /bin/rm "$logfile"
    fi 
 
-   ctest -j 4  # Run tests concurrently 4-fold. See "man ctest" or "ctest --help"
+   # Run tests concurrently 4-fold. See "man ctest" or "ctest --help"
 
-   if [[ $? != 0 ]]; then
+   ctest -j 4 || {
       echo "The test failed!" >&2
       echo "More info in directory $(pwd)/Testing/Temporary/" >&2
       tree "Testing/Temporary" >&2
       echo "Check file '$(pwd)/${logfile}'" >&2
       exit 1
-   fi
+   }
    
    # Always grep for ERROR even in case of success. There may also be warnings, but
    # they are probably of low interest.
 
    if [[ -f "$logfile" ]]; then
-      grep ERROR "$logfile"
-      grep WARN "$logfile"
+      local errfile
+      errfile=$(mktemp) || {
+         echo "Could not create a temporary file to capture error messages -- exiting" >&2
+         exit 1
+      }
+      grep ERROR "$logfile" >> "$errfile"
+      grep WARN "$logfile"  >> "$errfile"
+      local size
+      size=$(stat --format=%s "$errfile")
+      if [[ $size -gt 0 ]]; then
+         echo "Some error were found in the logfile '$logfile' (probably not a problem)" >&2
+         echo >&2
+         echo "--------------" >&2
+         cat "$errfile" >&2
+         echo "--------------" >&2
+         echo >&2
+      fi
+      /bin/rm "$errfile"
    fi
  
    # Maybe install

@@ -1,0 +1,128 @@
+https://eu.swi-prolog.org/Download.html
+
+TL;DR for "Install development version on Linux"
+
+With `bash`.
+
+Building is done using [cmake](https://cmake.org/), and it uses [ninja-build](https://ninja-build.org/) to compute dependencies and build.
+
+   - `CMAKE` must have been installed (on Fedora this is done with `dnf install cmake` but your system may have some different package tool than `dnf`, for example `apt`)
+   - `ninja-build` must have been installed (on Fedora: `dnf install ninja-build`)
+
+Suppose we want to install SWIPL into this directory: 
+
+==
+/usr/local/logic/swipl
+==
+
+You can also install it somewhere in your home directory, or at some other place, it's up to you. If you install it in your home directory, there is no need to change to user `root` below.
+
+**As root:**
+
+==
+# Define a shell variable with the location value
+install_under=/usr/local/logic/
+==
+
+You may want to prepare the installation directory:
+
+==
+mkdir -p "$install_under"
+if [[ -d "${install_under}/swipl" ]]; then
+   # move existing out of the way!
+   mv "${install_under}/swipl" "${install_under}/swipl_$(date +%Y%m%d%H%M%S)"
+fi
+==
+
+**As non-root, in your home directory**
+
+==
+# Define a shell variable with the location value
+install_under=/usr/local/logic
+
+# Prepare everything in your home directory inside ~/COMPILE
+cd ~
+mkdir COMPILE; cd COMPILE
+# - - - - - main download - - - - - - -
+git clone https://github.com/SWI-Prolog/swipl-devel.git
+# - - - - - - - - - - - - - - - - - - -
+cd swipl-devel
+# - - - - - download SWIPL packages, which are git modules - - - -
+git submodule update --init
+# - - - - - - - - - - - - - - - - - - - 
+
+# (... Maybe read CMAKE.md for more info at this point ...)
+
+# You are now inside "swipl-devel"; not the ".." at the end of the cmake command
+# which tells cmake to look for its necessary files one level up
+
+mkdir build
+cd build/
+cmake -DCMAKE_INSTALL_PREFIX="${install_under}/swipl" -G Ninja ..
+==
+
+By default the system configures all features. In particular, GMP, ODBC, JPL, graphics.
+
+Soon you will see:
+
+==
+Build files have been written to: /home/myuser/COMPILE/swipl-devel/build
+==
+
+Then actually compile and run the tests:
+
+==
+ninja       # Compile it! A lot of energy comes out of the CPU as waste heat.
+ctest -j 4  # Run tests concurrently 4-fold. See "man ctest" or "ctest --help"
+==
+
+(Note that if you want to compile the Prolog-Java bridge "JPL", you will have to have a discoverable JDK on the system; for testing you will need the hamcrest jar and junit jar but this is going too far now)
+
+Then, **install as root**:
+
+==
+su  # become root
+# you are still inside "swipl-devel/build"
+ninja install
+==
+
+To make sure SWI-Prolog is found on-PATH, add the following script as "logic.sh" to /etc/profile.d/ :
+
+==
+#!/bin/bash
+
+function extend_path_for_swipl {
+   local SWIPL="/usr/local/logic/swipl"
+   local BIN="${SWIPL}/bin"
+   if [[ -d "${BIN}" ]]; then
+      export PATH="${BIN}:${PATH}"
+      export SWIPL_HOME="$SWIPL"
+   fi
+}
+
+extend_path_for_swipl
+unset extend_path_for_swipl
+==
+
+**Drop root privileges. As non-root:**
+
+==
+exec bash          # reloads PATH
+swipl              # run it
+
+Welcome to SWI-Prolog (threaded, 64 bits, version 8.1.32-10-g1885b056f)
+==
+
+## Build script
+
+Here is a little bash script I use to set up a some SWIPL versions I used for development. It's too complex for general use, but it's all-in-one and rather foolproof:
+
+[swiprologpull.sh](https://github.com/dtonhofer/prolog_notes/blob/master/compiling/swiprologpull.sh)
+
+   - Grab it 
+   - Modify the values at the top to your liking:
+      - `system_install_dir`
+      - `toplevel_dir_fq`
+   - The command to execute is: 
+      - `swiprologpull.sh clone system`  to download the SWI-Prolog distro
+      - `swiprologpull.sh build system`  to build the SWI-Prolog distro

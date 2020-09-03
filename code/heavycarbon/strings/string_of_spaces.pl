@@ -35,6 +35,14 @@
 % Or even like this:
 %
 %    split_string(Spaces, "", " ", [""]).
+%
+% See also:
+% 
+% https://swi-prolog.discourse.group/t/once-this-predicate-is-tabled-it-loops-forever/2848
+% 
+% And this code concerning "exponentiation" of an associative operation:
+%
+% https://swi-prolog.discourse.group/t/power-implementation/1937
 % ==============================================================================
 
 string_of_spaces(N,Spaces) :-

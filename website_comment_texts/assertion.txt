@@ -1,4 +1,14 @@
-https://eu.swi-prolog.org/pldoc/doc_for?object=assertion/1
+## When to use this?
+
+Jan Wielemaker writes:
+
+> Public APIs should not use assertion/1 to validate argument types. must_be/2
+> is intended for this. assertion/1 is intended to trap stuff that should not
+> happen unless there is a bug in the library.
+
+OTOH, in my opinion must_be/2 is too rigid (i.e. very C-like). It is able to perform a selected number of relatively basic type check, whereas you can give a whole goal to assertion/1 and go wild while staying readable.
+
+**WISH**: The ideal way would be to have a must_be/3 that doesn't throw but just fails with a proper error message on third place. Then you could call that through `assertionx(Key,Goal,Txt)` where `Key` is an atom by which the assertionx/3 can be switched on or off (by consulting the Prolog database, naturally) and `Txt` is the text to be put into a dedicated assertion error to throw on assertion violation. That would a non-ISO error because [there is no ISO standard assertion error](https://github.com/dtonhofer/prolog_notes/tree/master/swipl_notes/about_exceptions#list-of-the-iso-standard-exception-term) ... hard to believe!)
 
 ## Example
 
@@ -15,13 +25,13 @@ true.
 
 [trace]  ?- nodebug.
 true.
-?- 
+?-
 ==
 
 Running the following code non-interactively (i.e. from a loaded file), using catch_with_backtrace/3 instead of just catch/3
 
 ==
-main :- 
+main :-
    catch_with_backtrace(assertion(false),H,writeln(H)).
 
 :- main.
@@ -49,16 +59,17 @@ ERROR:    Assertion failed: user:false
   - See also must_be/2
   - Here's how CIAO Prolog does it: https://ciao-lang.org/ciao/build/doc/ciao.html/assertions_doc.html
      - ... and there is a corresponding package for SWI-Prolog: https://eu.swi-prolog.org/pack/list?p=assertions
+  - How assertion/1 works together with plunit: [One body with multiple tests using assertions](https://eu.swi-prolog.org/pldoc/man?section=testassertion)
 
 ## No message text
 
-It **might** be nice if this predicate also took a second argument (possibly a goal) to generate a text for the exception so as to inform the user in a more detailed fashion concerning the failure. Similar for Java: [14.10. The assert Statement](https://docs.oracle.com/javase/specs/jls/se14/html/jls-14.html#jls-14.10). 
+It **might** be nice if this predicate also took a second argument (possibly a goal) to generate a text for the exception so as to inform the user in a more detailed fashion concerning the failure. Similar for Java: [14.10. The assert Statement](https://docs.oracle.com/javase/specs/jls/se14/html/jls-14.html#jls-14.10).
 
 However, this is not planned to be added for now.
 
 ## Disabling assertions
 
-You need to rewrite them using goal_expansion/2. 
+You need to rewrite them using goal_expansion/2.
 
 For example, load and execute:
 
@@ -119,7 +130,7 @@ More complex body to goal_expansion/2 will also allow you to disable assertions 
 ## Source
 
 - The assertion-handling source is in lib/swipl/library/debug.pl`
-- The message printing source is in `/usr/local/logic/swipl/lib/swipl/boot/messages.pl`
+- The message printing source is in `lib/swipl/boot/messages.pl`
 
 The assertion-handling source is a bit esoteric:
 
@@ -154,7 +165,5 @@ assertion_failed.
 assertion_rethrow(time_limit_exceeded).
 assertion_rethrow('$aborted').
 ==
-
-
 
 

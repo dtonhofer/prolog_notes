@@ -1,6 +1,6 @@
 :- use_module(library('heavycarbon/strings/string_of_spaces.pl')).
 
-:- begin_tests(stringy_performance).
+:- begin_tests(string_of_spaces_performance).
 
 callcount(100000).
 max_string_size(500).
@@ -15,8 +15,10 @@ goal_direct(SzMax,Spaces) :-
    maplist(=(0'\s),Codes),
    string_codes(Codes,Spaces).
 
-test("generate strings of spaces of random length and drop them immediately after creation") :-
-   maplist([Goal]>>create_and_drop(Goal),[goal_special,goal_direct]).
+goal_format(SzMax,Spaces) :- 
+   random_between(0,SzMax,RL),
+   format(string(Spaces),"~t~*|",[RL]),
+   string_length(Spaces,RL).
 
 create_and_drop(Goal) :-
    callcount(CC),
@@ -24,9 +26,6 @@ create_and_drop(Goal) :-
    with_output_to(string(StatsTxt),time(forall(between(1,CC,_),call(Goal,SzMax,_Spaces)))), 
    % doesn't work: time/1 output is NOT captured in StatsTxt
    format("~s (~d calls) (~d max size) using goal '~s': ~q\n",["drop them immediately",CC,SzMax,Goal,StatsTxt]).
-
-test("generate strings of spaces of random length and store them in a list") :-
-   maplist([Goal]>>create_and_collect(Goal),[goal_special,goal_direct]).
 
 create_and_collect(Goal) :-
    callcount(CC),
@@ -36,6 +35,12 @@ create_and_collect(Goal) :-
    % doesn't work: time/1 output is NOT captured in StatsTxt
    format("~s (~d calls) (~d max size) using goal '~s': ~q\n",["collect in list",CC,SzMax,Goal,StatTxt]).
 
-:- end_tests(stringy_performance).
+test("generate strings of spaces of random length and drop them immediately after creation") :-
+   maplist([Goal]>>create_and_drop(Goal),[goal_special,goal_direct,goal_format]).
+
+test("generate strings of spaces of random length and store them in a list") :-
+   maplist([Goal]>>create_and_collect(Goal),[goal_special,goal_direct,goal_format]).
+
+:- end_tests(string_of_spaces_performance).
 
 

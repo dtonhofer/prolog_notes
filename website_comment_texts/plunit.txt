@@ -1,8 +1,12 @@
 https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/plunit.html%27)
 
-## Examples
+## Test cases are your track bed through the swampland 
 
-Some example code:
+Write your test cases. Without test cases, you are toast!
+
+Compared to imperative programs, and even functional programs, a predicate call can perform in "several different modes" (unless you stick to functional style, which may be good practice in certain cases). There is practically no typing that can be used as guardrails, additionally a variable can appear unbound when you don't expect it and for added complication unification makes data flow bidirectionally between terms in one statement. A lot of elementary operations can be performed in a very little amount of code and you are bound to miss a number of edge cases. With test cases, you can make sure both edge cases and standard cases are covered, lead to expected behaviour and stay covered while you add features and execution paths. 
+
+## Some examples
 
 [`tests_demonstrating_units_tests.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/code_unit_tests/simplest/tests_demonstrating_units_tests.pl)
 
@@ -98,7 +102,7 @@ test(two_all,all(M=[1,1])) :- member(M,[1,1,3]),M=1.
 
 I suppose the right-hand side is wrapped in a findall/3 of M. 
 
-## If your test fails your bindings will be trashed
+## If your test fails your bindings will be trashed ... d'oh!
 
 ==
 test(one,[error(Formal)]) :-    % this catches the exception term thrown by must_be/2
@@ -111,4 +115,6 @@ and so (at first sight) is not expected to be caught.
 
 However, the failure rolls back the binding to T.... so the `catch` catches anything.
 
+## Some notes on loading modules and the corresponding plunit tests
 
+Module code can be found in `.pl` files, whereas the correspond plunit test blocks can be found in `.plt` files having the same "root filename": `foo.pl` and `foo.plt`. Here are some notes on this: [](https://github.com/dtonhofer/prolog_notes/blob/master/code/load_and_test_script.pl)
