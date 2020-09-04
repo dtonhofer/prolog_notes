@@ -1,0 +1,162 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=manual
+
+## Sometimes the documentation website is confusing.
+
+Main elements: 
+
+   - [*The SWI-Prolog reference manual*](https://eu.swi-prolog.org/pldoc/doc_for?object=manual), with a subsection:
+      - [*The SWI-Prolog library*](https://eu.swi-prolog.org/pldoc/man?section=libpl) (can also be found via the menu system)
+   - [*The "packages"*](https://eu.swi-prolog.org/pldoc/doc_for?object=packages)
+   - And the ["add-ons" aka. "packs"](https://eu.swi-prolog.org/pack/list) (see further below)
+
+Some parts of the SWI-Prolog reference manual section on ["builtins"](https://eu.swi-prolog.org/pldoc/man?section=builtin) are must-take-a-look. Here are a few:
+
+   - [Exception Handling](https://eu.swi-prolog.org/pldoc/man?section=exception)
+   - [Printing Messages](https://eu.swi-prolog.org/pldoc/man?section=printmsg)
+   - [DCG Grammar Rules](https://eu.swi-prolog.org/pldoc/man?section=DCG)
+   - [Delimited Continuations](https://eu.swi-prolog.org/pldoc/man?section=delcont)
+
+Some parts of the SWI-Prolog reference manual are really about extensions to Prolog and are also must-take-a-look. Here are a few:
+
+   - [Constraint Handling Rules](https://eu.swi-prolog.org/pldoc/man?section=chr)
+   - [Constraint Logic Programming](https://eu.swi-prolog.org/pldoc/man?section=clp) (IMHO _the_ thing that Logic Programming is actually about)
+   - [Tabled Execution](https://eu.swi-prolog.org/pldoc/man?section=tabling)
+   - [Modules](https://eu.swi-prolog.org/pldoc/man?section=modules)
+   - [Multithreaded Applications](https://eu.swi-prolog.org/pldoc/man?section=threads)
+
+### Concerning the SWI-Prolog library
+
+We read:
+
+   - _There is little difference between library predicates and built-in predicates_
+   - _The documentation of the library has just started_
+
+The libraries of SWI-Prolog are listed. In the list below, the commenting system has automatically injected live links for most libraries, but not for all (why?).
+
+In bold, those libraries you should take a look at:
+
+   - A.1 *library(aggregate)*: Aggregation operators on backtrackable predicates
+   - A.2 library(ansi_term): Print decorated text to ANSI consoles
+   - A.3 *library(apply): Apply predicates on a list*
+   - A.4 library(assoc): Association lists
+   - A.5 library(broadcast): Broadcast and receive event notifications
+   - A.6 library(charsio): I/O on Lists of Character Codes
+   - A.7 library(check): Consistency checking
+   - A.8 library(clpb): CLP(B): Constraint Logic Programming over Boolean Variables
+   - A.9 *library(clpfd): CLP(FD): Constraint Logic Programming over Finite Domains*
+   - A.10 library(clpqr): Constraint Logic Programming over Rationals and Reals
+   - A.11 library(csv): Process CSV (Comma-Separated Values) data
+   - A.12 *library(dcg/basics): Various general DCG utilities*
+   - A.13 library(dcg/high_order): High order grammar operations
+   - A.14 *library(debug): Print debug messages and test assertions*
+   - A.15 *library(dicts): Dict utilities*
+   - A.16 *library(error): Error generating support*
+   - A.17 library(gensym): Generate unique identifiers
+   - A.18 library(intercept): Intercept and signal interface
+   - A.19 library(iostream): Utilities to deal with streams
+   - A.20 library(listing): List programs and pretty print clauses
+   - A.21 *library(lists): List Manipulation*
+   - A.22 library(main): Provide entry point for scripts
+   - A.23 library(nb_set): Non-backtrackable set
+   - A.24 library(www_browser): Activating your Web-browser
+   - A.25 library(occurs): Finding and counting sub-terms
+   - A.26 library(option): Option list processing
+   - A.27 library(optparse): command line parsing
+   - A.28 library(ordsets): Ordered set manipulation
+   - A.29 library(pairs): Operations on key-value lists
+   - A.30 library(persistency): Provide persistent dynamic predicates
+   - A.31 library(pio): Pure I/O
+   - A.32 library(predicate_options): Declare option-processing of predicates
+   - A.33 library(prolog_jiti): Just In Time Indexing (JITI) utilities
+   - A.34 library(prolog_pack): A package manager for Prolog
+   - A.35 library(prolog_xref): Prolog cross-referencer data collection
+   - A.36 library(quasi_quotations): Define Quasi Quotation syntax
+   - A.37 library(random): Random numbers
+   - A.38 library(readutil): Read utilities
+   - A.39 library(record): Access named fields in a term
+   - A.40 library(registry): Manipulating the Windows registry
+   - A.41 library(settings): Setting management
+   - A.42 library(simplex): Solve linear programming problems
+   - A.43 library(solution_sequences): Modify solution sequences
+   - A.44 library(tables): XSB interface to tables
+   - A.45 library(thread): High level thread primitives
+   - A.46 library(thread_pool): Resource bounded thread management
+   - A.47 library(ugraphs): Unweighted Graphs
+   - A.48 library(url): Analysing and constructing URL
+   - A.49 library(varnumbers): Utilities for numbered terms
+   - A.50 *library(yall): Lambda expressions* *MAKES YOUR PROLOG HIGH-LEVEL & READABLE*
+
+## Concerning the Packages
+
+Go into the menu, _Documentation > Packages_ and you reach the [Packages page](https://eu.swi-prolog.org/pldoc/doc_for?object=packages)
+   
+In the left bar you have (I have added a live URL for some)
+   
+   - SWI-Prolog Semantic Web Library 3.0
+   - Constraint Query Language - A high level interface to SQL databases
+   - SWI-Prolog binding to GNU readline
+   - SWI-Prolog ODBC Interface
+   - SWI-Prolog binding to libarchive
+   - Transparent Inter-Process Communications (TIPC) libraries
+   - JPL: A bidirectional Prolog/Java interface
+   - [Pengines: Web Logic Programming Made Easy](https://eu.swi-prolog.org/pldoc/doc_for?object=section%28%27packages/pengines.html%27%29)
+   - SWI-Prolog SSL Interface
+   - Google's Protocol Buffers Library
+   - SWI-Prolog Natural Language Processing Primitives
+   - [Prolog Unit Tests](https://eu.swi-prolog.org/pldoc/doc_for?object=section%28%27packages/plunit.html%27%29) *USE THEM! WITHOUT THESE, YOU ARE TOAST*
+   - SWI-Prolog Unicode library
+   - SWI-Prolog YAML library
+   - SWI-Prolog HTTP support
+   - SWI-Prolog Regular Expression library
+   - Managing external tables for SWI-Prolog
+   - A C++ interface to SWI-Prolog
+   - SWI-Prolog SGML/XML parser
+   - SWI-Prolog binding to zlib
+   - Paxos -- a SWI-Prolog replicating key-value store
+   - SWI-Prolog Source Documentation Version 2
+   - SWI-Prolog C-library
+   - SWI-Prolog binding to BSD libedit
+   - SWI-Prolog RDF parser
+
+But there are also so-called "Add-Ons" from 3rd parties, also called "Packs"
+
+_Please be aware that packs are not moderated. Installing a pack does not execute code in the pack, but simply loading a library from the pack may execute arbitrary code._
+
+Click on the link "Add-Ons" in the "Packages Page" and you reach [list of packs](https://eu.swi-prolog.org/pack/list)
+   
+   - achelois
+   - aleph
+   - amazon_api
+   - ansi_termx
+   - ape
+   - ....
+
+## XPCE
+
+Some pages do not seem to be listed, but can be found through the search bar.
+
+In particular, the documentation of *XPCE* does not show up in the above although it _is_ indeed a package: https://eu.swi-prolog.org/packages/xpce/
+   
+It can, however, be found by going through the menu: Tutorials > Graphics > Gui Options > "Using XPCE"   
+
+A user guide is at:
+   
+   - https://eu.swi-prolog.org/packages/xpce/UserGuide/
+   
+Some page are generated directly from the source code:
+   
+   - https://eu.swi-prolog.org/pldoc/doc/_SWI_/xpce/prolog/lib/pce.pl 
+   
+and 
+   
+   - https://eu.swi-prolog.org/pldoc/doc/_SWI_/xpce/prolog/lib/pce_type.pl
+   - https://eu.swi-prolog.org/pldoc/doc/_SWI_/xpce/prolog/lib/Xserver.pl
+   ....
+
+A PDF for "XPCE/Prolog Course Notes" can be found through the menu system: Tutorials > Graphics > XPCE
+
+   - https://eu.swi-prolog.org/download/xpce/doc/coursenotes/coursenotes.pdf
+   
+See also:
+
+   - https://arxiv.org/abs/cs/0207053 - "An Architecture for Making Object-Oriented Systems Available from Prolog"

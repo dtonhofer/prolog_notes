@@ -1,0 +1,300 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=manual
+
+#### SWI-Prolog Wiki entry
+
+There is a wiki entry at the SWI-Prolog Discourse Group with a lot of links 
+
+https://swi-prolog.discourse.group/t/useful-prolog-references/1089
+
+#### Gentle introduction
+
+*A paper describing SWI-Prolog in general*:
+
+[An Overview of the SWI-Prolog Programming Environment](https://www.researchgate.net/publication/220933774_An_Overview_of_the_SWI-Prolog_Programming_Environment/) (January 2003)
+
+*Learn Prolog Now* by Patrick Blackburn, Johan Bos, and Kristina Striegnitz. Available in book form since 2006, too. In English and French (" _Prolog tout de suite_ " ... but everybody in the office wanted Java)
+
+  - http://www.learnprolognow.org/ 
+  - [Special version for SWI-Prolog](http://lpn.swi-prolog.org/lpnpage.php?pageid=online), also in the "Tutorials" menu above
+
+*An Introduction to Prolog* from the book _Language Processing with Perl and Prolog_
+
+  - https://link.springer.com/content/pdf/bbm%3A978-3-642-41464-0%2F1.pdf
+
+Markus Triska has now a bunch of excellent presentations on YouTube under *The Power of Prolog*:
+
+  - Channel: 
+     - https://www.youtube.com/channel/UCFFeNyzCEQDS4KCecugmotg
+  - To kick off, "Logical Foundations of Prolog":
+     - Logic: https://www.youtube.com/watch?v=nlTZQ0FF2Eo 
+     - Predicate Logic: https://www.youtube.com/watch?v=PCO3lzGfU90
+     - Horn Clauses: https://www.youtube.com/watch?v=hgw59_HBU2A
+
+The *Stanford Encyclopedia of Philosophy* is **hard to beat**:
+
+  - The entry on *Classical Logic*: https://plato.stanford.edu/entries/logic-classical/
+  - The entry on *Automated Reasoning*: https://plato.stanford.edu/entries/reasoning-automated/
+  - ...and thereunder on *Logic Programming*: https://plato.stanford.edu/entries/reasoning-automated/#LogPro
+
+If you are good at theory (Mind Blown!)
+
+  - Frank Pfenning's Course on Logic Programming: http://www.cs.cmu.edu/~fp/courses/lp/
+
+#### SWISH: Online SWI-Prolog
+
+Want to code now? 
+
+**Use SWISH for experimentation**. It's SWI-Prolog in your Browser:
+
+https://swish.swi-prolog.org/ 
+
+#### Some basic lingo
+
+  - SWI-Prolog's own glossary: https://www.swi-prolog.org/pldoc/man?section=glossary
+  - This question on StackOverflow: https://stackoverflow.com/questions/49898738/is-this-prolog-terminology-correct-fact-rule-procedure-predicate
+  - "The Prolog Dictionary" by Bill Wilson: http://www.cse.unsw.edu.au/~billw/prologdict.html
+  - My certainly less-than perfect [writeup of the "Byrd Box Model"](https://github.com/dtonhofer/prolog_notes/tree/master/other_notes/about_byrd_box_model)
+
+#### Discussion Groups
+
+  - The "Prolog" tag at **StackOverflow**: https://stackoverflow.com/tags/prolog/info - but please search for answer to your potential question first. Interesting and well-formulated questions only pop up rarely.
+  - The SWI-Prolog group at **Discourse**: https://swi-prolog.discourse.group/
+
+#### Pages listing resources
+
+**In this manual**
+
+  - SWI-Prolog manual's list of materials: https://www.swi-prolog.org/Links.txt
+  - SWI-Prolog manual's list of publications: https://www.swi-prolog.org/Publications.html
+  - There is the bibliography, but it's not so helpful: https://www.swi-prolog.org/pldoc/man?section=bibliography
+
+**Others**
+
+  - The aformentioned Prolog tag at StackOverflow: https://stackoverflow.com/tags/prolog/info
+  - Prolog FAQ: https://www.metalevel.at/prolog/faq/faq.html and https://www.metalevel.at/prolog/faq/
+  - A page at GitHub: https://github.com/klaussinani/awesome-prolog#resources
+  - The tail end of Wikipedia page for _Prolog_ : https://en.wikipedia.org/wiki/Prolog
+  - Also this: https://en.wikipedia.org/wiki/Comparison_of_Prolog_implementations 
+ 
+#### Code examples
+
+  - The "Prolog" category at *Rosettacode* : http://rosettacode.org/wiki/Category:Prolog
+  - *99 Prolog Problems* : https://www.ic.unicamp.br/~meidanis/courses/mc336/2009s2/prolog/problemas/ (the Swiss page at BFH.ch is down)
+
+#### Coding guidelines
+
+Wanna code? 
+
+You need guidelines:
+
+  - *Coding Guidelines for Prolog* by Michael Covington et al. https://arxiv.org/abs/0911.2899 (can also found at other sites) (this should be an HTML document, not buried in a PDF).
+
+You need style:
+
+   - https://www.metalevel.at/prolog/horror
+
+You also should get into **writing good comments**. There is **markup** for this:
+
+  - https://www.swi-prolog.org/PlDoc.txt
+  - "PIDoc: Wiki style Literate Programming for Prolog": https://www.swi-prolog.org/download/publications/pldoc.pdf 
+
+#### Unit testing
+
+No code without unit tests. Here is the testing framework and some info:
+
+  - https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/plunit.html%27)
+  - http://www.paulbrownmagic.com/blog/swi_prolog_unit_testing_env
+
+**Use it!**
+
+### Definite Clause Grammars (DCGs)
+
+In this manual:
+
+  - https://www.swi-prolog.org/pldoc/man?section=DCG
+
+Introduction and tutorials:
+
+  - https://www.metalevel.at/prolog/dcg by Markus Triska
+  - http://www.pathwayslms.com/swipltuts/dcg by Anne Ogborn
+  - https://en.wikipedia.org/wiki/Definite_clause_grammar (has more references)
+
+Also take a look at 
+
+- https://en.wikipedia.org/wiki/Attribute_grammar
+
+Markus Triska writes in his DCG tutorial:
+
+_Consider using DCGs if you are:_
+
+  - _describing a list_
+  - _reading from a file_
+  - _passing around a state representation that only a few predicates actually use or modify._
+
+_In every serious Prolog program, you will find many opportunities to use DCGs due to some subset of the above reasons._
+
+#### Difference lists
+
+This is about working at the end of lists and creating efficient append operations.
+
+  - "Difference List" wiki entry at SWI-Prolog discourse site: https://swi-prolog.discourse.group/t/difference-list/959
+  - Frank Pfenning - "Difference Lists": https://www.cs.cmu.edu/~fp/courses/lp/lectures/11-diff.pdf
+  - The application of "Difference Lists" to DCGs by Markus Triska: https://www.metalevel.at/prolog/dcg . They are called "list differences" here: _In the literature, you will also encounter the term "difference list". However, this terminology is misleading: We are not talking about—as the name may suggest—a special kind of list. The additional arguments are completely ordinary lists. It is their differences that matter especially in such cases._
+  - My own explainer: https://bit.ly/2WmphYy_prolog
+
+### Constraint Logic Programming (CLP)
+
+Start here: 
+
+   - https://www.swi-prolog.org/pldoc/man?section=clp
+
+Quickly get used to using numeric constraints to express relationships between integers, instead of performing function evaluation on the right with =is= : https://www.swi-prolog.org/pldoc/man?section=clpfd
+
+### Constraint Handling Rules
+
+This is a formalism for writing forward-chaining rewrite rules on top of Prolog:
+
+https://www.swi-prolog.org/pldoc/man?section=chr
+
+One should at least be aware that these exist.
+
+### Theorem proving
+
+Prolog is for programming (search-augmented programming) using a certain formalism from logic, rather than for theorem proving. One can build a theorem prover on top of it, however, for theorem proving, look at things like:
+
+  - https://en.wikipedia.org/wiki/Vampire_(theorem_prover)
+  - https://en.wikipedia.org/wiki/Isabelle_%28proof_assistant%29
+  - https://en.wikipedia.org/wiki/Coq
+
+Here is a paper on a FOL prover in Prolog:
+
+  - [leanTAP: Lean Tableau-based Deduction (1995)](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.28.5925)
+
+### History of Prolog
+
+  - *Prolog Héritage*: The Prologs from Marseille http://prolog-heritage.org/
+  - Robert Kowalski's 2014 paper *History of Logic Programming* (I would say it's the, "The Prehistory" because modern approaches have not yet made it into the paper), 2014: https://www.researchgate.net/publication/277670164_History_of_Logic_Programming
+  - Alain Colmerauer and Philippe Roussel: *The birth of Prolog* (November 1992): http://alain.colmerauer.free.fr/alcol/ArchivesPublications/PrologHistory/19november92.pdf
+  - Peter Van Roy's 1993 overview *1983--1993: The Wonder Years of Sequential Prolog Implementation*: https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.29.9583 ...  _This report surveys the major developments in sequential Prolog implementation during the period 1983--1993. In this decade, implementation technology has matured to such a degree that Prolog has left the university and become useful in industry._ 
+  - Robert Kowalski's 1988 paper *The Early Years of Logic Programming*, which appeared in a "Communications of the ACM" special issue (January '88: https://cacm.acm.org/magazines/1988/1 ), paper available for example here: https://www.doc.ic.ac.uk/~rak/papers/the%20early%20years.pdf
+  - If you are writing a paper for, say, the _IEEE Annals of the History of Computing_, there is a lot of further pointers here: http://www.softwarepreservation.org/projects/prolog/
+
+### Thinking, Logic & Computation
+
+On the SWI-Prolog bibliography page (https://eu.swi-prolog.org/pldoc/man?section=bibliography) a commenter mentions:
+
+*Thinking as Computation*
+
+_by Hector J. Levesque, 2012_
+
+https://mitpress.mit.edu/books/thinking-computation
+
+---
+
+*Simply Logical: Intelligent Reasoning by Example*
+
+_by Peter Flach, 1994_
+
+http://book.simply-logical.space/
+
+Download available at the author's website:
+
+http://people.cs.bris.ac.uk/~flach/SimplyLogical.html
+
+---
+
+*Computational Logic and Human Thinking - How to Be Artificially Intelligent*
+
+_by Robert Kowalski, 2011_
+
+https://www.cambridge.org/core/books/computational-logic-and-human-thinking/C2AFB0483D922944067DBC76FFFEB295
+
+Download available at the author's website:
+
+https://www.doc.ic.ac.uk/~rak/papers/newbook.pdf
+
+### Natural Language Processing
+
+Specifically for Natural Language Processing, there are tons of resources. 
+
+Although, just by looking at manning.com, what's done today for actual NLP (as opposed to command language processors) is done in Python pulling in Tensorflow libraries to analyze Twitter feeds.
+
+Start with an *overview*:
+
+https://plato.stanford.edu/entries/computational-linguistics/
+
+In a recent heavy textbook: 
+
+**Introduction to Natural Language Processing** 
+
+_by Jacob Eisenstein, 2019_
+
+https://mitpress.mit.edu/books/introduction-natural-language-processing
+
+the author goes far beyond "NLP and Parsing" (indeed the part on Formal Language Theory, Context-Free Parsing, Dependency Parsing is only 80 pages of 450) and throws statistics and neural networks at the problem.
+
+Prolog related works by reverse year of publication:
+
+----
+**An Introduction to Language Processing with Perl and Prolog**
+
+_by Pierre M. Nugues, 2nd edition, 2014_
+
+https://link.springer.com/book/10.1007%2F3-540-34336-9
+
+*"An Outline of Theories, Implementation, and Application with Special Consideration of English, French, and German"*
+
+Contains an intro to Prolog, specifically SWI-Prolog.
+
+----
+**Natural Language Processing Techniques in Prolog**
+
+_by Patrick Blackburn and Kristina Striegnitz, 2002_
+
+http://cs.union.edu/~striegnk/courses/nlp-with-prolog/html/index.html
+
+----
+
+**Prolog and Natural-Language Analysis**
+
+_by Fernando C. N. Pereira and Stuart M. Shieber, (Original 1987, Millenial reissue 2002)_
+
+http://www.mtome.com/Publications/PNLA/prolog-digital.pdf
+
+### Furthermore
+
+I liked the view on basic logic programming from the LISP side. This is the basis of Kanren and miniKanren:
+
+**The Reasoned Schemer**
+
+_by Daniel P. Friedman, William E. Byrd and Oleg Kiselyov, 2005-10_
+
+https://mitpress.mit.edu/books/reasoned-schemer
+
+A thin book (but pricey ... and you will not be able to resist annotating it).
+
+(The blurb saying "Friedman and Kiselyov extend Scheme to form a completely new kind of logic programming system, one which is in many ways even more elegant than Prolog." I don't feel that happens, at least not in this book.)
+
+---
+
+A fascinating page on a fascinating site, by Oleg Kiselyov (you must have reached at least Spock level) 
+
+http://okmij.org/ftp/Prolog/
+
+http://okmij.org/ftp/kakuritu/logic-programming.html
+
+---
+
+More info than one can handle at Robert Kowalski's Homepage:
+
+https://www.doc.ic.ac.uk/~rak/
+
+---
+
+A recent overview textbook by ACM Books:
+
+**Declarative Logic Programming: Theory, Systems, and Applications**
+
+_Editors: Michael Kifer & Yanhongannie Liu, 2018-09_
+
+https://dl.acm.org/doi/book/10.1145/3191315

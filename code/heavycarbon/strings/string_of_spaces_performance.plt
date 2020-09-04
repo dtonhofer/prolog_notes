@@ -17,22 +17,25 @@ goal_direct(SzMax,Spaces) :-
 
 goal_format(SzMax,Spaces) :- 
    random_between(0,SzMax,RL),
-   format(string(Spaces),"~t~*|",[RL]),
-   string_length(Spaces,RL).
+   format(string(Spaces),"~t~*|",[RL]).
+   % string_length(Spaces,RL).
 
 create_and_drop(Goal) :-
    callcount(CC),
    max_string_size(SzMax),
-   with_output_to(string(StatsTxt),time(forall(between(1,CC,_),call(Goal,SzMax,_Spaces)))), 
+   % with_output_to(string(StatsTxt),time(forall(between(1,CC,_),call(Goal,SzMax,_Spaces)))), 
    % doesn't work: time/1 output is NOT captured in StatsTxt
+
+   time(forall(between(1,CC,_),call(Goal,SzMax,_Spaces))), 
    format("~s (~d calls) (~d max size) using goal '~s': ~q\n",["drop them immediately",CC,SzMax,Goal,StatsTxt]).
 
 create_and_collect(Goal) :-
    callcount(CC),
    max_string_size(SzMax),
    length(CollectionList,CC),
-   with_output_to(string(StatTxt),time(maplist({Goal,SzMax}/[Spaces]>>call(Goal,SzMax,Spaces),CollectionList))),
+   % with_output_to(string(StatTxt),time(maplist({Goal,SzMax}/[Spaces]>>call(Goal,SzMax,Spaces),CollectionList))),
    % doesn't work: time/1 output is NOT captured in StatsTxt
+   time(maplist({Goal,SzMax}/[Spaces]>>call(Goal,SzMax,Spaces),CollectionList)),
    format("~s (~d calls) (~d max size) using goal '~s': ~q\n",["collect in list",CC,SzMax,Goal,StatTxt]).
 
 test("generate strings of spaces of random length and drop them immediately after creation") :-
