@@ -44,11 +44,11 @@ From \[DCP13\]:
 
 In \[1\]: "Effect handlers are an elegant way to add many kinds of side-effectful operations to a language and \[are\] far less instrusive than monads ... the effect handler decouples the syntax of the new operations from their semantics"
 
-**Code: [effect_handler.pl](effect_handler.pl)**
+**Code: [state_handler.pl](state_handler.pl)**
 
 Diagram it, more or less:
 
-![Effect Handler](effect_handler.svg)
+![State Handler](state_handler.svg)
 
 
 
