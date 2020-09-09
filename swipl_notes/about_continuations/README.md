@@ -38,17 +38,17 @@ From \[DCP13\]:
 
 # Monads vs Continuations vs Effect Handlers
 
-...
+... One day there will be something here ...
 
 # Example: Effect handler for state
 
 In \[1\]: "Effect handlers are an elegant way to add many kinds of side-effectful operations to a language and \[are\] far less instrusive than monads ... the effect handler decouples the syntax of the new operations from their semantics"
 
-**Code: [state_handler.pl](state_handler.pl)**
+**Code: [effect_handler.pl](effect_handler.pl)**
 
 Diagram it, more or less:
 
-![State Handler](state_handler.svg)
+![Effect Handler](effect_handler.svg)
 
 
 
