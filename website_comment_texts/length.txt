@@ -1,0 +1,93 @@
+http://eu.swi-prolog.org/pldoc/man?predicate=length/2
+
+## Unit test code 
+
+[Unit testing length/2](https://github.com/dtonhofer/prolog_notes/blob/master/code_unit_tests/builtin_demo/test_length.pl)
+
+## Variant behaviour
+
+Ulrich Neumerkel has a page on variant behaviour of length/2 across various implementations:
+
+https://www.complang.tuwien.ac.at/ulrich/iso-prolog/length
+
+It's a bit dated though, the latest SWI-Prolog's behaviour differs somewhat from the table.
+
+Actual test code:
+
+[test_length_against_iso_prolog_wg17.pl](https://github.com/dtonhofer/prolog_notes/blob/master/code_unit_tests/builtin_demo/test_length_against_iso_prolog_wg17.pl)
+
+Note this little inconsistency:
+
+==
+?- atom_length(a,-1).
+false.
+
+?- length([1],-1).
+ERROR: Domain error: `not_less_than_zero' expected, found `-1'
+==
+
+## More reading
+
+See also the description of length/2 in "A Prologue for Prolog (working draft)"
+
+http://www.complang.tuwien.ac.at/ulrich/iso-prolog/prologue#length
+
+## Create a list of freshvars
+
+And now a completely unintuitive trick for the rank beginner.
+
+Generate a "list of holes"/"template list" of length 5 holding only fresh variables:
+
+==
+?- length(L,5).
+L = [_1848, _1854, _1860, _1866, _1872].
+==
+
+## Generate integers
+
+Another trick: Using length/2 to generate monotonically increasing integers from 1 onwards. This is probably less space-efficient than using between/3 as in between(1,inf,N) 
+
+==
+?- length([_|_],N).
+N = 1 ;
+N = 2 ;
+N = 3 ;
+...
+==
+
+## Get length of a "difference list" or an "open list"
+
+   - [Explainer & Code](https://github.com/dtonhofer/prolog_notes/tree/master/swipl_notes/about_difference_lists/code)
+
+(Also includes an alternative that may a bit too clever, using exception handling)
+
+Example:
+
+==
+?- difflist_length([1,2,3]-[],L).  % Get length of proper list
+L = 3.
+
+?- difflist_length([1,2|X]-X,L).   % Get length of Tip-Fin difference list
+L = 2.
+
+?- difflist_length(X-X,L).         % Get length of Tip-Fin empty difference list
+L = 0.
+
+?- difflist_length(DL,4).          % Construct a Tip-Fin difference list of length 4
+DL = [_14654, _14660, _14666, _14672|_14674]-_14674.
+
+?- openlist_length(OL,4).          % Construct an open list of length 4
+OL = [_16098, _16104, _16110, _16116|_15832].
+
+?- openlist_length([1,2,3|_],L).   % Determine length of open list
+L = 3.
+==
+
+## Efficiency
+
+Implementation-wise, does length/2 scan the whole "backbone" of the passed list or does it just need to read an integer at the tip? Or in other words, is length/2 O(1) or O(n) with n length of the list? 
+
+*Answer found by clicking on the :- at the top right*: At least in this Prolog, it is O(n). 
+
+I suppose the functions '$length'/2, '$length3'/3, '$skip_list/3' are the C API?
+

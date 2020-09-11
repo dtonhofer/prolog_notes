@@ -4,35 +4,53 @@
 
 ## Naming
 
-Do not call this particular beast an "implication". Call it an "if-the-else" (maybe the "arrow"? 🤔) It really has scant to do with [material implication](https://en.wikipedia.org/wiki/Material_conditional) (which is given by `:-` of course). It's just a Prolog control construct.
+Do not call this construct an "implication". It really has little to do with [material implication](https://en.wikipedia.org/wiki/Material_conditional) (which is given by `:-` of course). It's just a Prolog control construct. Apparently it is called "soft cut". 
 
-## Use sparingly
+"Arrow" is already [used for something else](https://en.wikipedia.org/wiki/Arrow_%28computer_science%29) but why not.
 
-Code using `->` becomes rapidly unreadable if the predicate is "long" and even has imbricated `->`. Imbricated if-the-else in imperative languages is already difficult to digest ([Minimize Nesting](https://en.wikibooks.org/wiki/Computer_Programming/Coding_Style/Minimize_nesting) and all that), but Prolog's choice of making `;` the primary functor instead of `->` and making the "else" case by default a failure makes this triply worse.
+## Complex code
 
-Instead of 
+Code using `->` becomes rapidly hard-to-read if the predicate is "large" and has imbricated `->`. [Minimize Nesting](https://en.wikibooks.org/wiki/Computer_Programming/Coding_Style/Minimize_nesting)!. 
+
+Example from the file jpl.pl of the Java Language Interface:
+
+==
+jpl_type_to_class(T, RefA) :-
+    (   ground(T)
+        ->  (   jpl_class_tag_type_cache(RefB, T)
+            ->  true
+            ;   (   jpl_type_to_findclassname(T, FCN)
+                ->  jFindClass(FCN, RefB),
+                    jpl_cache_type_of_ref(class([java,lang],['Class']), RefB)
+                ),
+                jpl_assert(jpl_class_tag_type_cache(RefB,T))
+            ),
+            RefA = RefB
+    ;   throw_instantiation_error(jpl_type_to_class/2,es01)
+    ).
+==    
+
+Maybe use a helper meta-predicate. See [if(:If, :Then, :Else)](https://www.swi-prolog.org/pldoc/doc_for?object=sicstus:if/3) from SICStus Prolog.
+
+A similar approach is described in the paper [Indexing `dif/2`](https://arxiv.org/abs/1607.01590) and in Ulrich Neumerkel's reification library [`reif.pl`](http://www.complang.tuwien.ac.at/ulrich/Prolog-inedit/swi/reif.pl).
+
+Here are hand-coded predicates, which are relatively slow:
 
 ```
-foo(X,Z) :- bar(X) -> alpha(X,Z) ; beta(Z).
+if_then_else(Condition,Then,Else) :- 
+   call(Condition) -> call(Then) ; call(Else).
+
+if_then(Condition,Then) :- 
+   call(Condition) -> call(Then) ; true.
+
+unless(Condition,Then) :- 
+   call(Condition) -> true ; call(Then).
 ```
 
-consider writing this (or variations without `!` or with the negated test removed):
+For example:
 
 ```
-foo(X,Z) :-    bar(X),!,alpha(X,Z).
-foo(X,Z) :- \+ bar(X),!,beta(Z).
-```
-
-or use a helper meta-predicate:
-
-```
-ifthen(Cond,Cons) :- call(Cond) -> call(Cons) ; true.
-```
-
-for example:
-
-```
-tryit(X) :- ifthen((X > 0),(format("Yes, X is > 0: ~q\n",[X]))).
+tryit(X) :- if_then((X > 0),(format("Yes, X is > 0: ~q\n",[X]))).
 
 ?- tryit(10).
 Yes, X is > 0: 10
@@ -41,28 +59,54 @@ true.
 ?- tryit(-1).
 true.
 ```
- 
+
+Similarly, for a switch statement which is error-prone (see below), one could use:
+
+==
+switch(If1,Then1,If2,Then2,If3,Then3,Else) :-
+   call(If1)
+   ->  call(Then1)
+   ;   call(If2)
+   ->  call(Then2)
+   ;   call(If3)
+   ->  call(Then3)
+   ;   call(Else).
+==
+
+An example call might be:
+
+==
+switch(
+    (PatchColFin < StrInLen),
+     patched_string_with_suffix(StrIn,PatchStr,PatchCol,PatchColFin,StrOut),
+    (PatchCol < StrInLen),
+     patched_string_without_suffix(StrIn,PatchStr,PatchCol,StrOut),
+    (StrInLen =< PatchCo),
+     patched_string_append(StrIn,StrInLen,PatchStr,PatchCol,StrOut),
+    cannot_happen_error("impossible case")).
+==
+
 ## Switch statement based on ->
 
 Consider the expression:
 
 ==
-   test1(A) -> exec1(A,B);
-   test2(A) -> exec2(A,B);
-   else(A,B)
+test1(A) -> exec1(A,B);
+test2(A) -> exec2(A,B);
+else(A,B)
 ==
 
 better written
 
 ==
-   test1(A) -> exec1(A,B)
-   ;
-   test2(A) -> exec2(A,B)
-   ;
-   else(A,B)
+test1(A) 
+-> exec1(A,B)
+;  test2(A)
+-> exec2(A,B)
+;  else(A,B)
 ==
 
-Is this the correct way to write a switch statement or do we need to add parentheses?
+Is this the correct way to write a switch statement or do we need to add parentheses? Yes it is and no we don't.
     
 Here is how the expression is parsed:
 
@@ -70,7 +114,7 @@ Here is how the expression is parsed:
 Ex=(test1(A) -> exec1(A,B);
     test2(A) -> exec2(A,B);
     else(A,B)), 
-    write_canonical(Ex).
+write_canonical(Ex).
 ==
 
 write_canonical/1 prints:
@@ -79,7 +123,7 @@ write_canonical/1 prints:
 ;(->(test1(A),exec1(A,B)),;(->(test2(A),exec2(A,B)),else(A,B)))
 ==
 
-Graphically (by hand ... there must be program out there to do that):
+Graphically (by hand):
 
 ==              
             ┌─────── test1(A)    
@@ -93,9 +137,9 @@ Graphically (by hand ... there must be program out there to do that):
            └──── else(A,B)
 ==
 
-Note that the principal functor of the if-then-else is `;` and not `->`. That's some crazy design because this evidently clashes with the disjunction `;`. 
+Note that the "principal functor" of the if-then-else is `;` and not `->`.
 
-Anyway, that's how the expression **looks**, but that's not **how it is traversed** (that is what is meant by _"the combined semantics of this syntactic construct as defined above is different from the simple nesting of the two individual construct"_)
+Anyway, that's how the expression **looks**, but that's not **how it is traversed** (that is what is meant by _the combined semantics of this syntactic construct as defined above is different from the simple nesting of the two individual constructs_ )
 
 Testing the evaluation:
 
@@ -149,7 +193,7 @@ true.
 
 ## -> on the Prolog Toplevel
 
-Note that you can use ->/2 on the Prolog Toplevel, like any goal. (This is far from asking whether a Horn clause is implied by the program ... it's just a control construct, a way of saying "prove the left-hand side once; on success, prove the right-hand side with backtracking otherwise prove the else with backtracking")
+Note that you can use ->/2 on the Prolog Toplevel, like any operator. (This is far from asking whether a Horn clause is implied by the program though, just a control construct)
 
 ==
 a(1).
@@ -180,13 +224,11 @@ b(1).
 X = 1.
 ==
 
-**THE GOD OF LOGIC IS DISPLEASED**
+**THE GOD OF LOGIC IS DISPLEASED** because logically `a(X) -> b(X)` should respond false: `a(2)` is TRUE but `b(2)` is FALSE. But `a(X) -> b(X)` is a control construct, not a sentence with an implication that should be proved. 
 
-because logically `a(X) -> b(X)` should respond false: `a(2)` is TRUE but `b(2)` is FALSE.
+## Making a goal deterministic with ->
 
-## Dirty tricks: Making a goal deterministic with ->
-
-The "premiss" of ->/2 is not subject to backtracking. This can be advantageous if you want to suppress multiple answer. Alternatively (and far more clearly to the next one who reads the code), you could use once/1.
+The "premiss" of ->/2 is not subject to backtracking. This can be advantageous if you want to suppress multiple answer. Alternatively (and IMHO far more clear for the next one who reads your code), you could use once/1.
 
 ==
 ?- member(X,[1,2,3]) -> (write("yes")) ; true.
@@ -194,7 +236,7 @@ yes
 X = 1.
 ==
 
-But the "conclusion" is still subject to backtracking:
+The "conclusion" is still subject to backtracking:
 
 ==
 ?- member(X,[1,2,3]) -> (write("yes");write("yeah")) ; true.
@@ -204,52 +246,65 @@ yeah
 X = 1.
 ==
 
-## If-Then-Else using high-order predicate
+Another example showing that Prolog cuts at first success in the premiss but backtracks in the consequent:
 
-An interesting approach to "reify" the `->` by having a higher-order construct
+```
+:- debug(imp).
 
-==
-if_(If_1, Then_0, Else_0)
-==
+cond(A,B) :-
+   (linked(A,B) -> R=true ; R=false),
+   debug(imp,"cond(~q,~q)? ~q",[A,B,R]),
+   call(R).
 
-where `If_1`, `Then_0`, `Else_0` are goals, is described in the paper [Indexing `dif/2`](https://arxiv.org/abs/1607.01590). 
+conseq(A,B) :-
+   (also_linked(A,B) -> R=true ; R=false),
+   debug(imp,"conseq(~q,~q)? ~q",[A,B,R]),
+   call(R).
 
-This finally gives the correct feel of LISP-like function composition instead of a side order of extra syntax.
+linked(foo,bar).
+also_linked(1,2).
 
-The "reification" refers to the fact that truth values are no longer returned by predicates to be handled by the Prolog Processor but represented as atoms handled via dedicated arguments. The actual predicate truth value signifies "computation success" only.
+do(X,Y,V,W) :-
+   (cond(X,Y);cond(Y,X)) -> (conseq(V,W);conseq(W,V)). 
+```
 
-At http://www.complang.tuwien.ac.at/ulrich/Prolog-inedit/swi/reif.pl we find:
+Running this:
 
-==
-if_(If_1, Then_0, Else_0) :-
-   call(If_1, T),           
-   (  T == true -> Then_0   
-   ;  T == false -> Else_0
-   ;  nonvar(T) -> throw(error(type_error(boolean,T),
-                               type_error(call(If_1,T),2,boolean,T)))
-   ;  throw(error(instantiation_error,instantiation_error(call(If_1,T),2)))
-   ).
-==
+```
+?-  do(foo,bar,1,2).
+% cond(foo,bar)? true
+% conseq(1,2)? true
+true ;
+% conseq(2,1)? false
+false.
 
-`If_1` is a predicate taking a truth value represented by atoms `true` or `false` as third argument.
+?- do(foo,bar,2,1).
+% cond(foo,bar)? true
+% conseq(2,1)? false
+% conseq(1,2)? true
+true.
 
-## Good example of formatting for the _if-then-else_
+?- do(bar,foo,1,2).
+% cond(bar,foo)? false
+% cond(foo,bar)? true
+% conseq(1,2)? true
+true ;
+% conseq(2,1)? false
+false.
 
-From the file jpl.pl of the Java Language Interface:
+?- do(bar,foo,2,1).
+% cond(bar,foo)? false
+% cond(foo,bar)? true
+% conseq(2,1)? false
+% conseq(1,2)? true
+true.
+```
 
-==
-jpl_type_to_class(T, RefA) :-
-    (   ground(T)
-        ->  (   jpl_class_tag_type_cache(RefB, T)
-            ->  true
-            ;   (   jpl_type_to_findclassname(T, FCN)   % peculiar syntax for FindClass()
-                ->  jFindClass(FCN, RefB),       % which caches type of RefB
-                    jpl_cache_type_of_ref(class([java,lang],['Class']), RefB)    % 9/Nov/2004 bugfix (?)
-                ),
-                jpl_assert(jpl_class_tag_type_cache(RefB,T))
-            ),
-            RefA = RefB
-    ;   throw_instantiation_error(jpl_type_to_class/2,es01)
-    ).
-==    
+## Use -> for guard expressions
 
+To perform tests immediately after the head, in case the head is not discriminatory enough:
+
+```
+choo(X) :- var(X)    -> (!,debug(choo,"It's a var",[])).
+choo(X) :- nonvar(X) -> debug(choo,"It's not a var",[]).
+```

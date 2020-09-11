@@ -74,7 +74,7 @@ In bold, those libraries you should take a look at:
    - A.37 library(random): Random numbers
    - A.38 library(readutil): Read utilities
    - A.39 library(record): Access named fields in a term
-   - A.40 library(registry): Manipulating the Windows registry
+   - A.40 library(registry): Manipulating the Windows registry (why does the comment widget format this specially?)
    - A.41 library(settings): Setting management
    - A.42 library(simplex): Solve linear programming problems
    - A.43 library(solution_sequences): Modify solution sequences
@@ -118,7 +118,9 @@ In the left bar you have (I have added a live URL for some)
    - SWI-Prolog binding to BSD libedit
    - SWI-Prolog RDF parser
 
-But there are also so-called "Add-Ons" from 3rd parties, also called "Packs"
+## Concerning the "Add-Ons" or "Packs"
+
+But there are also "Add-Ons" from 3rd parties, also called "Packs"
 
 _Please be aware that packs are not moderated. Installing a pack does not execute code in the pack, but simply loading a library from the pack may execute arbitrary code._
 

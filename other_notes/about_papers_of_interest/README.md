@@ -5,6 +5,9 @@ If the paper is directly downloadable, a link is given.
 - 1984 [Making Prolog more expressive](https://core.ac.uk/download/pdf/82550631.pdf)
    - J.W. Lloyd, R.W. Topor
    - Journal of Logic Programming, 1984:3 pp 225-240
+- 1986 [Seventy-Five Problems for Testing Automatic Theorem Provers](https://www.researchgate.net/publication/220531947_Seventy-Five_Problems_for_Testing_Automatic_Theorem_Provers)
+   - Francis Jeffry Pelletier
+   - Journal of Automated Reasoning 2(2):191-216 (June 1986)
 - 1989 Logic Programming with Strong Negation 
    - David Pearce, Gerd Wagner
    - Springer LNAI 475, pp 311-326
@@ -31,6 +34,9 @@ Authors Info & Affiliations
    - _the Lambda-Prolog way_
 - 1995 [Higher-order logic programming in Prolog](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.34.9690) 
    - Lee Naish
+- 1995 [leanTAP: Lean Tableau-based Deduction](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.28.5925)
+   - Bernhard Beckert, Joachim Posegga
+   - Journal of Automated Reasoning, volume 15, pages 339–358 (1995)
 - 1996 ["Classical" Negation in Non-Monotonic Reasoning and Logic Programming](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.53.4127)
    - José Alferes, Luís Moniz Pereira, Teodor C. Przymusinski
    - Proceedings of the European Workshop on Logic in Artificial Intelligence (JELIA'96), Springer LNAI 1126, pp 143-163   

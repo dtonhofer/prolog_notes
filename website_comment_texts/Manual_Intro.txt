@@ -140,7 +140,7 @@ This is about working at the end of lists and creating efficient append operatio
   - "Difference List" wiki entry at SWI-Prolog discourse site: https://swi-prolog.discourse.group/t/difference-list/959
   - Frank Pfenning - "Difference Lists": https://www.cs.cmu.edu/~fp/courses/lp/lectures/11-diff.pdf
   - The application of "Difference Lists" to DCGs by Markus Triska: https://www.metalevel.at/prolog/dcg . They are called "list differences" here: _In the literature, you will also encounter the term "difference list". However, this terminology is misleading: We are not talking about—as the name may suggest—a special kind of list. The additional arguments are completely ordinary lists. It is their differences that matter especially in such cases._
-  - My own explainer: https://bit.ly/2WmphYy_prolog
+  - My own explainer: [About difference lists](https://github.com/dtonhofer/prolog_notes/tree/master/swipl_notes/about_difference_lists)
 
 ### Constraint Logic Programming (CLP)
 
