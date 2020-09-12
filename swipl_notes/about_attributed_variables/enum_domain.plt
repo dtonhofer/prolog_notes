@@ -37,6 +37,16 @@ test("assign attribute to unbound variable", true) :-
    debug(enum_domain_test,"assign attribute to unbound variable",[]),
    enum_domain(_X,[foo,bar,baz]). % Uses 2nd clause but hook is not called
 
+test("assign attribute to unbound variable, then verify", true(ATTS == [bar,baz,foo])) :-
+   debug(enum_domain_test,"assign attribute to unbound variable, then verify",[]),
+   enum_domain(X,[foo,bar,baz]), % Uses 2nd clause but hook is not called
+   enum_domain(X,ATTS).          % Uses 1st clause; ATTS is the ordset of [foo,bar,baz]
+
+test("assign attribute to unbound variable, then verify (using get_attrs/2)", true(ATTS == [bar,baz,foo])) :-
+   debug(enum_domain_test,"assign attribute to unbound variable, then verify (using get_attrs/2)",[]),
+   enum_domain(X,[foo,bar,baz]), % Uses 2nd clause but hook is not called
+   get_attrs(X,att(_,ATTS,[])).  % ATTS is the ordset of [foo,bar,baz]
+
 test("assign attribute to bound variable with disallowed value", fail) :-
    debug(enum_domain_test,"assign attribute to bound variable with disallowed value",[]),
    X=alfa,
