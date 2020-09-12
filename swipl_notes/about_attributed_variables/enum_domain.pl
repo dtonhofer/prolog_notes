@@ -77,7 +77,7 @@ attr_unify_hook(ATTV,PUV) :-
       auh_worker(ATTV,PUV), 
       (debug(enum_domain,"enum_domain:attr_unify_hook succeeds",[]),true),
       (debug(enum_domain,"enum_domain:attr_unify_hook fails",[]),fail)),
-   % some additional logging before returning (it's fun!)
+   % some additional logging before succeeding (it's fun!)
    attr_key(Key),
    if_then_else(
       get_attr(PUV,Key,PUVATTV),  % This succeeds iff PUV denotes a 'hole' with our attribute
@@ -131,8 +131,9 @@ auh_ax_decision([A],PUV) :-                  % Intersection contains only one al
    PUV = A.                                  % Now we can unify. Done! PUV is now certainly no "attributed variable" anymore.
                                              % Note that unification may cause a call to OTHER attr_unify_hook/2 clauses.
 
-auh_ax_decision(AX,PUV) :-                   % Default case.
-   attr_key(Key),put_attr(PUV,Key,AX).       % PUV is attributed with the intersection AX.
+auh_ax_decision([A1,A2|As],PUV) :-           % Default case: PUV is attributed with the cardinality>=2 intersection
+   attr_key(Key),
+   put_attr(PUV,Key,[A1,A2|As]).       
 
 % ---
 % Translate attributes from this module to residual goals
