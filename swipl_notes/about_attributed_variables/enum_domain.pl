@@ -1,12 +1,26 @@
 % ===
-% Rewritten example of
+% Rewritten demo code for "attributed variables" from the page
 % https://eu.swi-prolog.org/pldoc/man?section=attvar
 % ===
 
+% ---
+% Unlike in the original code, I have separated enum_domain/2 into
+%
+% 1) enum_domain_get/2 - get the value of the variable attribute
+% 2) enum_domain_set/3 - set the value of the variable attribute
+%
+% which is clearer than merging both functionalities into a single enum_domain/2.
+% All of this code essentially works imperatively, not logically in any case.
+% There is no gain in pretending otherwise.
+% ---
+
 :- module(enum_domain,
           [
-           enum_domain/2      % Var, ?Domain
-          ,enum_domain/3      % For trying attribute merge outside of module
+              enum_domain_get/2       % ?Var, ?ListOfAtoms
+             ,enum_domain_set/3       % ?Var, ?ListOfAtoms, ++Op
+             ,enum_domain_set/2       % ?Var, ?ListOfAtoms (only intersect)
+             ,get_hook_call_info/1    % -Info
+             ,reset_hook_call_info/0 
           ]).
 
 :- use_module(library(ordsets)).
@@ -18,9 +32,9 @@
 :- debug(enum_domain).
 
 % ---
-% For readability, I will not use ->/2 all that much. Instead I will use dedicated
-% meta-predicates (these are slow though, so maybe unusable in production). Should
-% really be rewrite instructions.
+% For readability, I will not use ->/2 all that much. Instead I will use
+% dedicated meta-predicates (these are slow though, so maybe unusable in
+% production). Should really be rewrite instructions.
 % ---
 
 if_then_else(Condition,Then,Else) :-
@@ -28,172 +42,300 @@ if_then_else(Condition,Then,Else) :-
    -> call(Then)
    ;  call(Else).
 
-switch([If1,Then1],[If2,Then2],Else) :-
+switch(If1,Then1,If2,Then2,Else) :-
    call(If1)
    ->  call(Then1)
    ;   call(If2)
    ->  call(Then2)
    ;   call(Else).
 
+switch(If1,Then1,If2,Then2,If3,Then3,If4,Then4,Else) :-
+   call(If1)
+   ->  call(Then1)
+   ;   call(If2)
+   ->  call(Then2)
+   ;   call(If3)
+   ->  call(Then3)
+   ;   call(If4)
+   ->  call(Then4)
+   ;   call(Else).
+
 % ---
-% "Our" variable attribute (really, "'hole' attribute" more than "variable attribute")
-% key. This corresponds to a factored-out constant in other programming languages.
-% It MUST be the same name as the module.
+% The name/key of our variable attribute.
+%
+% This is really a "hole attribute" rather than a "variable attribute":
+% Variables are just temporary clause-local names which don't carry
+% attributes at all. Instead the attributes are carried by the hole (on the
+% global term store) which are designated by variables. This abuse of language
+% is standard though.
+%
+% The name MUST be the same name as the module so that the correct unification
+% hook can be found at run-time.
+%
+% (This line corresponds to a "factored-out constant" in other programming
+% languages; maybe Prolog should be given a specific syntax for this?)
 % ---
 
 attr_key(enum_domain).
 
 % ---
-% Define the hook predicate to call whenever a variable with "our" attribute is
-% involved in unification.
+% Client code calls enum_domain_get/2 to get the value of the attribute
+% with key "enum_domain" carried by (the hole designated by) the unbound
+% variable X.
+%
+% In this application, the attribute is a non-empty ordset of atoms listing
+% allowed values of the attributed variable.
+% ---
+
+enum_domain_get(X, ATTV) :-
+   var(ATTV),!,
+   attr_key(Key),
+   get_attr(X,Key,ATTV).    % This fails if X is not unbound or doesn't carry the attribute "Key"
+
+enum_domain_get(X, ATTV) :-
+   nonvar(ATTV),!,
+   catch(
+      list_to_ord_set(ATTV,ATTVos), % This may throw with at least a "type exception"
+      _,
+      fail),               % ...but, don't throw, just fail
+   attr_key(Key),
+   get_attr(X,Key,ATTVX),  % This fails if X is not unbound or doesn't carry the attribute "Key"
+   ATTVX = ATTVos.         % This may fail or else perform element-wise unification
+
+% ---
+% Client code calls enum_domain_set/3 to modify/set the value of attribute
+% with key "enum_domain" carried by (the hole designated by) the unbound
+% variable "X", based on the values in "ATTV". Modification is done according
+% to argument "Op".
+%
+% In this application, the attribute is a non-empty ordset of atoms listing
+% allowed values of the attributed variable.
+%
+% - Op must be one of: "union","intersect","subtract","set";
+% - We allow standard lists as arguments, too, instead of only ordsets;
+% - We don't allow setting the attribute to an unbound variable, although that
+%   might make sense for other applications.
+% ---
+
+enum_domain_set(X, ATTV, Op) :-
+   must_be(oneof([union,intersect,subtract,set]),Op), % Throwy parameter check
+   must_be(var,X),                                    % A nonvar X would eventually lead to an exception; check it here
+   must_be(list(atom),ATTV),
+   list_to_ord_set(ATTV,ATTVos),
+   attr_key(Key),
+   if_then_else(
+      get_attr(X,Key,ATTVold),                        % This fails if X is not unbound or doesn't carry the attribute "Key"
+      true,
+      ATTVold = []),
+   switch(
+      (Op == union),
+      ord_union(ATTVold,ATTVos,ATTVnew),
+      (Op == intersect),
+      ord_intersect(ATTVold,ATTVos,ATTVnew),
+      (Op == subtract),
+      ord_subtract(ATTVold,ATTVos,ATTVnew),
+      (Op == set),
+      ATTVnew=ATTVos,
+      fail),
+   deluxe_put_attr(ATTVnew,Key,X).                    % Branch by special case
+
+deluxe_put_attr([],_,_) :-                            % Empty attribute value means "constraint will never be fulfilled"; fail the setter!
+   !,fail.
+
+deluxe_put_attr([A],Key,X) :-                         % Unique attribute value possibility means "X must be that value "
+   !,
+   del_attr(X,Key),                                   % ... make sure to delete any (possibly present) attributed variable to avoid triggering the hook
+   X=A.
+
+deluxe_put_attr([A1,A2|As],Key,X) :-                  % At least two attribute value possibilities; retain ordset as attribute value
+   put_attr(X,Key,[A1,A2|As]).                        % Would throw is X were uninstantiated
+
+% ---
+% Alternative, written according to the original example.
+% Client code calls enum_domain_set/2 to modify/set the value of attribute
+% "enum_domain" of unbound variable "X", based on the values in "ATTV".
+%
+% In this application, the attribute is a non-empty ordset of atoms listing
+% allowed values for variable X.
+%
+% - We allow standard lists as arguments, too.
+% - We don't allow setting the attribute to an unbound variable, although that
+%   might indeed make sense.
+%
+% If "X" already has an an attribute "enum_domain", the new and old ordsets
+% are intersected.
+%
+% Otherwise the attribute "enum_domain" of "X" is set to the new ordset.
+%
+% The idea here is that we punt all the work (failing if there is no solution,
+% setting the value of the unbound variable to the single solution, or
+% generally intersecting the ordsets) to the "attr_unify_hook" by performing
+% unification.
+%
+% For the hook to be triggered, both variables involved in the unification
+% must carry the attribute, so we set up that situation (it's a bit
+% artificial).
+% ---
+
+enum_domain_set(X, ATTV) :-
+   must_be(var,X),                          % A nonvar X would eventually lead to an exception; check it here
+   must_be(list(atom),ATTV),
+   list_to_ord_set(ATTV,ATTVos),
+   attr_key(Key),
+   put_attr(Y,Key,ATTVos),                  % Setting the new attribute value on not-yet-attributed freshvar Y
+   if_then_else(
+      get_attr(X, Key, _),                  % This fails if X does not designate a hole or does not carry the attribute "Key"
+      true,
+      put_attr(X,Key,ATTV)),                % Make X carry the same attribute value as Y
+   debug_before_unification(X,Y),
+   X = Y.                                   % This triggers the attr_unify_hook
+
+% ---
+% Define the "hook predicate" to call whenever a hole (unbound variable) with
+% "our" attribute is involved in unification.
 %
 % From the SWI-Prolog reference manual:
 %
 % - - - - - - -
-% "A hook that must be defined in the module to which an attributed variable
+% attr_unify_hook(AttValue,VarValue)
+%
+%  A hook that must be defined in the module to which an attributed variable
 %  refers. It is called after the attributed variable has been unified with a
 %  non-var term, possibly another attributed variable. AttValue is the
 %  attribute that was associated to the variable in this module and VarValue
 %  is the new value of the variable. If this predicate fails, the unification
 %  fails. If VarValue is another attributed variable the hook often combines
 %  the two attributes and associates the combined attribute with VarValue
-%  using put_attr/3."
+%  using put_attr/3.
 % - - - - - - -
 %
-% "AttValue" could, in fact, be unbound on call.
+% ("AttValue" could, in fact, itself be unbound if one of the arguments of
+%  the unification that triggers the hook has an attribute with an unbound
+%  value)
 %
-% This is the predicate that gets called on unfication.
-% ATTV (attribute value on the old variable) is a list of allowed values for
-% PUV (the Post-Unification Value).
-%
-% In this clause we do nothing except surround a worker predicate with logging.
+% - ATTV : attribute value on (one of) the attributed variables involved
+%          in the unification, in this application a nonempty list of atoms
+% - PUV  : the Result of Unification (Post-Unification-Value);
+%          if the unification involves two unbound variables,
+%          then this is an unbound variable with the attribute value
+%          the counterpart of ATTV
 % ---
 
 attr_unify_hook(ATTV,PUV) :-
   debug_on_entry(ATTV,PUV),
-  assert_on_entry(ATTV),
+  assert_on_entry(ATTV,PUV),
+  update_hook_call_info(ATTV,PUV),           % update global variable to enable test checks
   if_then_else(
-      auh_worker(ATTV,PUV),
+      attr_unify_hook_inner(ATTV,PUV),
       debug_on_success(PUV),
-      (debug(enum_domain,"enum_domain:attr_unify_hook fails",[]),fail)).
+      (debug_on_failure,fail)).
 
-debug_on_entry(ATTV,PUV) :-
-   (get_attrs(PUV, ATTPUV) -> true ; ATTPUV = 'none'),
-   debug(enum_domain,"enum_domain:attr_unify_hook called with ATTV = ~q, PUV = ~q, attributes(PUV) = ~q",[ATTV, PUV, ATTPUV]).
-
-assert_on_entry(ATTV) :-
-   assertion(nonvar(ATTV)),       % this is not generally the case, but it is in this application
-   assertion(is_ordset(ATTV)),    % additionally it's an ordset
-   assertion(maplist(atom,ATTV)). % and additionally, elements are all atoms
-
-debug_on_success(PUV) :-
+assert_on_entry(ATTV,PUV) :-
    attr_key(Key),
-   if_then_else(
-      get_attr(PUV,Key,PUVATTV),  % This succeeds iff PUV denotes a 'hole' with our attribute
-      debug(enum_domain,"enum_domain:attr_unify_hook succeeds. PUV is an unbound variable with attribute = ~q",[PUVATTV]),
-      debug(enum_domain,"enum_domain:attr_unify_hook succeeds. PUV is no longer a variable but ~q",[PUV])).
+   assertion(nonvar(PUV);                    % PUV is nonvar or a 'hole' with attribute 'key'
+             get_attr(PUV,Key,_)),           % ... or a 'hole' with attribute 'key' (otherwise we wouldn't be in the hook!)
+   assertion(nonvar(ATTV)),                  % This is NOT necessarily the case, but it *is* in this application
+   assertion(is_ordset(ATTV)),               % And this is also true in this application
+   assertion(maplist(atom,ATTV)),            % ...and so is this
+   assertion(\+ord_empty(ATTV)).             % ...and so is this
 
-debug_on_failure :-
-   debug(enum_domain,"enum_domain:attr_unify_hook fails",[]).
-
-% ---
-% ATTV (attribute value on the old variable) is a list of allowed values for
-% PUV (the Post-Unification Value).
-%
-% In this application ATTV is always a list of atoms.
-%
-% The variable PUV may denote:
-%
-% - A 'hole' with our attribute ("PUV is an unbound variable with our attribute")
-%   ... then (for this application) intersect ATTV with our attribute-value on that hole.
-%   ... because what happened was that two 'holes', both with our attribute, were unified.
-%   ... and PUV must fulfill the constraint of both attribute values.
-%   In this application, if only one element remains in the intersection of allowed values,
-%   then PUV must be equal to it, so we can unify PUV and that value and don't need to
-%   make PUV an attributed variable.
-% - A 'hole' without our attribute ("PUV is an unbound variable without our attribute")
-%   ... then set our attribute on PUV to ATTV.
-%   ... because what happened was that two 'holes' were unified, but only one had our attribute
-%       and we want to propagate the constraint.
-% - Not a hole (PUV is a bound variable)
-%   ... then verify that PUV indeed has a value allowed by ATTV.
-%   ... because what happened was that a hole with our attribute was unified with a value
-%       and we have to veto the unification as the constraint is not fulfuilled.
-% ---
-
-auh_worker(ATTV,PUV) :-
+attr_unify_hook_inner(ATTV,PUV) :-
    attr_key(Key),
    switch(
-      [get_attr(PUV,Key,PUVATTV),            % This succeeds iff PUV denotes a 'hole' with our attribute
-       auh_intersection(ATTV,PUVATTV,PUV)],
-      [var(PUV),put_attr(PUV,Key,ATTV)],     % PUV could still denote a 'hole' without our attribute
-      ord_memberchk(PUV,ATTV)).              % Not a 'hole', so check whether value allowed (incl. whether it is an atom)
+      get_attr(PUV,Key,ATTVPUV),             % This succeeds iff PUV denotes a 'hole' with attribute 'Key'
+      intersection(ATTV,PUV,ATTVPUV),        % ...so intersect the attribute values
+      var(PUV),                              % Otherwise if PUV is a 'hole'
+      fail,                                  % ...then something is very wrong (that case should have bene caught by assert_on_entry/2)
+      ord_memberchk(PUV,ATTV)).              % PUV is not a hole: check whether PUV one of the allowed atoms, possibly veto-ing unification
 
-auh_intersection(ATTV,PUVATTV,PUV) :-
-   ord_intersection(ATTV,PUVATTV,AX),        % Fails only if there is some typing problem with ATTV,PUVATTV (should not happen)
-   auh_ax_decision(AX,PUV).
+intersection(ATTV,PUV,ATTVPUV) :-
+   ord_intersection(ATTV,ATTVPUV,AX),        % Fails only if there is some typing problem with ATTV,ATTVPUV (should not happen)
+   ax_decision(AX,PUV).
 
-auh_ax_decision([],_) :-                     % Intersection of allowed values is empty.
-   !,fail.                                   % No solution, veto unification.
+ax_decision([],_) :-                         % Intersection of allowed atoms is empty.
+   !,fail.                                   % So no solution fulfillng constraint: veto unification!
 
-auh_ax_decision([A],PUV) :-                  % Intersection contains only one allowed value A
-   !,                                        % ... and so PUV can unified with A.
-   attr_key(Key),                            % To avoid triggering attr_unify_hook again on the upcoming "=" ...
+ax_decision([A],PUV) :-                      % Intersection contains only a single allowed value A
+   !,                                        % ... and so PUV, an unbound variable, can unified with A ... from within the hook itself!
+   attr_key(Key),                            % To avoid triggering attr_unify_hook **again** on the upcoming "=" ...
    del_attr(PUV,Key),                        % ... make sure to delete the (certainly present) attributed variable.
    PUV = A.                                  % Now we can unify. Done! PUV is now certainly no "attributed variable" anymore.
-                                             % Note that unification may cause a call to OTHER attr_unify_hook/2 clauses.
+                                             % Note that unification may cause a (second) call to attr_unify_hook/2 clauses of *OTHER* modules.
 
-auh_ax_decision([A1,A2|As],PUV) :-           % Default case: PUV is attributed with the cardinality>=2 intersection
-   attr_key(Key),
+ax_decision([A1,A2|As],PUV) :-               % Default case: PUV is attributed with an intersection of cardinality >= 2
+   attr_key(Key),                            % ...in which case the intersection is just assigned as new attribute value
    put_attr(PUV,Key,[A1,A2|As]).
 
 % ---
-% Translate attributes from this module to residual goals
+% This is for testing: Mark that the hook has been called by setting
+% a global variable named "enum_domain_hook_calls".
+% ---
+
+update_hook_call_info(ATTV,PUV) :-
+   attr_key(Key),
+   atom_concat(Key,'_hook_calls',GlobVarName),
+   if_then_else(
+      get_attr(PUV,Key,ATTVPUV),
+      true,
+      ATTVPUV = 'none'),
+   NOW=hooky{attv:ATTV,puv:PUV,attv_of_puv:ATTVPUV}, % SWI-Prolog Dict is excellent here
+   if_then_else(
+      nb_current(GlobVarName,OLD),
+      append([NOW],OLD,NEW),
+      NEW=[NOW]),
+   nb_setval(GlobVarName,NEW).
+
+% ---
+% Translate attributes from this module to residual goals for printout
 % ---
 
 attribute_goals(X) -->
    { attr_key(Key),
-     get_attr(X, Key, ATTV),
+     get_attr(X,Key,ATTV),
      compound_name_arguments(C,Key,[X|ATTV]) },
    [C].
 
 % ---
-% Either
-% - get the value of attribute "enum_domain" (a list of atoms enumerating the
-%   values allowed) associated to variable X (really, "... associated to the
-%   'hole' denoted at call time by variable X", but let's keep the english
-%   description conveniently fluent)
-% or
-% - merge a list of additional atoms with the list of atoms already associated
-%   to variable X using attribute "enum_domain". This reduces to setting the list
-%   to the passed list-of-atoms if there is no such attribute yet.
+% Various helpers
 % ---
 
-enum_domain(X, ED) :-
-   var(ED),                      % ED unbound? Then get the attribute value of the hole denoted by X
-   !,                            % If the guard succeeds, commit and ...
-   attr_key(Key),                % Retrieve Key value
-   get_attr(X, Key, ED).         % This fails if X does not designate a hole or has no attribute Key
-
-enum_domain(X, ED) :-
-   nonvar(ED),                   % ED bound? Then set the attribute value of the hole denoted by X
-   !,                            % Unnecessary cut (last clause!) but let's be clear about the commit
-   list_to_ord_set(ED, EDOS),    % Sort/uniquify ED to form EDOS
-   assertion(maplist(atom,ED)),  % All should be atom
-   attr_key(Key),                % Retrieve Key value, which *must* be the name of this module
-   put_attr(Y, Key, EDOS),       % Instead of replacing an existing attribute on X, set it on freshvar Y...
-                                 % ... & merge the attributes on X and Y via a triggered call to attr_unify_hook(Key, Y)
-   (get_attrs(X, ATTX) -> true ; ATTX = 'none'),
-   (get_attrs(Y, ATTY) -> true ; ATTY = 'none'),
-   debug(enum_domain,"Prior to unification: X attributes are ~q, Y attributes are ~q",[ATTX,ATTY]),
-   X = Y.                        % *** THIS ONLY TRIGGERS THE HOOK IF X IS NONVAR ***
-
-% Export Y to perform unification & merge outside of module
-
-enum_domain(_, ED, Y) :-
-   nonvar(ED),
-   list_to_ord_set(ED, EDOS),
-   assertion(maplist(atom,ED)),
+debug_on_entry(ATTV,PUV) :-
    attr_key(Key),
-   put_attr(Y, Key, EDOS).
+   (get_attrs(PUV,ATTVsPUV) -> true ; ATTVsPUV = 'none'),
+   debug(enum_domain,"~q:attr_unify_hook called with ATTV = ~q, PUV = ~q, attributes(PUV) = ~q",[Key,ATTV,PUV,ATTVsPUV]).
+
+debug_on_success(PUV) :-
+   attr_key(Key),
+   if_then_else(
+      get_attr(PUV,Key,ATTVPUV),   % This succeeds iff PUV denotes a 'hole' with attribute 'Key'
+      debug(enum_domain,"~q:attr_unify_hook succeeds. PUV is an unbound variable with attribute = ~q",[Key,ATTVPUV]),
+      debug(enum_domain,"~q:attr_unify_hook succeeds. PUV is now ~q (without attributes)",[Key,PUV])).
+
+debug_on_failure :-
+   attr_key(Key),
+   debug(enum_domain,"~q:attr_unify_hook fails",[Key]).
+
+debug_before_unification(X,Y) :-
+   if_then_else(
+      get_attrs(X,ATTVsX),
+      true,
+      ATTVsX = 'none'),
+   if_then_else(
+      get_attrs(Y,ATTVsY),
+      true,
+      ATTVsY = 'none'),
+   debug(enum_domain,"enum_domain_set/2: going to unify: X attributes: ~q, Y attributes: ~q",[ATTVsX,ATTVsY]).
+
+% ---
+% For tests: Access the global variable holding hook call info
+% ---
+
+get_hook_call_info(I) :-
+   must_be(var,I),
+   nb_current(enum_domain_hook_calls,I)
+   -> true
+   ;  I=[].
+
+reset_hook_call_info :-
+   nb_setval(enum_domain_hook_calls,[]).
 
