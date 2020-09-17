@@ -2,8 +2,8 @@
           [
               clashfree_id_selection/3    % clashfree_id_selection(Dict,Id,MaxId) - id chosen from [0,MaxId]
              ,clashfree_id_selection/4    % clashfree_id_selection(Dict,Id,MinId,MaxId) - id chosen from [MinId,MaxId]
-             ,insert_with_clashfree_id/5  % insert_with_clashfree_id(DictIn,Value,DictOut,Id,MaxId) - id chosen from [0,MaxId]
-             ,insert_with_clashfree_id/6  % insert_with_clashfree_id(DictIn,Value,DictOut,Id,MinId,MaxId) - id chosen from [MinId,MaxId]
+             ,insert_with_clashfree_id/3  % insert_with_clashfree_id(Id-Value,acc(DictIn,DictOut),limit(MaxId))
+                                          % insert_with_clashfree_id(Id-Value,acc(DictIn,DictOut),limit(MinId,MaxId))
           ]).
 
 % ============================================================================
@@ -28,8 +28,8 @@
 % or simpler
 %
 % ?- Dict0=_{},MaxId=200,
-%    insert_with_clashfree_id(Dict0,x,Dict1,Id1,MaxId),
-%    insert_with_clashfree_id(Dict1,y,Dict2,Id2,MaxId).
+%    insert_with_clashfree_id(Id1-x,acc(Dict0,Dict1),limit(MaxId)),
+%    insert_with_clashfree_id(Id2-y,acc(Dict1,Dict2),limit(MaxId)).
 % ============================================================================
 
 clashfree_id_selection(Dict,Id,MaxId) :-
@@ -47,11 +47,11 @@ clashfree_id_selection(Dict,Id,MinId,MaxId) :-
    !, % make deterministic
    debug(clashfree,"FOUND ~q",[Id]).
 
-insert_with_clashfree_id(DictIn,Value,DictOut,Id,MaxId) :-
-   insert_with_clashfree_id(DictIn,Value,DictOut,Id,0,MaxId).
+insert_with_clashfree_id(Id-Value,acc(DictIn,DictOut),limit(MaxId)) :-
+   insert_with_clashfree_id(Id-Value,acc(DictIn,DictOut),limit(0,MaxId)).
 
-insert_with_clashfree_id(DictIn,Value,DictOut,Id,MinId,MaxId) :-
-   assertion(var(DictOut)),
+insert_with_clashfree_id(Id-Value,acc(DictIn,DictOut),limit(MinId,MaxId)) :-
+   assertion(must_be(var,DictOut)), % DictOut cannot know the Id which will be chosen; must be a var
    clashfree_id_selection(DictIn,Id,MinId,MaxId),
    put_dict(Id,DictIn,Value,DictOut).
 

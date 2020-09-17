@@ -12,9 +12,9 @@ test("no id found because none left",error(too_many_attempts,context(_,_))) :-
 
 test("no id found because none left, again",error(too_many_attempts,context(_,_))) :-
    Dict0=_{},MaxId=1,
-   insert_with_clashfree_id(Dict0,x,Dict1,_Id0,MaxId),
-   insert_with_clashfree_id(Dict1,y,Dict2,_Id1,MaxId),
-   insert_with_clashfree_id(Dict2,z,_,_,MaxId).
+   insert_with_clashfree_id(_Id0-x,acc(Dict0,Dict1),limit(MaxId)),
+   insert_with_clashfree_id(_Id1-y,acc(Dict1,Dict2),limit(MaxId)),
+   insert_with_clashfree_id(_Id2-z,acc(Dict2,_),    limit(MaxId)).
 
 test("saturate the set of allowed ids [0,1] the hard way", true(Dict2 = _{0:x,1:x})) :-
    Dict0=_{},MaxId=1,
@@ -32,12 +32,12 @@ test("saturate the set of allowed ids [100,101] the hard way", true(Dict2 = _{10
 
 test("saturate the set of allowed ids [0,1]", true(Dict2 = _{0:x,1:x})) :-
    Dict0=_{},MaxId=1,
-   insert_with_clashfree_id(Dict0,x,Dict1,_Id0,MaxId),
-   insert_with_clashfree_id(Dict1,x,Dict2,_Id1,MaxId).
+   insert_with_clashfree_id(_Id0-x,acc(Dict0,Dict1),limit(MaxId)),
+   insert_with_clashfree_id(_Id1-x,acc(Dict1,Dict2),limit(MaxId)).
 
 test("saturate the set of allowed ids [100,101]", true(Dict2 = _{100:x,101:x})) :-
    Dict0=_{},MinId=100,MaxId=101,
-   insert_with_clashfree_id(Dict0,x,Dict1,_Id0,MinId,MaxId),
-   insert_with_clashfree_id(Dict1,x,Dict2,_Id1,MinId,MaxId).
+   insert_with_clashfree_id(_Id0-x,acc(Dict0,Dict1),limit(MinId,MaxId)),
+   insert_with_clashfree_id(_Id1-x,acc(Dict1,Dict2),limit(MinId,MaxId)).
 
 :- end_tests(clashfree_id_selection).

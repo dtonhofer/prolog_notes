@@ -2,6 +2,15 @@
 
 :- use_module(library('heavycarbon/support/utils.pl')).
 
+% ---
+% Aliases for var/1 and nonvar/1. Are the names of these less confusing?
+% I hope so. var/1 and nonvar/1 are really badly chosen.
+% TODO: export into another module
+% ---
+
+bound(X)   :- nonvar(X).
+unbound(X) :- var(X).
+
 :- begin_tests(difflist_length).
 
 % ---
@@ -62,33 +71,33 @@ test("intention determine", true(Intention==determine)) :-
    difflist_length([1,2,3]-[],_,_,Intention).
 
 % ---
-% Bad guess at intention. In fact, intention should always be fresh.
+% Bad guess at intention. In fact, intention should always be unbound.
 % ---
 
-test("intention bad guess 1", error(consistency(difflist_nonfresh,type(closed),length(3),intention(determine)),_)) :-
+test("intention bad guess 1", error(consistency(difflist_bound,type(closed),length(3),intention(determine)),_)) :-
    difflist_length([1,2,3]-[],3,closed,determine).
 
-test("intention bad guess 2", error(consistency(difflist_nonfresh,type(_),length(3),intention(verify)),_)) :-
+test("intention bad guess 2", error(consistency(difflist_bound,type(_),length(3),intention(verify)),_)) :-
    difflist_length([1,2,3]-[],3,_,verify).
 
-test("intention bad guess 3", error(consistency(difflist_nonfresh,type(closed),length(_),intention(verify)),_)) :-
+test("intention bad guess 3", error(consistency(difflist_bound,type(closed),length(_),intention(verify)),_)) :-
    difflist_length([1,2,3]-[],_,closed,verify).
 
-test("intention bad guess 4", error(consistency(difflist_nonfresh,type(_),length(_),intention(verify)),_)) :-
+test("intention bad guess 4", error(consistency(difflist_bound,type(_),length(_),intention(verify)),_)) :-
    difflist_length([1,2,3]-[],_,_,verify).
 
 % ---
-% Templating: the difflist is fresh and is set to a difflist either of a
+% Templating: the difflist is unbound and is set to a difflist either of a
 % given length, or of increasing length at backtracking
 % ---
 
 test("templatize difflist of length 0, 4 args") :-
    difflist_length(DL,0,open,templatize),
-   DL=X-X,fresh(X).
+   DL=X-X,unbound(X).
 
 test("templatize difflist of length 0, 2 args") :-
    difflist_length(DL,0),
-   DL=X-X,fresh(X).
+   DL=X-X,unbound(X).
 
 test("templatize various difflists, 4 args", true(T)) :-
    bagof(DL,L^(
@@ -115,7 +124,7 @@ test("templatize various difflists, 2 args", true(T)) :-
                [_D0,_D1,_D2,_D3|X4]-X4]).
 
 % ---
-% Analyzing: (Verifying/Determining) open difflists: the difflist is nonfresh
+% Analyzing: (Verifying/Determining) open difflists: the difflist is bound
 % and its length and its type are determined
 % ---
 
