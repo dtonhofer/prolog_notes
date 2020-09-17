@@ -25,12 +25,36 @@
 % these must be replaced by term rewriting.
 % ---
 
+% switch/4
+
+switch(If1,Then1,If2,Then2) :-
+   call(If1)
+   ->  call(Then1)
+   ;   call(If2)
+   ->  call(Then2)
+   ;   throw(error(programming_error,context(_,"default case of switch; should not happen"))).
+
+% switch/5
+
 switch(If1,Then1,If2,Then2,Else) :-
    call(If1)
    ->  call(Then1)
    ;   call(If2)
    ->  call(Then2)
    ;   call(Else).
+
+% switch/6
+
+switch(If1,Then1,If2,Then2,If3,Then3) :-
+   call(If1)
+   ->  call(Then1)
+   ;   call(If2)
+   ->  call(Then2)
+   ;   call(If3)
+   ->  call(Then3)
+   ;   throw(error(programming_error,context(_,"default case of switch; should not happen"))).
+
+% switch/7
 
 switch(If1,Then1,If2,Then2,If3,Then3,Else) :-
    call(If1)
@@ -41,13 +65,17 @@ switch(If1,Then1,If2,Then2,If3,Then3,Else) :-
    ->  call(Then3)
    ;   call(Else).
 
-switch_throw_on_default(If1,Then1,If2,Then2,If3,Then3) :-
+% switch/8
+
+switch(If1,Then1,If2,Then2,If3,Then3,If4,Then4) :-
    call(If1)
    ->  call(Then1)
    ;   call(If2)
    ->  call(Then2)
    ;   call(If3)
    ->  call(Then3)
+   ;   call(If4)
+   ->  call(Then4)
    ;   throw(error(programming_error,context(_,"default case of switch; should not happen"))).
 
 % ---

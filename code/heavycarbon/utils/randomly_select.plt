@@ -1,8 +1,11 @@
 :- use_module(library('heavycarbon/utils/randomly_select.pl')).
+
 :- include(library('heavycarbon/support/meta_helpers_nonmodular.pl')).
 
-% This is somewhat a test, but mainly a code to exercise the randmly_select module.
-% There is no failure criterium.
+% This is "somewhat of a test", but is mainly a code to exercise the 
+% randomly_select module.
+%
+% There is no failure criterium!
 
 :- begin_tests(randomly_select).
 

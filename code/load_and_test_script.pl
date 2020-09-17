@@ -113,6 +113,7 @@ Conventions
 :- use_module(library('heavycarbon/utils/clashfree_id_selection.pl')).
 :- use_module(library('heavycarbon/utils/difflist_length.pl')).
 :- use_module(library('heavycarbon/utils/randomly_select.pl')).
+:- use_module(library('heavycarbon/utils/random_atom.pl')).
 :- use_module(library('heavycarbon/utils/replace0.pl')).
 :- use_module(library('heavycarbon/utils/rotate_list.pl')).
 :- use_module(library('heavycarbon/utils/splinter0.pl')).
