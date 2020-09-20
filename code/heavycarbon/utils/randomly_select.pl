@@ -1,16 +1,18 @@
 :- module(heavycarbon_randomly_select,
-          [
-             randomly_select/2   % randomly_select(+SelDict,?Selected)
-          ]).
+   [
+   randomly_select/2   % randomly_select(+SelDict,-Selected)
+   ]).
 
-:- include(library('heavycarbon/support/meta_helpers_nonmodular.pl')).
-:- include(library('heavycarbon/support/throwme_nonmodular.pl')).
+:- include(library('heavycarbon/support/meta_helpers_nonmodular.pl')). % unless, if_then_else
+:- include(library('heavycarbon/support/throwme_nonmodular.pl')).      % better exceptions
+
+% :- debug(randomly_select).
 
 % ============================================================================
 % Randomly select a key from a dict, where the dict values indicate
-% relative probability of selection by a string of stars
-%
-% Use this module with:
+% relative probability of selection by length-of-atom
+% ============================================================================
+% Import this module with:
 %
 % :- use_module(library('heavycarbon/utils/randomly_select.pl')).
 %
@@ -19,53 +21,49 @@
 % ?- debug(randomly_select).
 %
 % For example:
+
 /*
 
 randomly_select(
      _{
-       alfa     : ''               % selection probability = 0
-      ,bravo    : '*****'          % selection probability = 5/24
-      ,charlie  : '***'            % selection probability = 3/24
-      ,echo     : '**********'     % selection probability = 10/24
-      ,foxtrott : '******'},       % selection probability = 6/24
+       alfa     : ''             % selection probability = 0
+      ,bravo    : xxxxx          % selection probability = 5/24
+      ,charlie  : xxx            % selection probability = 3/24
+      ,echo     : xxxxxxxxxx     % selection probability = 10/24
+      ,foxtrott : xxxxxx},       % selection probability = 6/24
      Selected).
 
 */
-%
-% with printout:
-%
-% CumulPairs is [borked_list-3,compound-13,dict-19,open_list-24] and the Total is 24
-% The random value is 15 (from [1,24])
-% Now checking R = 15 against borked_list-3 (i.e. R =< 3?)
-% Now checking R = 15 against compound-13 (i.e. R =< 13?)
-% Now checking R = 15 against dict-19 (i.e. R =< 19?)
-% ============================================================================
 
 % ---
 % Determining length of a list of '*' and summing over a list of such strings
 % ---
 
-stars(N) --> ['*'],!,stars(Nm),{succ(Nm,N)}.
-stars(N) --> [_],!,stars(N).
-stars(0) --> [].
+nonspaces(N) --> [' '],!,nonspaces(N).                % skip spaces
+nonspaces(N) --> [_]  ,!,nonspaces(Nm),{succ(Nm,N)}.  % anything else goes towards a total count
+nonspaces(0) --> [].                                  % be greedy, terminate in last clause
 
 % ---
-% Transform a dict with "keyword:'*****'" entries into a list
-% with "keyword-cumul" entries where "cumul" is the cumulative
-% number of stars up and including "keyword".
+% Transform a dict with "Keyword: xxxxxxx" entries into a list
+% with pairs "Keyword-Cumul" where "Cumul" is the cumulative
+% number of non-spaces found in all dict entry values that come
+% before the dict entry "Keyword", plus the number of non-spaces
+% for that entry itself. This gives an unnormalized cumulative
+% probability function. The order in which the dict entries
+% are inspected is unimportant!
 % ---
 
-build_cumulative_list(SelDict,CumulPairs,TotalStars) :-
+build_cumulative_list(SelDict,CumulPairs,Total) :-
    dict_pairs(SelDict,_,Pairs), % order unimportant
-   build_cumulative_list_2(Pairs,0,Fin,TotalStars),
+   build_cumulative_list_2(Pairs,0,Fin,Total),
    CumulPairs = Fin.
 
-count_stars(S,Count) :-
-   atom_chars(S,Chars),
-   phrase(stars(Count),Chars).
+count_nonspaces(S,Count) :-
+   atom_chars(S,Chars), % S could also be a string
+   phrase(nonspaces(Count),Chars).
 
 build_cumulative_list_2([K-V|Pairs],TotalSoFar,Fin,TotalOut) :-
-   count_stars(V,Count),
+   count_nonspaces(V,Count),
    if_then_else(
       (Count > 0),
       (TotalNow is Count + TotalSoFar,
@@ -73,7 +71,7 @@ build_cumulative_list_2([K-V|Pairs],TotalSoFar,Fin,TotalOut) :-
        build_cumulative_list_2(Pairs,TotalNow,NewFin,TotalOut)),
       (build_cumulative_list_2(Pairs,TotalSoFar,Fin,TotalOut))).
 
-build_cumulative_list_2([],TotalShunt,[],TotalShunt).
+build_cumulative_list_2([],Total,[],Total).
 
 % ---
 % Once a random integer R has been chosen, just get first entry
@@ -92,7 +90,8 @@ retrieve([K-Cumul|CumulPairs],R,Selected) :-
 % ---
 
 randomly_select(SelDict,Selected) :-
-   assertion(is_dict(SelDict)),
+   must_be(dict,SelDict),
+   must_be(var,Selected),
    build_cumulative_list(SelDict,CumulPairs,Total), % TODO: this should be cached or tabled
    debug(randomly_select,"CumulPairs is ~q and the Total is ~q",[CumulPairs,Total]),
    unless(Total > 0,throwme(randomly_select,total_is_zero(SelDict))),

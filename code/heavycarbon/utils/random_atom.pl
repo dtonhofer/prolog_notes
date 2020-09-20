@@ -1,9 +1,14 @@
 :- module(heavycarbon_random_atom,
-          [
-              random_atom_1/1   % random_atom_1(-Atom), creates no empties
-             ,random_atom_2/1   % random_atom_2(-Atom), also creates empties
-             ,random_char/1     % A random character a-z
-          ]).
+   [
+    random_char/1       % random_char(X)
+   ,random_text/3       % random_text(Text,Len,Options)
+   ,random_atom/3       % random_atom(Text,Len,Options)
+   ,random_string/3     % random_string(Text,Len,Options)
+   ,random_char_list/2  % random_char_list(List,Options)
+   ]).
+
+:- include(library('heavycarbon/support/meta_helpers_nonmodular.pl')).
+:- use_module(library('heavycarbon/utils/in_prefix.pl')).
 
 % ===
 % "the_list/2" always returns the same values computed at runtime.
@@ -18,70 +23,113 @@ the_list(List,Max) :-
    succ(Max,Length).
 
 % ===
-% Select a uniformly random character from the list given by the_list/2
+% Select a uniformly random character from the list given by "the_list/2"
 % ===
 
-random_char(X) :-
+random_char(X) :-                    % EXPORT
    the_list(List,Max), 
    random_between(0,Max,N),
    nth0(N,List,X).
 
 % ===
-% Nice sigmoid expressing decreasing probability of continuing with one
-% more character given there already are L characters.
+% Sigmoid expressing decreasing probability "P" of continuing with "one
+% more character" given there already are "L" characters.
 % Plot it at https://www.desmos.com/calculator
 % ===
 
-sigmoid_value(L,P) :- P is 1-(1/(1+exp(2-(L/2)))).
+sigmoid_value(L,P) :- 
+   P is 1-(1/(1+exp(2-(L/2)))).
 
-% ===
-% Generate a *nonempty* random atom with characters a-z having random length
-% ===
+% ---
+% Generate text, with the length of the result either imposed (L bound) or
+% communicated by (L unbound). Options includes the atom 'atom', 'string', 
+% 'nonempty'.
+% ---
 
-random_atom_1(Atom) :-
-   random_char_list_1(Chars,0),
-   atom_chars(Atom,Chars).
+random_text(Text,Len,Options) :-     % EXPORT
+   nonvar(Len),
+   !,
+   length(Chars,Len),                % throws if Len < 0 or not an integer
+   random_char_list(Chars,Options),  % fill the list of known length
+   transform(Chars,Text,Options).
 
-% ===
-% Generate a random list of characters picked randomly from the list of
-% characters set up by the_list/2.
+random_text(Text,Len,Options) :-     % EXPORT
+   var(Len),
+   !,
+   random_char_list(Chars,Options),  % fill a list of random length
+   length(Chars,Len),
+   transform(Chars,Text,Options).
+
+transform(Chars,Text,Options) :- 
+   switch(
+      (option_string(Options),\+option_atom(Options)), string_chars(Text,Chars),
+      (option_atom(Options),\+option_string(Options)), atom_chars(Text,Chars),
+      atom_chars(Text,Chars)   % default if no option or oth options
+   ).
+ 
+random_atom(Text,Len,Options) :-    % EXPORT
+   random_text(Text,Len,[atom|Options]).
+
+random_string(Text,Len,Options) :-  % EXPORT
+   random_text(Text,Len,[string|Options]).
+
+% ---
+% Option checkers.
+% ---
+
+option_atom(Options)     :- in_prefix_with_stoplist(atom,[atom,string],Options).
+option_string(Options)   :- in_prefix_with_stoplist(string,[atom,string],Options).
+option_nonempty(Options) :- in_prefix_with_stoplist(nonempty,[],Options).
+
+% ---
+% "List" can be unbound, then the length is chosen randomly (according to a
+% markov process), or else a proper list of unbound variables, thus giving 
+% the length. 
+% "Option" may be a list. If it contains the atom "nonempty", then the 
+% "List" will contain at least 1 character.
+% ---
+
+random_char_list(List,Options) :-   % EXPORT
+   var(List),
+   !,
+   if_then_else(
+      option_nonempty(Options),
+      (random_char_list_inner(L2,1),random_char(X),List=[X|L2]), % correctly start at "1"
+      (random_char_list_inner(List,0))).
+ 
+random_char_list(List,Options) :-
+   nonvar(List),
+   !,
+   must_be(list(var),List),
+   if_then(
+     option_nonempty(Options),
+     (length(List,LL),must_be(positive_integer,LL))),
+   maplist(random_char,List).
+
+% ---
+% random_char_list(-Result,+CharsGeneratedAlready)
 %
-% The length of the list is found by throwing a coin after each character
+% The length of the list is found by throwing a coin before each character
 % selection. The coin's probability of saying "one more character" decreases 
 % according to a sigmoid that is a function of the number of characters 
-% already in the collection (it decreases slowly at first, then has an 
-% exponential tail going to 0). 
-%
-% That gives nicer results than decreasing the probability according to a
-% exponential in the lnegth of already-collected characters, which would be
-% the case by throwing the same biased coin each time.
-% ===
+% already in the list (it decreases slowly at first, then has an 
+% exponential tail going to 0). That gives nicer results than decreasing the
+% probability according to a exponential in the length of already-collected
+% characters, which would be the case by throwing the same biased coin each time.
+% ---
 
-random_char_list_1([X|More],AlreadyGot) :-
-   random_char(X),
-   sigmoid_value(AlreadyGot,P),
-   random(Toss),                % Between 0.0 =< Toss < 1.0
-   ((P<Toss)                    % Stop if Toss is above P
-    -> More = []
-    ; (succ(AlreadyGot,AlreadyGotNow),random_char_list_1(More,AlreadyGotNow))).
+% *Stop criterium*
 
-% ===
-% Another approach. This one also generates atoms that may be empty
-% ===
-
-random_atom_2(Atom) :-
-   random_char_list_2(Chars,0),
-   atom_chars(Atom,Chars).
-
-random_char_list_2([],AlreadyGot) :-
+random_char_list_inner([],AlreadyGot) :-
    sigmoid_value(AlreadyGot,P), % P becomes smaller and smaller as AlreadyGot becomes larger (but even for 0, it's not 1.0)
    random(Toss),                % Between 0.0 =< Toss < 1.0
    P<Toss,                      % Stop if Toss is above P
    !.
 
-random_char_list_2([X|More],AlreadyGot) :-
+% *More chars!*
+
+random_char_list_inner([X|More],AlreadyGot) :-
    random_char(X),
    succ(AlreadyGot,AlreadyGotNow),
-   random_char_list_2(More,AlreadyGotNow).
-
+   random_char_list_inner(More,AlreadyGotNow).
 

@@ -24,11 +24,11 @@ generate_stats(Count,CountLimit,StatsIn,Out) :-
    Count < CountLimit,!,
    randomly_select(
      _{
-       alfa     : ''               % selection probability = 0
-      ,bravo    : '*****'          % selection probability = 5/24
-      ,charlie  : '***'            % selection probability = 3/24
-      ,echo     : '**********'     % selection probability = 10/24
-      ,foxtrott : '******'},       % selection probability = 6/24
+       alfa     : ''             % selection probability = 0
+      ,bravo    : xxxxx          % selection probability = 5/24
+      ,charlie  : xxx            % selection probability = 3/24
+      ,echo     : xxxxxxxxxx     % selection probability = 10/24
+      ,foxtrott : xxxxxx},       % selection probability = 6/24
      Selected),
    inc_value(Selected,StatsIn,Stats0),
    succ(Count,CountNow),
