@@ -63,14 +63,17 @@ test("random_atom/3, random length but not length 0, run 100x") :-
 
 :- end_tests(random_atom).
 
-% If you run the above (after uncommenting the debug/1 instruction), you get somethinglike:
+% If you run the above (after uncommenting the debug/1 instruction), you get something like:
 %
-% random_atom_1 delivers: [pvlhbpg,wuv,cp,ojwyl,hvbuee,p,xvm,hao,wmxa,a,pyg,dlksk,cswfu,ridgbo,
-% lqe,vwsg,hcwvj,bsvj,u,suzlc,nxtc,zjq,cdcl,kdaka,lowrxz,cjin,fdfwkn,fwiplr,sw,wayxa,h,ki,ahygdd,
-% o,plvkm,vdiri,gz,itduq,a,nmvpk,xyey,ob,kz,ohse,l,lwyl,dx,kh,r,wfk,qt,caxo,b,pig,ul,rkpa,pufa,
-% ukokqe,wyz,gamq,ljo,lyn,gfu,gvlg,sjfxy,gnp,kbzc,re,mamj,wrbo,numpnp,ihf,vj,oijblb,wcxg,svdaxa,...
 %
-% random_atom_2 delivers: ['',qyn,ydpz,hgj,gm,pnr,wf,xge,rhbe,hcihd,vm,siqtumr,wnhwhfa,'',meiw,
-% juut,yrz,gxt,'',hd,xvhg,xgd,j,zj,svx,ia,js,ondn,fmife,lxnb,hc,hbx,tt,mq,gada,ogb,uh,xmhip,e,
-% ib,sidq,rf,vuddxn,jpp,nmau,jpj,in,j,puj,avxth,mv,a,fzkn,bq,xjw,j,vp,s,n,pcmshs,uqbd,fwrxv,
-% ggibd,bfk,zwnn,nc,csme,cq,r,yfb,qahezw,jrh,jw,ai,lup,'',tmo,phmxv,oyf,fku,wbi,ua,v,wqo,...
+% random_char delivers: [f,j,s,d,a,g,c,t,f,s,t,p,u,w,u,c,k,z,l,d,u,f,c,h,w,h,w,c,b,c...
+%
+% random atoms of length 10: [hnighnehat,kewyxmijvz,urkomtlwmx,lxhjfwryjr,xtjkwcrhlq,
+%    guwbgrckfe,qzgmryedvz,kplmjhlmwd,peearerbwa,rlzwjneqlr,cejsyfcxih,vjklwlmdmf,...
+%
+% random atoms of random length: [f-1,cfbq-4,fem-3,tva-3,ety-3,phbrc-5,dp-2,jqmh-4,rtk-3,
+%    x-1,mebg-4,bpqsc-5,''-0,ohwh-4,rjq-3,hm-2,h-1,zenmor-6,oeyl-4,''-0,m-1,lsp-3,v-1,...
+% 
+% random atoms of random length, but not empty: [iydpn-5,bph-3,frdwtu-6,o-1,rb-2,excy-4,
+%    vgum-4,eiwqsid-7,sv-2,qnxza-5,irkq-4,huzj-4,wtd-3,fpvuyn-6,yf-2,bqu-3,xxszly-6,...
+
