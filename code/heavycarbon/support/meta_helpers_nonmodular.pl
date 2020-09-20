@@ -78,6 +78,66 @@ switch(If1,Then1,If2,Then2,If3,Then3,If4,Then4) :-
    ->  call(Then4)
    ;   throw(error(programming_error,context(_,"default case of switch; should not happen"))).
 
+% switch/9
+
+switch(If1,Then1,If2,Then2,If3,Then3,If4,Then4,Else) :-
+   call(If1)
+   ->  call(Then1)
+   ;   call(If2)
+   ->  call(Then2)
+   ;   call(If3)
+   ->  call(Then3)
+   ;   call(If4)
+   ->  call(Then4)
+   ;   call(Else).
+
+% switch/10
+
+switch(If1,Then1,If2,Then2,If3,Then3,If4,Then4,If5,Then5) :-
+   call(If1)
+   ->  call(Then1)
+   ;   call(If2)
+   ->  call(Then2)
+   ;   call(If3)
+   ->  call(Then3)
+   ;   call(If4)
+   ->  call(Then4)
+   ;   call(If5)
+   ->  call(Then5)
+   ;   throw(error(programming_error,context(_,"default case of switch; should not happen"))).
+
+% switch/11
+
+switch(If1,Then1,If2,Then2,If3,Then3,If4,Then4,If5,Then5,Else) :-
+   call(If1)
+   ->  call(Then1)
+   ;   call(If2)
+   ->  call(Then2)
+   ;   call(If3)
+   ->  call(Then3)
+   ;   call(If4)
+   ->  call(Then4)
+   ;   call(If5)
+   ->  call(Then5)
+   ;   call(Else).
+
+% switch/12
+
+switch(If1,Then1,If2,Then2,If3,Then3,If4,Then4,If5,Then5,If6,Then6) :-
+   call(If1)
+   ->  call(Then1)
+   ;   call(If2)
+   ->  call(Then2)
+   ;   call(If3)
+   ->  call(Then3)
+   ;   call(If4)
+   ->  call(Then4)
+   ;   call(If5)
+   ->  call(Then5)
+   ;   call(If6)
+   ->  call(Then6)
+   ;   throw(error(programming_error,context(_,"default case of switch; should not happen"))).
+
 % ---
 % An implementation of ->/2. Pass three goals.
 % ---
