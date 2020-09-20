@@ -1,0 +1,66 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=random_between/3
+
+## Example of selecting an id between 0 and 6 that is not in a (small) dict yet.
+
+This is an example of a "failure-driven loop".
+
+==
+clashfree_id_selection(Dict,Id) :-
+   repeat,
+   random_between(0,6,Id),
+   (true;(format("CLASH for ~q\n",[Id]),fail)), % print CLASH on backtracking
+   \+ get_dict(Id,Dict,_),
+   format("FOUND ~q\n",[Id]),
+   !.
+==
+
+Then
+
+==
+?- clashfree_id_selection(_{3:x,4:x,5:x,6:x,7:x},Id).
+CLASH for 3
+CLASH for 3
+CLASH for 3
+FOUND 1
+Id = 1.
+==
+
+Philosophically, it is weird that that random_between/3 is "semidet" (i.e. fails or succeeds once). It could propose another solution for Id on "redo" endlessly after all. But then one could not backtrack over it in the same clause or without ;, which would be inconvenient. So the "endless proposal" is done by the conjunction
+
+==
+repeat, random_between(X,Y,Z)
+==
+
+The code above is more cleanly written
+
+==
+clashfree_id_selection(Dict,Id) :-
+   endlessly_propose_id(Id),
+   print_clash_on_redo(Id),
+   \+ get_dict(Id,Dict,_),
+   format("FOUND ~q\n",[Id]),
+   !.
+
+endlessly_propose_id(Id) :- repeat, random_between(0,6,Id).
+
+print_clash_on_redo(_)  :- true.
+print_clash_on_redo(Id) :- format("CLASH for ~q\n",[Id]),fail.
+==
+
+## Simple application
+
+Use a dict to indicate the relative probability of a selection with a number of `x` or some other character, except `space`:
+
+[`randomly_select.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/randomly_select.pl)
+
+==
+randomly_select(
+     _{
+       alfa     : ''             % selection probability = 0
+      ,bravo    : xxxxx          % selection probability = 5/24
+      ,charlie  : xxx            % selection probability = 3/24
+      ,echo     : xxxxxxxxxx     % selection probability = 10/24
+      ,foxtrott : xxxxxx},       % selection probability = 6/24
+     Selected).
+==
+

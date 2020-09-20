@@ -6,13 +6,13 @@
 
 ==
 :- begin_tests(dict).
-  
+
 xyz_dict(foodict{x:alpha, y:beta, z:gamma}).
 
 test(get_valid_key,[true(Val == alpha)]) :-
     xyz_dict(Dc), get_dict(x,Dc,Val).
 
-test(get_missing_key,[fail])  :- 
+test(get_missing_key,[fail])  :-
    xyz_dict(Dc), get_dict(bar,Dc,_).
 
 test(check_key_ok, [true]) :-
@@ -22,7 +22,7 @@ test(check_key_notok, [fail]) :-
    xyz_dict(Dc), get_dict(x,Dc,ahpla).
 
 test(get_all_keys,[true((SortedBag == [x-alpha,y-beta,z-gamma]))]) :-
-   xyz_dict(Dc), 
+   xyz_dict(Dc),
    bagof((Key-Val),get_dict(Key,Dc,Val),Bag),
    keysort(Bag,SortedBag).
 
@@ -40,33 +40,33 @@ rt(dict) :- run_tests(dict).
 % If the counter does not exist, add a new entry with initial counter value 1.
 % ===
 
-inc(Din,Dout,Key) :- 
-   (get_dict(Key,Din,X) -> succ(X,XX) ; XX=1), 
+inc(Din,Dout,Key) :-
+   (get_dict(Key,Din,X) -> succ(X,XX) ; XX=1),
    put_dict(Key,Din,XX,Dout).
-   
+
 :- begin_tests(inc).
 
-   test(inc1,[ true(T) ]) :- 
+   test(inc1,[ true(T) ]) :-
       Di = quux{}, inc(Di,Do,a),
       T = (Do == quux{a:1}).
 
-   test(inc2,[ true(T) ]) :- 
+   test(inc2,[ true(T) ]) :-
       Di = quux{}, inc(Di,Dt,a),
-      inc(Dt,Do,a), 
+      inc(Dt,Do,a),
       T = (Do == quux{a:2}).
 
-   test(inc3,[ true(T) ]) :- 
-      Di = quux{}, 
+   test(inc3,[ true(T) ]) :-
+      Di = quux{},
       inc(Di,Dt,a), inc(Dt,Do,b),
       T = (Do == quux{a:1,b:1}).
 
    % This is a NO: You cannot use fresh variables ("names of holes") as keys
    % Di = quux{}, inc(Di,Dt1,X),inc(Dt1,Dt2,_),inc(Dt2,Dt3,X).
 
-   test(no, [ error(instantiation_error) ]) :- 
-      Di = quux{}, 
+   test(no, [ error(instantiation_error) ]) :-
+      Di = quux{},
       inc(Di,Dt1,X),inc(Dt1,Dt2,_),inc(Dt2,_Dt3,X).
-   
+
 :- end_tests(inc).
 
 rt(inc) :- run_tests(inc).
@@ -82,12 +82,12 @@ dict_sum(Dict,Total) :- aggregate(sum(Val), Key^get_dict(Key,Dict,Val), Total).
 
 :- begin_tests(sum).
 
-   test(sum1, [ true(T) ]) :- 
+   test(sum1, [ true(T) ]) :-
       Dict = quux{},
       dict_sum(Dict,Total),
       T = ( Total == 0 ).
 
-   test(sum2, [ true(T) ]) :- 
+   test(sum2, [ true(T) ]) :-
       Dict = quux{x:1,y:2},
       dict_sum(Dict,Total),
       T = ( Total == 3 ).

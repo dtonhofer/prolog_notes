@@ -14,7 +14,7 @@ Better:
 
 ## Unit tests
 
-Some unit tests for this predicate: 
+Some unit tests for this predicate:
 
 [`test_is_list.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/code_unit_tests/builtin_demo/test_is_list.pl)
 
@@ -29,7 +29,7 @@ OpenList = [1,2,3|_]    % freshvar at Fin position
 OpenList = [1,2,3|Fin]  % name the freshvar
 ==
 
-Like this. 
+Like this.
 
    - **proper/closed list** on the left
    - **open list** on the right
@@ -44,7 +44,7 @@ List ------->[|]                  [|]<-------------- OpenList
                  3     []             3   ~hole~ <--- Fin
 ==
 
-A predicate `is_openlist/1` can be found here: 
+A predicate `is_openlist/1` can be found here:
 
 [`openlist_append.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/openlist_append.pl)
 

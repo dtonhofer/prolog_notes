@@ -8,7 +8,7 @@ and run the plunit test cases:
 
 ```
 ?- run_tests.
-% PL-Unit: jpl 
+% PL-Unit: jpl
 % Java Version: 14.0.1
 ...
 % Obtained Java GregorianCalendar = <jref>(0x201c060)
@@ -29,22 +29,22 @@ A diagram on [**Type Concepts**](https://github.com/dtonhofer/prolog_notes/blob/
 
    - **JPL types**, which are Prolog terms describing a Java type ;
    - **Java Entity Names**, which are strings (atoms in JPL) describing a Java type: a reference type (concrete or abstract class or interface), in which case this is the **Java classname**, an array type or a primitive ;
-   - **Java Type Descriptors**, which are strings (atoms in JPL) describing a Java type, but slightly differently than for Java Entity Names ; 
+   - **Java Type Descriptors**, which are strings (atoms in JPL) describing a Java type, but slightly differently than for Java Entity Names ;
    - **JNI Findclassname Descriptors**, which are strings (atoms in JPL) given to the JNI function `FindClass` so that it may load/find the corresponding instance of `java.util.Class`
    - **Java Method Descriptors**, which are strings (atoms in JPL) describing a Java Method signature. These are based on Java Type Descriptors.
 
 The current distribution is not yet based on this (soon!).
 
 For a description of the **Entity Name**, see `java.lang.Class.getName()` which returns one of those:
-   
+
    - [`java.lang.Class.getName()`](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/lang/Class.html#getName%28%29)
-   
+
 For the **'binary' classname**, i.e. the classname as used in binary files, having package names with "." separators, see:
 
     - [Java Language Specification: Fully Qualified Names and Canonical Names](https://docs.oracle.com/javase/specs/jls/se14/html/jls-6.html#jls-6.7)
 
 For a description of the descriptors as used by the JNI function `FindClass`, which takes package names with "/" separators, see:
-   
+
    - [jclass FindClass(JNIEnv *env, const char *name)](https://docs.oracle.com/en/java/javase/14/docs/specs/jni/functions.html#findclass)
 
 ## Documentation: JavaDoc
@@ -55,25 +55,25 @@ For a description of the descriptors as used by the JNI function `FindClass`, wh
 ## Documentation: JNI
 
    - [Documentation for JNI in Java 14](https://docs.oracle.com/en/java/javase/14/docs/specs/jni/)
-   - There are two old-ish books: 
+   - There are two old-ish books:
       - "Essential JNI Java Native Interface" by Rob Gordon, Prentice-Hall, 1998
       - "The Java Native Interface, Programmer's Guide and Specification" by Sheng Liang, Addison-Wesley, 1999
 
 1998 is when JDK 1.1 was the current version, Michael Franz of UC Irvine wrote "The JVM: A Passing Fad?" in IEEE Software of Nov/Dec and Harold Lawson wrote "From Busyware to Stableware" in IEEE Software of Oct. But I digress.
-   
+
 ## Grouping the JPL predicates
 
 ### Create a new instance
 
    - jpl_new/3
-   
+
 ### Call a class or instance method
 
    - jpl_call/4
 
 ### Call a getter/setter or get/set a field member
 
-   - jpl_get/3    
+   - jpl_get/3
    - jpl_set/3
 
 ### JVM option handling
@@ -81,7 +81,7 @@ For a description of the descriptors as used by the JNI function `FindClass`, wh
    - jpl_get_default_jvm_opts/1
    - jpl_get_actual_jvm_opts/1
    - jpl_set_default_jvm_opts/1
-   
+
 ### What syntax are we using Prolog side (when is this used?)
 
    - jpl_pl_syntax/1
@@ -91,19 +91,19 @@ For a description of the descriptors as used by the JNI function `FindClass`, wh
    - jpl_pl_lib_version/1
    - jpl_c_lib_version/1
 
-### Type shuffling 
+### Type shuffling
 
 (confusing, needs a little ASCII diagram or something)
 
    - jpl_class_to_classname/2
-   - jpl_classname_to_class/2   
-   
+   - jpl_classname_to_class/2
+
    - jpl_class_to_type/2
    - jpl_type_to_class/2
 
    - jpl_classname_to_type/2
    - jpl_type_to_classname/2
-   
+
    - jpl_object_to_class/2
    - jpl_object_to_type/2
    - jpl_primitive_type/1
@@ -112,12 +112,12 @@ For a description of the descriptors as used by the JNI function `FindClass`, wh
 ### What do we have here
 
 (Maybe simpler as jpl_is(What,X) ?)
-   
+
    - jpl_is_false/1
-   - jpl_is_true/1   
+   - jpl_is_true/1
    - jpl_is_null/1
-   - jpl_is_void/1   
-   - jpl_is_class/1   
+   - jpl_is_void/1
+   - jpl_is_class/1
    - jpl_is_object/1
    - jpl_is_object_type/1
    - jpl_is_type/1
@@ -129,17 +129,17 @@ For a description of the descriptors as used by the JNI function `FindClass`, wh
    - jpl_null/1
    - jpl_false/1
    - jpl_true/1
-   - jpl_void/1   
-   
+   - jpl_void/1
+
 ### Array handling
 
    - jpl_array_to_length/2
    - jpl_array_to_list/2
    - jpl_array_to_terms/2
    - jpl_list_to_array/2
-   - jpl_datums_to_array/2   
+   - jpl_datums_to_array/2
    - jpl_terms_to_array/2
-   
+
 ### Iterator handling
 
    - jpl_iterator_element/2

@@ -6,9 +6,9 @@ From O'Keefe's **"The Craft of Prolog"** (MIT Press, 1990), p. 145:
 
 -----
 
-The first is the meta-logical operations functor/3 and arg/3, particularly the latter. A word of warning here: it is almost always a bad idea to use =../2. Do not use =../2 to locate a particular argument of some term. 
+The first is the meta-logical operations functor/3 and arg/3, particularly the latter. A word of warning here: it is almost always a bad idea to use =../2. Do not use =../2 to locate a particular argument of some term.
 
-For example, instead of 
+For example, instead of
 
 ==
 Term =.. [_F,_,ArgTwo|_]
@@ -37,13 +37,13 @@ than to write
 Term =.. [_,First,_,Third,Fourth|_]
 ==
 
-Do not use '=..'/2 when you know the functor. (That 
+Do not use '=..'/2 when you know the functor. (That
 is, when you know both the function symbol and the arity.)
 
 For example, one Prolog programmer actually wrote the following code:
 
 ==
-add_date(OldItem, Date, NewItem) :- 
+add_date(OldItem, Date, NewItem) :-
    OldItem =.. [item, Type, Ship, Serial],
    NewItem =.. [item,Type,Ship,Serial,Date].
 ==

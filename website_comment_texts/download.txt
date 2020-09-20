@@ -9,7 +9,7 @@ Building is done using [cmake](https://cmake.org/), and it uses [ninja-build](ht
    - `CMAKE` must have been installed (on Fedora this is done with `dnf install cmake` but your system may have some different package tool than `dnf`, for example `apt`)
    - `ninja-build` must have been installed (on Fedora: `dnf install ninja-build`)
 
-Suppose we want to install SWIPL into this directory: 
+Suppose we want to install SWIPL into this directory:
 
 ==
 /usr/local/logic/swipl
@@ -49,7 +49,7 @@ git clone https://github.com/SWI-Prolog/swipl-devel.git
 cd swipl-devel
 # - - - - - download SWIPL packages, which are git modules - - - -
 git submodule update --init
-# - - - - - - - - - - - - - - - - - - - 
+# - - - - - - - - - - - - - - - - - - -
 
 # (... Maybe read CMAKE.md for more info at this point ...)
 
@@ -119,10 +119,10 @@ Here is a little bash script I use to set up a some SWIPL versions I used for de
 
 [swiprologpull.sh](https://github.com/dtonhofer/prolog_notes/blob/master/compiling/swiprologpull.sh)
 
-   - Grab it 
+   - Grab it
    - Modify the values at the top to your liking:
       - `system_install_dir`
       - `toplevel_dir_fq`
-   - The command to execute is: 
+   - The command to execute is:
       - `swiprologpull.sh clone system`  to download the SWI-Prolog distro
       - `swiprologpull.sh build system`  to build the SWI-Prolog distro

@@ -4,13 +4,13 @@
 
 ## Naming
 
-Do not call this construct an "implication". It really has little to do with [material implication](https://en.wikipedia.org/wiki/Material_conditional) (which is given by `:-` of course). It's just a Prolog control construct. Apparently it is called "soft cut". 
+Do not call this construct an "implication". It really has little to do with [material implication](https://en.wikipedia.org/wiki/Material_conditional) (which is given by `:-` of course). It's just a Prolog control construct. Apparently it is called "soft cut".
 
 "Arrow" is already [used for something else](https://en.wikipedia.org/wiki/Arrow_%28computer_science%29) but why not.
 
 ## Complex code
 
-Code using `->` becomes rapidly hard-to-read if the predicate is "large" and has imbricated `->`. [Minimize Nesting](https://en.wikibooks.org/wiki/Computer_Programming/Coding_Style/Minimize_nesting)!. 
+Code using `->` becomes rapidly hard-to-read if the predicate is "large" and has imbricated `->`. [Minimize Nesting](https://en.wikibooks.org/wiki/Computer_Programming/Coding_Style/Minimize_nesting)!.
 
 Example from the file jpl.pl of the Java Language Interface:
 
@@ -28,7 +28,7 @@ jpl_type_to_class(T, RefA) :-
             RefA = RefB
     ;   throw_instantiation_error(jpl_type_to_class/2,es01)
     ).
-==    
+==
 
 Maybe use a helper meta-predicate. See [if(:If, :Then, :Else)](https://www.swi-prolog.org/pldoc/doc_for?object=sicstus:if/3) from SICStus Prolog.
 
@@ -37,13 +37,13 @@ A similar approach is described in the paper [Indexing `dif/2`](https://arxiv.or
 Here are hand-coded predicates, which are relatively slow:
 
 ```
-if_then_else(Condition,Then,Else) :- 
+if_then_else(Condition,Then,Else) :-
    call(Condition) -> call(Then) ; call(Else).
 
-if_then(Condition,Then) :- 
+if_then(Condition,Then) :-
    call(Condition) -> call(Then) ; true.
 
-unless(Condition,Then) :- 
+unless(Condition,Then) :-
    call(Condition) -> true ; call(Then).
 ```
 
@@ -99,7 +99,7 @@ else(A,B)
 better written
 
 ==
-test1(A) 
+test1(A)
 -> exec1(A,B)
 ;  test2(A)
 -> exec2(A,B)
@@ -107,33 +107,33 @@ test1(A)
 ==
 
 Is this the correct way to write a switch statement or do we need to add parentheses? Yes it is and no we don't.
-    
+
 Here is how the expression is parsed:
 
 ==
 Ex=(test1(A) -> exec1(A,B);
     test2(A) -> exec2(A,B);
-    else(A,B)), 
+    else(A,B)),
 write_canonical(Ex).
 ==
 
 write_canonical/1 prints:
 
-== 
+==
 ;(->(test1(A),exec1(A,B)),;(->(test2(A),exec2(A,B)),else(A,B)))
 ==
 
 Graphically (by hand):
 
-==              
-            ┌─────── test1(A)    
-    ┌─── -> ┤  
+==
+            ┌─────── test1(A)
+    ┌─── -> ┤
     │       └─────── exec1(A,B)
  ; ─┤
     │              ┌──────── test2(A)
-    │      ┌─── -> ┤  
+    │      ┌─── -> ┤
     │      │       └──────── exec2(A,B)
-    └─── ; ┤              
+    └─── ; ┤
            └──── else(A,B)
 ==
 
@@ -144,11 +144,11 @@ Anyway, that's how the expression **looks**, but that's not **how it is traverse
 Testing the evaluation:
 
 ==
-mt(C) :-           
+mt(C) :-
    test1(C) -> exec1(C);
    test2(C) -> exec2(C);
    else(C).
-                  
+
 test1(C) :- member(t1,C),  !,format("test1: succ\n").
 test1(C) :- \+member(t1,C),!,format("test1: fail\n"),false.
 
@@ -224,7 +224,7 @@ b(1).
 X = 1.
 ==
 
-**THE GOD OF LOGIC IS DISPLEASED** because logically `a(X) -> b(X)` should respond false: `a(2)` is TRUE but `b(2)` is FALSE. But `a(X) -> b(X)` is a control construct, not a sentence with an implication that should be proved. 
+**THE GOD OF LOGIC IS DISPLEASED** because logically `a(X) -> b(X)` should respond false: `a(2)` is TRUE but `b(2)` is FALSE. But `a(X) -> b(X)` is a control construct, not a sentence with an implication that should be proved.
 
 ## Making a goal deterministic with ->
 
@@ -265,7 +265,7 @@ linked(foo,bar).
 also_linked(1,2).
 
 do(X,Y,V,W) :-
-   (cond(X,Y);cond(Y,X)) -> (conseq(V,W);conseq(W,V)). 
+   (cond(X,Y);cond(Y,X)) -> (conseq(V,W);conseq(W,V)).
 ```
 
 Running this:

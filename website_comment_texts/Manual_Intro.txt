@@ -2,7 +2,7 @@ https://eu.swi-prolog.org/pldoc/doc_for?object=manual
 
 #### SWI-Prolog Wiki entry
 
-There is a wiki entry at the SWI-Prolog Discourse Group with a lot of links 
+There is a wiki entry at the SWI-Prolog Discourse Group with a lot of links
 
 https://swi-prolog.discourse.group/t/useful-prolog-references/1089
 
@@ -14,7 +14,7 @@ https://swi-prolog.discourse.group/t/useful-prolog-references/1089
 
 *Learn Prolog Now* by Patrick Blackburn, Johan Bos, and Kristina Striegnitz. Available in book form since 2006, too. In English and French (" _Prolog tout de suite_ " ... but everybody in the office wanted Java)
 
-  - http://www.learnprolognow.org/ 
+  - http://www.learnprolognow.org/
   - [Special version for SWI-Prolog](http://lpn.swi-prolog.org/lpnpage.php?pageid=online), also in the "Tutorials" menu above
 
 *An Introduction to Prolog* from the book _Language Processing with Perl and Prolog_
@@ -23,10 +23,10 @@ https://swi-prolog.discourse.group/t/useful-prolog-references/1089
 
 Markus Triska has now a bunch of excellent presentations on YouTube under *The Power of Prolog*:
 
-  - Channel: 
+  - Channel:
      - https://www.youtube.com/channel/UCFFeNyzCEQDS4KCecugmotg
   - To kick off, "Logical Foundations of Prolog":
-     - Logic: https://www.youtube.com/watch?v=nlTZQ0FF2Eo 
+     - Logic: https://www.youtube.com/watch?v=nlTZQ0FF2Eo
      - Predicate Logic: https://www.youtube.com/watch?v=PCO3lzGfU90
      - Horn Clauses: https://www.youtube.com/watch?v=hgw59_HBU2A
 
@@ -42,11 +42,11 @@ If you are good at theory (Mind Blown!)
 
 #### SWISH: Online SWI-Prolog
 
-Want to code now? 
+Want to code now?
 
 **Use SWISH for experimentation**. It's SWI-Prolog in your Browser:
 
-https://swish.swi-prolog.org/ 
+https://swish.swi-prolog.org/
 
 #### Some basic lingo
 
@@ -74,8 +74,8 @@ https://swish.swi-prolog.org/
   - Prolog FAQ: https://www.metalevel.at/prolog/faq/faq.html and https://www.metalevel.at/prolog/faq/
   - A page at GitHub: https://github.com/klaussinani/awesome-prolog#resources
   - The tail end of Wikipedia page for _Prolog_ : https://en.wikipedia.org/wiki/Prolog
-  - Also this: https://en.wikipedia.org/wiki/Comparison_of_Prolog_implementations 
- 
+  - Also this: https://en.wikipedia.org/wiki/Comparison_of_Prolog_implementations
+
 #### Code examples
 
   - The "Prolog" category at *Rosettacode* : http://rosettacode.org/wiki/Category:Prolog
@@ -83,7 +83,7 @@ https://swish.swi-prolog.org/
 
 #### Coding guidelines
 
-Wanna code? 
+Wanna code?
 
 You need guidelines:
 
@@ -96,7 +96,7 @@ You need style:
 You also should get into **writing good comments**. There is **markup** for this:
 
   - https://www.swi-prolog.org/PlDoc.txt
-  - "PIDoc: Wiki style Literate Programming for Prolog": https://www.swi-prolog.org/download/publications/pldoc.pdf 
+  - "PIDoc: Wiki style Literate Programming for Prolog": https://www.swi-prolog.org/download/publications/pldoc.pdf
 
 #### Unit testing
 
@@ -119,7 +119,7 @@ Introduction and tutorials:
   - http://www.pathwayslms.com/swipltuts/dcg by Anne Ogborn
   - https://en.wikipedia.org/wiki/Definite_clause_grammar (has more references)
 
-Also take a look at 
+Also take a look at
 
 - https://en.wikipedia.org/wiki/Attribute_grammar
 
@@ -144,7 +144,7 @@ This is about working at the end of lists and creating efficient append operatio
 
 ### Constraint Logic Programming (CLP)
 
-Start here: 
+Start here:
 
    - https://www.swi-prolog.org/pldoc/man?section=clp
 
@@ -175,7 +175,7 @@ Here is a paper on a FOL prover in Prolog:
   - *Prolog Héritage*: The Prologs from Marseille http://prolog-heritage.org/
   - Robert Kowalski's 2014 paper *History of Logic Programming* (I would say it's the, "The Prehistory" because modern approaches have not yet made it into the paper), 2014: https://www.researchgate.net/publication/277670164_History_of_Logic_Programming
   - Alain Colmerauer and Philippe Roussel: *The birth of Prolog* (November 1992): http://alain.colmerauer.free.fr/alcol/ArchivesPublications/PrologHistory/19november92.pdf
-  - Peter Van Roy's 1993 overview *1983--1993: The Wonder Years of Sequential Prolog Implementation*: https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.29.9583 ...  _This report surveys the major developments in sequential Prolog implementation during the period 1983--1993. In this decade, implementation technology has matured to such a degree that Prolog has left the university and become useful in industry._ 
+  - Peter Van Roy's 1993 overview *1983--1993: The Wonder Years of Sequential Prolog Implementation*: https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.29.9583 ...  _This report surveys the major developments in sequential Prolog implementation during the period 1983--1993. In this decade, implementation technology has matured to such a degree that Prolog has left the university and become useful in industry._
   - Robert Kowalski's 1988 paper *The Early Years of Logic Programming*, which appeared in a "Communications of the ACM" special issue (January '88: https://cacm.acm.org/magazines/1988/1 ), paper available for example here: https://www.doc.ic.ac.uk/~rak/papers/the%20early%20years.pdf
   - If you are writing a paper for, say, the _IEEE Annals of the History of Computing_, there is a lot of further pointers here: http://www.softwarepreservation.org/projects/prolog/
 
@@ -215,7 +215,7 @@ https://www.doc.ic.ac.uk/~rak/papers/newbook.pdf
 
 ### Natural Language Processing
 
-Specifically for Natural Language Processing, there are tons of resources. 
+Specifically for Natural Language Processing, there are tons of resources.
 
 Although, just by looking at manning.com, what's done today for actual NLP (as opposed to command language processors) is done in Python pulling in Tensorflow libraries to analyze Twitter feeds.
 
@@ -223,9 +223,9 @@ Start with an *overview*:
 
 https://plato.stanford.edu/entries/computational-linguistics/
 
-In a recent heavy textbook: 
+In a recent heavy textbook:
 
-**Introduction to Natural Language Processing** 
+**Introduction to Natural Language Processing**
 
 _by Jacob Eisenstein, 2019_
 
@@ -277,7 +277,7 @@ A thin book (but pricey ... and you will not be able to resist annotating it).
 
 ---
 
-A fascinating page on a fascinating site, by Oleg Kiselyov (you must have reached at least Spock level) 
+A fascinating page on a fascinating site, by Oleg Kiselyov (you must have reached at least Spock level)
 
 http://okmij.org/ftp/Prolog/
 

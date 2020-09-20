@@ -2,7 +2,7 @@
 *** This text is in the comment section of https://eu.swi-prolog.org/pldoc/man?section=yall
 ***
 
-## Don't forget the bracy part 
+## Don't forget the bracy part
 
 A question that often comes up is due to different behaviour in autoloading/late-compilation and non-autoloading/compilation:
 
@@ -13,7 +13,7 @@ bracy(L)   :- X=a, maplist({X}/[Y,Z]>>atom_concat(X,Y,Z), [1,2,3,4], L).
 nobracy(L) :- X=a, maplist([Y,Z]>>atom_concat(X,Y,Z), [1,2,3,4], L).     % KINDA FAULTY
 ==
 
-At the toplevel, add the above predicates with =[user].= 
+At the toplevel, add the above predicates with =[user].=
 
 ==
 ?- bracy(L).

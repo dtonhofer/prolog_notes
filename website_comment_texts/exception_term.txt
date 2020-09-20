@@ -13,26 +13,26 @@ How do we get a backtrace and how does the exception term have to look to get on
 
 The backtrace is filled in according to SWI-Prolog conventions because the ISO Standard has nothing to say about this.
 
-SWI-Prolog wants the second argument of the `error/2` term (given in the ISO standard as `Imp_def`) to look like 
+SWI-Prolog wants the second argument of the `error/2` term (given in the ISO standard as `Imp_def`) to look like
 `context(Location,Message)`. If `Location` is fresh and the catch is performed by catch_with_backtrace/3
-(which happens either explicity in code or at the latest possible time at the Prolog Toplevel), 
+(which happens either explicity in code or at the latest possible time at the Prolog Toplevel),
 then `Location` is filled with a backtrace (as implemented by `library(prolog_stack)` in
 file `swipl/lib/swipl/library/prolog_stack.pl`). The Message is generally a cleartext message (string or atom).
 
 Take this program:
 
 ==
-call0(ExceptionTerm) :- 
+call0(ExceptionTerm) :-
    call1(ExceptionTerm).
-   
-call1(ExceptionTerm) :- 
+
+call1(ExceptionTerm) :-
    call2(ExceptionTerm).
-   
-call2(ExceptionTerm) :- 
+
+call2(ExceptionTerm) :-
    throw(ExceptionTerm).
 ==
 
-Enable debugging to keep the compiler from optimizing-away stack frames. 
+Enable debugging to keep the compiler from optimizing-away stack frames.
 
 ==
 ?- debug.
@@ -71,8 +71,8 @@ ERROR:   [10] call0(error("deep in a search tree",_4216)) at user://1:8
 ERROR:    [9] <user>
    Exception: (13) throw(error("deep in a search tree", _3266)) ? Exception details
 ==
-   
-Asking for "exception details" using `m` reveals that `Context` has been filled in with a 
+
+Asking for "exception details" using `m` reveals that `Context` has been filled in with a
 term `context(prolog_stack(Frames),_)` as the exception term looks as follows:
 
 ==
@@ -89,7 +89,7 @@ error("deep in a search tree",
 **Quasi-ISO-standard exception term with SWI-Prolog context term `error(_,context(_,_))`**
 
 The same as above, we just have SWI-Prolog specific `context/2` subterm already in the
-ISO-standard specific `error/2` term. 
+ISO-standard specific `error/2` term.
 
 We can put a generic message in the second argument of `context/2`. In this example, a String:
 
@@ -100,7 +100,7 @@ ERROR: Unknown error term: "deep in a search tree" (get me outta here)
 
 **ISO-standard exception term with SWI-Prolog context term `error(IsoFormal,context(_,_))`**
 
-As above, backtrace and all, except that now error message generation is correct as it is based on the 
+As above, backtrace and all, except that now error message generation is correct as it is based on the
 list of valid ISO formal terms:
 
 ==

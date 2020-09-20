@@ -30,7 +30,7 @@ L = [_65320].
 
 ## Bag needs to fit
 
-Note that the "bag" needs to exactly fit the number of results; there is no "early breakoff if the bag is too small" or "leave remaining elements in bag non-unified if the bag is too large". 
+Note that the "bag" needs to exactly fit the number of results; there is no "early breakoff if the bag is too small" or "leave remaining elements in bag non-unified if the bag is too large".
 
 From a logicial standpoint, this absolutely makes sense.
 
@@ -97,16 +97,16 @@ More text and test cases at this page: [**Behaviour of the caret ^ in setof/3 an
                 |          thus can be constrained elsewhere      |
                 |          in the clause (possibly accidentally)  |
                 |                           |                     |
-                |                           |                     |                
+                |                           |                     |
                 |                +-+--------+----------+-+        |
                 |                | |                   | |        |
-                |                | |                   | |        |            
+                |                | |                   | |        |
 get_closed_set(Set,K) :- setof( [X,Y] , P^R^search(P,R,X,Y,K) , Set).
                    |                    | |        | |     |
-                   |                    <-------------------> Goal expression 
+                   |                    <-------------------> Goal expression
                    |                    | |        | |     |
-                   |                    | |        | |     |                   
-                   +---------------------------------------+-----+                    
+                   |                    | |        | |     |
+                   +---------------------------------------+-----+
                                         | |        | |           |
                                         | |        | |           |
                                         +-+----+---+-+          Clause-wide variable.
@@ -124,7 +124,7 @@ get_closed_set(Set,K) :- setof( [X,Y] , P^R^search(P,R,X,Y,K) , Set).
                                        they be constrained (possibly accidentally)!
 ==
 
-TL;DR It doesn't always work as expected. 
+TL;DR It doesn't always work as expected.
 
 You may want to write a dedicated predicate to "hide" the caret-adorned variables from the context of the clause calling bagof/3:
 

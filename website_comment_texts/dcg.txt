@@ -9,7 +9,7 @@ Introduction and tutorials:
 
 Also take a look at
 
-   - Wikipedia: [Attribute Grammar](https://en.wikipedia.org/wiki/Attribute_grammar) 
+   - Wikipedia: [Attribute Grammar](https://en.wikipedia.org/wiki/Attribute_grammar)
 
 And maybe
 
@@ -43,7 +43,7 @@ Generate or test strings obeying the Perl Regex `(ab)*`
 
    - Code: [`ab_dcg.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/prolog_exercises/ab_dcg/ab_dcg.pl)
    - Test: [`test_ab_dcg.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/prolog_exercises/ab_dcg/test_ab_dcg.pl)
-  
+
 **Generate**
 
 ```
@@ -73,7 +73,7 @@ N = 2 ;
 T = ababab,
 N = 3 ;
 T = abababab,
-N = 4 
+N = 4
 ...
 ```
 

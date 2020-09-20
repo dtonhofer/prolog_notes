@@ -1,6 +1,6 @@
-*** 
+***
 *** This is the text in the comment section of https://eu.swi-prolog.org/pldoc/doc_for?object=(\%2B)/1
-*** 
+***
 
 ## Interpretation
 
@@ -48,7 +48,7 @@ false.
 
 Maybe the Prolog processor should throw an exception when it finds a body subject to floundering.
 
-The problem stems from the fact that Prolog basically relies on explicit enumerations over domains followed by tests (but for some reason, explicit domains have never been given explicit treatment in Prolog syntax and unification) 
+The problem stems from the fact that Prolog basically relies on explicit enumerations over domains followed by tests (but for some reason, explicit domains have never been given explicit treatment in Prolog syntax and unification)
 
 Explicitly specify the domain makes the problem go away because X is backtrackably ground:
 
@@ -98,12 +98,12 @@ ddd_isolate(X) :-
    debug(topic,"X is ~q\n",[X]),
    (X=[] ->  % ERROR: = instead of ==
     debug(topic,"X is the empty list\n",[]) ; true).
-      
-test(X) :- 
+
+test(X) :-
    debug(topic),                      % switch on debug printing for topic "topic"
-   debug(topic,"X before: ~q\n",[X]), 
+   debug(topic,"X before: ~q\n",[X]),
    \+ \+ ddd_isolate(X),
-   debug(topic,"X after: ~q\n",[X]). 
+   debug(topic,"X after: ~q\n",[X]).
 ==
 
 Yes, it works:
@@ -129,7 +129,7 @@ true.
 % X before: _5354
 % X is _5354
 % X is the empty list
-% X after: _5354          % changes have been erased 
+% X after: _5354          % changes have been erased
 true.
 ==
 

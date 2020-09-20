@@ -1,21 +1,20 @@
-***
-*** https://eu.swi-prolog.org/pldoc/man?section=typetest
-***
+https://eu.swi-prolog.org/pldoc/man?section=typetest
 
 ## The Type Tree in ASCII
 
 ==
-                                                                          any T 
+                                                                          any T
                                                                             |
                                                   +-------------------------+------------------------+
                                                   |                                                  |
                                                 var(T)                                            nonvar(T)
-                                         ("is T a variable name                                      |
-                                          that is still fresh                                        |
-                                     variable at this point in time?")                               |
+                                        "T is a variable name                            "the complement of var(T)"
+                                  that denotes an 'unbound variable'                                 |
+                                    (a 'hole') at the time of call"                                  |
+                                    (should be called unbound(T))                                    |
                                                                          +---------------------------+-----------------------------+
-                                                                         |                                                         |      
-                                                                     atomic(T)                                                 compound(T)                                
+                                                                         |                                                         |
+                                                                     atomic(T)                                                 compound(T)
                                                                          |                                                         |
                                       +----------------------------------+------------------------+                 +--------------+-------------+
                                       |                                  |                        |                 |                            |
@@ -23,14 +22,14 @@
                                       |                                                           |             of arity 0"                of arity > 0"
                                       |                                                           |                                              |
               +-----------------------+-----------------------+                         +---------+---------+                   +----------------+-------------+
-              |                       |                       |                         |                   |                   |                |             |            
-       (other blob types)    blob(T,reserved_symbol)     blob(T,text)           rational(T,Nu,De)        float(T)              dict          "head of       ...others  
+              |                       |                       |                         |                   |                   |                |             |
+       (other blob types)    blob(T,reserved_symbol)     blob(T,text)           rational(T,Nu,De)        float(T)              dict          "head of       ...others
       encapsulated foreign            |                    atom(T)                      |                                       |            of a list"
            resources                  |                       |                         |                                (this seems to     '[|]'(H,Rs)
                                       |                       |                         |                              be an encapsulated      [H|Rs]
                              +--------+--------+              |              +----------+----------+                     data structure)         |
                              |                 |              |              |                     |                                       (a nonlocal
-                           T==[]             T\==[]           |   rational(X),\+integer(X)      integer(T)                               structure; there 
+                           T==[]             T\==[]           |   rational(X),\+integer(X)      integer(T)                               structure; there
                         empty list        dict functor        |      (proper rational)                                                    may or may not
                                                               |                                                                            be an actual
                                                               |                                                                        list beyond the head)
@@ -41,10 +40,10 @@
 
 ==
 
-The above as easily printable [**A4 PDF**](https://bit.ly/38K4uns_prolog)
+The above as easily printable [**A4 PDF**](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_swipl_data_types/swipl_data_type_tree/swipl_data_type_tree.pdf)
 
-More [**complete in in SVG**](https://bit.ly/3gNz7LF_prolog).
+More [**complete in in SVG**](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_swipl_data_types/swipl_data_type_tree/swipl_data_type_tree.svg).
 
-Some [**notes I took**](https://bit.ly/38HRKO9_prolog) around this.
+Some [**notes I took**](https://github.com/dtonhofer/prolog_notes/tree/master/swipl_notes/about_swipl_data_types) about this.
 
 The SWI-Prolog Wiki has more on SWI-Prolog datatypes [here](https://eu.swi-prolog.org/datatypes.txt).

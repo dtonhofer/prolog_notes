@@ -12,7 +12,7 @@ Delimited continuations for Prolog: https://www.swi-prolog.org/download/publicat
 
 Inspired "Schrijvers et al., 2013.":
 
-   - Iterator generating output to user-selectable destination (in this case, write/1) using continuations: [`iterator.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_continuations/iterator.pl) 
+   - Iterator generating output to user-selectable destination (in this case, write/1) using continuations: [`iterator.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_continuations/iterator.pl)
 
    - State handler using delimited continuations: [`state_handler.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_continuations/state_handler.pl) and a [diagram](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_continuations/state_handler.svg) for that.
 

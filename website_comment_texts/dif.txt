@@ -4,9 +4,9 @@ https://eu.swi-prolog.org/pldoc/doc_for?object=dif/2
 
 We read:
 
-_Finally, if A and B can unify, goals are delayed that prevent A and B to become equal._ 
+_Finally, if A and B can unify, goals are delayed that prevent A and B to become equal._
 
-This doesn't _really_ make sense to me. There is nothing that is "delayed" really, it's just that a background check is done if A and B are involved in a unification. That description really threw me off. 
+This doesn't _really_ make sense to me. There is nothing that is "delayed" really, it's just that a background check is done if A and B are involved in a unification. That description really threw me off.
 
 (With hindsight and after getting into the jargon one realizes that "goals are delayed"  might well mean "a procedure will be run asynchronously" ... "to make sure that A and B do not become equal". But a reference manual should not be a grimoire.)
 
@@ -16,14 +16,14 @@ _Among the most important coroutining predicates is dif/2, which expresses diseq
 
 I prefer to look at it this way:
 
-_After a `dif(A,B)` call, any unification involving `A` or `B` or subterms thereof 
-that would make `A` and `B` identical (`A == B`) will **fail** (and this applies to unification in clause heads, too)._ 
+_After a `dif(A,B)` call, any unification involving `A` or `B` or subterms thereof
+that would make `A` and `B` identical (`A == B`) will **fail** (and this applies to unification in clause heads, too)._
 
 _If `A` and `B` are already identical at call time, `dif(A,B)` fails at once._
 
 ## Writeup on `dif`
 
-I made a writeup, including examples, here: 
+I made a writeup, including examples, here:
 
 [**About dif/2**](https://github.com/dtonhofer/prolog_notes/tree/master/swipl_notes/about_dif).
 

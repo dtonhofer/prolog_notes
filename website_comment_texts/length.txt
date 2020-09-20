@@ -1,6 +1,6 @@
 http://eu.swi-prolog.org/pldoc/man?predicate=length/2
 
-## Unit test code 
+## Unit test code
 
 [Unit testing length/2](https://github.com/dtonhofer/prolog_notes/blob/master/code_unit_tests/builtin_demo/test_length.pl)
 
@@ -45,7 +45,7 @@ L = [_1848, _1854, _1860, _1866, _1872].
 
 ## Generate integers
 
-Another trick: Using length/2 to generate monotonically increasing integers from 1 onwards. This is probably less space-efficient than using between/3 as in between(1,inf,N) 
+Another trick: Using length/2 to generate monotonically increasing integers from 1 onwards. This is probably less space-efficient than using between/3 as in between(1,inf,N)
 
 ==
 ?- length([_|_],N).
@@ -85,9 +85,9 @@ L = 3.
 
 ## Efficiency
 
-Implementation-wise, does length/2 scan the whole "backbone" of the passed list or does it just need to read an integer at the tip? Or in other words, is length/2 O(1) or O(n) with n length of the list? 
+Implementation-wise, does length/2 scan the whole "backbone" of the passed list or does it just need to read an integer at the tip? Or in other words, is length/2 O(1) or O(n) with n length of the list?
 
-*Answer found by clicking on the :- at the top right*: At least in this Prolog, it is O(n). 
+*Answer found by clicking on the :- at the top right*: At least in this Prolog, it is O(n).
 
 I suppose the functions '$length'/2, '$length3'/3, '$skip_list/3' are the C API?
 

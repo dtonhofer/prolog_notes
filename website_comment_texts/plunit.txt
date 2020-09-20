@@ -1,10 +1,10 @@
 https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/plunit.html%27)
 
-## Test cases are your track bed through the swampland 
+## Test cases are your track bed through the swampland
 
 Write your test cases. Without test cases, you are toast!
 
-Compared to imperative programs, and even functional programs, a predicate call can perform in "several different modes" (unless you stick to functional style, which may be good practice in certain cases). There is practically no typing that can be used as guardrails, additionally a variable can appear unbound when you don't expect it and for added complication unification makes data flow bidirectionally between terms in one statement. A lot of elementary operations can be performed in a very little amount of code and you are bound to miss a number of edge cases. With test cases, you can make sure both edge cases and standard cases are covered, lead to expected behaviour and stay covered while you add features and execution paths. 
+Compared to imperative programs, and even functional programs, a predicate call can perform in "several different modes" (unless you stick to functional style, which may be good practice in certain cases). There is practically no typing that can be used as guardrails, additionally a variable can appear unbound when you don't expect it and for added complication unification makes data flow bidirectionally between terms in one statement. A lot of elementary operations can be performed in a very little amount of code and you are bound to miss a number of edge cases. With test cases, you can make sure both edge cases and standard cases are covered, lead to expected behaviour and stay covered while you add features and execution paths.
 
 ## Some examples
 
@@ -16,7 +16,7 @@ Compared to imperative programs, and even functional programs, a predicate call 
 
 ==
 test("no redo, choicepoint left open") :- throw_on_redo(1).
-==   
+==
 
 instead of
 
@@ -27,9 +27,9 @@ test(one) :- throw_on_redo(1).
 **If the test expression gets complex, move it out of the head and build it in the body:**
 
 (Of course, sometimes you don't have such an expression, e.g. if you test `var(X)`)
-   
+
 ==
-test("collect them yourself, built a test expression, test in the head", [true(T)]) :-   
+test("collect them yourself, built a test expression, test in the head", [true(T)]) :-
    bagof(X,nondeterminism(X),Bag),
    T = (Bag == [1,2]).
 ==
@@ -42,7 +42,7 @@ You can have multiple assertions in a test body which do fail the test but do no
 
 ==
 :- debug(assertion_info).
-  
+
 :- begin_tests(assertion_test).
 
 test(0) :-
@@ -66,7 +66,7 @@ Then
 
 ==
 ?- run_tests.
-% PL-Unit: assertion_test 
+% PL-Unit: assertion_test
 % Now past succeeded assertion
 .
 ERROR: /home/user/test_assertion.pl:9:
@@ -100,7 +100,7 @@ Note that this does not obey usual Prolog semantics:
 test(two_all,all(M=[1,1])) :- member(M,[1,1,3]),M=1.
 ==
 
-I suppose the right-hand side is wrapped in a findall/3 of M. 
+I suppose the right-hand side is wrapped in a findall/3 of M.
 
 ## If your test fails your bindings will be trashed ... d'oh!
 

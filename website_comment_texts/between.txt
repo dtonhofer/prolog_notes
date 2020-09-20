@@ -114,11 +114,11 @@ between_sym(A,B,X) :-
    % - between/3 throws if A,B not integers
 
    (A =< B)
-   ->    
+   ->
    between(A,B,X)
    ;
    (bagof(Q,between(B,A,Q),Seq),reverse(Seq,SeqR),member(X,SeqR)).
-   
+
 :- begin_tests(between_sym).
 
 test(1, all(X = [1,2,3]))   :- between_sym(1,3,X).

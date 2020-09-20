@@ -2,13 +2,13 @@ https://eu.swi-prolog.org/pldoc/doc_for?object=foldl/4
 
 ## Example (aka don't fear the foldl)
 
-Goal is a closure or predicate taking three additional arguments: The current "list element", the current "folded value",  and the variable to be instantiated to the next "folded value" after Goal has done its computation. 
+Goal is a closure or predicate taking three additional arguments: The current "list element", the current "folded value",  and the variable to be instantiated to the next "folded value" after Goal has done its computation.
 
 ==
 Goal(Element,CurFold,NextFold)
 ==
 
-In the end, the last value of `NextFold` will be in `V` (or `Out`): 
+In the end, the last value of `NextFold` will be in `V` (or `Out`):
 
 You can use `library(yall)` here to inline the Goal.
 
@@ -16,7 +16,7 @@ You can use `library(yall)` here to inline the Goal.
 
 ==
 Starter -->--Goal-->--Goal-->--Goal-->--Goal-->--Out
-              |        |        |        | 
+              |        |        |        |
               a        b        c        d
 ==
 
@@ -56,7 +56,7 @@ Out = 'Begin:abcd'.
 Creating a list of integers 0..5:
 
 ==
-?- 
+?-
    length(List,6),  % create a list of 6 fresh variables
    foldl(
       [Element,FromLeft,ToRight]
@@ -108,7 +108,7 @@ Simple!
 
 I had some fun explaining and writing a =foldl/4= and =foldr/4=, complete with test cases.
 
-A markdown page with lots of text, implementations and unit tests is here: 
+A markdown page with lots of text, implementations and unit tests is here:
 
 [**Linear `foldl` and `foldr` in Prolog**](https://github.com/dtonhofer/prolog_notes/tree/master/other_notes/about_foldl_and_foldr)
 
@@ -125,13 +125,13 @@ foo_foldr(_,[],Starter,AccUp) :-                  % empty list: bounce Starter "
 ==
 
 
-This also includes a (completely pointless) implementation of =foldl/4= based on =maplist/5=. 
+This also includes a (completely pointless) implementation of =foldl/4= based on =maplist/5=.
 
 Also good to peruse: The Wikipedia entry on "linear folds": https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Linear_folds
 
 ## Naming
 
-Note that V0 is an "accumulator", transformed as the iteration over the list proceeds, eventually appearing in its final 
+Note that V0 is an "accumulator", transformed as the iteration over the list proceeds, eventually appearing in its final
 
 A more general case would be "multi-accumulator":
 

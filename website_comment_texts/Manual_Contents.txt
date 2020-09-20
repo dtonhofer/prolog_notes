@@ -2,7 +2,7 @@ https://eu.swi-prolog.org/pldoc/doc_for?object=manual
 
 ## Sometimes the documentation website is confusing.
 
-Main elements: 
+Main elements:
 
    - [*The SWI-Prolog reference manual*](https://eu.swi-prolog.org/pldoc/doc_for?object=manual), with a subsection:
       - [*The SWI-Prolog library*](https://eu.swi-prolog.org/pldoc/man?section=libpl) (can also be found via the menu system)
@@ -89,9 +89,9 @@ In bold, those libraries you should take a look at:
 ## Concerning the Packages
 
 Go into the menu, _Documentation > Packages_ and you reach the [Packages page](https://eu.swi-prolog.org/pldoc/doc_for?object=packages)
-   
+
 In the left bar you have (I have added a live URL for some)
-   
+
    - SWI-Prolog Semantic Web Library 3.0
    - Constraint Query Language - A high level interface to SQL databases
    - SWI-Prolog binding to GNU readline
@@ -125,7 +125,7 @@ But there are also "Add-Ons" from 3rd parties, also called "Packs"
 _Please be aware that packs are not moderated. Installing a pack does not execute code in the pack, but simply loading a library from the pack may execute arbitrary code._
 
 Click on the link "Add-Ons" in the "Packages Page" and you reach [list of packs](https://eu.swi-prolog.org/pack/list)
-   
+
    - achelois
    - aleph
    - amazon_api
@@ -138,19 +138,19 @@ Click on the link "Add-Ons" in the "Packages Page" and you reach [list of packs]
 Some pages do not seem to be listed, but can be found through the search bar.
 
 In particular, the documentation of *XPCE* does not show up in the above although it _is_ indeed a package: https://eu.swi-prolog.org/packages/xpce/
-   
-It can, however, be found by going through the menu: Tutorials > Graphics > Gui Options > "Using XPCE"   
+
+It can, however, be found by going through the menu: Tutorials > Graphics > Gui Options > "Using XPCE"
 
 A user guide is at:
-   
+
    - https://eu.swi-prolog.org/packages/xpce/UserGuide/
-   
+
 Some page are generated directly from the source code:
-   
-   - https://eu.swi-prolog.org/pldoc/doc/_SWI_/xpce/prolog/lib/pce.pl 
-   
-and 
-   
+
+   - https://eu.swi-prolog.org/pldoc/doc/_SWI_/xpce/prolog/lib/pce.pl
+
+and
+
    - https://eu.swi-prolog.org/pldoc/doc/_SWI_/xpce/prolog/lib/pce_type.pl
    - https://eu.swi-prolog.org/pldoc/doc/_SWI_/xpce/prolog/lib/Xserver.pl
    ....
@@ -158,7 +158,7 @@ and
 A PDF for "XPCE/Prolog Course Notes" can be found through the menu system: Tutorials > Graphics > XPCE
 
    - https://eu.swi-prolog.org/download/xpce/doc/coursenotes/coursenotes.pdf
-   
+
 See also:
 
    - https://arxiv.org/abs/cs/0207053 - "An Architecture for Making Object-Oriented Systems Available from Prolog"

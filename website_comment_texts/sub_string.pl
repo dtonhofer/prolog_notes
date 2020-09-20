@@ -47,7 +47,7 @@ test(there_is_nothing_beyond_past_the_end_not_even_zero_chars,[fail]) :-
    string_length(Str,StrLen),
    succ(StrLen,BeyondStrLen),
    sub_string(Str, BeyondStrLen, 0, _, _).
- 
+
 % so one has to be careful!
 
 test(extract_at_most_5_chars,[true(T)]) :-
