@@ -1,8 +1,9 @@
 #!/bin/bash
 
 # TODO: automatically get the latest hamcrest and junit jars from
-# https://mvnrepository.com/artifact/org.hamcrest/hamcrest/
-# https://mvnrepository.com/artifact/junit/junit/
+#
+#   https://mvnrepository.com/artifact/org.hamcrest/hamcrest/
+#   https://mvnrepository.com/artifact/junit/junit/
 
 # set -x # Uncomment for tracing information
 
@@ -76,7 +77,7 @@ set -o nounset
 perso_github_account=https://github.com/dtonhofer
 swipl_github_account=https://github.com/SWI-Prolog
 system_install_dir=/usr/local/logic
-toplevel_dir_fq="$HOME/_WORK_ON_PROLOG/swiplmaking6"  # where to put stuff locally
+toplevel_dir_fq="$HOME/Development/swiplmaking/swiplmaking7"  # where to put stuff locally
 
 url_and_dir() {
    local finality=${1:-}                  # "jpl" or "docu" or "system"
@@ -206,18 +207,19 @@ clone() {
    local which_repo=${3:-}        # "forked" or "infra" repo
 
    if [[ -z "$toplevel_dir_fq" || ! -d "$toplevel_dir_fq" ]]; then
-      echo "You must pass the (fully qualified) toplevel directory -- exiting" >&2
+      echo "You must pass an existing (fully qualified) toplevel directory to subroutine clone()" >&2
+      echo "but it seems '$toplevel_dir_fq' either doesn't exist or is not a directory -- exiting!" >&2
       exit 1
    fi
 
    if [[ -z $finality || ( $finality != jpl && $finality != docu && $finality != system ) ]]; then
-      echo "You must indicate the finality ('jpl', 'docu', 'system') -- exiting" >&2
+      echo "You must indicate the finality ('jpl', 'docu', 'system') to subroutine clone() -- exiting" >&2
       exit 1
    fi
 
    if [[ $finality != system ]]; then
       if [[ -z "$which_repo" || ( $which_repo != forked && $which_repo != infra ) ]]; then
-         echo "You must indicate the git repo ('forked', 'infra') -- exiting" >&2
+         echo "You must indicate the git repo ('forked', 'infra') to subroutine clone() -- exiting" >&2
          exit 1
       fi
    else
@@ -330,6 +332,14 @@ clone() {
       exit 1
    }
 
+   # In case this is about documentation, create a symlink to the file describing builtins
+
+   if [[ "${finality}.${which_repo}" == docu.forked ]]; then
+      if [[ ! -e builtin.doc ]]; then
+         ln -s "${target_dir}/man/builtin.doc"
+      fi
+   fi
+
    # <<<< work_dir_fq
 
    popd >/dev/null || exit 1
@@ -346,13 +356,14 @@ copy() {
    local finality=${2:-}          # "jpl" or "docu"
 
    if [[ -z "$toplevel_dir_fq" || ! -d "$toplevel_dir_fq" ]]; then
-      echo "You must pass the (fully qualified) toplevel directory -- exiting" >&2
+      echo "You must pass an existing (fully qualified) toplevel directory to subroutine copy()" >&2
+      echo "but it seems '$toplevel_dir_fq' either doesn't exist or is not a directory -- exiting!" >&2
       exit 1
    fi
 
    if [[ -z "$finality" || ( $finality !=  jpl && $finality != docu ) ]]; then
       # There is nothing to copy at "system"
-      echo "You must indicate the finality ('jpl', 'docu') -- exiting" >&2
+      echo "You must indicate the finality ('jpl', 'docu') to subroutine copy() -- exiting" >&2
       exit 1
    fi
 
@@ -487,12 +498,13 @@ build() {
    local rebuild=${3:-}                    # if set to "rebuild", then just "rebuild" if possible
 
    if [[ -z "$toplevel_dir_fq" || ! -d "$toplevel_dir_fq" ]]; then
-      echo "You must pass the (fully qualified) toplevel directory -- exiting" >&2
+      echo "You must pass an existing (fully qualified) toplevel directory to subroutine build()" >&2
+      echo "but it seems '$toplevel_dir_fq' either doesn't exist or is not a directory -- exiting!" >&2
       exit 1
    fi
 
    if [[ -z "$finality" || ( $finality != jpl && $finality != docu && $finality != system ) ]]; then
-      echo "You must indicate the finality ('jpl', 'docu', 'system') -- exiting" >&2
+      echo "You must indicate the finality ('jpl', 'docu', 'system') to subroutine build() -- exiting" >&2
       exit 1
    fi
 

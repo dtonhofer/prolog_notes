@@ -10,14 +10,14 @@ Because it only does two things, Succeed or Throw:
   2. Otherwise throw ISO standard =type_error= if =Term= is *NOT* of =Type=
   3. Otherwise succeed
 
-So it's a *tripwire* to be used in [Design by Contract](https://en.wikipedia.org/wiki/Design_by_contract).
+So it's a *tripwire* to be used in [Design by Contract](https://en.wikipedia.org/wiki/Design_by_contract). 
 
 One would use it to check the parameters passed to "API predicates" but generally
 not among "friendly/helper predicates" (except during development). One may want
 to rely on other predicates throwing exceptions "late" due to bad arguments instead
 of check for erroneous arguments "early". But as usual, it depends. Including on your level of paranoia.
 
-Jan Wielemaker writes:
+Jan Wielemaker writes: 
 
    - _must_be/2 is not optimized in any way. It is no more and no less than a cheap and explicit way to add type checks intended primarily for public APIs of libraries. Some people tend to stick it in everywhere. That may seriously slow down the code. I almost never use it in cases where built-in predicates do a reasonable job anyway._
 
@@ -43,9 +43,22 @@ user:goal_expansion(must_be(_,_), true).
 
 ## What's missing
 
-The predicate seems to be missing a *third argument*: any context information which might be of interest to the whoever is handling the exception. A must_be/3 might be nice.
+The predicate seems to be missing a *third argument*: any context information which might be of interest to the whoever is handling the exception. A must_be/3 might be nice. 
 
 The ISO Standard exception, (which is not particularly flexible) allows an =Extra= term in the exception term error(type_error(_,_),Extra) or error(instantiation_error,Extra). Could be used here.
+
+There is even use for an argument that indicates whether we want:
+
+   - An exception on test failure
+   - A failure on test failure
+
+More desirable features:
+
+   - One might want to have a disjunction and a conjunction inside the must_be/2 `Type` field
+   - The criterium of "nonempty list", including "nonempty list of some type"
+   - The criterium of "list of 'type or type'"
+   - The criterium of "a yall lambda expression" 
+   - The criterium of "a compound of name N and arity A"
 
 ## Various type-testing approaches
 
@@ -54,7 +67,7 @@ Finally, comparing various type-testing approaches [**with a bit of test code**]
   - Default approach which fails silently if the answer is "don't know"
   - "Sufficiently instantiated" approach which throws if the answer is "don't know"
   - must_be/2 approach which throws unless the answer is "yes, the type matches" (can be used on predicate entry to check whether a contract regarding input arguments is being upheld)
-  - can_be/2 approach which throws only if the answer is "it's never going to be that type" (can be used on predicate entry to check whether a contract regarding output arguments is being upheld: is it possible to bind a term of a certain type to that argument later on?)
+  - can_be/2 approach which throws only if the answer is "it's never going to be that type" (can be used on predicate entry to check whether a contract regarding output arguments is being upheld: is it possible to bind a term of a certain type to that argument later on?) 
 
 See also "Type tests in Prolog" by Markus Triska
 https://youtu.be/ZIv0G4b1xBQ?t=123
