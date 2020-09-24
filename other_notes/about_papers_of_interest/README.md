@@ -2,74 +2,79 @@
 
 If the paper is directly downloadable, a link is given.
 
-- 1984 [Making Prolog more expressive](https://core.ac.uk/download/pdf/82550631.pdf)
+- 1984 [**Making Prolog more expressive**](https://core.ac.uk/download/pdf/82550631.pdf)
    - J.W. Lloyd, R.W. Topor
    - Journal of Logic Programming, 1984:3 pp 225-240
-- 1986 [Seventy-Five Problems for Testing Automatic Theorem Provers](https://www.researchgate.net/publication/220531947_Seventy-Five_Problems_for_Testing_Automatic_Theorem_Provers)
+- 1986 [**Seventy-Five Problems for Testing Automatic Theorem Provers**](https://www.researchgate.net/publication/220531947_Seventy-Five_Problems_for_Testing_Automatic_Theorem_Provers)
    - Francis Jeffry Pelletier
    - Journal of Automated Reasoning 2(2):191-216 (June 1986)
-- 1989 Logic Programming with Strong Negation 
+- 1989 **Logic Programming with Strong Negation** 
    - David Pearce, Gerd Wagner
    - Springer LNAI 475, pp 311-326
-- 1989 [What you always wanted to know about Datalog (and never dared to ask)](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.210.1118) 
+- 1989 [**What you always wanted to know about Datalog (and never dared to ask)**](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.210.1118) 
    - Stefan Ceri, Georg Gottlob, Letizia Tanca
    - [IEEE Transactions on Knowledge and Data Engineering](https://ieeexplore.ieee.org/document/43410), March 1989
-- 1989-10 [A denotational semantics for Prolog](https://dl.acm.org/doi/abs/10.1145/69558.69564)
+- 1989-10 [**A denotational semantics for Prolog**](https://dl.acm.org/doi/abs/10.1145/69558.69564)
    - Tim Nicholson, Norma Foo
    - ACM Transactions on Programming Languages and Systems, October 1989
    - With: [Some comments on “a denotational semantics for Prolog”](https://dl.acm.org/doi/abs/10.1145/177492.177605)
       - Bijan Arbab, Daniel M. Berry
       - ACM Transactions on Programming Languages and Systems, May 1994 
 Authors Info & Affiliations 
-- 1991-01 [Applying Techniques to Skeletons](https://www.researchgate.net/publication/220986744_Applying_Techniques_to_Skeletons)
+- 1991-01 [**Applying Techniques to Skeletons**](https://www.researchgate.net/publication/220986744_Applying_Techniques_to_Skeletons)
    - Leon Sterling, Marc Kirschenbaum
-- 1991-02 [A type system for logic programs](https://www.sciencedirect.com/science/article/pii/074310669180002U)
+- 1991-02 [**A type system for logic programs**](https://www.sciencedirect.com/science/article/pii/074310669180002U)
    - Eyal Yardeni, Ehud Shapiro
    - Journal of Logic Programming_ Volume 10, Issue 2
-- 1991 [Logic Programming with Strong Negation and Inexact Predicates](https://academic.oup.com/logcom/article-abstract/1/6/835/943774) 
+- 1991 [**Logic Programming with Strong Negation and Inexact Predicates**](https://academic.oup.com/logcom/article-abstract/1/6/835/943774) 
    - Gerd Wagner
    - Journal of Logic and Computation, Volume 1, Issue 6, December 1991, pp 835–859
-- 1991 [Uniform Proofs as a Foundation for Logic Programming](http://www.lix.polytechnique.fr/~dale/papers/apal91.pdf) 
+- 1991 [**Uniform Proofs as a Foundation for Logic Programming**](http://www.lix.polytechnique.fr/~dale/papers/apal91.pdf) 
    - Dale Miller, Gopalan Nadathur, Frank Pfenning, Andre Scedrov
    - _the Lambda-Prolog way_
-- 1995 [Higher-order logic programming in Prolog](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.34.9690) 
+- 1995 [**Higher-order logic programming in Prolog**](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.34.9690) 
    - Lee Naish
-- 1995 [leanTAP: Lean Tableau-based Deduction](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.28.5925)
+- 1995 [**leanTAP: Lean Tableau-based Deduction**](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.28.5925)
    - Bernhard Beckert, Joachim Posegga
    - Journal of Automated Reasoning, volume 15, pages 339–358 (1995)
-- 1996 ["Classical" Negation in Non-Monotonic Reasoning and Logic Programming](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.53.4127)
+- 1996 [**"Classical" Negation in Non-Monotonic Reasoning and Logic Programming**](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.53.4127)
    - José Alferes, Luís Moniz Pereira, Teodor C. Przymusinski
    - Proceedings of the European Workshop on Logic in Artificial Intelligence (JELIA'96), Springer LNAI 1126, pp 143-163   
-- 2001-04 [Logic Programming, Functional Programming, and Inductive Definitions](https://www.researchgate.net/publication/1880293_Logic_Programming_Functional_Programming_and_Inductive_Definitions) 
+- 2001-04 [**Logic Programming, Functional Programming, and Inductive Definitions**](https://www.researchgate.net/publication/1880293_Logic_Programming_Functional_Programming_and_Inductive_Definitions) 
    - Lawrence Paulson, Andrew W. Smith
-- 2002-07 [Abduction in Logic Programming](http://web.stanford.edu/class/cs227/Readings/Abudction%20in%20LP.pdf) 
+- 2001-10 [**Nominal Logic: A First Order Theory of Names and Binding**](https://www.sciencedirect.com/science/article/pii/S089054010300138X)
+   - Andrew M. Pitts
+   - Theoretical Aspects of Computer Science, 4th International Symposium, TACS 2001, Sendai, Japan, October 29-31, 2001
+   - Springer LNCS 2215, pp 219-242   
+   - also in "Information and Computation", Volume 186, Issue 2, November 2003, Pages 165-193   
+- 2002-07 [**Abduction in Logic Programming**](http://web.stanford.edu/class/cs227/Readings/Abudction%20in%20LP.pdf) 
    - Marc Denecker, Antonis Kakas
    - [Computational Logic: Logic Programming and Beyond, Springer LNCS 2407](https://link.springer.com/chapter/10.1007/3-540-45628-7_16), pp 402-436
-- 2003-10 [The Essence of Strategic Programming](https://www.researchgate.net/publication/277289331_The_Essence_of_Strategic_Programming) 
+- 2003-10 [**The Essence of Strategic Programming**](https://www.researchgate.net/publication/277289331_The_Essence_of_Strategic_Programming) 
    - Ralf Lämmel, Eelco Visser, Joost Visser
    - _generic programming with the use of strategies_
-- 2009-11 [Coding Guidelines for Prolog](https://arxiv.org/abs/0911.2899)
+- 2009-11 [**Coding Guidelines for Prolog**](https://arxiv.org/abs/0911.2899)
    - Michael A. Covington, Roberto Bagnara, Richard A. O'Keefe, Jan Wielemaker, Simon Price
-- 2011 [Answer Set Programming’s Contributions to Classical Logic](https://people.cs.kuleuven.be/~marc.denecker/ctc.pdf)
+- 2011 [**Answer Set Programming’s Contributions to Classical Logic**](https://people.cs.kuleuven.be/~marc.denecker/ctc.pdf)
    - Marc Denecker, Joost Vennekens, Hanne Vlaeminck, Johan Wittocx, Maurice Bruynooghe
    - Springer LNAI 6565
    - _Stable Semantics_ 
-- 2013-05 [Truth versus Information in Logic Programming](https://arxiv.org/abs/1305.0141v2)
+- 2013-05 [**Truth versus Information in Logic Programming**](https://arxiv.org/abs/1305.0141v2)
    - Lee Naish, Harold Sondergaard
-- 2015-01 [The sad state concerning the relationships between Logic, Rules and Logic Programming](http://via.aayo.ws/nrGeX) 
+- 2015-01 [**The sad state concerning the relationships between Logic, Rules and Logic Programming**](http://via.aayo.ws/nrGeX) 
    - Robert Kowalski
-- 2015-10 [The Inductive Constraint Programming Loop](https://arxiv.org/abs/1510.03317)
+- 2015-10 [**The Inductive Constraint Programming Loop**](https://arxiv.org/abs/1510.03317)
    - Christian Bessiere, Luc De Raedt, Tias Guns, Lars Kotthoff, Mirco Nanni, Siegfried Nijssen, Barry O'Sullivan, Anastasia Paparrizou, Dino Pedreschi, Helmut Simonis
    - Appears in modified form in _IEEE Intelligent Systems_, September/October 2017.
-- 2016-07 [Indexing `dif/2`](https://arxiv.org/abs/1607.01590v1) 
+- 2016-07 [**Indexing `dif/2`**](https://arxiv.org/abs/1607.01590v1) 
    - Ulrich Neumerkel, Stefan Kral
-- 2017-09 [plspec – A Specification Language for Prolog Data](https://www.krin.gs/publication/koerner-plspec-declare17/koerner-plspec-declare17.pdf)
+- 2017-09 [**plspec – A Specification Language for Prolog Data**](https://www.krin.gs/publication/koerner-plspec-declare17/koerner-plspec-declare17.pdf)
    - Philipp Körner, Sebastian Krings
    - DECLARE 2017
-- 2019-09 [Prolog Coding Guidelines: Status and Tool Support](https://arxiv.org/abs/1909.08230v1) 
+- 2019-09 [**Prolog Coding Guidelines: Status and Tool Support**](https://arxiv.org/abs/1909.08230v1) 
    - Falco Nogatz, Philipp Körner, Seastuan Krings
    - ICLP 2019
-- 2020-01 [Drawing Prolog Search Trees. A Manual for Teachers and Students of Logic Programming](https://arxiv.org/abs/2001.08133v1)
+- 2020-01 [**Drawing Prolog Search Trees. A Manual for Teachers and Students of Logic Programming**](https://arxiv.org/abs/2001.08133v1)
    - Johan Bos
 
 

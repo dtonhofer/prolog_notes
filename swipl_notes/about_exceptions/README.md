@@ -576,6 +576,22 @@ Jan Wielemaker writes:
 > There is no `illegal_type_error`, bad something, etc. It would be double, we are already talking 
 > about an error.
 
+Compare with the Java World: While the Prolog standard doesn't even _have_ a standard exception that can be thrown
+by failing tests (SWI Prolog invents its own for `assertion/1`, namely `error(assertion_error(Reason,Culprit),Context)`), 
+the Java World tries to standardize _which ones_ should be thrown across testing frameworks (smug.jpg):
+
+   - https://github.com/ota4j-team/opentest4j - The 
+   - https://github.com/ota4j-team/opentest4j/tree/master/src/main/java/org/opentest4j - The `Exception` classes
+
+### The exception term is not properly associated with a module
+
+In Java, the `toString()`  method is associated to the Exception (at least conceptually), so any code that catches the 
+exception can easily format and print it correctly. 
+
+In Prolog, the corresponding Module must define a printing predicate whose head uniquely unifies with the term
+carried by the exception and which is called from a "generic printer" that uses the multi-module exception printing
+predicate as dispatch table. This works (although how do I do it practically? To be done) but it is ... not very nice.
+
 ### Ideally...
 
 If non-ISO is an option, you can be inventive (or not):
@@ -717,3 +733,9 @@ throw_existence_error(Pred,Type,Term,ExCode,Options) :
   - [Printing messages](https://eu.swi-prolog.org/pldoc/man?section=printmsg) from exceptions, but can be used more generally. See 
     also Anne Ogborn's [Tutorial](http://www.pathwayslms.com/swipltuts/message/index.html) on printing messages
      
+## Compare with
+
+### From the Java World: The Exception Hierarchy
+
+
+
