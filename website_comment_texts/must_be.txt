@@ -117,3 +117,20 @@ Nearly works, but if the bad list entry comes after an unbound variable list ent
 ?- foo([X,x-y,hh]).
 ERROR: Arguments are not sufficiently instantiated
 ```
+
+## Compare with
+
+Hamcrest matchers, originally from the Java Universe and used primarily in unit tests:
+
+[Hamcrest Tutorial](http://hamcrest.org/JavaHamcrest/tutorial)
+
+These have the entry point [`MatcherAssert.assertThat()`](http://hamcrest.org/JavaHamcrest/javadoc/2.2/org/hamcrest/MatcherAssert.html) and take a _Matcher Expression_ to verify. However, but just return `false` instead of throwing - throwing a `java.lang.AssertionError` or some other `Throwable` is left to the caller. 
+
+The [Hamcrest Matchers for Erlang](https://github.com/hyperthunk/hamcrest-erlang) seem most comparable.
+
+For example:
+
+==
+string_is_only_digits_test() ->
+    assert_that("12345", is(only_digits())).
+==
