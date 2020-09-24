@@ -737,5 +737,6 @@ throw_existence_error(Pred,Type,Term,ExCode,Options) :
 
 ### From the Java World: The Exception Hierarchy
 
+![Java Exception Hierarchy](pics/Java_Exception_Hierarchy.svg)
 
 
