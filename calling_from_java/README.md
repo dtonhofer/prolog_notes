@@ -185,7 +185,8 @@ public class ConnectTest {
     @Test
     public void gettingSettingDefaultInitArgs() {
        Logger logger = LoggerFactory.getLogger("gettingSettingDefaultInitArgs");
-       String[] initArgs = JPL.getActualInitArgs();
+       // String[] initArgs = JPL.getActualInitArgs(); // returns null if not yet initialized
+       String[] initArgs = JPL.getDefaultInitArgs(); // returns null if not yet initialized
        for (String str : initArgs) {
           logger.info("Found {}",str);
        }
@@ -246,4 +247,34 @@ java -Djava.library.path=${SWIPL_INSTALL_DIR}/lib/swipl/lib/x86_64-linux/ \
      --scan-classpath
 ```
 
+This works but is awkward. Everything should run in Maven directly.
 
+```
+$ java -Djava.library.path=${SWIPL_INSTALL_DIR}/lib/swipl/lib/x86_64-linux/      -jar jars/junitsl.jar      --classpath $CLASSPATH      --scan-classpath
+23:48:49.751 [main] INFO gettingSettingDefaultInitArgs - Found swipl
+23:48:49.754 [main] INFO gettingSettingDefaultInitArgs - Found -g
+23:48:49.755 [main] INFO gettingSettingDefaultInitArgs - Found true
+23:48:49.755 [main] INFO gettingSettingDefaultInitArgs - Found --no-signals
+
+Thanks for using JUnit! Support its development at https://junit.org/sponsoring
+
+╷
+├─ JUnit Jupiter ✔
+└─ JUnit Vintage ✔
+   └─ ConnectTest ✔
+      └─ gettingSettingDefaultInitArgs ✔
+
+Test run finished after 150 ms
+[         3 containers found      ]
+[         0 containers skipped    ]
+[         3 containers started    ]
+[         0 containers aborted    ]
+[         3 containers successful ]
+[         0 containers failed     ]
+[         1 tests found           ]
+[         0 tests skipped         ]
+[         1 tests started         ]
+[         0 tests aborted         ]
+[         1 tests successful      ]
+[         0 tests failed          ]
+```
