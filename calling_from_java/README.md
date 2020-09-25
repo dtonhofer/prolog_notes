@@ -14,7 +14,7 @@
    - For logging, we will use [SLF4J](http://www.slf4j.org/), the "Simple Logging Façade for Java". This is a shim
      which allows one to write to a single API and "plug in" one or the other of logging implementations at 
      configuration time, just by dropping the correct jar onto the CLASSPATH.
-   - The logging implementation we use will be [logback](http://logback.qos.ch/). Easy to handle and adapted to the SLF4J API.
+      - The logging implementation we use will be [logback](http://logback.qos.ch/).
    - To write and run test, we are using [JUnit 5](https://junit.org/junit5/). This gives us an excellent
      framework to develop smallish code pieces to exercise features. The part of Junit5 which provides
      the Junit5-specific features is called "Junit Jupiter".
