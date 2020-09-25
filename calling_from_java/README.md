@@ -1,12 +1,13 @@
 # Calling SWI-Prolog from Java (via JPL)
 
-Work in progress!
+**2020-09-25: Work in progress, extremely incomplete**
    
    - JPL documentation can be found at:
       - The [JPL project website](http://jpl7.org/)
-      - The [JPL page of SWI-Prolog reference manual](https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/jpl.html%27%29)
-      - The [JPL API overview](https://jpl7.org/JavaApiOverview)
-      - The [The JPL javadoc](https://jpl7.org/javadoc/index.html)
+         - The [JPL API overview](https://jpl7.org/JavaApiOverview)
+         - The [The JPL javadoc](https://jpl7.org/javadoc/index.html)      
+      - The [The wiki page of the JPL Github Repository](https://github.com/ssardina-research/packages-jpl/wiki)
+      - The [JPL page of the SWI-Prolog reference manual](https://eu.swi-prolog.org/pldoc/doc_for?object=section%28%27packages/jpl.html%27%29)
    - We are using SWI Prolog 8.3.7
    - We are using Java 14, in this case [Adopt OpenJDK](https://adoptopenjdk.net/) on Linux x64.
       - The latest version is actually Java 15 already.
