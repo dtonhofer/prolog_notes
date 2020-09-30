@@ -26,6 +26,18 @@
       - There actually is an old jar for JPL on Maven central, dating from 2017.
       - We might look into that later.
 
+Links of interest:
+
+   - https://mkyong.com/junit5/junit-5-consolelauncher-examples/
+   - https://junit.org/junit5/docs/current/user-guide/#running-tests-console-launcher
+   - https://www.baeldung.com/jni
+   - http://www.tricoder.net/blog/?p=197
+   - http://roufid.com/3-ways-to-add-local-jar-to-maven-project/#2-_adding_directly_the_dependency_as_system_scope
+   - https://maven.apache.org/plugins-archives/maven-surefire-plugin-2.12.4/examples/configuring-classpath.html
+   - https://maven.apache.org/plugins-archives/maven-surefire-plugin-2.12.4/examples/configuring-classpath.html
+   - https://stackoverflow.com/questions/15013651/using-maven-execexec-with-arguments
+   - https://www.mojohaus.org/exec-maven-plugin/usage.html
+
 **Stuff provided by SWI-Prolog**
 
 If SWI Prolog has been compiled with the JPL module, there will be:

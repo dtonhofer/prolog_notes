@@ -1,10 +1,6 @@
 package name.heavycarbon.jpl.callprolog;
 
-/**
- * Hello world!
- *
- */
-public class App 
+public class Connect 
 {
     public static void main( String[] args )
     {

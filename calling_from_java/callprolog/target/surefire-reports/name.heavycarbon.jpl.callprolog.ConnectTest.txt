@@ -1,0 +1,8 @@
+-------------------------------------------------------------------------------
+Test set: name.heavycarbon.jpl.callprolog.ConnectTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.124 s <<< FAILURE! - in name.heavycarbon.jpl.callprolog.ConnectTest
+name.heavycarbon.jpl.callprolog.ConnectTest.gettingSettingDefaultInitArgs  Time elapsed: 0.106 s  <<< ERROR!
+java.lang.UnsatisfiedLinkError: no jpl in java.library.path: [/usr/java/packages/lib, /usr/lib64, /lib64, /lib, /usr/lib]
+	at name.heavycarbon.jpl.callprolog.ConnectTest.gettingSettingDefaultInitArgs(ConnectTest.java:15)
+
