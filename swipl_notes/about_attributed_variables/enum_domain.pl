@@ -224,7 +224,7 @@ enum_domain_set(X, ATTV) :-
 attr_unify_hook(ATTV,PUV) :-
   debug_on_entry(ATTV,PUV),
   assert_on_entry(ATTV,PUV),
-  update_hook_call_info(ATTV,PUV),           % update global variable to enable test checks
+  update_hook_call_info(ATTV,PUV),           % update global variable to enable test checks.
   if_then_else(
       attr_unify_hook_inner(ATTV,PUV),
       debug_on_success(PUV),
@@ -232,38 +232,40 @@ attr_unify_hook(ATTV,PUV) :-
 
 assert_on_entry(ATTV,PUV) :-
    attr_key(Key),
-   assertion(nonvar(PUV);                    % PUV is nonvar or a 'hole' with attribute 'key'
-             get_attr(PUV,Key,_)),           % ... or a 'hole' with attribute 'key' (otherwise we wouldn't be in the hook!)
-   assertion(nonvar(ATTV)),                  % This is NOT necessarily the case, but it *is* in this application
-   assertion(is_ordset(ATTV)),               % And this is also true in this application
-   assertion(maplist(atom,ATTV)),            % ...and so is this
-   assertion(\+ord_empty(ATTV)).             % ...and so is this
+   assertion(
+      nonvar(PUV);                           % PUV is nonvar or a 'hole' with attribute 'key'...
+      get_attr(PUV,Key,_)                    % ... or a 'hole' with attribute 'key' (otherwise we wouldn't even be in the hook!)
+   ),                                           
+   assertion(nonvar(ATTV)),                  % nonvar(ATTV) is NOT necessarily the case, but it *is* in this application.
+   assertion(is_ordset(ATTV)),               % And this is also true in this application.
+   assertion(maplist(atom,ATTV)),            % ...and so is this.
+   assertion(\+ord_empty(ATTV)).             % ...and so is this.
 
 attr_unify_hook_inner(ATTV,PUV) :-
    attr_key(Key),
    switch(
-      get_attr(PUV,Key,ATTVPUV),             % This succeeds iff PUV denotes a 'hole' with attribute 'Key'
-      intersection(ATTV,PUV,ATTVPUV),        % ...so intersect the attribute values
-      var(PUV),                              % Otherwise if PUV is a 'hole'
-      fail,                                  % ...then something is very wrong (that case should have bene caught by assert_on_entry/2)
-      ord_memberchk(PUV,ATTV)).              % PUV is not a hole: check whether PUV one of the allowed atoms, possibly veto-ing unification
+      get_attr(PUV,Key,ATTVPUV),             % This succeeds iff PUV denotes a 'hole' with attribute 'Key'...
+      intersection(ATTV,PUV,ATTVPUV),        % ...so intersect the attribute values.
+      var(PUV),                              % Otherwise if PUV is a 'hole'...
+      fail,                                  % ...then something is very wrong (that case should have been caught by assert_on_entry/2)
+      ord_memberchk(PUV,ATTV)).              % PUV is not a hole: check whether PUV one of the allowed atoms, possibly vetoing unification.
 
 intersection(ATTV,PUV,ATTVPUV) :-
-   ord_intersection(ATTV,ATTVPUV,AX),        % Fails only if there is some typing problem with ATTV,ATTVPUV (should not happen)
+   ord_intersection(ATTV,ATTVPUV,AX),        % Fails only if there is some typing problem with ATTV,ATTVPUV (should not happen).
    ax_decision(AX,PUV).
 
 ax_decision([],_) :-                         % Intersection of allowed atoms is empty.
-   !,fail.                                   % So no solution fulfillng constraint: veto unification!
+   !,fail.                                   % So ther is no solution fulfilling constraint: veto the unification!
 
-ax_decision([A],PUV) :-                      % Intersection contains only a single allowed value A
-   !,                                        % ... and so PUV, an unbound variable, can unified with A ... from within the hook itself!
+ax_decision([A],PUV) :-                      % Intersection contains only a single allowed value A...
+   !,                                        % ... and so PUV, an unbound variable, can be unified with A ... from within the hook itself!
    attr_key(Key),                            % To avoid triggering attr_unify_hook **again** on the upcoming "=" ...
    del_attr(PUV,Key),                        % ... make sure to delete the (certainly present) attributed variable.
    PUV = A.                                  % Now we can unify. Done! PUV is now certainly no "attributed variable" anymore.
                                              % Note that unification may cause a (second) call to attr_unify_hook/2 clauses of *OTHER* modules.
 
-ax_decision([A1,A2|As],PUV) :-               % Default case: PUV is attributed with an intersection of cardinality >= 2
-   attr_key(Key),                            % ...in which case the intersection is just assigned as new attribute value
+ax_decision([A1,A2|As],PUV) :-               % Default case: PUV is attributed with an intersection of cardinality >= 2...
+   attr_key(Key),                            % ...in which case the intersection is just assigned as new attribute value.
    put_attr(PUV,Key,[A1,A2|As]).
 
 % ---
