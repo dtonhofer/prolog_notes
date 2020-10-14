@@ -67,7 +67,7 @@ through unification as computation proceeds. The empty term is "instantiated"
 solve. Prolog does allow one to "uninstantiate" an instantiated, previously empty
 term except when backtracking.
 
-[Concept of a variable](concept_of_variable.svg)
+![[Concept of a variable](concept_of_variable.svg)]
 
 Fluidly, one talks about "the term `X`" when one really wants to talk about 
 "the (possibly empty) term designated by the variable name `X` at runtime".
@@ -102,7 +102,7 @@ X = a.
 
 Another example:
 
-[Unification example](unification_example.svg)
+![[Unification example](unification_example.svg)]
 
 ## Variables
 
