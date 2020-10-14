@@ -19,7 +19,7 @@ They may be generated on demand by predicates like [`print/1`](https://eu.swi-pr
 f(_1668):-g(_1668,_1674)
 ```
 
-## Cells and terms
+## Terms and cells
 
 A variable name appearing in a clause or goal designates (or "denotes") a _cell in a "global term store" at runtime.
 The term store is _global_ as the currently clause may access any cell therein as long as the activation (stack frame)
@@ -101,7 +101,7 @@ Another example:
 
 ![Unification example](unification_example.svg)
 
-## Variable
+## The "variable"
 
 Fluidly, the noun "variable" may be used for:
 
@@ -124,7 +124,7 @@ Compare with the entry for
 [`var`](http://www.cse.unsw.edu.au/~billw/prologdict.html#termtype) in 
 Bill Wilson's Prolog dictionary.
 
-## `var(X)` and `nonvar(X)`
+## The predicates `var(X)` and `nonvar(X)`
 
 When you ask `var(X)` you are actually asking whether the variable name `X` _currently_ (at query time, a non-logical concept)
 designates an empty cell.
