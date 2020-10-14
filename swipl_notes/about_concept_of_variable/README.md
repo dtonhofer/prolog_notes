@@ -21,9 +21,9 @@ f(_1668):-g(_1668,_1674)
 
 ## Terms and cells
 
-A variable name appearing in a clause or goal designates (or "denotes") a _cell in a "global term store" at runtime.
+A variable name appearing in a clause or goal designates (or "denotes") a _cell_ in a "global term store" at runtime.
 The term store is _global_ as the currently clause may access any cell therein as long as the activation (stack frame)
-contains a reference to said cell.  
+contains a reference to said cell. Cells form directed graphs that are a concrete representation of terms.   
 
 Consider the clause:
 
@@ -33,10 +33,8 @@ f(X,Y) :- g(X,Z),h(Z,Y).
 
 It uses variables names `X`, `Y` and `Z`. At runtime, the activation of the clause (the stack frame) is initialized with
 references into the global term store for the arguments passed in: one for `X` and one for `Y`. A new reference into the 
-global term store for the fresh variable `Z` is added. The actual variable names used in source code, `X`, `Y`, `Z`
+global term store for the fresh variable `Z` is also added. The actual variable names used in source code, `X`, `Y`, `Z`
 are of no relevance and actually unknown to the activation. 
-
-Cells form directed graphs that are a concrete representation of terms.
 
 A term is generally considered to have tree structure (a "tree of terms", the definition being recursive). Inner nodes of
 the tree are _compound terms_ and leaf nodes are either _atomic terms_ or _empty terms_. An _empty term_ leaf is printed
@@ -61,15 +59,17 @@ One can consider each node of a term graph to be represented by a (either shared
 Inner nodes are cells with (possibly 0) children. Leaf nodes (or rather, nodes the the edge of the graph) are cells with 
 no children. 
 
-An empty term is represented by an _empty cell_ (a "hole", not to be confused with an Haskell [type holes](https://wiki.haskell.org/GHC/Typed_holes)). 
+An empty term is represented by an _empty cell_ (maybe call this a **hole** (not official terminology and not to be confused 
+with an Haskell [type holes](https://wiki.haskell.org/GHC/Typed_holes)). 
+
 The idea is that this represents an as-yet-undefined datum. The cell may be filled using unification as computation
 proceeds. The empty term is "instantiated" (or "refined"). This represents accumulation of information about the problem to 
 solve. Prolog does allow one to "uninstantiate" an instantiated, previously empty term except when backtracking.
 
 ![Concept of a variable](concept_of_variable.svg)
 
-Fluidly, one talks about "the term `X`" when one really wants to talk about "the (possibly empty) term designated by the 
-variable name `X` at a given step of the computation". Indeed, whatever can be found inside the parentheses of a 
+Fluidly, one talks about _the term `X`_ when one really wants to talk about _the (possibly empty) term designated by the 
+variable name `X` at a given step of the computation_. Indeed, whatever can be found inside the parentheses of a 
 predicate call may be called a "term".
 
 Also, "term" may be used to designate the full graph reachable from a given node/cell but sometimes it is used to
