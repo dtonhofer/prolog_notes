@@ -59,6 +59,7 @@ More desirable features:
    - The criterium of "list of 'type or type'"
    - The criterium of "a yall lambda expression" 
    - The criterium of "a compound of name N and arity A"
+   - The criterium of "matches a certain dict structure". For example: `must_be(io_monad{ stream:_, goal:_ },T)`: "T must be a dict with tag `io_monad` and at least the keys `stream` and `goal` (but maybe more)." 
 
 ## Various type-testing approaches
 

@@ -4,13 +4,45 @@
 % ===
 
 % ---
+% Note the ambiguity concerning the word "variable".
+% (See also https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_concept_of_variable/README.md)
+% 
+% The variable name
+%
+% "Variable names" are clause-local names found in source code, possibly
+% "anonymous":
+%
+%    f(X) :- g(X,_).
+%
+%
+% Cells on the global term store
+%
+% A "variable name" designates (or "denotes") a cell held in a "global term 
+% store". A graph of cells represents a term. A term may be empty if it
+% represents an s yet-unknown value. Such a term can only appear as the leaf
+% in a larger term. It is represented by an "empty cell" (a "hole").
+%
+% The variable
+%
+% The empty cell (or the empty term that it implements) is "a variable"
+% or better "an unbound variable" although colloquial use of language 
+% allows to use "variable" in other contexts, too. It has no name! 
+%
+% It makes sense to talk of "attributed variables" with the above meaning.
+% It is not the "variable name" which carries attributes but the empty
+% cell. "attributed empty cell" is not used in common usage though.
+% ---
+
+% ---
 % Unlike in the original code, I have separated enum_domain/2 into
 %
 % 1) enum_domain_get/2 - get the value of the variable attribute
 % 2) enum_domain_set/3 - set the value of the variable attribute
 %
-% which is clearer than merging both functionalities into a single enum_domain/2.
-% All of this code essentially works imperatively, not logically in any case.
+% which is clearer than merging both functionalities into a single 
+% enum_domain/2.
+%
+% In any case, all of this code essentially works imperatively, not logically.
 % There is no gain in pretending otherwise.
 % ---
 
@@ -34,7 +66,8 @@
 % ---
 % For readability, I will not use ->/2 all that much. Instead I will use
 % dedicated meta-predicates (these are slow though, so maybe unusable in
-% production). Should really be rewrite instructions.
+% production). Should really be rewrite instructions. (Should these 
+% be declared as meta-predicates instead of just built as terms and called?)
 % ---
 
 if_then_else(Condition,Then,Else) :-
@@ -61,27 +94,21 @@ switch(If1,Then1,If2,Then2,If3,Then3,If4,Then4,Else) :-
    ;   call(Else).
 
 % ---
-% The name/key of our variable attribute.
-%
-% This is really a "hole attribute" rather than a "variable attribute":
-% Variables are just temporary clause-local names which don't carry
-% attributes at all. Instead the attributes are carried by the hole (on the
-% global term store) which are designated by variables. This abuse of language
-% is standard though.
+% The name/key of our variable attribute oor rather our "empty cell attribute".
 %
 % The name MUST be the same name as the module so that the correct unification
 % hook can be found at run-time.
 %
-% (This line corresponds to a "factored-out constant" in other programming
-% languages; maybe Prolog should be given a specific syntax for this?)
+% (This following line corresponds to a "factored-out constant" in other
+%  programming languages; maybe Prolog should be given a specific syntax?)
 % ---
 
 attr_key(enum_domain).
 
 % ---
 % Client code calls enum_domain_get/2 to get the value of the attribute
-% with key "enum_domain" carried by (the hole designated by) the unbound
-% variable X.
+% with key "enum_domain" carried by variable "X" (more precisely, the empty cell
+% designated by the variable name "X").
 %
 % In this application, the attribute is a non-empty ordset of atoms listing
 % allowed values of the attributed variable.
@@ -97,16 +124,16 @@ enum_domain_get(X, ATTV) :-
    catch(
       list_to_ord_set(ATTV,ATTVos), % This may throw with at least a "type exception"
       _,
-      fail),               % ...but, don't throw, just fail
+      fail),                % ...but, don't throw, just fail
    attr_key(Key),
-   get_attr(X,Key,ATTVX),  % This fails if X is not unbound or doesn't carry the attribute "Key"
-   ATTVX = ATTVos.         % This may fail or else perform element-wise unification
+   get_attr(X,Key,ATTVX),   % This fails if X is not unbound or doesn't carry the attribute "Key"
+   ATTVX = ATTVos.          % This may fail or else perform element-wise unification
 
 % ---
 % Client code calls enum_domain_set/3 to modify/set the value of attribute
-% with key "enum_domain" carried by (the hole designated by) the unbound
-% variable "X", based on the values in "ATTV". Modification is done according
-% to argument "Op".
+% with key "enum_domain" carried by the variable "X" (actually, the empty cell
+% designated by the variable name "X"), based on the values in "ATTV".
+% Modification is done according to argument "Op".
 %
 % In this application, the attribute is a non-empty ordset of atoms listing
 % allowed values of the attributed variable.
@@ -152,11 +179,14 @@ deluxe_put_attr([A1,A2|As],Key,X) :-                  % At least two attribute v
 
 % ---
 % Alternative, written according to the original example.
+% ---
+
+% ---
 % Client code calls enum_domain_set/2 to modify/set the value of attribute
 % "enum_domain" of unbound variable "X", based on the values in "ATTV".
 %
 % In this application, the attribute is a non-empty ordset of atoms listing
-% allowed values for variable X.
+% allowed values for variable "X2.
 %
 % - We allow standard lists as arguments, too.
 % - We don't allow setting the attribute to an unbound variable, although that
@@ -184,15 +214,15 @@ enum_domain_set(X, ATTV) :-
    attr_key(Key),
    put_attr(Y,Key,ATTVos),                  % Setting the new attribute value on not-yet-attributed freshvar Y
    if_then_else(
-      get_attr(X, Key, _),                  % This fails if X does not designate a hole or does not carry the attribute "Key"
+      get_attr(X, Key, _),                  % This fails if X does not designate an empty cell or does not carry the attribute "Key"
       true,
       put_attr(X,Key,ATTV)),                % Make X carry the same attribute value as Y
    debug_before_unification(X,Y),
    X = Y.                                   % This triggers the attr_unify_hook
 
 % ---
-% Define the "hook predicate" to call whenever a hole (unbound variable) with
-% "our" attribute is involved in unification.
+% Define the "hook predicate" to call whenever an empty cell with "our" 
+% attribute is involved in unification.
 %
 % From the SWI-Prolog reference manual:
 %
@@ -233,8 +263,8 @@ attr_unify_hook(ATTV,PUV) :-
 assert_on_entry(ATTV,PUV) :-
    attr_key(Key),
    assertion(
-      nonvar(PUV);                           % PUV is nonvar or a 'hole' with attribute 'key'...
-      get_attr(PUV,Key,_)                    % ... or a 'hole' with attribute 'key' (otherwise we wouldn't even be in the hook!)
+      nonvar(PUV);                           % PUV is nonvar...
+      get_attr(PUV,Key,_)                    % ... or an empty cell with attribute 'key' (otherwise we wouldn't even be in the hook!)
    ),                                           
    assertion(nonvar(ATTV)),                  % nonvar(ATTV) is NOT necessarily the case, but it *is* in this application.
    assertion(is_ordset(ATTV)),               % And this is also true in this application.
@@ -244,18 +274,18 @@ assert_on_entry(ATTV,PUV) :-
 attr_unify_hook_inner(ATTV,PUV) :-
    attr_key(Key),
    switch(
-      get_attr(PUV,Key,ATTVPUV),             % This succeeds iff PUV denotes a 'hole' with attribute 'Key'...
+      get_attr(PUV,Key,ATTVPUV),             % This succeeds iff PUV denotes an empty cell with attribute 'Key'...
       intersection(ATTV,PUV,ATTVPUV),        % ...so intersect the attribute values.
-      var(PUV),                              % Otherwise if PUV is a 'hole'...
+      var(PUV),                              % Otherwise if PUV is an empty cell...
       fail,                                  % ...then something is very wrong (that case should have been caught by assert_on_entry/2)
-      ord_memberchk(PUV,ATTV)).              % PUV is not a hole: check whether PUV one of the allowed atoms, possibly vetoing unification.
+      ord_memberchk(PUV,ATTV)).              % PUV is not an empty cell: check whether PUV one of the allowed atoms, possibly vetoing unification.
 
 intersection(ATTV,PUV,ATTVPUV) :-
    ord_intersection(ATTV,ATTVPUV,AX),        % Fails only if there is some typing problem with ATTV,ATTVPUV (should not happen).
    ax_decision(AX,PUV).
 
 ax_decision([],_) :-                         % Intersection of allowed atoms is empty.
-   !,fail.                                   % So ther is no solution fulfilling constraint: veto the unification!
+   !,fail.                                   % So there is no solution fulfilling constraint: veto the unification!
 
 ax_decision([A],PUV) :-                      % Intersection contains only a single allowed value A...
    !,                                        % ... and so PUV, an unbound variable, can be unified with A ... from within the hook itself!

@@ -1,14 +1,37 @@
 https://eu.swi-prolog.org/pldoc/doc_for?object=(%3D..)/2
 
+## A bit surprising perhaps
+
+==
+% works for atoms and strings
+
+?- atom =.. X.
+X = [atom].
+
+?- "atom" =.. X.
+X = ["atom"].
+
+% works for numbers
+
+?- 3.4 =.. X.
+X = [3.4].
+
+?- 3r4 =.. X.
+X = [3r4].
+
+?- 3 =.. X.
+X = [3].
+==
+
+## Overview table
+
 [**This page**](https://github.com/dtonhofer/prolog_notes/tree/master/swipl_notes/about_term_analysis_and_construction) provides a short overview of the "analysis/construction" predicates.
 
-From O'Keefe's **"The Craft of Prolog"** (MIT Press, 1990), p. 145:
+## From O'Keefe's "The Craft of Prolog" (MIT Press, 1990), p. 145
 
------
+The first is the meta-logical operations functor/3 and arg/3, particularly the latter. A word of warning here: it is almost always a bad idea to use =../2. Do not use =../2 to locate a particular argument of some term. 
 
-The first is the meta-logical operations functor/3 and arg/3, particularly the latter. A word of warning here: it is almost always a bad idea to use =../2. Do not use =../2 to locate a particular argument of some term.
-
-For example, instead of
+For example, instead of 
 
 ==
 Term =.. [_F,_,ArgTwo|_]
@@ -37,13 +60,13 @@ than to write
 Term =.. [_,First,_,Third,Fourth|_]
 ==
 
-Do not use '=..'/2 when you know the functor. (That
+Do not use '=..'/2 when you know the functor. (That 
 is, when you know both the function symbol and the arity.)
 
 For example, one Prolog programmer actually wrote the following code:
 
 ==
-add_date(OldItem, Date, NewItem) :-
+add_date(OldItem, Date, NewItem) : - 
    OldItem =.. [item, Type, Ship, Serial],
    NewItem =.. [item,Type,Ship,Serial,Date].
 ==
@@ -51,7 +74,7 @@ add_date(OldItem, Date, NewItem) :-
 This could have been expressed more clearly and more efficiently as
 
 ==
-add_date(OldItem, Date, NewItem) :-
+add_date(OldItem, Date, NewItem) : -
    OldItem = item(Type,Ship,Serial),
    NewItem = item(Type,Ship,Serial,Date).
 ==
@@ -61,4 +84,3 @@ or, even better, as
 ==
 add_date(item(Type,Ship,Serial),Date,item(Type,Ship,Serial,Date)).
 ==
---------

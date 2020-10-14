@@ -1,23 +1,81 @@
-***
-*** https://eu.swi-prolog.org/pldoc/doc_for?object=var/1
-***
+https://eu.swi-prolog.org/pldoc/doc_for?object=var/1
 
-This predicate is named according to tradition but in a very unfortunate fashion (leading to much confusion for newcomers trying to understand Prolog).
+## A note on concepts and the ambiguity concerning the word "variable"
 
-The correct name should be:
+The noun "variable" is used confusingly in the Prolog universe. Let's attempt to clarify!
 
-==
-fresh/1
-==
+First, identify the lego blocks of the mental landscape. (One should add a diagram too):
 
-Because var(X) does not test whether whatever is in between the parentheses (in this case =X=), is a _variable_ (we **know that** just by looking at the source code and the compiler should flag an always-true call "var(foo)", and actually it does), but whether =X= is a _fresh variable_ (alias "names a 'hole'", "names an uninstantiated term", "names a fresh term", "is uninstantiated", "is unrefined", "is the name denoting an empty box in the term store" and also "unifies with anything" and variations thereof) at the current state of computation.
+**Variable names**
 
-It is also the **exact complement** of "nonvar(X)".
+"Variable names" are clause-local names found in source code, possibly "anonymous":
 
-Note the difference between functional languages supporting =nil=, imperative languages supporting =null= and the logical fresh variable:
+```
+f(X) :- g(X,_).
+```
 
-   - Imperative =null= in languages that have it: "I have currently no content assigned to this variable but that may change with the next instruction"
-   - Functional =nil= in languages that support it: "I have currently no content assigned to this variable and that cannot change (unless a new context is created wherein the same variable name designates valid content, e.g. through a recursive call)
-   - Prolog's var(X)  : "I have currently no content assigned to this variable and this may change via unification a bit further to the right, but only by repeatedly replacing leaf holes in a term tree by new term trees (growing the tree at the leaves)"
+or generated on demand by predicates like print/1 when they need to print out a term:
 
-Note that you can absolutely **test** whether two variables name the same "empty box" in the term store using the X == Y operator, whereas unification is active: X = Y will **make sure** that two variables name the exact same term in the term store ... and generally that term first has to be constructed (by unification) from the distinct terms named by =X= and =Y= first.
+```
+?- print(f(X) :- g(X,_)).
+f(_1668):-g(_1668,_1674)
+```
+
+**Cells and Terms in the global term store**
+
+Given the activation of a clause at-runtime, a "variable name" appearing in the clause designates (or "denotes") a "cell" in the "global term store". The term store is _global_ because any clause activation can access any cell therein as long as the clause has been handed the reference to said cell.  
+
+   - _The cell may be empty_ (it represents an empty term). I like to call this a "hole". "hole" is used in Haskell for other things, namely [type holes](https://wiki.haskell.org/GHC/Typed_holes) but why not?
+   - _The cell may hold structure_ (it represents a nonempty term), which is (recursively) a tree (or rather, a directed graph) of terms, with compound terms as inner nodes and either atomic terms or empty cells (empty terms) as leaves.
+
+Usage of the noun "term" is rather free-wheeling. It seems to be used for anything that can be found within the parentheses of a predicate call, in particular a variable name. The difference between "term" used to designate a graph and a single node of the graph is not so clear-cut either. 
+
+Note this important unification behaviour of empty cells:
+
+When unifying two empty cells, the cells are merged and one cell disappears:
+
+```
+?- print(X),nl,print(Y),nl,X=Y,print(X),nl,print(Y),nl.
+_7780
+_7784
+_7780
+_7780
+X = Y.
+```
+
+When unifying an empty cell and a nonempty cell, the empty cell disappears:
+
+```
+?- print(X),nl,X=a,print(X).
+_9280
+a
+X = a.
+```
+
+**Variables**
+
+Fluidly, the noun "variable" may be used for:
+
+   - an _empty cell_ in the term store. In particular [_Attributed Variables_](https://eu.swi-prolog.org/pldoc/man?section=attvar) are should rightly be called _Attributed Empty Cells_; the predicate name of var/1 makes sense under the interpretation of "variable" testing whether what's in the parentheses designates an "empty cell"
+   - a _variable name_ as found in source code, which may designate an empty or nonempty cell during a program run (as in "the variable `X` in `var(X)`")
+   - a _variable name_ printed out during a live program, like `X` or `_124`, which always designates an empty cell (otherwise the content of the cell would be printed). Empty cells do not have a name by themselves, although the Prolog toplevel may make efforts to use the _variable name used in the query_ for the user's convenience.
+
+If the variable name designates an empty cell, one talks about _an unbound variable_ or an _uninstantiated variable_. There is also the _fresh variable_ (always uninstantiated at first during a program run), which is a newly introduced variable name.
+
+If the variable name designates a cell filled with structure (filled with a nonempty term) one talks about _a bound variable_ or an _instantiated variable_ or one says that _the variable is bound to a term_ (note the direction; **not** _term is bound to a variable_).
+
+Compare with the entry for [variable](http://www.cse.unsw.edu.au/~billw/prologdict.html#variable) and [`var`](http://www.cse.unsw.edu.au/~billw/prologdict.html#termtype) in Bill Wilson's Prolog dictionary.
+
+**var(X)**
+
+When you ask `var(X)` you are actually asking whether the variable name `X` "currently" (at query time, a non-logical concept) designates an empty cell. 
+
+The predicate would be less confusing if named `unbound(X)`.
+
+Note that if the text within the parentheses of the `var(.)` call is not a variable name, the answer is `false` immediately. The compiler should protest about a call that always fails when it sees source text like `var(foo)`.
+
+Note that the definition given by the SWI-Prolog reference manual uses the adjective _free_, which is something else entirely and should not be used: a variable is _free_ in a formula (of logic or a lambda expression) if it does not appear in a quantifier (or a lambda prefix) closing over the formula.
+
+**nonvar(X)**
+
+When you ask `nonvar(X)` you are actually asking whether the variable name `X` currently designates anything other than an empty cell. This is the complement of `var(X)`. Note that if the text within the parentheses of the `nonvar(.)` call is not a variable name, the answer is `true` immediately. The compiler should protest about a call that always succeeds when it sees source text like `nonvar(foo)`).

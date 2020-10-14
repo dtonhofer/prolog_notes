@@ -174,7 +174,7 @@ f/2<y:LabelModel>
       <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.process">
-          <y:Geometry height="31.0" width="166.0" x="1248.0" y="692.25"/>
+          <y:Geometry height="31.0" width="128.5" x="1268.3125" y="692.25"/>
           <y:Fill color="#FFFF99" color2="#FFFF99" transparent="false"/>
           <y:BorderStyle color="#000000" type="dashed" width="1.0"/>
           <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="l" textColor="#000000" verticalTextPosition="bottom" visible="true" width="113.318359375" x="4.0" y="6.515625">A "variable name"</y:NodeLabel>
@@ -283,7 +283,7 @@ computation progresses</y:NodeLabel>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.process">
           <y:Geometry height="31.0" width="197.0" x="1026.5" y="805.25"/>
-          <y:Fill color="#FFFF99" color2="#FFFF99" transparent="false"/>
+          <y:Fill color="#FFFF99" color2="#FFFF00" transparent="false"/>
           <y:BorderStyle color="#000000" type="dashed" width="1.0"/>
           <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="l" textColor="#000000" verticalTextPosition="bottom" visible="true" width="189.583984375" x="4.0" y="6.515625">May also be called a "variable"</y:NodeLabel>
         </y:GenericNode>
