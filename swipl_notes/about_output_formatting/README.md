@@ -694,7 +694,7 @@ For the theory on quasi-quotations, see [Quasi-quotation](https://en.wikipedia.o
 
 Here is a test case:
 
-```
+```prolog
 :- use_module(library(strings)).
   
 :- begin_tests(here_document).
