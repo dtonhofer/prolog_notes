@@ -12,8 +12,18 @@ _Work in progress_
   as an application of [linear logic](https://plato.stanford.edu/entries/logic-linear/)? Would it help in this context? 🤔.
   Imlementation-wise, one should try to add it. 
 - The fact that there are two version of output predicates, one taking a (mode +) stream and one not taking a stream, indicates that 
-  there is something basically wrong in the approach. One should be able to associate a stream to a clause maybe. 🤔
-- I discovered that there is [`library(strings)`](https://www.swi-prolog.org/pldoc/man?section=strings) 
+  there is something wrong in the approach. One should be able to associate a stream to a clause maybe. 🤔
+  - There is [`with_output_to/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=with_output_to/2) and the less
+    generic [`with_output_to_chars/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=with_output_to_chars/2)
+    which captures all that is being written to the "current output" in the context of a goal and
+    builds a list of chars or codes, a string or atom as result. Nice!
+- Functionality for [here documents](https://en.wikipedia.org/wiki/Here_document) is provided by  
+  SWI-Prolog's [`library(strings)`](https://www.swi-prolog.org/pldoc/man?section=strings) which is based on 
+  [`library(quasi_quotations)`](https://eu.swi-prolog.org/pldoc/man?section=quasiquotations). 
+- Some functionality can be found in [`library(lynx)`](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/lynx/index.html), 
+  but that library cannot be found directly via the manual (It think). I found it via Google. Maybe it's being retired?
+- I wrote some simple predicates to justify text left/right/centrally too (doesn't
+  everybody?): [justify.pl](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/strings/justify.pl).
 
 # TL;DR
 
@@ -671,6 +681,35 @@ test("data atom is 9*32 characters exactly, with atomic_list_concat/2") :-
 
 (A note concerning this has been added to the SWI-Prolog manual page for [Syntax Changes](https://eu.swi-prolog.org/pldoc/man?section=ext-syntax)).
 
+## Actual "here documents" using `library(strings)`
 
+[`library(strings)`](https://www.swi-prolog.org/pldoc/man?section=strings), provides full 
+functionality for [here documents](https://en.wikipedia.org/wiki/Here_document) (and some additional predicates)
 
+It is based on [`library(quasi_quotations)`](https://eu.swi-prolog.org/pldoc/man?section=quasiquotations) 
+which provides quasi-quotation syntax as in [Haskell](https://wiki.haskell.org/Quasiquotation),
+[Racket](https://docs.racket-lang.org/guide/qq.html) and others.
+    
+For the theory on quasi-quotations, see [Quasi-quotation](https://en.wikipedia.org/wiki/Quasi-quotation).
 
+Here is a test case:
+
+```
+:- use_module(library(strings)).
+  
+:- begin_tests(here_document).
+
+test("generate greeting",true(TXT == 'Dear Perl Developer,\n\nI\'m happy to announce a \nstring interpolation quasi quoter\nfor Prolog!\n')) :-
+    [To,Lang] = ["Perl Developer","Prolog"],
+    with_output_to(atom(TXT),
+       write({|string(To,Lang)||
+              | Dear {To},
+              |
+              | I'm happy to announce a 
+              | string interpolation quasi quoter
+              | for {Lang}!
+              |})),
+    format("~w\n",[TXT]).
+    
+:- end_tests(here_document).
+```
