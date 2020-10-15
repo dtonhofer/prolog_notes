@@ -620,16 +620,14 @@ Text = "This is a cute test: \"Hello, World\" 15".
 Text = 'SPROING! & "This is a ~q test: ~q ~d" & cute & "Hello, World" & foo'.
 ```
 
-## Multiline/Long strings and atoms in SWI-Prolog
+## Multi-line strings and atoms in SWI-Prolog
 
 Multiline strings can be written in SWI-Prolog by putting the `\c` escape sequence at the end of a line.
 This concatenates the current line with the next one, minus any indenting whitespace.
 
 `\c` is not in the ISO Standard but stems from Quintus Prolog, see the
 [Quintus Prolog Manual](https://quintus.sics.se/isl/quintus/html/quintus/ref-syn-ces.html#ref-syn-ces)
-under "The Prolog Language" > Syntax > Compound Terms > Character Escaping"). 
-
-This is not quite as a [here document](https://en.wikipedia.org/wiki/Here_document), but close.
+under "The Prolog Language > Syntax > Compound Terms > Character Escaping". 
 
 For example:
 
