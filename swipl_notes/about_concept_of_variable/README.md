@@ -117,19 +117,26 @@ Another example:
 
 Fluidly, the noun "variable" may be used for:
 
-- An _empty cell_ in the term store. In particular the designation [_Attributed Variable_](https://eu.swi-prolog.org/pldoc/man?section=attvar)
+- An **empty cell** in the term store. In particular the designation [_Attributed Variable_](https://eu.swi-prolog.org/pldoc/man?section=attvar)
 uses "variable" in that sense. The predicate name [`var/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=var/1) makes sense under this 
 interpretation: Checking whether what is inside the parentheses is a "variable" means checking whether it is an empty cell.
-- A _variable name_ as found in source code, which may designate an empty or nonempty cell at runtime (as in "the variable `X` in `var(X)`")
-- A _variable name_ printed out at runtime, like `X` or `_124`, which always designates an empty cell (otherwise the content of the cell would be
+- A **variable name as found in source code**, which may designate an empty or nonempty cell at runtime (as in "the variable `X` in `var(X)`")
+- A **variable name printed out at runtime**, like `X` or `_124`, which always designates an empty cell (otherwise the content of the cell would be
 printed). Empty cells do not have a name by themselves.
 
-If the variable name designates an empty cell, one talks about _an unbound variable_ or an _uninstantiated variable_. 
+If the variable name designates an empty cell, one talks about **an unbound variable** or an **uninstantiated variable**. 
 
-There is also the _fresh variable_ (always uninstantiated at first), which is a newly introduced variable name.
+There is also the **fresh variable** (always uninstantiated at first), which is a "newly introduced" empty cell. 
 
-If the variable name designates a cell holding structure (a nonempty term), one talks about _a bound variable_ or an
-_instantiated variable_ or one says that _the variable is bound to a term_ (note the direction; **not** _term is bound to a variable_).
+For example, "variables `_4480` and `_4486` are fresh" (really, "the cells designated by variable names `_4480` and `_4486` are newly allocated and as yet empty")
+
+```
+?- length(List,2).
+List = [_4480, _4486].
+```
+
+If the variable name designates a nonempty cell (it represents the topmost node of a nonemtpy term), one talks about **a bound variable** or an
+**instantiated variable** or one says that **the variable is bound to a term** (note the direction: **not** _term is bound to a variable_).
 
 ## The predicates `var(X)` and `nonvar(X)`
 
