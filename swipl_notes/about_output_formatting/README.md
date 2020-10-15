@@ -683,7 +683,7 @@ test("data atom is 9*32 characters exactly, with atomic_list_concat/2") :-
 
 ## Actual "here documents" using `library(strings)`
 
-[`library(strings)`](https://www.swi-prolog.org/pldoc/man?section=strings), provides full 
+[`library(strings)`](https://eu.swi-prolog.org/pldoc/man?section=strings), provides full 
 functionality for [here documents](https://en.wikipedia.org/wiki/Here_document) (and some additional predicates)
 
 It is based on [`library(quasi_quotations)`](https://eu.swi-prolog.org/pldoc/man?section=quasiquotations) 
