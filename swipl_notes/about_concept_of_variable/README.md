@@ -29,7 +29,7 @@ f(_1182,_1184):-g(_1182,_1190),h(_1190,_1184)
 true.
 ```
 
-## Terms and cells
+## "Terms" and the "Cells" that represent them
 
 A variable name appearing in a clause or goal designates (or "denotes") a _cell_ in a "global term store" at runtime.
 The term store is _global_ as the currently clause may access any cell therein as long as the activation (stack frame)
@@ -113,7 +113,7 @@ Another example:
 
 ![Unification example](unification_example.svg)
 
-## The "variable"
+## The noun "variable"
 
 Fluidly, the noun "variable" may be used for:
 
@@ -149,7 +149,7 @@ than an empty cell. This is the complement of `var(X)`: exactly one of `var(X)` 
 
 Again, if the text within the parentheses of the `nonvar(.)` call is not a variable name, the answer is immediately `true`.
 
-## _Free_ variables
+## "Free variables"
 
 The definition given by the SWI-Prolog reference manual for
 [`var/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=var/1) uses the adjective _free_, which is something else
