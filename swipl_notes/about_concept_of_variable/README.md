@@ -4,6 +4,12 @@ The noun "variable" is used confusingly in the Prolog universe.
 
 Let's attempt to clarify (hopefully).
 
+Compare with:
+
+- The entry for "variable" from [Quintus Prolog manual](https://quintus.sics.se/isl/quintus/html/quintus/glo-glo.html)
+- The entry for ["variable"]((http://www.cse.unsw.edu.au/~billw/prologdict.html#variable)) from Bill Wilson's Prolog dictionary.
+- The entry for [`var/1`](http://www.cse.unsw.edu.au/~billw/prologdict.html#termtype) from Bill Wilson's Prolog dictionary.
+
 ## Variable names
 
 "Variable names" are clause-local or goal-local names found in source code and user-readable representations. They may be "anonymous":
@@ -118,11 +124,6 @@ There is also the _fresh variable_ (always uninstantiated at first), which is a 
 
 If the variable name designates a cell holding structure (a nonempty term), one talks about _a bound variable_ or an
 _instantiated variable_ or one says that _the variable is bound to a term_ (note the direction; **not** _term is bound to a variable_).
-
-Compare with the entry for 
-[variable](http://www.cse.unsw.edu.au/~billw/prologdict.html#variable) and 
-[`var`](http://www.cse.unsw.edu.au/~billw/prologdict.html#termtype) in 
-Bill Wilson's Prolog dictionary.
 
 ## The predicates `var(X)` and `nonvar(X)`
 
