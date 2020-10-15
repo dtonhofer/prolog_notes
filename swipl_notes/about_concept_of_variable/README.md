@@ -7,22 +7,26 @@ Let's attempt to clarify (hopefully).
 Compare with:
 
 - The entry for "variable" from [Quintus Prolog manual](https://quintus.sics.se/isl/quintus/html/quintus/glo-glo.html)
-- The entry for ["variable"]((http://www.cse.unsw.edu.au/~billw/prologdict.html#variable)) from Bill Wilson's Prolog dictionary.
+- The entry for ["variable"](http://www.cse.unsw.edu.au/~billw/prologdict.html#variable) from Bill Wilson's Prolog dictionary.
 - The entry for [`var/1`](http://www.cse.unsw.edu.au/~billw/prologdict.html#termtype) from Bill Wilson's Prolog dictionary.
 
-## Variable names
+## "Variable Names"
 
-"Variable names" are clause-local or goal-local names found in source code and user-readable representations. They may be "anonymous":
-
-```
-f(X) :- g(X,_).
-```
-
-They may be generated on demand by predicates like [`print/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=print/1):
+"Variable names" are clause-local or goal-local names found in source code, and queries:
 
 ```
-?- print(f(X) :- g(X,_)).
-f(_1668):-g(_1668,_1674)
+f(X,Y) :- g(X,Z),h(Z,Y).
+```
+
+Variable names may be generated on demand by predicates like [`print/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=print/1):
+
+Here the original variable names are dropped as the term is built in-memory, and new ones are generated on need when
+printing. (The number probably indicates the cell address).
+
+```
+?- print((f(X,Y) :- g(X,Z),h(Z,Y))).
+f(_1182,_1184):-g(_1182,_1190),h(_1190,_1184)
+true.
 ```
 
 ## Terms and cells
@@ -30,6 +34,8 @@ f(_1668):-g(_1668,_1674)
 A variable name appearing in a clause or goal designates (or "denotes") a _cell_ in a "global term store" at runtime.
 The term store is _global_ as the currently clause may access any cell therein as long as the activation (stack frame)
 contains a reference to said cell. Cells form directed graphs that are a concrete representation of terms.   
+
+The special variable name `_` is the "anonymous variable name". Wherever it appears, it designates a distinct cell.
 
 Consider the clause:
 
