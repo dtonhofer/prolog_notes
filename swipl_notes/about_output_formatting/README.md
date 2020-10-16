@@ -622,7 +622,7 @@ Text = "This is a cute test: \"Hello, World\" 15".
 Text = 'SPROING! & "This is a ~q test: ~q ~d" & cute & "Hello, World" & foo'.
 ```
 
-## Multi-line strings and atoms in SWI-Prolog
+## Multi-line strings (or atoms) in SWI-Prolog
 
 Multiline strings can be written in SWI-Prolog by putting the `\c` escape sequence at the end of a line.
 This concatenates the current line with the next one, minus any indenting whitespace.
@@ -681,16 +681,23 @@ test("data atom is 9*32 characters exactly, with atomic_list_concat/2") :-
 
 (A note concerning this has been added to the SWI-Prolog manual page for [Syntax Changes](https://eu.swi-prolog.org/pldoc/man?section=ext-syntax)).
 
-## Actual "here documents" using `library(strings)`
+## "here documents" using `library(strings)` in SWI-Prolog
 
 [`library(strings)`](https://eu.swi-prolog.org/pldoc/man?section=strings), provides full 
-functionality for [here documents](https://en.wikipedia.org/wiki/Here_document) (and some additional predicates)
+functionality for [here documents](https://en.wikipedia.org/wiki/Here_document) (and some additional helper predicates).
 
 It is based on [`library(quasi_quotations)`](https://eu.swi-prolog.org/pldoc/man?section=quasiquotations) 
-which provides quasi-quotation syntax as in [Haskell](https://wiki.haskell.org/Quasiquotation),
-[Racket](https://docs.racket-lang.org/guide/qq.html) and others.
-    
-For the theory on quasi-quotations, see [Quasi-quotation](https://en.wikipedia.org/wiki/Quasi-quotation).
+which (as the name says) provides quasi-quotation syntax, as used in 
+
+- [Haskell](https://wiki.haskell.org/Quasiquotation), 
+- [Lisp/Scheme](https://en.wikipedia.org/wiki/Lisp_(programming_language)#Self-evaluating_forms_and_quoting)
+- [Racket](https://docs.racket-lang.org/guide/qq.html) and others.
+- ...and others.
+
+See also
+
+- This Wikipedia entry for the origin: [Quasi-quotation](https://en.wikipedia.org/wiki/Quasi-quotation).
+- This entry in the Stanfor Encyclopedia of Philosophy: [Quotation](https://plato.stanford.edu/entries/quotation/)
 
 Here is a test case:
 
