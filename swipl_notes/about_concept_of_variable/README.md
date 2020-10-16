@@ -128,14 +128,16 @@ If the variable name designates an empty cell, one talks about **an unbound vari
 
 There is also the **fresh variable** (always uninstantiated at first), which is a "newly introduced" empty cell. 
 
-For example, "variables `_4480` and `_4486` are fresh" (really, "the cells designated by variable names `_4480` and `_4486` are newly allocated and as yet empty")
+For example:
 
 ```
 ?- length(List,2).
 List = [_4480, _4486].
 ```
 
-(When does "freshness" end? Maybe at first unification, maybe earlier, maybe later. It's vague. Consider the "Law of Fresh" from [The Reasoned Schemer](https://mitpress.mit.edu/books/reasoned-schemer): "If _x_ is fresh, then `(≡ v x)` succeeds and associates _x_ with _v_.")
+Variables `_4480` and `_4486` are evidently "fresh", which is a pithy way of saying "the cells designated by variable names `_4480` and `_4486` are newly allocated and as yet empty".
+
+When does "freshness" end? Maybe at first unification, maybe earlier, maybe later. It's vague. Consider the "Law of Fresh" from [The Reasoned Schemer](https://mitpress.mit.edu/books/reasoned-schemer): "If _x_ is fresh, then `(≡ v x)` succeeds and associates _x_ with _v_."
 
 If the variable name designates a nonempty cell (it represents the topmost node of a nonemtpy term), one talks about **a bound variable** or an
 **instantiated variable** or one says that **the variable is bound to a term** (note the direction: **not** _term is bound to a variable_).
