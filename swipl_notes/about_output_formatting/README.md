@@ -633,7 +633,7 @@ under "The Prolog Language > Syntax > Compound Terms > Character Escaping".
 
 For example:
 
-```prolog
+```text
 :- begin_tests(long_atoms).
 
 test("long atom without newlines",true(TXT == 'this is a long atom that is written over several lines of source code')) :-
@@ -701,7 +701,7 @@ See also
 
 Here is a test case:
 
-```prolog
+```text
 :- use_module(library(strings)).
   
 :- begin_tests(here_document).
