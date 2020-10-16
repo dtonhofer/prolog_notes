@@ -45,7 +45,7 @@ f(X,Y) :- g(X,Z),h(Z,Y).
 
 It uses variables names `X`, `Y` and `Z`. At runtime, the activation of the clause (the stack frame) is initialized with
 references into the global term store for the arguments passed in: one for `X` and one for `Y`. A new reference into the 
-global term store for the fresh variable `Z` is also added. The actual variable names used in source code, `X`, `Y`, `Z`
+global term store for the _fresh_ variable `Z` is also added. The actual variable names used in source code, `X`, `Y`, `Z`
 are of no relevance and actually unknown to the activation. 
 
 A term is generally considered to have tree structure (a "tree of terms", the definition being recursive). Inner nodes of
@@ -134,6 +134,8 @@ For example, "variables `_4480` and `_4486` are fresh" (really, "the cells desig
 ?- length(List,2).
 List = [_4480, _4486].
 ```
+
+(When does "freshness" end? Maybe at first unification, maybe earlier, maybe later. It's vague. Consider the "Law of Fresh" from [The Reasoned Schemer](https://mitpress.mit.edu/books/reasoned-schemer): "If _x_ is fresh, then `(≡ v x)` succeeds and associates _x_ with _v_.")
 
 If the variable name designates a nonempty cell (it represents the topmost node of a nonemtpy term), one talks about **a bound variable** or an
 **instantiated variable** or one says that **the variable is bound to a term** (note the direction: **not** _term is bound to a variable_).
