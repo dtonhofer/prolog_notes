@@ -10,6 +10,18 @@ Compare with:
 - The entry for ["variable"](http://www.cse.unsw.edu.au/~billw/prologdict.html#variable) from Bill Wilson's Prolog dictionary.
 - The entry for [`var/1`](http://www.cse.unsw.edu.au/~billw/prologdict.html#termtype) from Bill Wilson's Prolog dictionary.
 
+## TL;DR
+
+One basically has three things: the "cells" (a concrete representation), the "terms" (the things represented by the cell graphs), the "variable names"
+
+- An "unbound variable" or "uninstantiated variable" and possibly "fresh variable"
+- ... has exactly the meaning of an "empty cell" in the global term store ("a hole", I like this even if Jan Burse protests)
+- A term is represented by a (equivalence class of) directed graphs of cells, some of which, on the leaves, may be empty
+- In particular an "empty term" is represented by an "empty cell" (empty terms are distinguishable, as are empty cells)
+- And an "empty term" represents "missing knowledge about the solution"
+- And a term, empty or otherwise, is designated or denoted by a "variable name" in source or in printouts: X, _123 (one colloquially says: "the term X")
+- And if the variable name X designates an empty cell (an empty term) one colloquially says: "variable X is unbound/uninstantiated/fresh"
+    
 ## "Variable Names"
 
 "Variable names" are clause-local or goal-local names found in source code, and queries:
