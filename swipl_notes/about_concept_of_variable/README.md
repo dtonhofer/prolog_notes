@@ -4,26 +4,50 @@ The noun "variable" is used confusingly in the Prolog universe.
 
 Let's attempt to clarify (hopefully).
 
-## Variable names
+Compare with:
 
-"Variable names" are clause-local or goal-local names found in source code and user-readable representations. They may be "anonymous":
+- The entry for "variable" from [Quintus Prolog manual](https://quintus.sics.se/isl/quintus/html/quintus/glo-glo.html)
+- The entry for ["variable"](http://www.cse.unsw.edu.au/~billw/prologdict.html#variable) from Bill Wilson's Prolog dictionary.
+- The entry for [`var/1`](http://www.cse.unsw.edu.au/~billw/prologdict.html#termtype) from Bill Wilson's Prolog dictionary.
+
+## TL;DR
+
+One basically has three things: the "cells" (a concrete representation), the "terms" (the things represented by the cell graphs), the "variable names"
+
+- An "unbound variable" or "uninstantiated variable" and possibly "fresh variable"
+- ... has exactly the meaning of an "empty cell" in the global term store ("a hole", I like this even if Jan Burse protests)
+- A term is represented by a (equivalence class of) directed graphs of cells, some of which, on the leaves, may be empty
+- In particular an "empty term" is represented by an "empty cell" (empty terms are distinguishable, as are empty cells)
+- And an "empty term" represents "missing knowledge about the solution"
+- And a term, empty or otherwise, is designated or denoted by a "variable name" in source or in printouts: X, _123 (one colloquially says: "the term X")
+- And if the variable name X designates an empty cell (an empty term) one colloquially says: "variable X is unbound/uninstantiated/fresh"
+    
+## "Variable Names"
+
+"Variable names" are clause-local or goal-local names found in source code, and queries:
 
 ```
-f(X) :- g(X,_).
+f(X,Y) :- g(X,Z),h(Z,Y).
 ```
 
-They may be generated on demand by predicates like [`print/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=print/1):
+Variable names may be generated on demand by predicates like [`print/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=print/1):
+
+Here the original variable names are dropped as the term is built in-memory, and new ones are generated on need when
+printing. (The number probably indicates the cell address).
 
 ```
-?- print(f(X) :- g(X,_)).
-f(_1668):-g(_1668,_1674)
+?- print((f(X,Y) :- g(X,Z),h(Z,Y))).
+f(_1182,_1184):-g(_1182,_1190),h(_1190,_1184)
+true.
 ```
 
-## Terms and cells
+## "Terms" and the "Cells" that represent them
 
 A variable name appearing in a clause or goal designates (or "denotes") a _cell_ in a "global term store" at runtime.
 The term store is _global_ as the currently clause may access any cell therein as long as the activation (stack frame)
 contains a reference to said cell. Cells form directed graphs that are a concrete representation of terms.   
+
+The special variable name `_` is the "anonymous variable name". Wherever it appears, it designates a distinct cell.
 
 Consider the clause:
 
@@ -33,7 +57,7 @@ f(X,Y) :- g(X,Z),h(Z,Y).
 
 It uses variables names `X`, `Y` and `Z`. At runtime, the activation of the clause (the stack frame) is initialized with
 references into the global term store for the arguments passed in: one for `X` and one for `Y`. A new reference into the 
-global term store for the fresh variable `Z` is also added. The actual variable names used in source code, `X`, `Y`, `Z`
+global term store for the _fresh_ variable `Z` is also added. The actual variable names used in source code, `X`, `Y`, `Z`
 are of no relevance and actually unknown to the activation. 
 
 A term is generally considered to have tree structure (a "tree of terms", the definition being recursive). Inner nodes of
@@ -101,28 +125,34 @@ Another example:
 
 ![Unification example](unification_example.svg)
 
-## The "variable"
+## The noun "variable"
 
 Fluidly, the noun "variable" may be used for:
 
-- An _empty cell_ in the term store. In particular the designation [_Attributed Variable_](https://eu.swi-prolog.org/pldoc/man?section=attvar)
+- An **empty cell** in the term store. In particular the designation [_Attributed Variable_](https://eu.swi-prolog.org/pldoc/man?section=attvar)
 uses "variable" in that sense. The predicate name [`var/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=var/1) makes sense under this 
 interpretation: Checking whether what is inside the parentheses is a "variable" means checking whether it is an empty cell.
-- A _variable name_ as found in source code, which may designate an empty or nonempty cell at runtime (as in "the variable `X` in `var(X)`")
-- A _variable name_ printed out at runtime, like `X` or `_124`, which always designates an empty cell (otherwise the content of the cell would be
+- A **variable name as found in source code**, which may designate an empty or nonempty cell at runtime (as in "the variable `X` in `var(X)`")
+- A **variable name printed out at runtime**, like `X` or `_124`, which always designates an empty cell (otherwise the content of the cell would be
 printed). Empty cells do not have a name by themselves.
 
-If the variable name designates an empty cell, one talks about _an unbound variable_ or an _uninstantiated variable_. 
+If the variable name designates an empty cell, one talks about **an unbound variable** or an **uninstantiated variable**. 
 
-There is also the _fresh variable_ (always uninstantiated at first), which is a newly introduced variable name.
+There is also the **fresh variable** (always uninstantiated at first), which is a "newly introduced" empty cell. 
 
-If the variable name designates a cell holding structure (a nonempty term), one talks about _a bound variable_ or an
-_instantiated variable_ or one says that _the variable is bound to a term_ (note the direction; **not** _term is bound to a variable_).
+For example:
 
-Compare with the entry for 
-[variable](http://www.cse.unsw.edu.au/~billw/prologdict.html#variable) and 
-[`var`](http://www.cse.unsw.edu.au/~billw/prologdict.html#termtype) in 
-Bill Wilson's Prolog dictionary.
+```
+?- length(List,2).
+List = [_4480, _4486].
+```
+
+Variables `_4480` and `_4486` are evidently "fresh", which is a pithy way of saying "the cells designated by variable names `_4480` and `_4486` are newly allocated and as yet empty".
+
+When does "freshness" end? Maybe at first unification, maybe earlier, maybe later. It's vague. Consider the "Law of Fresh" from [The Reasoned Schemer](https://mitpress.mit.edu/books/reasoned-schemer): "If _x_ is fresh, then `(≡ v x)` succeeds and associates _x_ with _v_."
+
+If the variable name designates a nonempty cell (it represents the topmost node of a nonemtpy term), one talks about **a bound variable** or an
+**instantiated variable** or one says that **the variable is bound to a term** (note the direction: **not** _term is bound to a variable_).
 
 ## The predicates `var(X)` and `nonvar(X)`
 
@@ -142,7 +172,7 @@ than an empty cell. This is the complement of `var(X)`: exactly one of `var(X)` 
 
 Again, if the text within the parentheses of the `nonvar(.)` call is not a variable name, the answer is immediately `true`.
 
-## _Free_ variables
+## "Free variables"
 
 The definition given by the SWI-Prolog reference manual for
 [`var/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=var/1) uses the adjective _free_, which is something else
