@@ -10,7 +10,7 @@ Here is compressed explainer in SVG (you can zoom in!), showing how the algorith
 
 Here is the complete source code (nothing has been copied from other sources, and just grab what you need).
 
-![fibonacci_various.pl]
+![fibonacci_various.pl](fibonacci_various.pl)
 
 The solution that caches `(x,fib(x))` using [`assertz/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=assertz/1) (as found at [Rosettacode.org](http://rosettacode.org/wiki/Fibonacci_sequence#Prolog) or [This Stack Overflow question](https://stackoverflow.com/questions/16358747/why-this-dynamic-version-of-fibonacci-program-is-incredibly-faster-then-this-oth)) is not in the set of approaches because I feel doing things that way should be avoided.
 
