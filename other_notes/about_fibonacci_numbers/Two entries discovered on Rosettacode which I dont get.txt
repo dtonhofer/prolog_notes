@@ -1,0 +1,31 @@
+Works with SWI-Prolog and module lambda, written by Ulrich Neumerkel found there http://www.complang.tuwien.ac.at/ulrich/Prolog-inedit/lambda.pl
+
+:- use_module(lambda).
+fib(N, FN) :-
+	cont_fib(N, _, FN, \_^Y^_^U^(U = Y)).
+ 
+cont_fib(N, FN1, FN, Pred) :-
+	(   N < 2 ->
+	    call(Pred, 0, 1, FN1, FN)
+	;
+	    N1 is N - 1,
+	    P = \X^Y^Y^U^(U is X + Y),
+	    cont_fib(N1, FNA, FNB, P),
+	    call(Pred, FNA, FNB, FN1, FN)
+	).
+ 
+
+Generators idiom
+
+take( 0, Next, Z-Z, Next).
+take( N, Next, [A|B]-Z, NZ):- N>0, !, next( Next, A, Next1),
+  N1 is N-1,
+  take( N1, Next1, B-Z, NZ).
+ 
+next( fib(A,B), A, fib(B,C)):- C is A+B.
+ 
+%% usage: ?- take(15, fib(0,1), _X-[], G), writeln(_X).
+%% [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377]
+%% G = fib(610, 987)
+
+ 
