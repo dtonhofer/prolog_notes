@@ -12,6 +12,8 @@ Here is the complete source code (nothing has been copied from other sources, an
 
 ![fibonacci_various.pl]
 
+The solution that caches `(x,fib(x))` using [`assertz/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=assertz/1) (as found at [Rosettacode.org](http://rosettacode.org/wiki/Fibonacci_sequence#Prolog) or [This Stack Overflow question](https://stackoverflow.com/questions/16358747/why-this-dynamic-version-of-fibonacci-program-is-incredibly-faster-then-this-oth)) is not in the set of approaches because I feel doing things that way should be avoided.
+
 The above has been run on SWI Prolog 8.3.9 (some SWI-Prolog specificities are in there).
 
 When running the tests, one obtains:
