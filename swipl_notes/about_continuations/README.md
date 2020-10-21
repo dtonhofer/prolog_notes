@@ -1,5 +1,7 @@
 # Continuations
 
+(Work in progresss)
+
 (But why are they "delimited"?)
 
 (The use of continuations to express an alorithm seems to be in competition with the use of monads to do the same. 
@@ -27,7 +29,7 @@ From \[DCP13\] (see below for reference):
    - Reference [here](https://www.cambridge.org/core/journals/theory-and-practice-of-logic-programming/article/delimited-continuations-for-prolog/DD08147828169E26212DFAF743C8A9EB)
    - (The PDF wrongly indicates the year "2003")
 
-# More Reading
+## More Reading
 
 - Wikipedia: [`setjmp.h`](https://en.wikipedia.org/wiki/Setjmp.h)
 - Wikipedia: [Continuation](https://en.wikipedia.org/wiki/Continuation) (as usual, Prolog is not listed as supporting this)
@@ -37,7 +39,7 @@ From \[DCP13\] (see below for reference):
    - Olivier Danvy , Andrzej Filinski 
    - In _Proceedings of the 1990 ACM Conference on LISP and Functional Programming_ pp. 151-160
       
-# Example: Effect handler for state
+## Example: Effect handler for state
 
 In \[DCP13\]: 
 
@@ -51,5 +53,7 @@ Diagram it, more or less:
 
 ![State Handler](state_handler.svg)
 
+## Example: Iterator
 
+**Code: [iterator.pl](iterator.pl)**
 
