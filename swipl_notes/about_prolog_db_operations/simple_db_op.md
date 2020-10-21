@@ -1,4 +1,4 @@
-# A Simple Relational Database Operation
+# A discussion of a "Prolog Database" (relational) operation
 
  This is not about connecting to a database using SQL. It is inspired by this StackOverflow question:
 
