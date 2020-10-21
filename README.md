@@ -66,6 +66,7 @@ Lest I forget:
    - [The concept of a "Prolog variable"](swipl_notes/about_concept_of_variable/) (needs review once more)
    - [Difference Lists](swipl_notes/about_difference_lists/) (another one that is actually very simple in the end)
    - [Prolog data types](swipl_notes/about_swipl_data_types) (somewhat specific to SWI Prolog)
+      - Code to tag a Prolog term according to the data type decision tree: [`tagging.pl`](swipl_notes/about_swipl_data_types/code/tagging.pl)
 - Having to do with [JPL](https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/jpl.html%27)), the Java-Prolog Bridge
    - [Some test code](swipl_notes/about_jpl/)
 - Having to do with general questions
