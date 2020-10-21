@@ -55,5 +55,7 @@ Diagram it, more or less:
 
 ## Example: Iterator
 
+This can be used to model the behaviour of an IO monad for sure. But that needs to be explained and coded in detail.
+
 **Code: [iterator.pl](iterator.pl)**
 
