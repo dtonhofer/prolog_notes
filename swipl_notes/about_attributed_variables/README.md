@@ -5,7 +5,7 @@ These are some additions to the page on "Attributed Variables" of the SWI-Prolog
 Note that the pages should be the same but the comments differ (!?)
 
 - [Attributed variables at eu.swi-prolog.org](https://eu.swi-prolog.org/pldoc/man?section=attvar) 
-- [Attributed variables at www.swi-prolog.org](https://eu.swi-prolog.org/pldoc/man?section=attvar) 
+- [Attributed variables at www.swi-prolog.org](https://www.swi-prolog.org/pldoc/man?section=attvar) 
 
 ## Diagram showing how to think about the structure involved
 
