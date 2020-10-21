@@ -32,46 +32,51 @@ Missed in the above:
   theorem prover (or rather, "enumerating consequence checker") of Prolog. And how do you direct search in a theorem prover anyway?
   The NP desert is not for the faint of heart.
 
-## Notes on...
+## Journals
 
-### Rule-based Systems
+Lest I forget:
 
-A general overview: [Rule-based Systems](other_notes/about_rule_based_systems)
+- [Theory and Practice of Logic Programming ](https://www.cambridge.org/core/journals/theory-and-practice-of-logic-programming) (Cambridge UP)
+- [The Journal of Logic Programming](https://www.sciencedirect.com/journal/the-journal-of-logic-programming) (Elsevier)
 
-### Are we working in the correct Logic?
+## Notes
 
-Prolog seems to work in classical logic, but: [About the Logic](other_notes/about_the_logic/)
-
-### Truth values
-
-Prolog is two-valued, but: [About the Truth Values](other_notes/about_truth_values/)
-
-### Depicting Terms
-
-Prolog naming and concepts are confusing. My way to name & graphically represent terms: [Terms](other_notes/about_depicting_terms/) (needs review)
-
-## More subjects, general and SWI-Prolog oriented
-
-- [About the Byrd Box Model](other_notes/about_byrd_box_model/) (rather complete)
-- [SWI-Prolog data types](swipl_notes/about_swipl_data_types/) (rather complete)
-- [SWI-Prolog term analysis & construction](swipl_notes/about_term_analysis_and_construction/) (rather complete)
-- [Exceptions](swipl_notes/about_exceptions/) (rather complete)
-- [Output formatting](swipl_notes/about_output_formatting/) (rather complete)
-- [How to load a library (the lynx library in this case)](swipl_notes/various/loading_lynx_library.md)
-- [The use of the caret `^` in` bagof/3`, `setof/3`](swipl_notes/various/notes_on_the_caret_used_in_bagof_goals.md)
-- [SWI-Prolog string modes](swipl_notes/various/swipl_string_modes.md)
-- [`dif/2`](swipl_notes/about_dif/) (rather complete)
-- ["Difference Lists"](swipl_notes/about_difference_lists/)
-- Questions on `maplist/N` are recurrent and popular (not only on Stack Overflow), so these page collect notes & examples:
-   - [maplist_2_examples.md](swipl_notes/about_maplist/maplist_2_examples.md): Examples and major explainer for [`maplist/2`](https://www.swi-prolog.org/pldoc/man?predicate=maplist%2f2)
-   - [maplist_3_examples.md](swipl_notes/about_maplist/maplist_3_examples.md): Examples for [`maplist/3`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/3)
-   - [maplist_4_examples.md](swipl_notes/about_maplist/maplist_4_examples.md): Examples for [`maplist/4`](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/4)
-- Linear "fold" in Prolog: [`foldl` and `foldr`](other_notes/about_foldl_and_foldr), Explainer and code
-
-### Under construction
-
-- [About DCGs](swipl_notes/about_dcgs)
-- [About Prolog DB operations](swipl_notes/about_prolog_db_operations)
+- Example code for some standard problems
+   - [Prolog implementations for Fibonacci Number computation](other_notes/about_fibonacci_numbers) (code is tilted towards SWI Prolog though)
+   - [A dicussion of a "Prolog Database" operation](swipl_notes/about_prolog_db_operations/simple_db_op.md) 
+   - [Various code snippets](swipl_notes/various_code/) (testing predicates found in the SWI-Prolog manual)
+- Having to do with programming constructs, some of which are specific to Prolog or to SWI-Prolog
+   - [`foldl` and `foldr` in Prolog](other_notes/about_foldl_and_foldr/)   
+   - [Attributed Variables](swipl_notes/about_attributed_variables/) (an addendum to the SWI-Prolog manual page with new code)
+   - [Delimited continuations](swipl_notes/about_continuations/) (to be continued!)
+   - [CHR: Constraint Handling Rules](swipl_notes/about_chr/) (there is nothing here yet)
+   - [DCGs: Definite Clause Grammars](swipl_notes/about_dcgs/) (just some work in progress)
+   - [Explaining `dif/2`](swipl_notes/about_dif) (but it's actually very simple in the end)
+   - [Exceptions](swipl_notes/about_exceptions) (exceptions are useful, but the ISO standard exception is Really Bad)
+   - [The `maplist/N` predicates](swipl_notes/about_maplist) 
+   - [Predicates dealing with I/O and printing](swipl_notes/about_output_formatting) (it all started with this...)
+   - [Predicates for analyzing/constructing terms](swipl_notes/about_term_analysis_and_construction)
+   - [The use of the caret `^` in` bagof/3`, `setof/3`](swipl_notes/various/notes_on_the_caret_used_in_bagof_goals.md)
+   - [SWI-Prolog string modes](swipl_notes/various/swipl_string_modes.md)  
+   - [How to load a library (the lynx library in this case)](swipl_notes/various/loading_lynx_library.md)   
+- Having to do with generally explaining Prolog
+   - ["Byrd Box Model"](other_notes/about_byrd_box_model/)
+   - [Depicting Terms](other_notes/about_depicting_terms/) (needs review)
+   - [Prolog list processing idioms](other_notes/about_list_processing/)
+   - [The concept of a "Prolog variable"](swipl_notes/about_concept_of_variable/) (needs review once more)
+   - [Difference Lists](swipl_notes/about_difference_lists/) (another one that is actually very simple in the end)
+   - [Prolog data types](swipl_notes/about_swipl_data_types) (somewhat specific to SWI Prolog)
+- Having to do with [JPL](https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/jpl.html%27)), the Java-Prolog Bridge
+   - [Some test code](swipl_notes/about_jpl/)
+- Having to do with general questions
+   - [Some notes on the Logic](other_notes/about_the_logic/) (Prolog is said to be based on classical logic, but is this really true?)
+   - [Some notes on the Truth Values](other_notes/about_truth_values) (Prolog is said to be based on two-valued logic, but is this really true, or advised?)
+   - [Map of the Logic Programming landscape](other_notes/quick_map_of_lp_landscape) (actually quite detailed; shown above)
+   - [Map of the Rule-based Systems landscape](other_notes/about_rule_based_systems) (first try)
+- Freestyle Notes, undigested
+   - [About Predicate Structure](swipl_notes/about_predicate_structure/)
+   - [Salvaging a term out of a dropped search branch](swipl_notes/about_salvaging_a_term_out_of_a_dropped_search_branch/)
+   - [Better type tests](swipl_notes/about_type_tests)
 
 ## Code grabbag
 
@@ -79,6 +84,7 @@ Some predicates which may be of general use can be found in the [Code grabbag](c
 
 ## External Resources
 
+- [Papers of interet](other_notes/about_papers_of_interest) (a small selection)
 - [The first page of the SWI-Prolog manual has a large comment with pointers to resources](https://eu.swi-prolog.org/pldoc/doc_for?object=manual) ... sometimes I add something to that comment.
 - [Extensive list at klaussinani's github account](https://github.com/klaussinani/awesome-prolog#resources)
 - [The **Prolog Syntax Highlighting** file for KDE](https://cgit.kde.org/syntax-highlighting.git/tree/data/syntax/prolog.xml) (by Torsten Eichstädt), as used in the [Kate editor](https://docs.kde.org/trunk5/en/applications/katepart/highlight.html)
@@ -87,12 +93,8 @@ Some predicates which may be of general use can be found in the [Code grabbag](c
 
 ### On YouTube: "The Power of Prolog" by Markus Triska
 
-Gotta watch them all: [List of uploads](other_notes/about_power_of_prolog_on_youtube/)
+[List of Markus Triska's "Power of Prolog" YouTube videos](other_notes/about_power_of_prolog_on_youtube)
   
-### Papers of Interest
-
-A small selection: [List of papers](other_notes/about_papers_of_interest/)
-
 ### Packages of Interest
 
 - https://github.com/shonfeder/tokenize - "A modest tokenization library for SWI-Prolog, seeking a balance between simplicity and flexibility."
