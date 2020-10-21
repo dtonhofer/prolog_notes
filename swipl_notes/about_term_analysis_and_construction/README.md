@@ -1,11 +1,10 @@
-# Predicates for Analyzing/Constructing a Term
+# Predicates for analyzing/constructing terms
 
 ## Vocabulary
 
-- *Analyzing/Constructing* a term or 
-- *Disassembling/Assembling* a term or maybe
-- *Decomposing/Composing* a term
-- Is seem to gravitate towards *Analyzing/Assembling*. OK!
+- *analyzing/constructing* a term or 
+   - *disassembling/assembling* a term or maybe
+   - *decomposing/composing* a term
 - In Clojure there is also ["Destructuring"](https://clojure.org/guides/destructuring), which is pattern-matching a term and disassembling it into parts
   like one-way unification. In Prolog this would by copy_term, followed by unification.
   - This is also how calls work in [Erlang](https://en.wikipedia.org/wiki/Erlang_(programming_language))
