@@ -84,7 +84,6 @@ Some predicates which may be of general use can be found in the [Code grabbag](c
 
 ## External Resources
 
-- [Papers of interet](other_notes/about_papers_of_interest) (a small selection)
 - [The first page of the SWI-Prolog manual has a large comment with pointers to resources](https://eu.swi-prolog.org/pldoc/doc_for?object=manual) ... sometimes I add something to that comment.
 - [Extensive list at klaussinani's github account](https://github.com/klaussinani/awesome-prolog#resources)
 - [The **Prolog Syntax Highlighting** file for KDE](https://cgit.kde.org/syntax-highlighting.git/tree/data/syntax/prolog.xml) (by Torsten Eichstädt), as used in the [Kate editor](https://docs.kde.org/trunk5/en/applications/katepart/highlight.html)
@@ -94,7 +93,11 @@ Some predicates which may be of general use can be found in the [Code grabbag](c
 ### On YouTube: "The Power of Prolog" by Markus Triska
 
 [List of Markus Triska's "Power of Prolog" YouTube videos](other_notes/about_power_of_prolog_on_youtube)
-  
+
+### Papers of Interest
+
+[Papers of interest](other_notes/about_papers_of_interest) (a small selection)
+
 ### Packages of Interest
 
 - https://github.com/shonfeder/tokenize - "A modest tokenization library for SWI-Prolog, seeking a balance between simplicity and flexibility."
