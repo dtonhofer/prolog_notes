@@ -76,5 +76,6 @@ Authors Info & Affiliations
    - ICLP 2019
 - 2020-01 [**Drawing Prolog Search Trees. A Manual for Teachers and Students of Logic Programming**](https://arxiv.org/abs/2001.08133v1)
    - Johan Bos
-
+- 2020-08 [**Effectiveness of Annotation-Based Static Type Inference**](https://arxiv.org/abs/2008.12545)
+   - Isabel Wingen, Philipp Körner
 
