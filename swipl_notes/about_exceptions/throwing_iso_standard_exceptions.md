@@ -1,8 +1,8 @@
 # Throwing ISO standard exceptions 
 
-## The ISO-Standard exception term
+## The ISO standard exception term
 
-The ISO Standard stipulates that the exception term be of the form `error(Formal, Context)`.
+The ISO standard stipulates that the exception term be of the form `error(Formal, Context)`.
 
 - The `Formal` term is the formal description of the error, specifying the error class and error context information. 
   It may be an atom or variously a compound term of arity 1,2 or 3. The ISO Standard lists the admissible `Formal` terms in chapter
@@ -34,14 +34,16 @@ thrower(FormalFunctor,FormalArgs,PredInd,Msg) :-
 
 ## Using `library(error)` 
 
-ISO-Standard exceptions can be thrown with [`library(error)`](https://www.swi-prolog.org/pldoc/man?section=error).
-It exports predicates which (as terms) look exactly like the ISO-Standard `Formal` part of the corresponding exception term.
+ISO standard exceptions can be thrown with predictes from [`library(error)`](https://eu.swi-prolog.org/pldoc/man?section=error).
+This library exports predicates which (as terms) look exactly like the ISO standard `Formal` of the corresponding exception term.
 
 The following predicates exist (in order of appearance in the ISO Standard):
 
   - [instantiation_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=instantiation_error/1)
      - `instantiation_error(+FormalSubTerm)` 
      - the `FormalSubTerm` is not currently exploited as the standard demands the `Formal` be the atom `instantiation_error` only
+       (which makes this exception somewhat pointless; this is definitely an error in the standard. It is also not clear
+        how to communicate "variable `X` is uninstantiated" formally. One cannot just pass `X`...)
   - [uninstantiation_error/1](https://eu.swi-prolog.org/pldoc/doc_for?object=uninstantiation_error/1)
      - `uninstantiation_error(+Culprit)`      
      - appears in Corrigendum 2: ISO/IEC 13211-1:1995/Cor.2:2012(en)
@@ -51,7 +53,7 @@ The following predicates exist (in order of appearance in the ISO Standard):
       - `domain_error(+ValidDomain,+Culprit)`
   - [existence_error/2](https://eu.swi-prolog.org/pldoc/doc_for?object=existence_error/2)
       - `existence_error(+ObjectType,-Culprit)`
-  - [existence_error/3](https://eu.swi-prolog.org/pldoc/doc_for?object=existence_error/3) (**not** ISO)
+  - [existence_error/3](https://eu.swi-prolog.org/pldoc/doc_for?object=existence_error/3) (**not ISO**)
       - `existence_error(+ObjectType,+Culprit,+Set)`
       - the third argument `Set` makes this a non-ISO exception. `Set` goes into the `Formal` like this: `Formal=existence_error(ObjectType,Culprit,Set)`
   - [permission_error/3](https://eu.swi-prolog.org/pldoc/doc_for?object=permission_error/3)
@@ -67,12 +69,12 @@ Note that there is no facility for **catching standard errors**, which is done b
 a successful unification of the a thrown term with a "catcher" term passed to
 [`catch/3`](https://www.swi-prolog.org/pldoc/doc_for?object=catch/3). 
 
-If you want to decorate the exceptoin with more context information, take a look
+If you want to decorate the exception with more context information, take a look
 at [Adding context to errors: prolog_exception_hook](https://eu.swi-prolog.org/pldoc/man?section=excepthook), 
-which allows to do that before the jump to the approriate `catch/3` is performed.
+which allows to do that before the jump to the appropriate `catch/3` is performed.
 
 The generator for user-readable error messages based on the exception term can be found 
-in `boot/messages.pl`, where there is code like this:
+in `boot/messages.pl`, where there is the following code:
 
 ```prolog
 iso_message(resource_error(Missing)) -->
@@ -89,11 +91,11 @@ You may be able to change the printing of messages based on exception. See
 [4.10.4 Printing messages](https://eu.swi-prolog.org/pldoc/man?section=printmsg) and
 in particular [Predicate message_hook/3](https://eu.swi-prolog.org/pldoc/doc_for?object=message_hook/3).
 
-### Examples
+### Example usage of `library(error)` 
 
 Here we throw an exception using the appropriate exception-throwing predicates from `library(error)` 
 Note they are not called `throw_type_error/2` etc. just `type_error/2` etc, which may cause some
-confusion on reading. We catch the exception in the catcher term _C_ which unifies with anything.
+confusion on reading. We catch the exception in the _catcher_ term `C` which unifies with anything.
 `C` is then printed by the Prolog toplevel.
 
 ```prolog
@@ -128,14 +130,16 @@ C = error(syntax_error(term), _8162).
 
 ## List of the ISO-Standard exception term
 
+From the ISO standard:
+
 > Most errors defined in this part of ISO/IEC 13211 occur because the arguments of the goal fail to satisfy a particular
 > condition; they are thus detected before execution of the goal begins, and no side effect will have taken place.
 > The exceptional cases are: Syntax Errors, Resource Errors, and System Errors.
 
 **Style**
 
-Note that the ISO standard formal term tries ot express what _should be the case_ or _what is the expected correct state_, and 
-not what _is the problem_.
+Note that the ISO standard formal term tries ot express what _should be the case_ or 
+_what is the expected correct state_, and not what _is the problem_.
 
 For example:
 
@@ -220,7 +224,6 @@ epecially as there is already a "non_empty_list" Domain Error. Oh well!
 
 An argument's type is correct but the value is outside the domain for which the procedure is defined. ("Domain Error occurs when the value is not a a member of an implementation defined or implementation-dependent set.")
 
-
 _Personal Note:_ This exception lacks the possibility to properly express being outside the allowed subdomain
 if that subdomain is spanned by several arguments instead of just one.
 
@@ -233,6 +236,25 @@ Formal=domain_error(ValidDomain,Culprit)
 - `Culprit` is the argument or one of its components which caused the error.
 
 Thrown with [domain_error/2](https://eu.swi-prolog.org/pldoc/doc_for?object=domain_error/2)
+
+**Domain error or Type error?**
+
+When going through the parameter verifications, you would first verify that a parameter is of a required type (e.g. an atom), and throw
+a `type_error(_,_)` when not. Once the type has been ascertained, you would then determine whether the received parameter is in its expected
+domain, so that the predicate can meaningfully say something (either succeed or fail). For example, is the parameter, previously 
+ascertained to be a `number/1`, also larger or equal to 0? Domain verification may involve several variables at a time and
+can be become rather involved. For example the allowed domain may be a plane of three arguments `X+Y+Z = 1`. (Sadly, the ISO standard
+exception for `domain_error(_,_)` has no way of communicating a meaningful messages regarding such cases.)
+
+The SWI-Prolog manual says [this](https://eu.swi-prolog.org/pldoc/doc_for?object=type_error/2):
+
+> ... the notion of types is not really set in stone in Prolog. We introduce the difference using a simple example.
+> 
+> Suppose an argument must be a non-negative integer. If the actual argument is not an integer, this is a 
+> `type_error`. If it is a negative integer, it is a `domain_error`. Typical borderline cases are predicates
+> accepting a compound term, e.g., `point(X,Y)`. One could argue that the basic type is a compound-term 
+> and any other compound term is a domain error. Most Prolog programmers consider each compound as a type 
+> and would consider a compound that is not `point(_,_)` a `type_error`.
 
 ### Existence Error
 
@@ -339,6 +361,7 @@ The `Formal` is a parameterless atom (which means one has the same problems as f
 Formal=system_error
 ```
 
-There is no corresponding `library(error)` predicate. "System Error" should not be thrown from user code. The counterpart in the Java world would be [Error](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/lang/Error.html).
-
+There is no corresponding `library(error)` predicate. "System Error" should not be 
+thrown from user code. The counterpart in the Java world would be
+[Error](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/lang/Error.html).
 
