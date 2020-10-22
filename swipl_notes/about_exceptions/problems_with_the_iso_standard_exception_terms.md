@@ -1,4 +1,4 @@
-# Some problems with the ISO-Standard exception terms
+# Problems with the ISO standard exception terms
 
 ## Non-uniformity
 
