@@ -1,4 +1,4 @@
-# Collecting exception texts in one place
+# Throwing in style: collecting exception specs in one place of the code
 
 This is a more flexible proposal than inserting error texts everywhere an exception needs
 to be thrown (originally made for the Prolog-Java bridge [JPL](https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/jpl.html%27))).
