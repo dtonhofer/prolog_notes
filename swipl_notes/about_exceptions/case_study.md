@@ -1,4 +1,4 @@
-# Case Study
+# Case study on verifying predicate parameters
 
 Here is an example of a predicate that extensively verfies the parameters it has been passed.
 
