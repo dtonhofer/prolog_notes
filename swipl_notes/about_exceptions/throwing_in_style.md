@@ -1,4 +1,4 @@
-# "Throwing in Style" and avoiding cleartext exception texts littering you code
+# Avoiding cleartext exception text littering
 
 This is a more flexible proposal than inserting error texts everywhere an exception needs
 to be thrown (originally made for the Prolog-Java bridge [JPL](https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/jpl.html%27))).
