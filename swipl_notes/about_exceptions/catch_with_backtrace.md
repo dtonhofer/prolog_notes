@@ -1,0 +1,108 @@
+# Catch with backtrace
+
+How do we get a backtrace and how does the exception term have to look to get one?
+
+The backtrace is filled in according to SWI-Prolog conventions because the ISO Standard has nothing to say about this. 
+
+SWI-Prolog wants the second argument of the `error/2` term (given in the ISO standard as `Imp_def`) to look
+like `context(Location,Message)`. If `Location` is fresh and the catch is performed
+by [`catch_with_backtrace/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=catch_with_backtrace/3) (which happens
+either explicity in code or at the latest possible time at the Prolog Toplevel), `Location`
+is filled with a backtrace (as implemented by `library(prolog_stack)`  in file `swipl/lib/swipl/library/prolog_stack.pl`).
+The `Message` is generally a cleartext message (string or atom).
+
+Take this program:
+
+```prolog
+call0(ExceptionTerm) :- 
+   call1(ExceptionTerm).
+   
+call1(ExceptionTerm) :- 
+   call2(ExceptionTerm).
+   
+call2(ExceptionTerm) :- 
+   throw(ExceptionTerm).
+```
+
+Enable debugging to keep the compiler from optimizing-away stack frames. 
+
+```text
+?- debug.
+```
+
+Let's study the behaviour of "backtrace generation" by `catch_with_backtrace/3` with various forms of `ExceptionTerm`. We will let the
+exception be caught at the Prolog Toplevel, which uses that predicate.
+
+## Non-ISO-standard exception term without placeholder
+
+No backtrace is generated, there is minimal printing at toplevel:
+
+```text
+?- call0("deep in a search tree").
+ERROR: Unhandled exception: "deep in a search tree"
+```
+
+## Quasi-ISO-standard exception term `error(_,_)`
+
+An exception term that looks like `error(_,_)` matches the ISO Standard basic format, although the requirements
+regarding the formal term on the first position have to be followed too for full compliance.
+
+The second argument is set to `context(B,_)` where `B` contains a backtrace.
+
+The toplevel tries validly to print something in the first line, but has to admit that it found an `Unknown error term`:
+
+```text
+[debug]  ?- call0(error("deep in a search tree",Context)).
+
+ERROR: Unknown error term: "deep in a search tree"
+ERROR: In:
+ERROR:   [13] throw(error("deep in a search tree",_4126))
+ERROR:   [12] call2(error("deep in a search tree",_4156)) at user://1:14
+ERROR:   [11] call1(error("deep in a search tree",_4186)) at user://1:11
+ERROR:   [10] call0(error("deep in a search tree",_4216)) at user://1:8
+ERROR:    [9] <user>
+   Exception: (13) throw(error("deep in a search tree", _3266)) ? Exception details
+==
+```
+
+Asking for "exception details" using `m` reveals that `Context` has been filled in with a 
+term `context(prolog_stack(Frames),_)` as the exception term looks as follows:
+
+```text
+error("deep in a search tree",
+      context(
+         prolog_stack([
+            frame(13,call(system:throw/1),throw(error("deep in a search tree",_4126))),
+            frame(12,clause(<clause>(0x1a7ef30),4),call2(error("deep in a search tree",_4156))),
+            frame(11,clause(<clause>(0x1a9ccd0),4),call1(error("deep in a search tree",_4186))),
+            frame(10,clause(<clause>(0x1a368c0),4),call0(error("deep in a search tree",_4216))),
+            frame(9,clause(<clause>(0x18f7450),3),'$toplevel':toplevel_call(user:user: ...))]),_4082))
+```
+
+## Quasi-ISO-standard exception term with SWI-Prolog context term `error(_,context(_,_))`
+
+The same as above, we just have SWI-Prolog specific `context/2` subterm already in the
+ISO-standard specific `error/2` term. 
+
+We can put a generic message in the second argument of `context/2`. In this example, a String:
+
+```text
+[debug]  ?- call0(error("deep in a search tree",context(_,"get me outta here"))).
+ERROR: Unknown error term: "deep in a search tree" (get me outta here)
+```
+
+### ISO-standard exception term with SWI-Prolog context term `error(IsoFormal,context(_,_))` 
+
+As above, backtrace and all, except that now error message generation is correct as it is based on the 
+list of valid ISO formal terms:
+
+```text
+[debug]  ?- call0(error(instantiation_error,context(_,"get me outta here"))).
+ERROR: Arguments are not sufficiently instantiated (get me outta here)
+ERROR: In:
+ERROR:   [13] throw(error(instantiation_error,context(_3028,"get me outta here")))
+ERROR:   [12] call2(error(instantiation_error,context(_3064,"get me outta here"))) at user://1:14
+ERROR:   [11] call1(error(instantiation_error,context(_3100,"get me outta here"))) at user://1:11
+ERROR:   [10] call0(error(instantiation_error,context(_3136,"get me outta here"))) at user://1:8
+ERROR:    [9] <user>
+```
