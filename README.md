@@ -52,7 +52,7 @@ Lest I forget:
    - [CHR: Constraint Handling Rules](swipl_notes/about_chr/) (there is nothing here yet)
    - [DCGs: Definite Clause Grammars](swipl_notes/about_dcgs/) (just some work in progress)
    - [Explaining `dif/2`](swipl_notes/about_dif) (but it's actually very simple in the end)
-   - [Exceptions](swipl_notes/about_exceptions) (exceptions are useful, but the ISO standard exception are open for improvement)
+   - [Exceptions](swipl_notes/about_exceptions) (exceptions are useful, but the ISO standard exceptions are open to improvement)
       - [Catch with backtrace](swipl_notes/about_exceptions/catch_with_backtrace.md)   
       - [Throwing ISO standard exceptions](swipl_notes/about_exceptions/throwing_iso_standard_exceptions.md)
       - [Problems with the ISO standard exception terms](swipl_notes/about_exceptions/problems_with_the_iso_standard_exception_terms.md)
