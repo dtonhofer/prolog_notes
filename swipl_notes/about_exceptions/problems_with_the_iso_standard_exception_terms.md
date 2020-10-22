@@ -124,3 +124,10 @@ throw_mystyle_existence_error(Pred,Type,Term,ExCode) :-
    (exception_code(ExCode,ExText) -> true ; (ExText = ExCode)),
    throw(mystyle([[error,existence],type-Type,term-Term,pred-Pred,msg-ExText]).
 ```
+
+## Compare with the Java World
+
+We have a nice, user-extensible exception hierarchy:
+
+![Java Exception Hierarchy](pics/Java_Exception_Hierarchy.svg)
+
