@@ -1,4 +1,4 @@
-# SWI-Prolog Exceptions
+# Prolog Exceptions
 
 _References to the SWI-Prolog manual pages and more are collected at the tail end of this page._
 
@@ -102,10 +102,4 @@ throw_existence_error(Pred,Type,Term,ExCode,Options) :
   - [Printing messages](https://eu.swi-prolog.org/pldoc/man?section=printmsg) from exceptions, but can be used more generally. See 
     also Anne Ogborn's [Tutorial](http://www.pathwayslms.com/swipltuts/message/index.html) on printing messages
      
-## Compare with
-
-### From the Java World: The Exception Hierarchy
-
-![Java Exception Hierarchy](pics/Java_Exception_Hierarchy.svg)
-
 
