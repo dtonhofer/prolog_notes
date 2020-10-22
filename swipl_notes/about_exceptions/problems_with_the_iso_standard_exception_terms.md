@@ -88,9 +88,9 @@ Jan Wielemaker writes:
 
 Compare with the Java World: While the Prolog standard doesn't even _have_ a standard exception that can be thrown
 by failing tests (SWI Prolog invents its own for `assertion/1`, namely `error(assertion_error(Reason,Culprit),Context)`), 
-the Java World tries to standardize _which ones_ should be thrown across testing frameworks (smug.jpg):
+the Java World tries to standardize _which ones_ should be thrown across testing frameworks:
 
-   - https://github.com/ota4j-team/opentest4j - The 
+   - https://github.com/ota4j-team/opentest4j - The project
    - https://github.com/ota4j-team/opentest4j/tree/master/src/main/java/org/opentest4j - The `Exception` classes
 
 ## The exception term is not properly associated with a module
