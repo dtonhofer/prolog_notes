@@ -1,6 +1,6 @@
 # Prolog Notes
 
-Some notes taken while working on Prolog (most SWI-Prolog)
+Some notes taken while working on Prolog (mostly SWI-Prolog)
 
 ## A Tradition
 
