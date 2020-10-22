@@ -43,7 +43,7 @@ Lest I forget:
 
 - Example code for some standard problems
    - [Prolog implementations for Fibonacci Number computation](other_notes/about_fibonacci_numbers) (code is tilted towards SWI Prolog though)
-   - [A dicussion of a "Prolog Database" operation](swipl_notes/about_prolog_db_operations/simple_db_op.md) 
+   - [A discussion of a "Prolog Database" operation](swipl_notes/about_prolog_db_operations/simple_db_op.md) 
    - [Various code snippets](swipl_notes/various_code/) (testing predicates found in the SWI-Prolog manual)
 - Having to do with programming constructs, some of which are specific to Prolog or to SWI-Prolog
    - [`foldl` and `foldr` in Prolog](other_notes/about_foldl_and_foldr/)   
@@ -52,7 +52,8 @@ Lest I forget:
    - [CHR: Constraint Handling Rules](swipl_notes/about_chr/) (there is nothing here yet)
    - [DCGs: Definite Clause Grammars](swipl_notes/about_dcgs/) (just some work in progress)
    - [Explaining `dif/2`](swipl_notes/about_dif) (but it's actually very simple in the end)
-   - [Exceptions](swipl_notes/about_exceptions) (exceptions are useful, but the ISO standard exception is Really Bad)
+   - [Exceptions](swipl_notes/about_exceptions) (exceptions are useful, but the ISO standard exception are ... improvable)
+      - [Throwing ISO standard exceptions](swipl_notes/about_exceptions/throwing_iso_standard_exceptions.md)
    - [The `maplist/N` predicates](swipl_notes/about_maplist) 
    - [Predicates dealing with I/O and printing](swipl_notes/about_output_formatting) (it all started with this...)
    - [Predicates for analyzing/constructing terms](swipl_notes/about_term_analysis_and_construction)
