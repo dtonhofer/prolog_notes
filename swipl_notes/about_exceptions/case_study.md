@@ -2,6 +2,8 @@
 
 Here is an example of a predicate that extensively verfies the parameters it has been passed.
 
+The whole code: [case_study.pl](code/case_study.pl)
+
 This is a defensive approach. If a predicate fails instead of throwing for calls with one or the other 
 parameter situtated out of the valid domain, someone may start to rely on this beahviour.
 If the domain of the predicate is extended later to cover more cases, unexpected success may lead to
@@ -215,7 +217,6 @@ ERROR: Domain error: `[0,2[' expected, found `300'
 ?- foo_lenient(300,300,Z,Name).
 false.
 ```
-
 
    
    
