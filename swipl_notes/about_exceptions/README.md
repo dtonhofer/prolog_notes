@@ -36,6 +36,10 @@ one would never see the values bound to the variables that can be found in the c
 
 See also: [Salvaging a term out of a dropped search branch](../about_salvaging_a_term_out_of_a_dropped_search_branch)
 
+## Throwing ISO standard exceptions
+
+[Throwing ISO standard exceptions](throwing_iso_standard_exceptions.md)
+
 ## Catch with backtrace
 
 [Catch with backtrace](catch_with_backtrace.md)
@@ -44,9 +48,9 @@ See also: [Salvaging a term out of a dropped search branch](../about_salvaging_a
 
 [Problems with the ISO standard exception terms](problems_with_the_iso_standard_exception_terms.md)
 
-## Good idea: Collecting exception texts in one place
+## Good idea: Throwing in style and collecting exception texts in one place
 
-[Collecting exception texts in one place](throwing_in_style.md)
+[Throwing in style and collecting exception texts in one place](throwing_in_style.md)
 
 ## Good idea: Selecting whether to "throw or fail" at runtime
 
