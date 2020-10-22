@@ -89,7 +89,44 @@ You may be able to change the printing of messages based on exception. See
 [4.10.4 Printing messages](https://eu.swi-prolog.org/pldoc/man?section=printmsg) and
 in particular [Predicate message_hook/3](https://eu.swi-prolog.org/pldoc/doc_for?object=message_hook/3).
 
-### List of the ISO-Standard exception term
+### Examples
+
+Here we throw an exception using the appropriate exception-throwing predicates from `library(error)` 
+Note they are not called `throw_type_error/2` etc. just `type_error/2` etc, which may cause some
+confusion on reading. We catch the exception in the catcher term _C_ which unifies with anything.
+`C` is then printed by the Prolog toplevel.
+
+```prolog
+?- catch(type_error(type,term),C,true).
+C = error(type_error(type, term), _2844).
+```
+
+```prolog
+?- catch(domain_error(type,term),C,true).
+C = error(domain_error(type, term), _3974).
+```
+
+```prolog
+?- catch(existence_error(type,term),C,true).
+C = error(existence_error(type, term), _5108).
+```
+
+```prolog
+?- catch(permission_error(action,type,term),C,true).  % 3 args!
+C = error(permission_error(action, type, term), _1314).
+```
+
+```prolog
+?- catch(instantiation_error(term),C,true). % noargs! The term is not passed along currently
+C = error(instantiation_error, _7032).
+```
+
+```prolog
+?- catch(syntax_error(term),C,true). % 1 args!
+C = error(syntax_error(term), _8162).
+```
+
+## List of the ISO-Standard exception term
 
 > Most errors defined in this part of ISO/IEC 13211 occur because the arguments of the goal fail to satisfy a particular
 > condition; they are thus detected before execution of the goal begins, and no side effect will have taken place.
@@ -197,7 +234,7 @@ Formal=domain_error(ValidDomain,Culprit)
 
 Thrown with [domain_error/2](https://eu.swi-prolog.org/pldoc/doc_for?object=domain_error/2)
 
-#### Existence Error
+### Existence Error
 
 An object on which an operation is to be performed does not exist. 
 
@@ -304,39 +341,4 @@ Formal=system_error
 
 There is no corresponding `library(error)` predicate. "System Error" should not be thrown from user code. The counterpart in the Java world would be [Error](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/lang/Error.html).
 
-## Examples
 
-Here we throw an exception using the appropriate exception-throwing predicates from `library(error)` 
-Note they are not called `throw_type_error/2` etc. just `type_error/2` etc, which may cause some
-confusion on reading. We catch the exception in the catcher term _C_ which unifies with anything.
-`C` is then printed by the Prolog toplevel.
-
-```prolog
-?- catch(type_error(type,term),C,true).
-C = error(type_error(type, term), _2844).
-```
-
-```prolog
-?- catch(domain_error(type,term),C,true).
-C = error(domain_error(type, term), _3974).
-```
-
-```prolog
-?- catch(existence_error(type,term),C,true).
-C = error(existence_error(type, term), _5108).
-```
-
-```prolog
-?- catch(permission_error(action,type,term),C,true).  % 3 args!
-C = error(permission_error(action, type, term), _1314).
-```
-
-```prolog
-?- catch(instantiation_error(term),C,true). % noargs! The term is not passed along currently
-C = error(instantiation_error, _7032).
-```
-
-```prolog
-?- catch(syntax_error(term),C,true). % 1 args!
-C = error(syntax_error(term), _8162).
-```
