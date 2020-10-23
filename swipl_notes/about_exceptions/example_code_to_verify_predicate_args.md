@@ -35,6 +35,58 @@ depends on the context: It should be the caller that decides. One solution would
 telling the predicate to fail, not throw. ANother would be to add a "lenient" wrapping predicate, which catches
 all exceptions thrown by the wrapped predicate, dumps them and just calls `fail` instead. See below.
 
+In fact, I content that a predicate should NOT jsut fail on out-of-domain arguments, but **always** throw.
+One **does** want to be informed when a predicate is called with garbage. It could be an important information.
+If the caller really wants to just have the predicate fail on bad input, doing so should be made explicit in the code.
+Thus there should be an `atom_length_ng/2` and  `atom_length_ng/3`:
+
+```
+% Not exported from the module in which this is defined.
+
+atom_length_strict(Atom,Length) :-
+   ((nonvar(Atom),\+atom(Atom))        -> type_error(atom,Atom) ; true),
+   ((nonvar(Length),\+integer(Length)) -> type_error(integer,Length) ; true),
+   ((nonvar(Length),Length<0)          -> domain_error(positive_integer,Length) ; true),
+   atom_length(Atom,Length).
+
+opts_contains_lenient(Opts) :-
+   is_dict(Opts),               % fails if not dict
+   get_dict(lenient,Opts,true). % fails if key does not exist
+
+% Exported from the module in which this is defined.
+
+% Decision whether to be strict or lenient is pulled from an 
+% "options" SWI-Prolog dict (one way of doing it, it seems the most palatable)
+
+% Default behaviour is **strict**:
+
+atom_length_ng(Atom,Length) :- 
+   atom_length_ng(Atom,Length,_).
+   
+% Special way of eliciting **lenient** behaviour:
+
+atom_length_ng(Atom,Length,Opts) :-
+   opts_contains_lenient(Opts) 
+   -> catch(atom_length_strict(Atom,Length),_Catcher,fail) 
+   ;  atom_length_strict(Atom,Length).
+
+```
+
+And thus:
+
+```
+?- atom_length_ng(atom,-1).
+ERROR: Domain error: `positive_integer' expected, found `-1'
+
+?- atom_length_ng(atom,-1,_).
+ERROR: Domain error: `positive_integer' expected, found `-1'
+
+?- atom_length_ng(atom,-1,_{lenient:true}).
+false.
+```
+
+That's more like it. 
+
 ## Code 
 
 The whole code: [case_study.pl](code/case_study.pl)
