@@ -72,6 +72,10 @@ Some unit test code (including unit test code for length/2) can be found here:
 
 [test_length_against_iso_prolog_wg17.pl](https://github.com/dtonhofer/prolog_notes/blob/master/code_unit_tests/builtin_demo/test_length_against_iso_prolog_wg17.pl)
 
+This is based on
+
+https://www.complang.tuwien.ac.at/ulrich/iso-prolog/length
+
 ## An atom_length_ng/2 which throws on negative length
 
 In fact, I contend that a predicate should NOT just "silently" fail on out-of-domain arguments, but **always** throw.
