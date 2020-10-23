@@ -1,4 +1,4 @@
-# Case study on verifying predicate arguments
+# Example code to verify predicate arguments
 
 ## Preliminary notes
 
