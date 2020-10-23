@@ -1,0 +1,128 @@
+## Something for the toolbox: What is a character?
+
+==
+character(A) :- atom(A),atom_length(A,1).
+==
+
+## Note this little inconsistency
+
+==
+?- atom_length(a,-1).
+false.
+==
+
+So `atom_length/2` is lenient, but `length/2` is not:
+
+==
+?- length([1],-1).
+ERROR: Domain error: `not_less_than_zero' expected, found `-1'
+==
+
+In fact, the ISO standard says that `atom_length/2` should throw on negative length.
+
+## atom_length goes semantic
+
+The ISO standard says that the first parameter must be an atom. SWI-Prolog accepts other things here, clearly "printing them" them, then counting the characters. This may be practical but seems odd, because it's no longer a purely syntactic operation:
+
+```
+?-  atom_length(1,N).
+N = 1.
+
+?- atom_length(1.334,N).
+N = 5.
+
+?- atom_length(1r3,N).
+N = 3.
+```
+
+## A list is fine too
+
+It also takes lists of characters:
+
+```
+?- atom_length([a,b,c],N).
+N = 3.
+
+?- atom_length([a,b,12.33],N).
+ERROR: Type error: `character' expected, found `12.33' (a float)
+
+?- atom_length([h,e,l,l,o],N).
+N = 5.
+
+?- atom_length([h,e,l,l,o,555],N).
+ERROR: Type error: `character' expected, found `555' (an integer)
+```
+
+And list of character codes (unicode codepoints):
+
+```
+?- atom_length([0'1,0'2,0'.,0'3],N).
+N = 4.
+
+?- X=`hello`.
+X = [104, 101, 108, 108, 111].
+
+?- atom_length(`hello`,N).
+N = 5.
+```
+
+## Unit test code
+
+Some unit test code (including unit test code for length/2) can be found here:
+
+[test_length_against_iso_prolog_wg17.pl](https://github.com/dtonhofer/prolog_notes/blob/master/code_unit_tests/builtin_demo/test_length_against_iso_prolog_wg17.pl)
+
+## An atom_length_ng/2 which throws on negative length
+
+In fact, I contend that a predicate should NOT just "silently" fail on out-of-domain arguments, but **always** throw.
+One **does** want to be informed when a predicate is called with garbage. It could be an important information (ok,
+Prolog is probably not going to be used in high-assurance software, but still..)
+
+If the caller really wants to just have the predicate fail on bad input, doing so should be made explicit in the code.
+Thus there should be an `atom_length_ng/2` and  `atom_length_ng/3`:
+
+```
+% Not exported from the module in which this is defined.
+
+atom_length_strict(Atom,Length) :-
+   ((nonvar(Atom),\+atom(Atom))        -> type_error(atom,Atom) ; true),
+   ((nonvar(Length),\+integer(Length)) -> type_error(integer,Length) ; true),
+   ((nonvar(Length),Length<0)          -> domain_error(positive_integer,Length) ; true),
+   atom_length(Atom,Length).
+
+opts_contains_lenient(Opts) :-
+   is_dict(Opts),               % fails if not dict
+   get_dict(lenient,Opts,true). % fails if key does not exist
+
+% Exported from the module in which this is defined.
+
+% Decision whether to be strict or lenient is pulled from an 
+% "options" SWI-Prolog dict (one way of doing it, it seems the most palatable)
+
+% Default behaviour is **strict**:
+
+atom_length_ng(Atom,Length) :- 
+   atom_length_ng(Atom,Length,_).
+   
+% Special way of eliciting **lenient** behaviour:
+
+atom_length_ng(Atom,Length,Opts) :-
+   opts_contains_lenient(Opts) 
+   -> catch(atom_length_strict(Atom,Length),_Catcher,fail) 
+   ;  atom_length_strict(Atom,Length).
+```
+
+And thus:
+
+```
+?- atom_length_ng(atom,-1).
+ERROR: Domain error: `positive_integer' expected, found `-1'
+
+?- atom_length_ng(atom,-1,_).
+ERROR: Domain error: `positive_integer' expected, found `-1'
+
+?- atom_length_ng(atom,-1,_{lenient:true}).
+false.
+```
+
+That's more like it.
