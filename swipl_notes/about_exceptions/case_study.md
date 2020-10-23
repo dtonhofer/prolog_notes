@@ -1,11 +1,23 @@
-# Case study on verifying predicate parameters
+# Case study on verifying predicate arguments
 
-Here is an example of a predicate that extensively verfies the parameters it has been passed.
+## Preliminary notes
 
-The whole code: [case_study.pl](code/case_study.pl)
+> **Note on naming:**
+>
+> - **Parameters** are the **formal parameters**: Source code lists the _parameters_: `foo(Param0,Param1) :- bar(Param0,Param1).`
+> - **Arguments** are the **actual parameters**: `foo/2` is called with two atom _arguments_: `foo(a0,a1)` 
+> 
+> In Prolog, the entries of a compound term are _also_ called arguments: `p(Arg0,Arg1)`
+> 
+> A _parameter_ takes on an actual value, the _argument_ at that position.
+>
+> **verifying**, **checking** and **testing** of arguments carries more or less the same meaning.
+> We shall use _verifying_.
 
-This is a defensive approach. If a predicate fails instead of throwing for calls with one or the other 
-parameter situtated out of the valid domain, someone may start to rely on this beahviour.
+We show an example of a predicate that extensively verfies the arguments it has been passed.
+
+This is a defensive approach. If a predicate _fails_ instead of _throwing_ for calls where one or the other 
+parameter has a value situtated out of its valid domain, someone may start to rely on this beahviour.
 If the domain of the predicate is extended later to cover more cases, unexpected success may lead to
 hard-to-diagnose problems.
 
@@ -17,6 +29,17 @@ false.
 ```
 
 However, this looks very much like an artifact of extremely weak typing: a length value should never be negative, really.
+
+Another point of view is that whether a predicate should fail or throw depending on bad arguments
+depends on the context: It should be the caller that decides. One solution would be to pass a "processing option"
+telling the predicate to fail, not throw. ANother would be to add a "lenient" wrapping predicate, which catches
+all exceptions thrown by the wrapped predicate, dumps them and just calls `fail` instead. See below.
+
+## Code 
+
+The whole code: [case_study.pl](code/case_study.pl)
+
+## What does the example predicate describe?
 
 In the present example, we have a 2-D _numbers_ domain, associated to a _zone names_ domain:
 
@@ -39,20 +62,24 @@ In the present example, we have a 2-D _numbers_ domain, associated to a _zone na
 ```
 
 - Any pair of numbers _(X,Y)_ that is not inside one of "zone A", "zone B" or "zone C" is considered "out-of-domain".
-- For "zone A", there are two values computed from _(X,Y)_, the other two zones just yield a single value.
+- For "zone A", there are two values computed from _(X,Y)_ (there is non-determinism), the other two zones just yield a single value.
 
-The "core predicate" `core_foo/4` assumes that the type and the domain of the parameters is correct (it 
+## Code structure
+
+The "core predicate" `core_foo/4` assumes that the type and the domain of the arguments seen is correct (it 
 is thus relatively fragile).
 
-It consists of three clauses, each protected by a guard that verifies in which zone the pair _(X,Y)_ 
+It consists of three clauses, each protected by a _guard_ that verifies in which zone the pair _(X,Y)_ 
 lies, as that cannot be verified through head unification alone. The guard performs no variable
 bindings and does not throw exceptions. It just succeeds or fails. (You can make double sure that
 variable bindings are not performed by preceding the call to the guard with the double negation, `\+ \+`,
 but that usage is rare).
 
-The guard goals have been moved out to their own predicates.
-Guard conditions could be made laxer as we _do assume_ that we are inside the domain, but
-let's keep it relatively strict for clarity:
+The guard goals have been moved out to their own predicates for nicer code structure.
+
+Guard conditions could be made laxer (i.e. some conditions could be left out) as we do assume that arguments are
+inside the domain, but let's keep it relatively strict for clarity. Code clarity is always worth more than
+a few cycles saved:
 
 ```
 guard_zone_a(X,Y) :- 0=<X, X<1, 0=<Y, Y<1.
@@ -60,7 +87,8 @@ guard_zone_c(X,Y) :- 0=<X, X<1, 1=<Y, Y<2.
 guard_zone_b(X,Y) :- 1=<X, X<2, 0=<Y, Y<1.
 ```
 
-We arrange the code so that we commit to the selected clause after each guard. So:
+We arrange the code so that we commit to the selected clause after each guard (these are green cuts,
+not changing the semantics, as only a single guard in the set of guards can succeed). So:
 
 ```
 core_foo(X,Y,Z,zone_c) :- guard_zone_a(X,Y), !, (Z is X+Y;Z is X*Y). 
@@ -68,7 +96,7 @@ core_foo(X,Y,Z,zone_a) :- guard_zone_a(X,Y), !, Z is X*Y*Y.
 core_foo(X,Y,Z,zone_d) :- guard_zone_d(X,Y), !, Z is X*X*Y.
 ```
 
-Or maybe clearer using `->`:
+Or maybe clearer using [`->`](https://eu.swi-prolog.org/pldoc/doc_for?object=(-%3E)/2):
 
 ```
 core_foo(X,Y,Z,zone_a) :- guard_zone_a(X,Y) -> (Z is X+Y;Z is X*Y). 
@@ -87,14 +115,14 @@ Name = zone_a ;
 false.
 ```
 
-For `core_foo/4`, anything outside of the allowed domain of the three zone fails, but we want it to throw instead.
+For `core_foo/4`, anything outside of the allowed domain of the "three allowed zone" _fails_, but we want it to _throw_ instead:
 
 ```
 ?- core_foo(300,300,Z,Name).
 false.
 ```
 
-If the caller calls `core_foo/4` with a bad zone identifer, it also fails, which is what we want:
+If the caller calls `core_foo/4` with a bad zone identifer, the call also fails, which is what we want:
 
 ```
 ?- core_foo(0.1,0.1,Z,zone_b).
@@ -102,7 +130,7 @@ false.
 ```
 
 The "core part" of the predicate shall now be preceded by predicate `before_foo/4` that performs all
-parameter verifications and throws on problems. 
+argument verifications and throws on problems. 
 
 It behaves like a "throwing guard" and is deterministic: It just throws or succeeds.
 
@@ -149,7 +177,7 @@ verify(foo/4).   % It's on for foo/4!
 
 % ---
 % The predicate to verify all the arguments that will be passed to core_foo/4.
-% It either succeeds (deterministically) or throws.
+% It either succeeds (deterministically) or throws. It looks a bit ugly.
 % ---
 
 before_foo(X,Y,Z,ZoneName) :-
@@ -202,6 +230,10 @@ foo_lenient(X,Y,Z,ZoneName) :-
    catch(foo(X,Y,Z,ZoneName),_Catcher,fail).
 ```
 
+In some extreme cases it might be interesting to to code a second `before_foo_lenient/4` which never throws, just fails, and
+is invoked instead of `before_foo/4` depending on on a processing option passed to now `foo/5`, formerly `foo/4`. But that
+duplicates code and is nasty. Just do that if the cost of many no-operation throw-catch sequences can actually be measured.
+
 The problem with the above is that it also catches exceptions generated "deeper down the stack", by predicates called by foo/4. 
 These you might not want to catch, they could have something to do with I/O etc.
 
@@ -218,5 +250,3 @@ ERROR: Domain error: `[0,2[' expected, found `300'
 false.
 ```
 
-   
-   
