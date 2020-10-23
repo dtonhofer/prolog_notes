@@ -39,7 +39,7 @@ all exceptions thrown by the wrapped predicate, dumps them and just calls `fail`
 
 The whole code: [case_study.pl](code/case_study.pl)
 
-## What does the example predicate describe?
+### What does the example predicate describe?
 
 In the present example, we have a 2-D _numbers_ domain, associated to a _zone names_ domain:
 
@@ -64,7 +64,7 @@ In the present example, we have a 2-D _numbers_ domain, associated to a _zone na
 - Any pair of numbers _(X,Y)_ that is not inside one of "zone A", "zone B" or "zone C" is considered "out-of-domain".
 - For "zone A", there are two values computed from _(X,Y)_ (there is non-determinism), the other two zones just yield a single value.
 
-## Code structure
+### Code structure
 
 The "core predicate" `core_foo/4` assumes that the type and the domain of the arguments seen is correct (it 
 is thus relatively fragile).
@@ -220,6 +220,8 @@ head unification behind-the-scenes). Prolog might benefit from being extended to
 [Many-sorted logic](https://en.wikipedia.org/wiki/Many-sorted_logic) so that head unification fails for
 mismatched "sorts" (which are types, more or less). But then, one might not want it to fail but to
 throw.
+
+### Failing instead of throwing
 
 If you want to make `foo/4` lenient, in the sense that instead of thrown exceptions, the predicate just fails
 (in which case predicate failure has the scrambled meaning of "core predicate fails in its domain" or "bad arguments passsed"), 
