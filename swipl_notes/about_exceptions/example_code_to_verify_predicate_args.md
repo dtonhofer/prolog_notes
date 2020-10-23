@@ -35,8 +35,10 @@ depends on the context: It should be the caller that decides. One solution would
 telling the predicate to fail, not throw. ANother would be to add a "lenient" wrapping predicate, which catches
 all exceptions thrown by the wrapped predicate, dumps them and just calls `fail` instead. See below.
 
-In fact, I content that a predicate should NOT jsut fail on out-of-domain arguments, but **always** throw.
-One **does** want to be informed when a predicate is called with garbage. It could be an important information.
+In fact, I contend that a predicate should NOT just "silently" fail on out-of-domain arguments, but **always** throw.
+One **does** want to be informed when a predicate is called with garbage. It could be an important information (ok,
+Prolog is probably not going to be used in high-assurance software, but still..)
+
 If the caller really wants to just have the predicate fail on bad input, doing so should be made explicit in the code.
 Thus there should be an `atom_length_ng/2` and  `atom_length_ng/3`:
 
