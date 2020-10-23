@@ -21,7 +21,7 @@ parameter has a value situtated out of its valid domain, someone may start to re
 If the domain of the predicate is extended later to cover more cases, unexpected success may lead to
 hard-to-diagnose problems.
 
-Sometimes just failing instead of throwing makes some sense:
+Sometimes just failing instead of throwing makes some sense. In SWI-Prolog (the ISO standard says that `atom_length/2` should throw in this case):
 
 ```
 ?- atom_length(a,-1).
