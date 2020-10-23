@@ -21,30 +21,43 @@ parameter has a value situtated out of its valid domain, someone may start to re
 If the domain of the predicate is extended later to cover more cases, unexpected success may lead to
 hard-to-diagnose problems.
 
-Sometimes just failing instead of throwing makes some sense. In SWI-Prolog (the ISO standard says that `atom_length/2` should throw in this case):
+Sometimes just failing instead of throwing makes some sense. In SWI-Prolog we have this:
 
 ```
 ?- atom_length(a,-1).
 false.
 ```
 
-However, this looks very much like an artifact of extremely weak typing: a length value should never be negative, really.
+The ISO standard actually says that `atom_length/2` should actually throw a `domain_error(_,_)` and indeed 
+this case looks very much like an artifact of extremely weak typing: a length value should never be negative, really.
 
-Another point of view is that whether a predicate should fail or throw depending on bad arguments
-depends on the context: It should be the caller that decides. One solution would be to pass a "processing option"
-telling the predicate to fail, not throw. ANother would be to add a "lenient" wrapping predicate, which catches
-all exceptions thrown by the wrapped predicate, dumps them and just calls `fail` instead. See below.
+But whether predicate should fail or throw depending on "bad arguments" actually depends on the context: 
+It should probably be the caller that decides! Consider two possible interpretations of `atom_length(A,L)`
 
-In fact, I contend that a predicate should NOT just "silently" fail on out-of-domain arguments, but **always** throw.
-One **does** want to be informed when a predicate is called with garbage. It could be an important information (ok,
-Prolog is probably not going to be used in high-assurance software, but still..)
+- _In order to continue with "towards the right" I need you to ascertain that the length of the
+  atom denoted by `A` is indeed `L`._ It may be reasonable to fail if `L` happens to be negative, it could for example
+  stem from a counter variable that will eventually become positive after sufficient backtracking.  
+- _Some predicate asserts that the length of the atom denoted by `A` is `L`, is that true_. It may be reasonable to 
+  throw if `L` happens to be negative, the predicate that gave out the information seems to be a bit buggy.   
 
-On the other hand, if program deals more with _modeling_ rather than _computation_, it makes abolutely sense to just
-fail in case of bad parameters. We are modeling the thin archipelago of true relationships in any case. There is no
-harm in just failing `mother(henry,1)`.
+Furthermore:
 
-If the caller really wants to just have the predicate fail on bad input, doing so should be made explicit in the code.
-Thus there should be an `atom_length_ng/2` and  `atom_length_ng/3`:
+- If the program deals more with _modeling_ rather than _computation_, it makes abolutely sense to just
+  fail in case of "bad parameters". We are modeling the thin archipelago of true relationships in any 
+  case. There is no harm in just failing `mother(henry,1)`. 
+- On the other hand, one **does** want to be informed when a predicate is called with garbage. It could be
+  important information (we want some assurance that we are still "on the rails", this is also why
+  [assertion/1](https://eu.swi-prolog.org/pldoc/doc_for?object=assertion/1) exists). A predicate should
+  **not** just "silently" fail on out-of-domain arguments, but at least leave open the possibility to raise exceptions.
+
+Maybe a predicate should always raise exceptions and the programmer should be forced to explicitly state that
+he doesn't want the predicate to throw, just fail. That would make predicate behaviour uniform and explicit.
+   
+One possibility would be to have the predicate raise exceptions, and provide a second "lenient" predicate that 
+just fails (simply by catching all exceptions and failing instead). Or both predicates could be combined by
+adding a processing option.
+
+Thus an `atom_length_ng/2` and  `atom_length_ng/3`:
 
 ```
 % Not exported from the module in which this is defined.
@@ -78,7 +91,7 @@ atom_length_ng(Atom,Length,Opts) :-
 
 ```
 
-And thus:
+And so:
 
 ```
 ?- atom_length_ng(atom,-1).
