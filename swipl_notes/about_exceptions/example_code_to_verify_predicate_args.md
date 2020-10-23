@@ -39,6 +39,10 @@ In fact, I contend that a predicate should NOT just "silently" fail on out-of-do
 One **does** want to be informed when a predicate is called with garbage. It could be an important information (ok,
 Prolog is probably not going to be used in high-assurance software, but still..)
 
+On the other hand, if program deals more with _modeling_ rather than _computation_, it makes abolutely sense to just
+fail in case of bad parameters. We are modeling the thin archipelago of true relationships in any case. There is no
+harm in just failing `mother(henry,1)`.
+
 If the caller really wants to just have the predicate fail on bad input, doing so should be made explicit in the code.
 Thus there should be an `atom_length_ng/2` and  `atom_length_ng/3`:
 
@@ -191,6 +195,16 @@ It behaves like a "throwing guard" and is deterministic: It just throws or succe
 It does not change variable bindings. Again, you can make double sure that variable bindings are not
 performed by preceding the call to `before_foo/4` with the double negation, `\+ \+`. That construct lets
 through exceptions.
+
+In many cases it is of course prohibitive to try to perform all the verification in a dedicated "before"
+predicate. There will be exceptions thrown from the core predicate, sometimes after a long recursive chain.
+Consider a predicate that takes a list of characters. A "before" predicate may check whether the parameter
+is indeed a list, and maybe even an empty list or a list at least starting with a character. However,
+unless there is good reason for it (and/or the code becomes more elegant by _making sure_ before the core
+predicate), one would not traverse the possibly infinite list to check every single element. The core
+predicate would do that, and "throw late" in case it finds some non-character element. (It would be easier if the
+list were an opaque object about which certain type-related statements could be made with assurance; but
+that's not how Polog works, at least for now.)
 
 In strongly and statically typed languages, many of these tests are made superfluous because
 the compiler will refuse to even compile the code if a verification premises might become _false_
