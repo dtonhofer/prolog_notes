@@ -57,7 +57,7 @@ Lest I forget:
       - [Throwing ISO standard exceptions](swipl_notes/about_exceptions/throwing_iso_standard_exceptions.md)
       - [Problems with the ISO standard exception terms](swipl_notes/about_exceptions/problems_with_the_iso_standard_exception_terms.md)
       - [Throwing in style: collecting exception specs in one place of the code](swipl_notes/about_exceptions/throwing_in_style.md)
-      - [Case study on verifying predicate arguments](swipl_notes/about_exceptions/case_study.md)
+      - [Example code to verify predicate arguments](swipl_notes/about_exceptions/example_code_to_verify_predicate_args.md)
    - [The `maplist/N` predicates](swipl_notes/about_maplist) 
    - [Predicates dealing with I/O and printing](swipl_notes/about_output_formatting) (it all started with this...)
    - [Predicates for analyzing/constructing terms](swipl_notes/about_term_analysis_and_construction)
