@@ -1,0 +1,87 @@
+## Need doc fix
+
+"ordered list of pairs" means (probably) "ordered by natural order of keys"
+
+It should be:
+
+"Bi-directional mapping between Dict and the pair (Tag, Pairs), where Pairs is an ordered list of pairs"
+
+## Testing 
+
+Time for some unit test code to demonstrate behaviour.
+
+Note that, contrary to put_dict/3, dict_pairs/3 demands that =Pairs= be a key-value list on input.
+
+Note the comparitively nasty behaviour of compound_name_arguments/3 on a dict. Don't use that, its behaviour is due to the current way dict is implemented (I think).
+
+==
+:- begin_tests(dict_equality).
+
+test("term equality between empty dicts") :-
+   foo{} == foo{}.
+
+test("term equality between nonempty dicts") :-
+   foo{a:x,b:y} == foo{a:x,b:y}.
+
+test("term equality between nonempty dict with differently ordered literals") :-
+   foo{a:x,b:y,c:z} == foo{c:z,b:y,a:x}.
+
+:- end_tests(dict_equality).
+
+
+:- begin_tests(dict_pairs).
+
+% Obtain the special blob which is the dict functor name
+
+dict_functor_name(FN) :-
+   compound_name_arity(_{},FN,_).
+
+% This is used to process the special list yielded by compound_name_arguments/3
+
+swappypairzip([V,K|Ms],[K-V|Ps]) :- !,swappypairzip(Ms,Ps).
+swappypairzip([],[]).
+
+test("analyze empty dict", true([Name,Pairs] == [foo,[]])) :-
+   dict_pairs(foo{},Name,Pairs).
+
+% Pairs list is assumed "ordered" in the next test
+
+test("analyze nonempty dict", true([Name,Pairs] == [foo,[a-x,b-y]])) :-
+   dict_pairs(foo{a:x,b:y},Name,Pairs).
+
+% Analyze dict with "compound_name_arguments/3":
+% VERY different, much nastier than using dict_pairs
+
+test("analyze empty dict with compound_name_arguments/3",true([Name,DictTag] == [FN,foo])) :-
+   dict_functor_name(FN),
+   compound_name_arguments(foo{},Name,[DictTag]).
+
+test("analyze nonempty dict with compound_name_arguments/3",true([Name,DictTag,DictContentZippedSorted] == [FN,foo,[a-x,b-y]])) :-
+   dict_functor_name(FN),
+   compound_name_arguments(foo{a:x,b:y},Name,[DictTag|DictContent]),
+   swappypairzip(DictContent,DictContentZipped),       % DictContent has the order of Key, Value reversed!
+   keysort(DictContentZipped,DictContentZippedSorted). % and there is no guarantee on order
+
+% Assemble a dict
+
+test("assemble an empty dict",true(Dict == foo{})) :-
+   dict_pairs(Dict,foo,[]).
+
+test("assemble a nonempty dict",true(Dict == foo{a:x,b:y,c:z})) :-
+   dict_pairs(Dict,foo,[a-x,b-y,c-z]).
+
+test("assemble nonempty dict from differently ordered pairs",true(Dict == foo{a:x,b:y,c:z})) :-
+   dict_pairs(Dict,foo,[b-y,a-x,c-z]).
+
+% This throws the non-ISO exception with formal "duplicate_key(Key)"
+
+test("assemble nonempty dict with ambivalent input",error(duplicate_key(a))) :-
+   dict_pairs(_,foo,[b-y,a-x,c-z,a-666]).
+
+% Pairs cannot be specified with ":"
+
+test("assemble nonempty dict with pairs that use ':'",error(type_error(_,_))) :-
+   dict_pairs(_,foo,[b:y,a:x,c:z]).
+
+:- end_tests(dict_pairs).
+==
