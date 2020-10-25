@@ -1,5 +1,9 @@
 # Relevant predicates for generating output in Prolog (by order of importance)
 
+# TL;DR
+
+![TL;DR Diagram](output_formatting_pics/tldr.svg).
+
 _Work in progress_
 
 - Some predicates are SWI-Prolog specific.
@@ -79,10 +83,6 @@ The reserved stream name `user` refers to the terminal (not sure what that impli
   This is often described using a monad structure (colloquially, "a monad") from Category Theory. One can consider this
   as a goal accumulator. Would it make sense?
   
-# TL;DR
-
-![TL;DR Diagram](output_formatting_pics/tldr.svg).
-
 ## Formatted write: "format family"
 
 See chapter "[4.32.2 Format](https://eu.swi-prolog.org/pldoc/man?section=format-predicates)" of the SWI-Prolog documentation.
