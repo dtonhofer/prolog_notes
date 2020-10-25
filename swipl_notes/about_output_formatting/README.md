@@ -37,7 +37,8 @@ Each thread has five stream aliases identified by atoms:
    - `current_output`: Implicit sink for predicates that do not take a stream argument for output, initially `user_error`
       - Rebind with [`set_output`](https://eu.swi-prolog.org/pldoc/doc_for?object=set_output/1) and also [`tell/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=tell/1) if you insist on Edinburgh tradition.
 
-The predicate [`with_output_to/2`](https://eu.swi-prolog.org/pldoc/man?predicate=with_output_to/2) provides temporary
+The predicate [`with_output_to/2`](https://eu.swi-prolog.org/pldoc/man?predicate=with_output_to/2)
+(in section [Write onto atoms, code-lists, etc.](https://eu.swi-prolog.org/pldoc/man?section=write-on-atom)) provides temporary
 context for a goal to redirect temporarily output to another sink: stream, an atom, a string etc. It's a beginning! 
 The various forms of sink are listed in the page of [`with_output_to/2`](https://eu.swi-prolog.org/pldoc/man?predicate=with_output_to/2).
 
@@ -533,21 +534,6 @@ These predicates convert between Prolog constants and lists of character codes (
 ### Libraries to read stuff
 
 `library(readutil)`, `library(pure_input)` or libraries from the extension packages to read XML, JSON, YAML, etc.
-
-### Write unto atoms, code-lists, etc.	
-
-...see [4.17.6 Write onto atoms, code-lists, etc.](https://eu.swi-prolog.org/pldoc/man?section=write-on-atom)
-
-**[`with_output_to(+Output, :Goal)`](https://eu.swi-prolog.org/pldoc/doc_for?object=with_output_to/2)**
-
-> Run Goal as [`once/1`](https://eu.swi-prolog.org/pldoc/man?predicate=once/1), while characters written to the
-> current output are sent to Output. The predicate is SWI-Prolog-specific, inspired by various posts to the
-> mailinglist. It provides a flexible replacement for predicates such as `sformat/3` ,
-> [`swritef/3`](https://eu.swi-prolog.org/pldoc/man?predicate=swritef/3),
-> [`term_to_atom/2`](https://eu.swi-prolog.org/pldoc/man?predicate=term_to_atom/2),
-> [`atom_number/2`](https://eu.swi-prolog.org/pldoc/man?predicate=atom_number/2) converting numbers to atoms, etc. 
-> The predicate [`format/3`](https://eu.swi-prolog.org/pldoc/man?predicate=format/3) accepts the same terms as
-> output argument.
 
 ### Character representation and Wide Character support
 
