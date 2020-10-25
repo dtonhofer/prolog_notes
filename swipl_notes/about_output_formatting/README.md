@@ -666,20 +666,30 @@ X = "Hello, \"World\"\n".
 
 ## Defensive programming around format calls
 
-`format/2` is **precise in the arguments it expects**. If you want to make sure a call to `format/2` won't generate further exceptions in situations where you are already handling an error for example:
+`format/2` is **precise in the arguments it expects**. If you want to make sure a call
+to `format/2` won't generate further exceptions in situations where you are already handling an error for example:
 
 ```Logtalk
-textize(Msg,Args,Text) :-
-   (is_list(Args) -> ListyArgs = Args ; ListyArgs = [Args]),
+textize(Msg,Params,Text) :-
+   (is_list(Params)                           % make sure it's a for sure
+    -> ListyParams = Params
+    ;  ListyParams = [Params]),
    catch(
-      % happy path
-      with_output_to(string(Text),format(Msg,ListyArgs)),
-      _,
-      catch(
-         % we end up here if format/2 doesn't like what it sees; finagle something!
-         (maplist([X,Buf]>>with_output_to(string(Buf),format("~q",[X])),[Msg|ListyArgs],L),atomic_list_concat(["SPROING!"|L]," & ",Text)),
-         _,
-         "WTF,MAN!")).
+      format(string(Text),Msg,ListyParams),   % if all goes well, we are done after that
+      Catcher1,                               % catch & ignore exception term in _Catcher1
+      (format(user_error,"~q",Catcher1),                 % Exception handler
+       catch(                                  % make doubly sure with another catch
+         % We end up here if format/2 doesn't like what it sees in ListyParams.
+         finagle_some_text(Msg,ListyParams,Text),
+         _Catcher2,
+         "Exception inside exception handling."))).
+         
+finagle_some_text(Msg,ListyParams,Text) :-
+   maplist(
+      [X,Text]>>format(string(Text),"~q",[X]),
+      [Msg|ListyParams],
+      Texts),
+   atomic_list_concat(["Exception while printing with the following:"|Texts],",",Text).
 ```
 
 Then 
@@ -687,13 +697,14 @@ Then
 ```  
 % Happy path
 
-?- textize("This is a ~q test: ~q ~d",[cute,"Hello, World",15],Text).
-Text = "This is a cute test: \"Hello, World\" 15".
+?- textize("Everything is going extremely ~s. We have ~s complaints",["well","no"],Text).
+Text = "Everything is going extremely well. We have no complaints".
 
-% Saves your bacon because "foo" is not a ~d:
+% Saves your bacon, you forgot a placeholder in the template:
 
-?- textize("This is a ~q test: ~q ~d",[cute,"Hello, World", foo],Text).
-Text = 'SPROING! & "This is a ~q test: ~q ~d" & cute & "Hello, World" & foo'.
+?- textize("Open the %s, %s.",["pod bay doors","HAL"],Text).
+error(format('too many arguments'),context(system:format/3,_3440))
+Text = 'Exception while printing with the following:,"Open the %s, %s.","pod bay doors","HAL"'.
 ```
 
 ## Multi-line strings (or atoms) in SWI-Prolog
