@@ -521,6 +521,82 @@ Contract fulfilled on entry!
 true.
 ```
 
+### An exercise from Stack Overflow
+
+From [How to sum up multiple lists in Prolog](https://stackoverflow.com/questions/64575128/how-to-sum-up-multiple-lists-in-prolog)
+
+Suppose you have a list of (sub)lists of numbers. You want to sum over each (sub)list individually, obtaining a list of sums over the (sub)lists:
+
+As done in [TDD](https://en.wikipedia.org/wiki/Test-driven_development), we can write 
+the [`plunit`](https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/plunit.html%27)) test cases first:
+
+```logtalk
+:- begin_tests(sum_over_sublists).
+
+test("empty list of lists",true(R == [])) :-
+   sum_over_sublists([],R).
+
+test("all sublists contain one value",true(R == [1,2,3])) :- 
+   sum_over_sublists([[1],[2],[3]],R).
+   
+test("one sublist is empty",true(R == [1,0,3])) :- 
+   sum_over_sublists([[1],[],[3]],R).
+   
+test("standard case #1",true(R == [6,15,24])) :- 
+   sum_over_sublists([[1,2,3],[4,5,6],[7,8,9]],R).
+   
+test("standard case #2",true(R == [10,14,18])) :-
+   sum_over_sublists([[1,2,3,4],[2,3,4,5],[3,4,5,6]],R).
+
+:- end_tests(sum_over_sublists).
+```
+
+Here, one can apply `maplist/3` to iterate over the the list of (sub)lists. Addition for each sublist is
+performed by [`foldl/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=foldl/4). 
+[`library(yall)`](https://eu.swi-prolog.org/pldoc/man?section=yall)
+notation is used to define new predicates inline.
+
+For good measure, we also check the passed arguments using [`must_be/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=must_be/2)
+
+```
+entry_checks(ListOfSublists,ListOfSums) :-
+   must_be(list(list(number)),ListOfSublists), % throws on problem
+   (var(ListOfSums) -> true ; must_be(list)).  % throws on problem
+
+sum_over_sublists(ListOfSublists,ListOfSums) :-
+   entry_checks(ListOfSublists,ListOfSums), 
+   maplist(
+      ([Sublist,Sum]>>
+          (foldl(
+              [AccumIn,X,AccOut]>>(AccOut is AccumIn + X),
+              Sublist,
+              0,
+              Sum))),
+      ListOfSublists,
+      ListOfSums).
+```
+
+This can be more extensively written as
+
+```
+sum_over_sublists(ListOfSublists,ListOfSums) :-
+   entry_checks(ListOfSublists,ListOfSums), 
+   maplist(
+      p2,              % p2 will be called with 2 parameters, an element from each list
+      ListOfSublists,
+      ListOfSums).
+
+p2(Sublist,Sum) :-
+   foldl(
+      p3,              % will be called with 3 parameters (see below)
+      Sublist,
+      0,
+      Sum).
+
+p3(AccumIn,X,AccOut) :-
+   AccOut is AccumIn + X.
+```
+
 ## TODO: maplist_relax/3
 
 TODO: Write a maplist that can deal with lists of differing length, and stops with success after as many list pairs as possible have been processed. 
