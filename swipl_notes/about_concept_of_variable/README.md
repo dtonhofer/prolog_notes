@@ -12,19 +12,25 @@ Compare with:
 
 ## TL;DR
 
-One basically has three things: the "cells" (a concrete representation), the "terms" (the things represented by the cell graphs), the "variable names"
+One basically has three things: 
 
-- An "unbound variable" or "uninstantiated variable" and possibly "fresh variable"
-- ... has exactly the meaning of an "empty cell" in the global term store ("a hole", I like this even if Jan Burse protests)
-- A term is represented by a (equivalence class of) directed graphs of cells, some of which, on the leaves, may be empty
-- In particular an "empty term" is represented by an "empty cell" (empty terms are distinguishable, as are empty cells)
-- And an "empty term" represents "missing knowledge about the solution"
-- And a term, empty or otherwise, is designated or denoted by a "variable name" in source or in printouts: X, _123 (one colloquially says: "the term X")
-- And if the variable name X designates an empty cell (an empty term) one colloquially says: "variable X is unbound/uninstantiated/fresh"
+   - "cells" (a storage element; cells are referencing each other, forming directed graphs), held in a globally accessible "cell store";
+   - "terms" (a cell graph is interpreted as a term; as the cell store is globally accessible, so are the terms)
+   - "variable names"
+
+- A term is represented by a (equivalence class of) directed graphs of cells. Inner cells of the graph cannot be "empty".
+  Leaf cells of the graph can be "empty" ;
+- An "unbound variable" or "uninstantiated variable" (sometimes called a "fresh variable" and even sometimes a "free variable") 
+  has exactly the meaning of an "empty cell" in the cell store (one can call this  "hole") ;
+- In particular an "empty term" is represented by an "empty cell" (empty terms are distinguishable, as are empty cells) ;
+- An "empty term" represents "missing knowledge about the solution" ;
+- A term, empty or otherwise, is designated (or denoted) by a "variable name" in source or in printouts: 
+  `X`, `_123` etc. (one colloquially says: "the term `X`")
+- And if the variable name `X` designates an empty cell (an empty term) one colloquially says: "variable `X` is unbound/uninstantiated/fresh".
     
 ## "Variable Names"
 
-"Variable names" are clause-local or goal-local names found in source code, and queries:
+"Variable names" are clause-local or goal-local names found in source code and queries. The clause below sports local variable names `X`, `Y`, `Z`.
 
 ```
 f(X,Y) :- g(X,Z),h(Z,Y).
@@ -32,7 +38,7 @@ f(X,Y) :- g(X,Z),h(Z,Y).
 
 Variable names may be generated on demand by predicates like [`print/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=print/1):
 
-Here the original variable names are dropped as the term is built in-memory, and new ones are generated on need when
+Here the original variable names are dropped as the term `f(X,Y) :- g(X,Z),h(Z,Y)` is read in. New ones are generated on need when
 printing. (The number probably indicates the cell address).
 
 ```
@@ -43,9 +49,11 @@ true.
 
 ## "Terms" and the "Cells" that represent them
 
-A variable name appearing in a clause or goal designates (or "denotes") a _cell_ in a "global term store" at runtime.
-The term store is _global_ as the currently clause may access any cell therein as long as the activation (stack frame)
-contains a reference to said cell. Cells form directed graphs that are a concrete representation of terms.   
+A variable name that appears in a clause or goal designates (or "denotes"), at runtime, a _cell_ in a "global cell store".
+The cell store is _global_ as the currently active clause may access any cell therein as long as the activation (stack frame)
+holds a reference to said cell. 
+
+Cells form directed graphs that are concrete representations of terms.   
 
 The special variable name `_` is the "anonymous variable name". Wherever it appears, it designates a distinct cell.
 
@@ -74,7 +82,7 @@ L = [E0, E1, _124792, _124798, _124804].
 ```
 
 The _same_ empty term may appear in several distinct leaf positions ("the variable is shared") and cycles may even be
-constructed. In that case, the term can no longer be considered a tree  but must be considered a directed graph, possibly cyclic.
+constructed. In that case, the term can no longer be considered a tree: it is a directed graph, possibly cyclic.
 
 If there is sharing of subterms (entire subtrees referenced from multiple places) inside the term graph, there is in
 principle no way to find out from Prolog that this is the case.
