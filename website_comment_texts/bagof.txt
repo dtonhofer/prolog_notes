@@ -1,7 +1,3 @@
-***
-*** Text in th comment section of https://eu.swi-prolog.org/pldoc/doc_for?object=bagof/3
-***
-
 ## No solutions for Goal lead to failure, instead of an empty bag.
 
 ==
@@ -12,7 +8,7 @@ Bag = [p].
 false.
 ==
 
-I consider this a bit surprising.
+I consider this (a bit) surprising.
 
 In fact, this means binding the Bag to [] must always fail, because an empty Bag **is never generated**
 
@@ -21,49 +17,77 @@ In fact, this means binding the Bag to [] must always fail, because an empty Bag
 false.
 ==
 
-Evidently, one "true" generates a one-element bag with a fresh variable:
+Evidently, one "true" generates a one-element bag with an unbound variable:
 
 ==
 ?- bagof(X,true,L).
 L = [_65320].
 ==
 
-## Bag needs to fit
+findall/3 just yields the empty bag if there is no solution.
 
-Note that the "bag" needs to exactly fit the number of results; there is no "early breakoff if the bag is too small" or "leave remaining elements in bag non-unified if the bag is too large".
+## Bag needs to fit exactly
 
-From a logicial standpoint, this absolutely makes sense.
+The "bag" needs to exactly fit the number of results; there is no "early breakoff if the bag is too small" or "leave remaining elements in bag non-unified if the bag is too large". 
 
-If the bag is a fresh variable, a new list (evidently fitting the number of results obtained) is bound to it.
+From a logical standpoint, this makes sense.
+
+If the bag is an unbound variable, it is bound to (the head of) a newly constructed list (with length > 0, fitting the number of results obtained).
 
 Example:
 
+The bag is too small:
+
 ==
-?- bagof(S,between(1,3,S),[X]).
+?- bagof(B,between(1,3,B),[X]).
 false.
+==
 
-?- bagof(S,between(1,3,S),[X,Y]).
+The bag is still too small:
+
+==
+?- bagof(B,between(1,3,B),[X,Y]).
 false.
+==
 
-?- bagof(S,between(1,3,S),[X,Y,Z]).
+The bag is an exact fit:
+
+==
+?- bagof(B,between(1,3,B),[X,Y,Z]).
 X = 1,
 Y = 2,
 Z = 3.
+==
 
-?- bagof(S,between(1,3,S),Bag).
+You can just request that bagof build a new list for you, so no worries about list size:
+
+==
+?- bagof(B,between(1,3,B),Bag).
 Bag = [1, 2, 3].
 ==
 
-This also applies to setof/3
+Another way: this bag requires a prefix of 3 elements, but any surplus goes into the suffix `Rest`:
 
 ==
-% Generate some duplicates with bagof/3
+?- bagof(B,between(1,3,B),[A,B,C|Rest]).
+B = 2,
+A = 1,
+C = 3,
+Rest = [4, 5, 6, 7, 8, 9, 10].
+==
 
-?- bagof(S,(between(1,3,S);between(1,2,S)),Bag).
+The above also applies to setof/3:
+
+bagof/3 leaves duplicate elements (as decided by ==/2) in the bag:
+
+==
+?- bagof(B,(between(1,3,B);between(1,2,B)),Bag).
 Bag = [1, 2, 3, 1, 2].
+==
 
-% Eliminate duplicates with setof/3 and either freshvar Bag or three-freshvar list
+setof/3 does not retain duplicate elements:
 
+==
 ?- setof(S,(between(1,3,S);between(1,2,S)),Bag).
 Bag = [1, 2, 3].
 
@@ -71,18 +95,77 @@ Bag = [1, 2, 3].
 X = 1,
 Y = 2,
 Z = 3.
+==
 
-% But
+But the resulting list (now a "set") still must fit exactly:
 
+==
 ?- setof(S,(between(1,3,S);between(1,2,S)),[X,Y]).
 false.
 ==
 
-----
+## Non-termination even if the Bag is of limited size
 
-## Notes on the ^ ("caret") mark of setof/3 and bagof/3
+**This is bad**: If the Goal generates solutions forever, non-termination occurs even if the Bag is of limited size (and runaway processing could be detected easily). 
 
-More text and test cases at this page: [**Behaviour of the caret ^ in setof/3 and bagof/3 goal expressions**](https://bit.ly/3iDUQap_prolog)
+Example:
+
+==
+?- bagof(X,between(0,3,X),[A1,A2,A3,A4,A5]).
+false.
+
+?- bagof(X,between(0,4,X),[A1,A2,A3,A4,A5]).
+A1 = 0,
+A2 = 1,
+A3 = 2,
+A4 = 3,
+A5 = 4.
+
+?- bagof(X,between(0,5,X),[A1,A2,A3,A4,A5]).
+false.
+
+?- bagof(X,between(0,inf,X),[A1,A2,A3,A4,A5]).
+... NON TERMINATION
+==
+
+Shield the goal using [library(solution_sequences)](https://eu.swi-prolog.org/pldoc/man?section=solutionsequences)
+
+==
+?- Bag=[A1,A2,A3,A4,A5],
+   length(Bag,BagLen),
+   succ(BagLen,Over),
+   bagof(X,limit(Over,between(0,3,X)),Bag).
+false.
+
+?- Bag=[A1,A2,A3,A4,A5],
+   length(Bag,BagLen),
+   succ(BagLen,Over),
+   bagof(X,limit(Over,between(0,4,X)),Bag).
+Bag = [0, 1, 2, 3, 4],
+A1 = 0,
+A2 = 1,
+A3 = 2,
+A4 = 3,
+A5 = 4,
+BagLen = 5,
+Over = 6.
+
+?- Bag=[A1,A2,A3,A4,A5],
+   length(Bag,BagLen),
+   succ(BagLen,Over),
+   bagof(X,limit(Over,between(0,5,X)),Bag).
+false.
+
+?- Bag=[A1,A2,A3,A4,A5],
+   length(Bag,BagLen),
+   succ(BagLen,Over),
+   bagof(X,limit(Over,between(0,inf,X)),Bag).
+false.
+==
+
+## Notes on the ^ ("caret") mark of setof / 3 and bagof / 3
+
+More text and test cases at this page: [**Behaviour of the caret ^ in setof/3 and bagof/3 goal expressions**](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/various/notes_on_the_caret_used_in_bagof_goals.md)
 
 ==
                                  Clause-wide variable
@@ -97,16 +180,16 @@ More text and test cases at this page: [**Behaviour of the caret ^ in setof/3 an
                 |          thus can be constrained elsewhere      |
                 |          in the clause (possibly accidentally)  |
                 |                           |                     |
-                |                           |                     |
+                |                           |                     |                
                 |                +-+--------+----------+-+        |
                 |                | |                   | |        |
-                |                | |                   | |        |
+                |                | |                   | |        |            
 get_closed_set(Set,K) :- setof( [X,Y] , P^R^search(P,R,X,Y,K) , Set).
                    |                    | |        | |     |
-                   |                    <-------------------> Goal expression
+                   |                    <-------------------> Goal expression 
                    |                    | |        | |     |
-                   |                    | |        | |     |
-                   +---------------------------------------+-----+
+                   |                    | |        | |     |                   
+                   +---------------------------------------+-----+                    
                                         | |        | |           |
                                         | |        | |           |
                                         +-+----+---+-+          Clause-wide variable.
@@ -124,7 +207,7 @@ get_closed_set(Set,K) :- setof( [X,Y] , P^R^search(P,R,X,Y,K) , Set).
                                        they be constrained (possibly accidentally)!
 ==
 
-TL;DR It doesn't always work as expected.
+TL;DR It doesn't always work as expected. 
 
 You may want to write a dedicated predicate to "hide" the caret-adorned variables from the context of the clause calling bagof/3:
 

@@ -2,21 +2,29 @@ https://eu.swi-prolog.org/pldoc/doc_for?object=foldl/4
 
 ## Example (aka "don't fear the `foldl`")
 
-The _Goal_ in `foll` call is a predicate or closure taking three additional arguments: The current "list element", the current "folded value",  and the variable to be instantiated to the next "folded value" after _Goal_ has done its computation. 
+The _Goal_ in a `foldl` call is a predicate, which is either given by a predicate name, like `foo` (in which case `foldl` will look for a predicate with indicator `foo/3`), or a Prolog-style closure, which is a predicate call with some of the leftmost arguments already defined, like `foo(x,y)` (in which case `foldl` will look with a predicate with indicator `foo/5` and always call it with the first arguments set to `x` and `y`).
 
-==
-Goal(Element,CurFold,NextFold)
-==
+The three arguments taked on to the _Goal_ are:
 
-When `foldl` succeeds, the last value of `NextFold` will be in `V` (or `Out`).
+   - The current "list element" 
+   - The "folded value" up to that point
+   - The variable to be instantiated to the next "folded value" 
 
-Diagramming it as a data flow, `foldl(Goal,[a,b,c,d],Starter,Out)` perfoms the following:
+Diagrammed as a data flow, `foldl(Goal,[a,b,c,d],Starter,Out)` performs the following:
 
 ==
 Starter -->--Goal-->--Goal-->--Goal-->--Goal-->--Out
+              ^        ^        ^        ^
               |        |        |        | 
               a        b        c        d
 ==
+
+At each node, `Goal` computes the next value "going rightwards" from the value coming in "from the left" and the element at the current position in the list.
+
+In the definition of the manual
+
+   - `Starter` = `V0`
+   - `Out` = `V`
 
 with the above image, if you name the arguments for your `Goal`
 
@@ -29,21 +37,30 @@ it becomes rather clear what's going on.
 You can use [`library(yall)`](https://www.swi-prolog.org/pldoc/man?section=yall) to inline the _Goal_.
 
 ==
-?- foldl([Element,FromLeft,ToRight]>>atom_concat(FromLeft,Element,ToRight),[a,b,c,d],'Begin:',Out).
+?- foldl(
+      [Element,FromLeft,ToRight]>>atom_concat(FromLeft,Element,ToRight),
+      [a,b,c,d],
+      'Begin:',
+      Out).
 Out = 'Begin:abcd'.
 ==
 
 and in particular with the empty input list:
 
 ==
-?- foldl([Element,FromLeft,ToRight]>>atom_concat(FromLeft,Element,ToRight),[],'Begin:',Out).
+?- foldl(
+      [Element,FromLeft,ToRight]>>atom_concat(FromLeft,Element,ToRight),
+      [],
+      'Begin:',
+      Out).
 Out = 'Begin:'.
 ==
 
 or, exactly the same:
 
 ==
-mygoal(Element,FromLeft,ToRight) :- atom_concat(FromLeft,Element,ToRight).
+mygoal(Element,FromLeft,ToRight) :- 
+   atom_concat(FromLeft,Element,ToRight).
 
 ?- foldl(mygoal,[a,b,c,d],'Begin:',Out).
 Out = 'Begin:abcd'.
@@ -57,9 +74,10 @@ Creating a list of integers 0..5:
 ?- 
    length(List,6),  % create a list of 6 fresh variables
    foldl(
-      [Element,FromLeft,ToRight]
-         >>(succ(FromLeft,ToRight),Element=FromLeft),
-      List,0,_Out).
+      [Element,FromLeft,ToRight]>>(succ(FromLeft,ToRight),Element=FromLeft),
+      List,
+      0,
+      _Out).
 
 List = [0, 1, 2, 3, 4, 5],
 _Out = 6.
@@ -83,7 +101,10 @@ andify_rightwards(false,true,false).
 andify_rightwards(false,false,false).
 
 all_true(List) :-
-    foldl([E,FromLeft,ToRight]>>once(andify_rightwards(FromLeft,E,ToRight)),List,true,Out),
+    foldl([E,FromLeft,ToRight]>>once(andify_rightwards(FromLeft,E,ToRight)),
+       List,
+       true,
+       Out),
    Out == true.
 ==
 
@@ -96,7 +117,10 @@ andify_negation_rightwards(false,true,false).
 andify_negation_rightwards(false,false,false).
 
 all_false(List) :-
-   foldl([E,FromLeft,ToRight]>>once(andify_negation_rightwards(FromLeft,E,ToRight)),List,true,Out),
+   foldl([E,FromLeft,ToRight]>>once(andify_negation_rightwards(FromLeft,E,ToRight)),
+      List,
+      true,
+      Out),
    Out == true.
 ==
 

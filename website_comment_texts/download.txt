@@ -1,6 +1,6 @@
-# https://eu.swi-prolog.org/Download.html
+https://eu.swi-prolog.org/Download.html
 
-TL;DR for "Install development version on Linux"
+TL;DR for "Install development version on Linux" (also described [here](https://eu.swi-prolog.org/build/unix.html) where there actually is now _less_ text 😬)
 
 With `bash`.
 
@@ -34,6 +34,10 @@ if [[ -d "${install_under}/swipl" ]]; then
 fi
 ==
 
+Now may also be the time to install additional packages that SWI-Prolog depends on, in particular:
+
+   - [GMP for multi-precision arithmetic](https://eu.swi-prolog.org/build/issues/gmp.txt)
+
 **As non-root, in your home directory**
 
 ==
@@ -50,18 +54,21 @@ cd swipl-devel
 # - - - - - download SWIPL packages, which are git modules - - - -
 git submodule update --init
 # - - - - - - - - - - - - - - - - - - - 
+==
 
-# (... Maybe read CMAKE.md for more info at this point ...)
+(... Maybe read CMAKE.md for more info at this point ...)
 
-# You are now inside "swipl-devel"; not the ".." at the end of the cmake command
-# which tells cmake to look for its necessary files one level up
+You are now inside directory `swipl-devel`; not the `..` at the end of the `cmake` command which tells `cmake` to look for its necessary files one directory up
 
+If you want to run functionality tests at runtime with the command [`test_installation/0`](https://eu.swi-prolog.org/pldoc/doc_for?object=check_installation%3Atest_installation/0), also add the option   `-DINSTALL_TESTS=ON` to the `cmake` options:
+
+==
 mkdir build
 cd build/
 cmake -DCMAKE_INSTALL_PREFIX="${install_under}/swipl" -G Ninja ..
 ==
 
-By default the system configures all features. In particular, GMP, ODBC, JPL, graphics.
+By default the system configures all features (depending on whether the required packages these features depend on exist on the system). In particular, GMP, ODBC, JPL, graphics.
 
 Soon you will see:
 
@@ -139,6 +146,36 @@ Welcome to SWI-Prolog (threaded, 64 bits, version 8.3.7-16-g13001415d)
 SWI-Prolog comes with ABSOLUTELY NO WARRANTY. This is free software.
 Please run ?- license. for legal details.
 ==
+
+You can now run [`check_intallation/0`](https://eu.swi-prolog.org/pldoc/doc_for?object=check_installation%3Acheck_installation/0) to see whether there are any remaining problems (there may be some but you also may not be interested in fixing them):
+
+==
+?- check_installation.
+% Checking your SWI-Prolog kit for common issues ...
+%                                                                                                                                                           
+% Version: ............. 8.3.9-21-g431bddd1b                                                                                                                
+% Address bits: ........ 64                                                                                                                                 
+% Architecture: ........ x86_64-linux                                                                                                                       
+% Installed at: ........ /usr/local/logic/swipl/lib/swipl                                                                                                   
+% Cores: ............... 8                                                                                                                                  
+%                                                                                                                                                           
+% Checking tcmalloc ............................ not present
+Warning: See http://www.swi-prolog.org/build/issues/tcmalloc.html                                                                                           
+% Checking gmp ................................. ok
+% Loading library(archive) ..................... ok                                                                                                         
+%   Supported filters: bzip2, compress, gzip, grzip, lrzip, lzip, lzma, lzop, none, rpm, uu, xz                                                             
+%   Supported formats: 7zip, ar, cab, cpio, empty, gnutar, iso9660, lha, mtree, rar, raw, tar, xar, zip                                                     
+% Loading library(cgi) ......................... ok                                                                                                         
+% Loading library(crypt) ....................... ok                                                                                                         
+% Loading library(bdb) ......................... ok                                                                                                         
+% Loading library(double_metaphone) ............ ok                     
+==
+
+etc.
+
+The above messages will point you to "problem solving pages" in this directory:
+
+   - https://eu.swi-prolog.org/build/issues/
 
 ## Build script
 

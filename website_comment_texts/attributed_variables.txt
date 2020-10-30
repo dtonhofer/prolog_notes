@@ -1,0 +1,68 @@
+https://eu.swi-prolog.org/pldoc/man?section=attvar
+
+## Explainer & Rewritten code
+
+For an explainer and rewritten code, go [**here**](https://github.com/dtonhofer/prolog_notes/tree/master/swipl_notes/about_attributed_variables)
+
+## Example code subtlety
+
+The example application has a subtle unfelicity (with no deleterious consequences) in that the unification `Y = Value` assigns one of the allowed values for attribute `domain`  (held in `Value`) to an unbound variable (`Y`) that itself carries the attribute `domain`. This works but needlessly triggers itself a call to `attr_unify_hook/2` from within `attr_unif_hook/2`. One would need to to remove attribute `domain` from `Y` first.
+
+## What about exceptions?
+
+When the coroutine called on attributed variable unification fails, the unification fails.
+
+What if the coroutine throws ... 
+
+... well, it seems that the exception is throw up the stack of the thread that called the unification. This makes sense as the "attributed variable coroutine" is run in the same thread. 
+
+## Another example:
+
+This is a simple module with a service predicate that creates a list of unbound variables, where each variable only accepts unification with an integer (the coroutine fails otherwise). Simple runtime type checking. As an extra, unification with a string is handled in a special way, by throwing an exception.
+
+[`enforced_integer_list.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_attributed_variables/enforced_integer_list.pl)
+
+And thus:
+
+```
+?- use_module('enforced_integer_list.pl').
+true.
+
+?- list_of_int(5,L),nth0(1,L,X),(X='a';X=12).
+% Trying to unify with something that is neither an integer nor an unbound variable: Vetoed!
+% Trying to unify with an integer: 12. Unification okayed!
+L = [_13778, 12, _13790, _13796, _13802],
+X = 12,
+put_attr(_13778, enforced_integer_list, make_sure_it_is_an_int),
+put_attr(_13790, enforced_integer_list, make_sure_it_is_an_int),
+put_attr(_13796, enforced_integer_list, make_sure_it_is_an_int),
+put_attr(_13802, enforced_integer_list, make_sure_it_is_an_int) ;
+false.
+
+?- catch((list_of_int(5,L),nth0(1,L,X),(X="a";X=12)), C, true).
+% Received string 'a'; this means throwing
+C = error(type_error(integer, "a"), _7586).
+```
+
+One can see the 4 residual goals printed by the toplevel.
+
+For some reason, there is an open choicepoint left, but why?
+
+```
+?- list_of_int(1,L),L=[12].
+% Trying to unify with an integer: 12. Unification okayed!
+L = [12] ;  % <--- more solutions
+false.      % <--- actually not
+```
+
+## Still doesn't help in a clause head
+
+Sadly, this cannot be applied to variables in a clause head, so the one feature I would really like see, namely vetoing head unification depending on whhether the argument counterpart passes `var` or `nonvar` (which precludes these weird tests in guards called after the head unification succeeds) is still open.
+
+## Pack which may be of interest
+
+"An alternate interface to the clause database to allow attributed variables to be asserted/read"
+
+   - [Pack page](https://eu.swi-prolog.org/pack/list?p=clause_attvars)
+   - [Github Page](https://github.com/TeamSPoon/clause_attvars)
+   

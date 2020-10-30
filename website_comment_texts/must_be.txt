@@ -59,7 +59,7 @@ More desirable features:
    - The criterium of "list of 'type or type'"
    - The criterium of "a yall lambda expression" 
    - The criterium of "a compound of name N and arity A"
-   - The criterium of "matches a certain dict structure". For example: `must_be(io_monad{ stream:_, goal:_ },T)`: "T must be a dict with tag `io_monad` and at least the keys `stream` and `goal` (but maybe more)." 
+   - The criterium of "matches a certain dict structure". For example: `must_be(io_monad{ stream:_, goal:_ },T)`: "T must be a dict with tag `io_monad` and at least the keys `stream` and `goal` (but maybe more).", although you can test for "dict-ness" using `is_dict`.
 
 ## Various type-testing approaches
 
@@ -80,7 +80,7 @@ https://youtu.be/ZIv0G4b1xBQ?t=123
 true.
 ```
 
-The above is an illusion, as the type expression is not currently checked:
+The above is an illusion (it should throw), the type expression is not currently checked:
 
 ```
 ?- must_be(list(pairs),[X-N]).
@@ -118,6 +118,59 @@ Nearly works, but if the bad list entry comes after an unbound variable list ent
 ?- foo([X,x-y,hh]).
 ERROR: Arguments are not sufficiently instantiated
 ```
+
+Much simpler, I want to accept an `X` that can be an unbound variable or otherwise a number.
+
+I would like to write
+
+```
+foo(N) :-
+   must_be((var;number),N),
+   bar(N).
+```
+
+Running this yields an error:
+
+```
+?- foo(12).
+ERROR: type `var;number' does not exist
+```
+   
+One has to write
+
+```
+foo(N) :- 
+   (var(N) -> true ; must_be(number,N)).
+```
+
+[assertion/1](https://eu.swi-prolog.org/pldoc/doc_for?object=assertion/1) is much more high-level (but maybe slower as it has to call a goal?)
+
+```
+foo(N) :-
+   assertion(var(N);number(N)).
+```
+
+But in principle `assertion/1` it is not meant to be used for predicate entry checks (OTOH, a rose by any other name etc. etc.)
+
+But note that this works:
+
+```
+foo(N) :-
+   must_be(list(list(number)),N).
+```
+
+```
+?- foo([]).
+true.
+
+?- foo([[1,2],[4,5]]).
+true.
+
+?- foo([[1,2],[4,z]]).
+ERROR: Type error: `number' expected, found `z' (an atom)
+```
+
+Yes!
 
 ## Compare with
 
