@@ -72,10 +72,12 @@ The option shall be found in an _option list_, as expected by
 predicate that extract the option's value from the option list would be
 [`option(?Option, +OptionList, +Default)`](https://eu.swi-prolog.org/pldoc/doc_for?object=option/3).
 
+The predicate:
+
 ```
 optional_domain_error(ValidDomain,Culprit,Options) :-
    option(throw_or_fail(What),Opts,throw),
-   ((What==throw) -> existence_error(ObjectType,Culprit) ; fail).   
+   ((What==throw) -> existence_error(ObjectType,Culprit) ; fail).  % The "else fail" is optional
 ```
 
 And so:
