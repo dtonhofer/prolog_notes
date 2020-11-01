@@ -1,10 +1,16 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=dict_pairs/3
+
 ## Need doc fix
 
 "ordered list of pairs" means (probably) "ordered by natural order of keys"
 
 It should be:
 
-"Bi-directional mapping between Dict and the pair (Tag, Pairs), where Pairs is an ordered list of pairs"
+"Bi-directional mapping between Dict and the pair (Tag, Pairs), where Pairs is an ordered list of pairs **if `Pairs` is ouput**"
+
+The predicate doesn't care about ordering when `Pairs` is input. Duplicate keys, however, lead to an exception.
+
+When verifying `Pairs` against `Dict`, the order matters. Duplicates in `Pairs` lead to failure.
 
 ## Testing 
 
@@ -12,23 +18,9 @@ Time for some unit test code to demonstrate behaviour.
 
 Note that, contrary to put_dict/3, dict_pairs/3 demands that =Pairs= be a key-value list on input.
 
-Note the comparitively nasty behaviour of compound_name_arguments/3 on a dict. Don't use that, its behaviour is due to the current way dict is implemented (I think).
+Note the comparatively nasty behaviour of compound_name_arguments/3 on a dict. Don't use that, its behaviour is due to the current way dict is implemented (I think).
 
 ==
-:- begin_tests(dict_equality).
-
-test("term equality between empty dicts") :-
-   foo{} == foo{}.
-
-test("term equality between nonempty dicts") :-
-   foo{a:x,b:y} == foo{a:x,b:y}.
-
-test("term equality between nonempty dict with differently ordered literals") :-
-   foo{a:x,b:y,c:z} == foo{c:z,b:y,a:x}.
-
-:- end_tests(dict_equality).
-
-
 :- begin_tests(dict_pairs).
 
 % Obtain the special blob which is the dict functor name
@@ -82,6 +74,17 @@ test("assemble nonempty dict with ambivalent input",error(duplicate_key(a))) :-
 
 test("assemble nonempty dict with pairs that use ':'",error(type_error(_,_))) :-
    dict_pairs(_,foo,[b:y,a:x,c:z]).
+
+% Verify a dict: order matters!
+
+test("verify nonempty dict from unordered pairs",fail) :-
+   dict_pairs(foo{a:x,b:y,c:z},foo,[b-y,a-x,c-z]).
+
+test("verify nonempty dict from ordered pairs") :-
+   dict_pairs(foo{a:x,b:y,c:z},foo,[a-x,b-y,c-z]).
+
+test("verify nonempty dict from ordered pairs with duplicates",fail) :-
+   dict_pairs(foo{a:x,b:y,c:z},foo,[a-x,b-y,c-z,c-z]).
 
 :- end_tests(dict_pairs).
 ==

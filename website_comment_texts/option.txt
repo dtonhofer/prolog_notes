@@ -1,0 +1,96 @@
+https://eu.swi-prolog.org/pldoc/man?section=option
+
+Note in particular that you cannot backtrack over the list of options via option/2
+
+Esentially option/2 behaves like memberchk/2 but demands that the 'Option' argument not be an uninstantiated variable.
+
+This also precludes detecting option repetition (as in `[verbose(true),verbose(true)]`) or options with multiple values (as in `[file(foo),file(bar)]`) 
+
+(Sometimes the design decisions are hard to fathom 🙁).
+
+Here is a bad side-effect of this way of looking through the options list:
+
+==
+?- option(b(3),[a(1),b(2),b(3),c(4)]).
+false.
+==
+
+"Nope, no b(3) in this options list"
+
+How it is done in (for example) venerable Perl: https://perldoc.perl.org/Getopt/Long.html#Options-with-multiple-values.
+
+Fun with testing:
+
+==
+:- begin_tests(options).
+
+test("Getting an option from an empty option-list fails as expected",fail) :-
+   option(b(_),[]).
+
+test("Getting a option from an option-list that doesn't contain that option fails as expected",fail) :-
+   option(d(_),[a(1),b(2),c(3)]).
+
+test("Leaving the 'Option' argument an unbound variable throws (instead of backtracking over all options)", [error(instantiation_error)]) :-
+   option(_,[a(1),b(2),c(3)]).
+
+test("Normal way: Getting the argument of a b(X)",true(X == 2)) :-
+   option(b(X),[a(1),b(2),c(3)]).
+
+test("Normal way: Getting the argument of a b(X), if there are multiple solutions, yields just one solution",true(Bag == [2])) :-
+   bagof(X, option(b(X),[a(1),b(2),b(3),c(3)]), Bag).
+   
+test("Normal way: Checking the presence of a ground b(x)",true) :-
+   option(b(2),[a(1),b(2),c(3)]).
+   
+% This is bad and should be changed!
+
+test("Normal way: Checking the presence of a ground b(x) that comes after a b(y) unexpectedly fails",fail) :-
+   option(b(3),[a(1),b(2),b(3),c(4)]).
+   
+test("Normal way: Getting the argument of an option with a complex argument",true([X,Y,Z] == [1,2,3])) :-
+   option(b(x(X,Y,Z)),[a(1),b(x(1,2,3)),c(3)]).
+
+test("What if the option argument in the list is a variable? Unification happens!",true(X == Y)) :-
+   option(b(X),[a(1),b(Y),c(3)]).
+
+test("What if the option argument in the list is a variable (take 2)?",true(foo == Y)) :-
+   option(b(foo),[a(1),b(Y),c(3)]).
+
+test("A duplicate option will yield a single entry (no backtracking)",true(Bag == [2])) :-
+   bagof(X, option(b(X),[a(1),b(2),b(3),c(4)]), Bag).
+
+test("Checking the presence of an 'entry with no arguments' (an atom), which exists") :-
+   option(b,[a(1),b,c(4)]).
+
+test("Checking the presence of an 'entry with no arguments' (an atom), which does not exist", fail) :-
+   option(b,[a(1),b(2),c(4)]).
+
+test("Checking the presence of an 'entry with zero arguments' (an zero-arg compound), doesn't work", error(domain_error(_,_))) :-
+   option(b(),[a(1),b(),c(4)]).
+
+test("The 'entry with zero arguments' can be in the list but won't be found", fail) :-
+   option(b,[a(1),b(),c(4)]).
+
+test("Checking the presence of an 'entry with multiple arguments'", true([X,Y] == [2,5])) :-
+   option(b(X,Y),[a(1),b(2,5),c(4)]).
+
+test("Checking the presence of an 'entry with multiple arguments', where the 'Option' argument is partially instantiated", true([X] == [2])) :-
+   option(b(X,5),[a(1),b(2,5),c(4)]).
+
+test("Default value is used if the option is missing",true(X == false)) :-
+   option(foo(X),[],false).
+
+test("Default value is not used if the option is there",true(X == true)) :-
+   option(foo(X),[foo(true)],false).
+
+test("Complex default value is used if the option is missing",true(X == h(x,y))) :-
+   option(foo(X),[],h(x,y)).
+   
+test("Getting default value if one is just testing",fail) :-
+   option(foo(bar),[foo(true)],false).
+
+test("Getting default value if one is just testing") :-
+   option(foo(bar),[foo(bar)],false).
+      
+:- end_tests(options).
+==

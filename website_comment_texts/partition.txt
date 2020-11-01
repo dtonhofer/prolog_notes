@@ -1,0 +1,37 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=partition/4
+
+A partition_freely/4 predicate which partitions into arbitrarily many partitions by accepting a "partitioning closure" as first argument, returning the result as an SWI-Prolog dict where the dict's keys are the partition keys: 
+
+   - [`partition_freely.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/partition_freely.pl)
+   - [`partition_freely.plt`](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/partition_freely.plt)
+
+Example:
+
+Define a partitioning predicate taking 3 arguments
+
+==
+partition_by_length_modulo_m(Modulo,Atom,Key) :-
+   atom_length(Atom,Length),
+   Key is Length mod Modulo.
+==
+
+A "partitioning closure" might then be for exmaple `partition_by_length_modulo_m(5)`: a partially filled in predicate call.
+
+Then:
+
+==
+?- partition_freely(
+      partition_by_length_modulo_m(5),
+      [silent,puffy,left,damaged,fascinated,deafening,
+       wistful,whip,nest,inquisitive,imperfect,jog,unwieldy,provide,locket,reign],
+      result_tag,
+      DictOut).
+
+DictOut = result_tag{
+   0:[puffy, fascinated, reign],
+   1:[silent, inquisitive, locket],
+   2:[damaged, wistful, provide],
+   3:[jog, unwieldy],
+   4:[left, deafening, whip, nest, imperfect]}.
+==
+

@@ -1,0 +1,92 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/2
+
+## Explainer
+
+Explainer including examples for the use of maplist/2 (and maplist/3 and maplist/4) here:
+
+[**Examples for the Prolog predicate `maplist/2`**](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_maplist/maplist_2_examples.md)
+
+## What if argument 2 is not a list?
+
+If the List argument is not a list, then maplist _fails_ instead of throwing.
+
+```
+?- maplist(atom,foo).
+false.
+```
+
+Prolog predicates are often too lenient, leading to hard-to-find errors.
+
+One would expect:
+
+```
+hardcore_maplist(Goal,List) :-
+   is_list(List) 
+   -> maplist(Goal,List)
+   ; type_error("expecting list on arg position 1",List).
+```
+
+Then 
+
+```
+?- hardcore_maplist(atom,foo).
+ERROR: Type error: `expecting list on arg position 1' expected, found `foo' (an atom)
+
+?- hardcore_maplist(atom,[foo]).
+true.
+```
+
+It would be advantageous to merge both of the above into a single, option-ed predicate
+
+==
+maplist_with_options(Goal,List,Options) :-
+   option(hardcore(X),Options,false),
+   ( X==false -> maplist(Goal,List)
+   ; X==true  -> hardcore_maplist(Goal,List)
+   ; domain_error("option for hardcore(.) should be true or false",X)).
+
+hardcore_maplist(Goal,List) :-
+   is_list(List) 
+   -> maplist(Goal,List)
+   ; type_error("expecting list on arg position 1",List).
+==
+
+Then
+
+==
+?- maplist_with_options(integer,notalist,[hardcore(true)]).
+ERROR: Type error: `expecting list on arg position 1' expected, found `notalist' (an atom)
+
+?- maplist_with_options(integer,notalist,[hardcore(false)]).
+false.
+
+?- maplist_with_options(integer,notalist,[hardcore(foo)]).
+ERROR: Domain error: `option for hardcore(.) should be true or false' expected, found `foo'
+
+?- maplist_with_options(integer,[1,2,3],[hardcore(true)]).
+true.
+
+?- maplist_with_options(integer,[1,a,3],[hardcore(true)]).
+false.
+==
+
+## How about open lists
+
+maplist/2 succeeds (non-deterministically) on open lists
+
+Here it says "yes, this is a list of integer, but there may be another solution ... on second thoughts, there is not".
+
+```
+?- maplist(integer,[1,2,3,4|_]).
+true ;
+false.
+```
+
+More clearly:
+
+```
+?- maplist(integer,[1,2,3,4|X]).
+X = [] ;
+false.
+```
+
