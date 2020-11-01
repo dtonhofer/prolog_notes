@@ -86,9 +86,14 @@ The exception term is still "ISO-like" because it follows the `error(Formal,Cont
 where `Context` can stay unbound or is instantiated to a backtrace if [`catch_with_backtrace/3`]() 
 is used instead of simple [`catch/3`](). 
 
-It is however, resolutly non-ISO (in particular because it is based on a non-ISO object, the
-SWI-Prolog 'dict'). It will thus not be printed correctly at the toplevel by default (unless an
-appropriate handler predicate has been hooked-in ... TODO!). It makes up for that in flexibility.
+It is however, non-ISO, in particular because it is based on a non-ISO object, the
+SWI-Prolog ['dict'](https://eu.swi-prolog.org/pldoc/man?section=bidicts) (a map structure)).
+It will thus not be printed correctly at the toplevel by default (unless an
+appropriate handler predicate has been hooked-in ... TODO!). If code unable to deal
+with non-ISO exceptions calls code that throws one of these exceptions, there may be
+trouble
+
+On the other hand, we gain a great amount of flexibility.
 
 For example, a predicate that throws:
 
@@ -106,7 +111,7 @@ funky_2(X,false) :-
    ; format("funky/2 received ~d\n",[X]).
 ```
 
-and a corresponding excpetion handler:
+and the corresponding exception handler:
 
 ```
 goal_of_recovery_2(error(Dict,Context)) :-
