@@ -57,17 +57,17 @@ See also: [Salvaging a term out of a dropped search branch](../about_salvaging_a
 Sometimes context determines whether some code, upon encountering 
 problematic situation, should fail or throw. In particular, deterministic predicates
 (which always succeed) can only _throw_ to signal a problem, whereas
-semi-deterministic or non-deterministic predicates may choose to fail instead.
+semi-deterministic or non-deterministic predicates may choose to _fail_ instead.
 
 Suppose we want to use the same code in case a passed argument is found to be
-outside its expected domain:
+outside its expected domain, but depending on a "option", the code shall:
 
 - throw an ISO-standard compliant _domain error_ using predicate
   [`domain_error(+ValidDomain, +Culprit)`](https://eu.swi-prolog.org/pldoc/doc_for?object=domain_error/2) 
   from [`library(error)`](https://eu.swi-prolog.org/pldoc/man?section=error), or
 - just fail  
   
-This shall be controlled by an option in an _option list_, as expected by
+The option shall be found in an _option list_, as expected by
 [`library(option)`](https://eu.swi-prolog.org/pldoc/man?section=option). The
 predicate that extract the option's value from the option list would be
 [`option(?Option, +OptionList, +Default)`](https://eu.swi-prolog.org/pldoc/doc_for?object=option/3).
