@@ -68,7 +68,7 @@ outside its expected domain:
 - just fail  
   
 This shall be controlled by an option in an _option list_, as expected by
-[`library(option)`](`https://eu.swi-prolog.org/pldoc/man?section=option`). The
+[`library(option)`](https://eu.swi-prolog.org/pldoc/man?section=option). The
 predicate that extract the option's value from the option list would be
 [`option(?Option, +OptionList, +Default)`](https://eu.swi-prolog.org/pldoc/doc_for?object=option/3).
 
