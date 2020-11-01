@@ -72,6 +72,56 @@ throw_existence_error(Pred,Type,Term,ExCode,Options) :
    ;
    fail. % actually unnecessary to write this, but it's good for the next programmer
 ```
+
+## Good idea: Using SWI-Prolog dict in a (non-ISO) exception term
+
+This example code concerning throwing and catching: 
+
+[`catchy.pl`](code/catchy.pl)
+
+demonstrates an exception term of the form `error(Dict,Context)`, where `Dict` carries information 
+about the exception according to a (so far informal) convention.
+
+The exception term is still "ISO-like" because it follows the `error(Formal,Context)` convention, 
+where `Context` can stay unbound or is instantiated to a backtrace if [`catch_with_backtrace/3`]() 
+is used instead of simple [`catch/3`](). 
+
+It is however, resolutly non-ISO (in particular because it is based on a non-ISO object, the
+SWI-Prolog 'dict'). It will thus not be printed correctly at the toplevel by default (unless an
+appropriate handler predicate has been hooked-in ... TODO!). It makes up for that in flexibility.
+
+For example, a predicate that throws:
+
+```
+funky_2(X,false) :-
+   X == 0
+   -> throw(error(
+         _{class    : "domain_error",
+           expected : "Something different from 0",
+           got      : "Got 0",
+           what     : "Argument 'X'",
+           where    : "funky_2/2",
+           culprit  : X},
+         _Context))
+   ; format("funky/2 received ~d\n",[X]).
+```
+
+and a corresponding excpetion handler:
+
+```
+goal_of_recovery_2(error(Dict,Context)) :-
+   is_dict(Dict),
+   !,
+   format("Oops, exception of class ~q\n",[Dict.class]),
+   (get_dict(expected, Dict, V1)  -> format("Expected : ~q\n",[V1]) ; true),
+   (get_dict(got, Dict, V2)       -> format("Got      : ~q\n",[V2]) ; true),
+   (get_dict(where, Dict, V3)     -> format("Where    : ~q\n",[V3]) ; true),
+   (get_dict(what, Dict, V4)      -> format("What     : ~q\n",[V4]) ; true),
+   (get_dict(culprit, Dict, V5)   -> format("Culprit  : ~q\n",[V5]) ; true),
+   % contain backtraces if "catch_with_backtrace/3" is used
+   (nonvar(Context)    
+```
+
 ## Reading
 
 ### Coding guidelines say nothing
