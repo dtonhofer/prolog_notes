@@ -1,0 +1,116 @@
+## Problematic Naming
+
+While the `Goal` argument is correctly named, `Catcher` is a confusing name for what is the exception term against which a thrown exception shall be against. `Recover`is a generic goal.
+
+```
+catch(:Goal, +ExceptionTerm, :RecoveryGoal)
+```
+
+looks much better.
+
+## Doc needs help
+
+"Recovery from an exception is much slower, especially if the exception term is large due to the copying thereof or is decorated with a stack trace.."
+
+By default, that only happens with `catch_with_backtrace/3`, but not with `catch/3`.
+ 
+Note that the toplevel also prints the backtrace, so it surrounds and query essentially with  `catch_with_backtrace/3`.
+
+## Example code to play around with
+
+[`catchy.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/prolog_exercises/exceptions/catchy.pl)
+
+## Example 1
+
+Example, catching format/2 complaining about a lack of arguments:
+
+==
+?- catch(
+   % will throw due to "~q" (but still print something)
+   format("Hello, ~w. Goodbye ~q\n",[world]),
+   ExceptionTerm,
+   format("\n\nOh noes! Got an exception: ~q", [ExceptionTerm])).
+==
+
+We get:
+
+==
+Hello, world. Goodbye 
+
+Oh noes! Got an exception: error(format('not enough arguments'),context(system:format/2,_8118))
+ExceptionTerm = error(format('not enough arguments'), context(system:format/2, _8118)).
+==
+
+Perhaps more readably:
+
+==
+p :- 
+   WrappedGoal  = format("Hello, ~w. Goodbye ~q\n",[world]),
+   RecoveryGoal = format("\n\nOh noes! Got an exception: ~q", [ExceptionTerm]),
+   catch(WrappedGoal,ExceptionTerm,RecoveryGoal).
+==
+
+==
+?- p.
+Hello, world. Goodbye 
+
+Oh noes! Got an exception: error(format('not enough arguments'),context(system:format/2,_2352))
+true.
+==
+
+## Example 2
+
+Make sure a predicate does not perform any accidental instantiations. For example, this predicate is just supposed to print and do nothing else. At the end, it throws, which rolls back any stray unifications.
+
+==
+print_isolated(X,Throw) :- 
+   catch(print_isolated_2(X,Throw),"roll it back",true).
+
+print_isolated_2(X,Throw) :-
+   (X=[] -> debug(topic,"X is the empty list",[]) ; true),   % ERROR: "=" instead of "=="
+   (Throw == true -> throw("roll it back") ; true).
+      
+test_print_isolated(X,Throw) :- 
+   debug(topic),                      % switch on debug printing for topic "topic"
+   debug(topic,"X before call: ~q",[X]), 
+   print_isolated(X,Throw),
+   debug(topic,"X after call: ~q",[X]). 
+==
+
+And so:
+
+==    
+?- test_print_isolated(X,true).
+% X before call: _16
+% X is the empty list
+% X after call: _16
+==
+
+==
+?- test_print_isolated(X,false).
+% X before call: _3822
+% X is the empty list
+% X after call: []
+X = [].
+==
+
+As an alternative to throw/catch to roll back all bindings:
+
+  - use copy_term/2 on the arguments passed to the isolated predicate and work with the copies
+  - precede the call to the isolated predicate with `\+ \+`
+
+## Example 3
+
+Example for when you want to call =main= of your source file **immediately after the source file has been loaded** (from swipl-devel/man/select.pl):
+
+==
+:- initialization
+        (   catch(main, E,
+                  ( print_message(error, E),
+                    fail
+                  ))
+        ->  halt
+        ;   halt(1)
+        ).
+==
+ 
