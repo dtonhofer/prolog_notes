@@ -18,7 +18,9 @@ Note that the toplevel also prints the backtrace, so it surrounds and query esse
 
 ## Example code to play around with
 
-[`catchy.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/prolog_exercises/exceptions/catchy.pl)
+Fun with exceptions, ISO-standard and non-ISO-standard (also trying to find a style on how cleanly write code involving exceptions):
+
+[`catchy.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_exceptions/code/catchy.pl)
 
 ## Example 1
 
@@ -113,4 +115,3 @@ Example for when you want to call =main= of your source file **immediately after
         ;   halt(1)
         ).
 ==
- 
