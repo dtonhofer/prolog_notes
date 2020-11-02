@@ -69,10 +69,15 @@ down to "trash everything and then ask around".
 The ISO-Standard is missing entries for a "can't happen",  "illegal state reached" or "assertion violated". This is just to be
 expected, no specification can hope to be complete & precise in an open problem domain like a programming language. 
 
-In SWI-Prolog, some non-ISO exceptions may be encountered. As mentioned, the predicate
-[assertion/1](https://eu.swi-prolog.org/pldoc/doc_for?object=assertion/1) throws a non ISO-standard exception with
-an exception term `error(assertion_error(Reason,Culprit),Context)`. Others exist, take a look at the error 
-text generation in file ` boot/messages.pl`.
+In SWI-Prolog, some non-ISO exceptions may be encountered. 
+
+- As mentioned, the predicate [`assertion/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=assertion/1)
+  throws a non ISO-standard exception term `error(assertion_error(Reason,Culprit),Context)`. 
+- [`call_with_inference_limit/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=call_with_inference_limit/3) 
+  injects an exception term `inference_limit_exceeded` into executing code. That exception is not meant to
+  be caught by user code though.
+  
+Others exist, take a look at the error text generation in file ` boot/messages.pl`.
 
 If you **have** to invent your own exception consider this (in the context of `library(jpl)`:
 
