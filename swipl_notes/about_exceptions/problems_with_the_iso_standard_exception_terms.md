@@ -76,6 +76,9 @@ In SWI-Prolog, some non-ISO exceptions may be encountered.
 - [`call_with_inference_limit/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=call_with_inference_limit/3) 
   injects an exception term `inference_limit_exceeded` into executing code. That exception is not meant to
   be caught by user code though.
+- [`call_with_depth_limit/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=call_with_depth_limit/3)
+  injects an exception term `depth_limit_exceeded ` into executing code. Again, that exception is not meant to
+  be caught by user code though.
   
 Others exist, take a look at the error text generation in file ` boot/messages.pl`.
 
