@@ -79,6 +79,8 @@ In SWI-Prolog, some non-ISO exceptions may be encountered.
 - [`call_with_depth_limit/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=call_with_depth_limit/3)
   injects an exception term `depth_limit_exceeded ` into executing code. Again, that exception is not meant to
   be caught by user code though.
+- A duplicate key `a` found while assembling an SWI-Prolog dict raises an exception with
+  term `error(duplicate_key(a), context(system:dict_pairs/3, _)).`  
   
 Others exist, take a look at the error text generation in file ` boot/messages.pl`.
 
