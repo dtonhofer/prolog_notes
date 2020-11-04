@@ -1,6 +1,6 @@
 # About conditions
 
-** In progress **
+**In progress**
 
 Michael Hendrix has written SWI-Prolog pack [`condition`](https://www.swi-prolog.org/pack/list?p=condition),
 _Condition system à la Common Lisp_. This code is from 2014.
@@ -10,10 +10,10 @@ _Condition system à la Common Lisp_. This code is from 2014.
 - The latest download URL: http://packs.ndrix.com/condition/condition-0.1.1.tgz (see below for installation)
 - The 2001 paper _Condition Handling in the Lisp Language Family_ by Kent M. Pitman, who wrote the condition system for Common Lisp: 
   - appears in: [_Advances in Exception Handling Techniques_](https://www.springer.com/gp/book/9783540419525), (Springer Lecture Notes in Computer Science (LNCS) 2022), 2001.
-  - in HTML [here](http://www.nhplace.com/kent/Papers/Condition-Handling-2001.html)
+  - [HTML](http://www.nhplace.com/kent/Papers/Condition-Handling-2001.html) version.
 - Also by Kent M. Pitman (while at Symbolics Inc.), a paper from 1990, _Exceptional Situation in Lisp_:
   - appears in: _Proceedings for the First European Conference om the Practical Application of Lisp (EUROPAL'90)_. Churchill College, Cambridge, UK, March 27-29, 1990.
-  - in HTML [here](https://nhplace.com/kent/Papers/Exceptional-Situations-1990.html). 
+  - [HTML](https://nhplace.com/kent/Papers/Exceptional-Situations-1990.html) version.
 
 ## Desc
 
