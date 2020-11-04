@@ -1,19 +1,19 @@
 # About conditions
 
-Michael Hendrix has written [package "condition"](https://www.swi-prolog.org/pack/list?p=condition),
+** In progress **
+
+Michael Hendrix has written SWI-Prolog pack [`condition`](https://www.swi-prolog.org/pack/list?p=condition),
 _Condition system à la Common Lisp_. This code is from 2014.
 
-- The [SWI-Prolog "pack" page](https://eu.swi-prolog.org/pack/list?p=condition)
-   - [Michael Hendrix' page for this "pack"](http://packs.ndrix.com/condition/)
-   - The manual page generated from the annotated source: [`condition.pl`](http://packs.ndrix.com/condition/condition.html)
-- The (latest) download URL: http://packs.ndrix.com/condition/condition-0.1.1.tgz (see below for installation)
-- A paper from 2001, _Condition Handling in the Lisp Language Family_, explains the idea of the "Condition System",
-  authored by Kent M. Pitman, then at MIT (Ii think), who implemented the condition system for Common Lisp:
-  - In HTML [here](http://www.nhplace.com/kent/Papers/Condition-Handling-2001.html).
-  - Appears in: [_Advances in Exception Handling Techniques_](https://www.springer.com/gp/book/9783540419525), (Springer Lecture Notes in Computer Science (LNCS) 2022), 2001.
-- A 1990 paper, also by Kent M. Pitman (written while at Symbolics Inc.) is 
-  [_Exceptional Situation in Lisp_](https://nhplace.com/kent/Papers/Exceptional-Situations-1990.html). 
-  - Appears in: _Proceedings for the First European Conference om the Practical Application of Lisp (EUROPAL'90)_. Churchill College, Cambridge, UK, March 27-29, 1990.
+- [Michael Hendrix' page for this pack](http://packs.ndrix.com/condition/).
+- The manual page generated from the annotated source: [`condition.pl`](http://packs.ndrix.com/condition/condition.html).
+- The latest download URL: http://packs.ndrix.com/condition/condition-0.1.1.tgz (see below for installation)
+- The 2001 paper _Condition Handling in the Lisp Language Family_ by Kent M. Pitman, who wrote the condition system for Common Lisp: 
+  - appears in: [_Advances in Exception Handling Techniques_](https://www.springer.com/gp/book/9783540419525), (Springer Lecture Notes in Computer Science (LNCS) 2022), 2001.
+  - in HTML [here](http://www.nhplace.com/kent/Papers/Condition-Handling-2001.html)
+- Also by Kent M. Pitman (while at Symbolics Inc.), a paper from 1990, _Exceptional Situation in Lisp_:
+  - appears in: _Proceedings for the First European Conference om the Practical Application of Lisp (EUROPAL'90)_. Churchill College, Cambridge, UK, March 27-29, 1990.
+  - in HTML [here](https://nhplace.com/kent/Papers/Exceptional-Situations-1990.html). 
 
 ## Desc
 
