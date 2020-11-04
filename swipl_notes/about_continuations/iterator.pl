@@ -14,10 +14,6 @@
 % Iterator
 % ===
 
-% The command term carring the value to output
-
-yield(X) :- shift(yield(X)).
-
 % Helper: Tag "Cont" for pattern-directed branching.
 % - "zero vs cont(_)" is better than
 % - "0 vs some unknown structure that can be used as a goal"
@@ -29,17 +25,23 @@ tag_cont(Cont,cont(Cont)).
 
 with_write(Goal) :-
   reset(Goal,Loot,Cont),         % Loot is the full term yieled, should be "yield(X)"
-  tag_cont(Cont,TgCont),
+  tag_cont(Cont,TgCont),         % this just tags the continutation "Cont" into "TgCont" for ease-of-matching
   branch(TgCont,Loot).
 
-branch(zero,_).                  % end of loop as Goal succeeded
+branch(zero,_).                  % successful "end of loop" because Goal succeeded
 branch(cont(Cont),yield(X)) :- 
    write(X),write('.'),          % output yielded X
-   with_write(Cont).             % tail-recursively loop around
+   with_write(Cont).             % tail-recursively loop around into a new context where Cont is the new Goal
 
 % ===
-% Two example generators
+% Two example generators which call yield(X) for each value generated until success
 % ===
+
+% ---
+% "yield/1" is just a "shift" of the "command term" carrying the value that shall be output
+% ---
+
+yield(X) :- shift(yield(X)).     % a "logical interpretation" of this is hard to find...
 
 % ---
 % predicate which yields the values from a list
