@@ -4,7 +4,7 @@ _References to the SWI-Prolog manual pages and more are collected at the tail en
 
 ## Throwing exceptions 
 
-Predicate [`throw/1`](https://www.swi-prolog.org/pldoc/doc_for?object=throw/1) takes a single argument, the _exception term_:
+Predicate [`throw/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=throw/1) takes a single argument, the _exception term_:
 
 ```text
 throw(+Exception).
@@ -159,10 +159,10 @@ goal_of_recovery_2(error(Dict,Context)) :-
 
 ### An alternative to Exceptions: Conditions
 
-[Package 'condition'](https://eu.swi-prolog.org/pack/list?p=condition) provides a _Condition_ system as found in 
+SWI-Prolog pack [`condition`](https://eu.swi-prolog.org/pack/list?p=condition) provides a _condition_ system as found in 
 [ZetaLisp](https://en.wikipedia.org/wiki/Lisp_Machine_Lisp) and later [Common Lisp](https://en.wikipedia.org/wiki/Common_Lisp).
 
-See [this page](../swipl_notes/about_conditions).
+More on [this page](../about_conditions).
    
 ### Pages of interest in the SWI-Prolog manual
 
