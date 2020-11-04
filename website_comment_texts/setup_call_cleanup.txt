@@ -1,0 +1,112 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=setup_call_cleanup/3
+
+## Another example:
+
+The example given in the text is hard to understand. Here is another one:
+
+==
+alty :- format("1st clause of alty/0 called\n").
+alty :- format("2nd clause of alty/0 called\n").
+alty :- format("3rd clause of alty/0 called\n").
+
+outro(yes) :- format("In outro/1: called!\n").
+
+check_outro(D) :-
+   (D==yes
+    -> format("outro/1 has been called")
+    ;  format("outro/1 has not yet been called")).
+
+testy_nocut :-
+   setup_call_cleanup(true,alty,outro(D)),
+   format("After setup_call_cleanup/3\n"),
+   check_outro(D).
+
+testy_withcut :-
+   setup_call_cleanup(true,alty,outro(D)),
+   format("After setup_call_cleanup/3, prior to cut\n"),
+   !,
+   check_outro(D).
+==
+
+Running `testy_nocut/0`. `outro` is invoked once `alty` returns without open choicepoints.
+
+==
+?- testy_nocut.
+1st clause of alty/0 called
+After setup_call_cleanup/3
+outro/1 has not yet been called
+true ;
+2nd clause of alty/0 called
+After setup_call_cleanup/3
+outro/1 has not yet been called
+true ;
+3rd clause of alty/0 called
+In outro/1: called!
+After setup_call_cleanup/3
+outro/1 has been called
+true.
+==
+
+Running =testy_withcut/0=. =outro= is (somewhat magically) invoked once the cut has been traversed. Just by scanning the code one would not expect this to happen.
+
+This is akin to installing a handler on the OR-node of the search tree, which is run once there are no more choices left or choices have been cut off.
+
+==
+?- testy_withcut.
+1st clause of alty/0 called
+After setup_call_cleanup/3, prior to cut
+In outro/1: called!
+outro/1 has been called
+true.
+==
+
+## Example of determinism in the cleanup procedure
+
+==
+?- setup_call_cleanup(true,member(X,[1,2]),member(Y,[a,b])).
+X = 1 ;
+X = 2,    % member(X,[1,2]) has no more solutions, so the cleanup goal is called
+Y = a.    % member(Y,[a,b]) is called as with once/1
+==
+
+## Example of a goal generating an exception
+
+==
+alty_with_exception :- format("1st clause of alty/0 called\n").
+alty_with_exception :- type_error("the cake is a lie","cake").
+
+outro(yes) :- format("In outro/1: called!\n").
+
+check_outro(D) :-
+   (D==yes
+    -> format("outro/1 has been called")
+    ;  format("outro/1 has not yet been called")).
+
+testy_with_exception :-
+   setup_call_cleanup(true,alty_with_exception,outro(D)),
+   format("After setup_call_cleanup/3\n"),
+   check_outro(D).
+==
+
+Then `outro/1` is called when the exception is thrown:
+
+==
+?- catch(testy_with_exception,ExTerm,format("Exception: ~q\n",[ExTerm])).
+1st clause of alty/0 called
+After setup_call_cleanup/3
+outro/1 has not yet been called
+true ;
+In outro/1: called!
+Exception: error(type_error("the cake is a lie","cake"),_6068)
+ExTerm = error(type_error("the cake is a lie", "cake"), _6068).
+==
+
+## Compare with Java's "finally"
+
+The `cleanup` goal is basically the `finally` block of (say) Java (or other bracy languages):
+
+[The finally Block](https://docs.oracle.com/javase/tutorial/essential/exceptions/finally.html):
+
+"The finally block always executes when the try block exits. This ensures that the finally block is executed even if an unexpected exception occurs."
+
+

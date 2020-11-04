@@ -1,0 +1,81 @@
+https://eu.swi-prolog.org/pldoc/man?section=db
+
+## Doc needs help
+
+Please provide the link to [`library(persistency)`](https://www.swi-prolog.org/pldoc/man?section=persistency) in the second paragraph of "Using dynamic predicates"
+
+## From "The Craft of Prolog"
+
+Relative to **4.13.5 Update view**, Richard A. O'Keefe writes in "The Craft of Prolog" (1990) on pages 87/88:
+
+There has been a great deal of confusion about how a dynamic code is to behandled. A lot of Prolog implementors have never had any clear idea about what should happen when a predicate which is running is changed. The definition used in DEC-10 Prolog, C Prolog (in some modes), and early versions of Quintus Prolog, was the **immediate update** view. This meant that as soon as a clause was asserted in or retracted from a predicate, each running copy of that predicate was supposed to notice the change. The trouble with that is that the Prolog system can never tell that it has come to the last branch of a node in the proof tree: while it is working on that branch, another clause might be added! The result is that
+
+==
+P :-clause(p, Body, Ref),
+    assert((p :- Body)),
+    erase(Ref),
+    write(*),
+    fail.
+==
+
+will run forever, once called. With this definition of the effect of assert/1 and retract/1 on running code, there isn't any point in the system trying to be clever about choice points.
+
+I have been advocating the **logical view** since 1984. Tim Lindholm has implemented it in Quintus Prolog: we had a paper about it in the Melbourne conference in 1987 [Timothy G. Lindholm & Richard A. O'Keefe. _Efficient Implementation of a defensible semantics for dynamic Prolog code_]. The idea here is that the set of clauses relevant to a running goal is the set of clauses which were there when it started. The interpreter sketched above assumes (and implements) this view. According to this definition, every time =p= is called it prints a single * and fails. 
+
+This was an extremely important change, because it means that Quintus Prolog now creates exactly the same set of choice points for static and :-dynamic predicates, so that you need exactly the same cuts in your code whichever condition it was running under. SICStus Prolog works like this too.
+
+(End of citation)
+
+## Module considerations
+
+Predicates asserted using assertz/1 etc. are associated to the module in which the corresponding `:- dynamic` directive has been issued. I think.
+
+The assertz/1 or asserta/1 has not to be qualified. I think.
+
+For example, in the "condition" pack, an addition to a thread-local clause database associated to module "condition" is done like this:
+
+==
+:- module(condition, [ add_handler/2
+                     , rm_handler/1
+                     ]).
+
+:- thread_local handler/2.
+
+add_handler(Restarter,Ref) :-
+    Clause = (handler(C,R) :- call(Restarter,C,R)),
+    condition:asserta(Clause, Ref).   % is this qualification needed??
+
+rm_handler(Ref) :-
+    erase(Ref).
+==
+
+## Multithreading considerations
+
+The asserted dynamic predicates are [visible to all threads unless declared "local"](https://eu.swi-prolog.org/pldoc/man?section=threadlocal)
+
+## asserting means the term is copied
+
+==
+?- asserta((handler(X) :- write(X)), Ref),X=bar.
+X = bar,
+Ref = <clause>(0x2567420).
+
+?- handler(foo).
+foo
+true.
+==
+
+But
+
+==
+?- X=bar,asserta((houndler(X) :- write(X)), Ref).
+X = bar,
+Ref = <clause>(0x256a970).
+
+?- houndler(foo).
+false.
+
+?- houndler(bar).
+bar
+true.
+==

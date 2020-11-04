@@ -1,0 +1,48 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=option/3
+
+It's about the value found in the term:
+
+==
+?- option(foo(X),[],none).
+X = none.
+==
+
+Do not specify the whole expected term as default:
+
+==
+?- option(foo(X),[],foo(none)).
+X = foo(none).
+==
+
+As expected, if an option with a value exists, that value is used instead:
+
+==
+?- option(foo(X),[foo(yes)],none).
+X = yes.
+==
+
+A bit weirdish:
+
+==
+?- option(foo(yes),[foo(Z)],none).
+Z = yes.
+==
+
+==
+?- option(foo(yes),[foo(yes)],none).
+true.
+==
+
+How to make option/3 actually fail (I'm not sure this makes sense)
+
+==
+?- option(foo(yes),[],none).
+false.
+==
+
+What about this?
+
+==
+?- option(foo(yes),[],yes).
+true.
+==

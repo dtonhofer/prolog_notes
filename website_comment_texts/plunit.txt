@@ -1,10 +1,14 @@
 https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/plunit.html%27)
 
-## Test cases are your track bed through the swampland
+## Test cases are your track bed through the swampland 
 
-Write your test cases. Without test cases, you are toast!
+You do not want to haphazardly enter various queries on the toplevel to see whether everything is working after the latest change. Of course not!
 
-Compared to imperative programs, and even functional programs, a predicate call can perform in "several different modes" (unless you stick to functional style, which may be good practice in certain cases). There is practically no typing that can be used as guardrails, additionally a variable can appear unbound when you don't expect it and for added complication unification makes data flow bidirectionally between terms in one statement. A lot of elementary operations can be performed in a very little amount of code and you are bound to miss a number of edge cases. With test cases, you can make sure both edge cases and standard cases are covered, lead to expected behaviour and stay covered while you add features and execution paths.
+Compared to imperative programs, and even functional programs, a predicate call can perform in "several different modes" (unless you stick to functional style, which may be good practice in certain cases). There is practically no typing that can be used as guardrail, additionally a variable can appear unbound when you don't expect it and for added complication unification makes data flow bidirectionally between terms in one statement. A lot of elementary operations can be performed in a very little amount of code and you are bound to miss a number of edge cases. 
+
+With test cases, you can make sure both edge cases and standard cases are covered, lead to expected behaviour and stay covered while you add features and execution paths. 
+
+The infrastructure supports having test code in [separate files](https://eu.swi-prolog.org/pldoc/man?section=testfiles) terminating in `.plt` instead of `.pl` and to load them with load_test_files/1 - very convenient!
 
 ## Some examples
 
@@ -16,7 +20,7 @@ Compared to imperative programs, and even functional programs, a predicate call 
 
 ==
 test("no redo, choicepoint left open") :- throw_on_redo(1).
-==
+==   
 
 instead of
 
@@ -27,9 +31,9 @@ test(one) :- throw_on_redo(1).
 **If the test expression gets complex, move it out of the head and build it in the body:**
 
 (Of course, sometimes you don't have such an expression, e.g. if you test `var(X)`)
-
+   
 ==
-test("collect them yourself, built a test expression, test in the head", [true(T)]) :-
+test("collect them yourself, built a test expression, test in the head", [true(T)]) :-   
    bagof(X,nondeterminism(X),Bag),
    T = (Bag == [1,2]).
 ==
@@ -42,7 +46,7 @@ You can have multiple assertions in a test body which do fail the test but do no
 
 ==
 :- debug(assertion_info).
-
+  
 :- begin_tests(assertion_test).
 
 test(0) :-
@@ -66,7 +70,7 @@ Then
 
 ==
 ?- run_tests.
-% PL-Unit: assertion_test
+% PL-Unit: assertion_test 
 % Now past succeeded assertion
 .
 ERROR: /home/user/test_assertion.pl:9:
@@ -100,7 +104,7 @@ Note that this does not obey usual Prolog semantics:
 test(two_all,all(M=[1,1])) :- member(M,[1,1,3]),M=1.
 ==
 
-I suppose the right-hand side is wrapped in a findall/3 of M.
+I suppose the right-hand side is wrapped in a findall/3 of M. 
 
 ## If your test fails your bindings will be trashed ... d'oh!
 
@@ -117,4 +121,71 @@ However, the failure rolls back the binding to T.... so the `catch` catches anyt
 
 ## Some notes on loading modules and the corresponding plunit tests
 
-Module code can be found in `.pl` files, whereas the correspond plunit test blocks can be found in `.plt` files having the same "root filename": `foo.pl` and `foo.plt`. Here are some notes on this: [](https://github.com/dtonhofer/prolog_notes/blob/master/code/load_and_test_script.pl)
+Module code can be found in `.pl` files, whereas the correspond plunit test blocks can be found in `.plt` files having the same "root filename": `foo.pl` and `foo.plt`. Here are some notes on this: [`load_and_test_script.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/code/load_and_test_script.pl)
+
+## Possible improvements
+
+The test identifier (1st arg to test/1 or test/2) should be available in the test body. Sometimes one wants to call debug/3 to print something and having identifier would be great. But Prolog doesn't directly cater for such a possibility...
+
+## See also
+
+The [TAP (Test Anything Protocol)](http://testanything.org/), where the philosophy is that tests generate structured output to be postprocessed by the test harness.
+
+An implementation can be found in [package "tap"](https://www.swi-prolog.org/pack/list?p=tap)
+
+## A note on modules
+
+"In the current system, test units are compiled into sub-modules of the module in which they appear." actually sounds wrong. 
+
+AFAIK, there are no "submodules" in the current SWI-Prolog implementation, only modules.
+
+The test are compiled into (top level) modules named after the plunit block:
+
+==
+:-begin_tests(footest).
+:-end_tests(footest).
+==
+
+Creates a new module `plunit_footest`. Apparently every predicate in the plunit block is exported (?)
+
+Special consequence: If you want external meta-predicates not declared as meta-predicates to call predicates inside he plunit block by name, you must "guess the plunit module name" and qualify the predicate name so that the caller can resolve it:
+ 
+==
+% With meta_predicate declaration!
+
+:- meta_predicate(collect_metapredicate(0)).
+collect_metapredicate(Collector) :- call(Collector).
+
+% Without meta_predicate declaration!
+
+collect_vanilla(Collector) :- call(Collector).
+
+% ---
+% The code below will be compiled into module plunit_footest
+% ---
+
+:- begin_tests(footest).
+
+helper(X) :- 
+   member(X,[1,2,3]).
+
+% The predicate (term) given to bagof/3 does not need qualification:
+
+test("call me, bagof/3!", true(Bag == [1,2,3])) :- 
+   bagof(X,helper(X),Bag). 
+
+% A term which is given to a metapredicate that has not been declared as such
+% needs qualification by the (guessed) name of the plunit module:
+
+test("call me, collect_vanilla/1", [true(X == 1),nondet]) :- 
+   collect_vanilla(plunit_footest:helper(X)). 
+
+% A term which is given to a metapredicate that has been properly declared
+% as such (on the correct argument position of course) does not need qualification:
+
+test("call me", [true(X == 1),nondet]) :- 
+   collect_metapredicate(helper(X)). 
+
+:- end_tests(footest).
+==
+

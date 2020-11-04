@@ -9,12 +9,12 @@
 
 # ===========================================================================
 # This is free and unencumbered software released into the public domain.
-# 
+#
 # Anyone is free to copy, modify, publish, use, compile, sell, or
 # distribute this software, either in source code form or as a compiled
 # binary, for any purpose, commercial or non-commercial, and by any
 # means.
-# 
+#
 # In jurisdictions that recognize copyright laws, the author or authors
 # of this software dedicate any and all copyright interest in the
 # software to the public domain. We make this dedication for the benefit
@@ -22,7 +22,7 @@
 # successors. We intend this dedication to be an overt act of
 # relinquishment in perpetuity of all present and future rights to this
 # software under copyright law.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 # EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 # MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -30,7 +30,7 @@
 # OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
-# 
+#
 # For more information, please refer to <http://unlicense.org/>
 # ===========================================================================
 # swiprologpull.sh
@@ -40,8 +40,8 @@
 #
 # System-level installation:
 #
-# - Clone the latest original SWI-Prolog distribution including submodules 
-#   from GitHub to the local machines, and build it for system-level 
+# - Clone the latest original SWI-Prolog distribution including submodules
+#   from GitHub to the local machines, and build it for system-level
 #   installation. You then just run "ninja install" (and change the PATH in
 #   bashrc).
 #
@@ -51,7 +51,7 @@
 #   machine for documentation maintenance, copy a selected set of files from
 #   that clone to a clone of the original SWI-Prolo distribution, build that
 #   and see whether the documentation looks right.
-# 
+#
 # JPL package maintenance:
 #
 # - Clone a fork of the "JPL package" (SWI-Prolog/Java bridge) from my personal
@@ -62,7 +62,7 @@
 # ===========================================================================
 # This script passes https://www.shellcheck.net/
 # ===========================================================================
- 
+
 set -o nounset
 
 # ===========================================================================
@@ -77,7 +77,7 @@ set -o nounset
 perso_github_account=https://github.com/dtonhofer
 swipl_github_account=https://github.com/SWI-Prolog
 system_install_dir=/usr/local/logic
-toplevel_dir_fq="$HOME/Development/swiplmaking/swiplmaking7"  # where to put stuff locally
+toplevel_dir_fq="$HOME/Development/2020_10/swiplmaking"  # where to put stuff locally
 
 url_and_dir() {
    local finality=${1:-}                  # "jpl" or "docu" or "system"
@@ -114,7 +114,7 @@ trim() {
 }
 
 # ===========================================================================
-# Build a version string from the git log available for the *current 
+# Build a version string from the git log available for the *current
 # directory*. This works if the current directory is under git management.
 # The version sting is output as text, so capture this in the caller.
 # Calls perl.
@@ -128,13 +128,13 @@ generate_version_string_from_git_log() {
    local gitline
    gitline=$(git log -n 1 --date=iso | grep 'Date:') || {
       echo "Could not obtain git log line in directory '$(pwd)'" >&2
-      exit 1 
+      exit 1
    }
    local version
    version=$(echo "$gitline" | perl -e '$line = <>; if ($line =~ /\b(\d{4}-\d{2}-\d{2})\b/) { print "$1\n" }')
    if [[ -z "$version" ]]; then
       echo "Version/Date string from 'git log' is '$version' and not recognized" >&2
-      exit 1 
+      exit 1
    else
       echo "$version"
    fi
@@ -143,7 +143,7 @@ generate_version_string_from_git_log() {
 # ===========================================================================
 # Build a version string from the contents of the VERSION file in the
 # current directory. The VERSION file must exist and its contents must be
-# recognized, otherwise exit 1 is called. 
+# recognized, otherwise exit 1 is called.
 # This works only if the current directory is the SWI-Prolog toplevel.
 #
 # An exit here doesn't exit the script because this is called in a subshell
@@ -169,7 +169,7 @@ generate_version_string_from_version_file() {
 # Querying the user for a binary response. You have to hit enter after Y/N.
 # Pipe "yes" into this script for auto-feeding.
 #
-# Call    : confirm "message" 
+# Call    : confirm "message"
 # Returns : 0 for "YES" and 1 for "NO"
 # Exits after 10 erroneous entries.
 # ===========================================================================
@@ -226,7 +226,7 @@ clone() {
       # Which repo makes no sense if we are cloning for a system-wide build. Set it to "infra"
       which_repo=infra
    fi
-  
+
    # cd to finality-dependent subdir
 
    local work_dir_fq="$toplevel_dir_fq/$finality"
@@ -250,14 +250,14 @@ clone() {
    local target_dir
    local target_dir_fq
    local modules_yesno
- 
+
    url_and_dir=$(url_and_dir "$finality" "$which_repo") || {
-      echo "Did not obtain valid values from url_and_dir()  -- exiting" >&2 
+      echo "Did not obtain valid values from url_and_dir()  -- exiting" >&2
       exit 1
    }
 
    url=$(echo "$url_and_dir" | cut --field=1 --delimiter='|'           ); url=$(trim "$url")
-   target_dir=$(echo "$url_and_dir" | cut --field=2 --delimiter='|'    ); target_dir=$(trim "$target_dir") 
+   target_dir=$(echo "$url_and_dir" | cut --field=2 --delimiter='|'    ); target_dir=$(trim "$target_dir")
    modules_yesno=$(echo "$url_and_dir" | cut --field=3 --delimiter='|' ); modules_yesno=$(trim "$modules_yesno")
    target_dir_fq="$work_dir_fq/$target_dir"
 
@@ -294,7 +294,7 @@ clone() {
       exit 1
    }
 
-   # Get some clone action going! 
+   # Get some clone action going!
 
    git clone "$url" "$target_dir" || {
       echo "Could not clone '$url' to directory '$target_dir' in '$(pwd)' -- exiting" >&2
@@ -336,7 +336,7 @@ clone() {
 
    if [[ "${finality}.${which_repo}" == docu.forked ]]; then
       if [[ ! -e builtin.doc ]]; then
-         ln -s "${target_dir}/man/builtin.doc"
+         ln -s "${target_dir}/man/builtin.doc" "builtin.doc"
       fi
    fi
 
@@ -384,21 +384,21 @@ copy() {
    local url_and_dir_infra
 
    url_and_dir_infra=$(url_and_dir "$finality" infra) || {
-      echo "Did not obtain valid values from url_and_dir()  -- exiting" >&2 
+      echo "Did not obtain valid values from url_and_dir()  -- exiting" >&2
       exit 1
    }
 
    local url_and_dir_forked
 
    url_and_dir_forked=$(url_and_dir "$finality" forked) || {
-      echo "Did not obtain valid values from url_and_dir()  -- exiting" >&2 
+      echo "Did not obtain valid values from url_and_dir()  -- exiting" >&2
       exit 1
    }
 
    local infra_dir
    local forked_dir
-   
-   infra_dir=$(echo "$url_and_dir_infra" | cut --field=2 --delimiter='|')   ; infra_dir=$(trim "$infra_dir") 
+
+   infra_dir=$(echo "$url_and_dir_infra" | cut --field=2 --delimiter='|')   ; infra_dir=$(trim "$infra_dir")
    forked_dir=$(echo "$url_and_dir_forked" | cut --field=2 --delimiter='|') ; forked_dir=$(trim "$forked_dir")
 
    local exit_now=
@@ -427,15 +427,15 @@ copy() {
 
    declare -a from_files
    declare -a to_files
-   
-   case "$finality" in 
+
+   case "$finality" in
    jpl)
       from_files=( "jpl.pl"              "test_jpl.pl" )
       to_files=(   "packages/jpl/jpl.pl" "packages/jpl/test_jpl.pl" )
    ;;
    docu)
-      from_files=( "man/builtin.doc" )
-      to_files=(   "man/builtin.doc"  )
+      from_files=( "man/builtin.doc" "man/extensions.doc" )
+      to_files=(   "man/builtin.doc" "man/extensions.doc" )
    ;;
    *)
       echo "Unknown finality '$finality'" >&2
@@ -467,7 +467,7 @@ copy() {
       }
      ((i++))
    done
- 
+
    # <<<< work_dir_fq
 
    popd >/dev/null || exit 1
@@ -522,7 +522,7 @@ build() {
 
    local url_and_dir_infra
    url_and_dir_infra=$(url_and_dir "$finality" infra) || {
-      echo "Did not obtain valid values from url_and_dir()  -- exiting" >&2 
+      echo "Did not obtain valid values from url_and_dir()  -- exiting" >&2
       exit 1
    }
 
@@ -542,17 +542,17 @@ build() {
 
    local version
 
-   if [[ -f VERSION ]]; then 
-      version=$(generate_version_string_from_version_file) || { 
-         echo "Could not generate a version string from the version $(pwd)/VERSION -- exiting" >&2 
-         exit 1 
-      } 
-      echo "The version string obtained from the version file is '$version'" >&2 
-   else 
+   if [[ -f VERSION ]]; then
+      version=$(generate_version_string_from_version_file) || {
+         echo "Could not generate a version string from the version $(pwd)/VERSION -- exiting" >&2
+         exit 1
+      }
+      echo "The version string obtained from the version file is '$version'" >&2
+   else
       echo "There is no VERSION file in '$work_dir_fq/$infra_dir' -- exiting" >&2
       exit 1
    fi
-  
+
    # Where to install? It depends!
 
    local install_location=
@@ -585,15 +585,15 @@ build() {
       fi
    else
       if [[ $rebuild == rebuild ]]; then
-         echo "Rebuild ordered but build directory does not exist -- performing a full build" >&2 
+         echo "Rebuild ordered but build directory does not exist -- performing a full build" >&2
          rebuild=xxxxxxxxxxx      # We really want to build, not rebuild
       fi
    fi
- 
+
    if [[ ! -d $build_dir ]]; then
       mkdir "$build_dir" # No need to check whether it worked; we will try to cd to it in any case
-   fi   
-      
+   fi
+
    cd "$build_dir" || {
       echo "Could not cd to '$build_dir' in '$(pwd)' -- exiting" >&2
       exit 1
@@ -602,11 +602,11 @@ build() {
    # jars may or may not exist; compilation works without them; but if they are there, then
    # the Java bridge "jpl" can be tested
 
-   local jar_dir_fq="${toplevel_dir_fq}/jars"  
+   local jar_dir_fq="${toplevel_dir_fq}/jars"
 
    local hamcrest_jar_fq="${jar_dir_fq}/hamcrest-2.2.jar"
-   local junit_jar_fq="${jar_dir_fq}/junit-4.13.jar"           
- 
+   local junit_jar_fq="${jar_dir_fq}/junit-4.13.jar"
+
    # Re-confirm with user (actually a bit late as we have already removed the build dir)
 
    echo "Going to build the SWI-Prolog distro in: $infra_dir"            >&2
@@ -650,7 +650,7 @@ build() {
             -DJUNIT_JAR="$junit_jar_fq" \
             -DLIBEDIT_LIBRARIES=/usr/lib64/libedit.so \
             -DLIBEDIT_INCLUDE_DIR=/usr/include/editline \
-            -G Ninja ..   
+            -G Ninja ..
       else
          echo "Building without jars as '$jar_dir_fq' does not exist" >&2
          cmake \
@@ -660,13 +660,13 @@ build() {
             -G Ninja ..
       fi
    fi
- 
-   # compile    
+
+   # compile
 
    ninja
 
    # Test
-   
+
    # Delete the logfile prior to tests.
 
    local logfile="Testing/Temporary/LastTest.log"
@@ -676,7 +676,7 @@ build() {
       echo "There already is a logfile '$logfile' -- deleting it" >&2
       echo "-------" >&2
       /bin/rm "$logfile"
-   fi 
+   fi
 
    # Run tests concurrently 4-fold. See "man ctest" or "ctest --help"
 
@@ -687,7 +687,7 @@ build() {
       echo "Check file '$(pwd)/${logfile}'" >&2
       exit 1
    }
-   
+
    # Always grep for ERROR even in case of success. There may also be warnings, but
    # they are probably of low interest.
 
@@ -702,7 +702,7 @@ build() {
       local size
       size=$(stat --format=%s "$errfile")
       if [[ $size -gt 0 ]]; then
-         echo "Some error were found in the logfile '$logfile' (probably not a problem)" >&2
+         echo "Some errors were found in the logfile '$(pwd)/${logfile}' (probably not a problem)" >&2
          echo >&2
          echo "--------------" >&2
          cat "$errfile" >&2
@@ -711,14 +711,14 @@ build() {
       fi
       /bin/rm "$errfile"
    fi
- 
+
    # Maybe install
    # What happens if the installation directory exists? Is it replaced?
 
    if [[ $finality != system ]]; then
       ninja install
    fi
- 
+
    # retain the build directory
 
    valueout_build_dir_fq=$(pwd)
@@ -776,7 +776,7 @@ Expecting:
 For cloning remote repo
 
 - clone system      : To clone the original SWI Prolog repo, including submodules, in order to build for a systemwide distribution
-- clone jpl forked  : To clone the modified jpl package from the personal github account, for editing 
+- clone jpl forked  : To clone the modified jpl package from the personal github account, for editing
 - clone jpl infra   : To clone the original SWI Prolog repo, including submodules, in order to build for jpl testing
 - clone docu forked : To clone the modified SWI Prolog repo from the personal github account, for editing the documentation
 - clone docu infra  : To clone the original SWI Prolog repo, including submodules, in order to build the documentation
@@ -792,8 +792,8 @@ For building/rebuilding
                       There is no installation, which has to be done manually as root.
                       If a build already exists, it is removed.
 - rebuild system    : Same as above, without removal of existing build and not doing
-                      configuration if the build exists.               
-      
+                      configuration if the build exists.
+
 - build docu        : Configure-Build-Test-Install the distro meant for testing documentation.
                       If a build already exists, it is removed.
 - rebuild docu      : Same as above, without removal of existing build.

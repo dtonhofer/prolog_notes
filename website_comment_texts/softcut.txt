@@ -1,0 +1,70 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=(*-%3E)/2
+
+## In other words...
+
+Compared to `->/2` this construct backtracks over the "premiss" ( `->/2` and `*->/2` are equivalent is the premiss succeeds at most once)
+
+```
+?- member(X,[a,b]) *-> format("Got ~q\n",[X]).
+Got a
+X = a ;
+Got b
+X = b.
+```
+
+Unlike
+
+```
+?- member(X,[a,b]) -> format("Got ~q\n",[X]).
+Got a
+X = a.
+```
+
+The `;` is still the "principal functor":
+
+==
+?- write_canonical( (member(X,[a,b]) *-> fail ; format("Got ~q\n",[X]) )).
+;(*->(member(A,[a,b]),fail),format("Got ~q\n",[A]))
+==
+
+## Example
+
+As used in package [condition](https://eu.swi-prolog.org/pack/list?p=condition):
+
+Given a `Condition`, ask applicable "handlers" (represented naturally by a set of clauses of predicate `handler/2`) for their advice, which is a `Restart`value: 
+
+==
+signal(Condition,Restart) :-
+    ( handler(Condition,Restart) *-> true ; throw(Condition) ).
+==
+
+`signal/2` backtracks over all possible handlers (i.e. yields successive values for `Restart`), but if there are no handlers for that `Condition` (i.e. the call to `handler/2` fails immediately or there are no `handler/2` predicates in the database at all), throw the term `Condition` instead.
+
+Declare `handler/2` as dynamic:
+
+==
+?- dynamic handler/2.
+==
+
+Then:
+
+==
+?- signal(foo,Restart).
+ERROR: Unhandled exception: foo
+==
+
+Add some handler knowledge:
+
+==
+?- assertz(handler(foo,"What, me worry?")),
+   assertz(handler(foo,"You don't want to mention this on the daily report.")),
+   assertz(handler(foo,"All company reps must report to their nearest synthetic!")).
+
+?- signal(foo,Restart).
+Restart = "What, me worry?" ;
+Restart = "You don't want to mention this on the daily report." ;
+Restart = "All company reps must report to their nearest synthetic!".
+
+?- signal(bar,Restart).
+ERROR: Unhandled exception: bar
+==
