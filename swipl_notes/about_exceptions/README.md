@@ -157,9 +157,12 @@ goal_of_recovery_2(error(Dict,Context)) :-
 
 [Coding Guidelines for Prolog](https://arxiv.org/abs/0911.2899) offers a bit of commentary on _when_ to throw, but does not go further.
 
-### An alternative to Exceptions
+### An alternative to Exceptions: Conditions
 
-[Package 'condition'](https://eu.swi-prolog.org/pack/list?p=condition) provides a _Condition_ system as in Common Lisp. (I haven't tried it yet)
+[Package 'condition'](https://eu.swi-prolog.org/pack/list?p=condition) provides a _Condition_ system as found in 
+[ZetaLisp](https://en.wikipedia.org/wiki/Lisp_Machine_Lisp) and later [Common Lisp](https://en.wikipedia.org/wiki/Common_Lisp).
+
+See [this page](../swipl_notes/about_conditions).
    
 ### Pages of interest in the SWI-Prolog manual
 
