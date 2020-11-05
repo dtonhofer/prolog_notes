@@ -47,15 +47,15 @@ In \[DCP13\]:
 > and \[are\] far less instrusive than monads ... the effect handler decouples the syntax of the
 > new operations from their semantics"
 
-**Code: [state_handler.pl](state_handler.pl)**
+**Code: [state_handler.pl](code/state_handler.pl)**
 
 Diagram it, more or less:
 
-![State Handler](state_handler.svg)
+![State Handler](pics/state_handler.svg)
 
 ## Example: Iterator
 
 This can be used to model the behaviour of an IO monad for sure. But that needs to be explained and coded in detail.
 
-**Code: [iterator.pl](iterator.pl)**
+**Code: [iterator.pl](code/iterator.pl)**
 
