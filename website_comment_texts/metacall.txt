@@ -1,0 +1,55 @@
+https://eu.swi-prolog.org/pldoc/man?section=metacall
+
+In this context, the following, though rather old, is highly readable:
+
+**Higher-order logic programming in Prolog** 
+
+   - http://www.csee.umbc.edu/courses/771/papers/mu_96_02.pdf
+   - Lee Naish
+   - 1996
+
+Functional programmers have shown the outstanding beneﬁts of the higher order style of programming. It is ubiquitous in modern functional programming languages. It enables greater code reuse, encourages more abstraction and alleviates the tedium of writing many similar long-winded recursive deﬁnitions. Over the years many people have also toyed with this style of programming in Prolog but to say it has not caught on would be a gross understatement. Higher order programming has been has been advocated more in newer logic programming languages such as HiLog [CKW93], Lambda Prolog [NM88][GH95], Mercury [SHCQ5] and the many combined logic and functional languages (see [Han94]). Some advocates of these languages are apparently unaware of the techniques available to Prolog programmers, despite the efforts of Richard O’Keefe and others.
+
+One aim of this paper is to illustrate higher order programming techniques in Prolog.
+
+We give examples to show the interaction between higher order programming and other features of Prolog such as nondeterminism, logic variables, ﬂexible modes, meta programming, Deﬁnite Clause Grammar notation and (in some systems) coroutining. Another aim is to point out a signiﬁcant difference between two ways in which higher order features are supported in logic programming languages. The superior method was suggested by David H.D. Warren over a decade ago. Since then higher order logic programming has gone off the rails. The Prolog coding style advocated by O’Keefe and the HiLog and Mercury languages use a less ﬂexible method which does not realise the full beneﬁts of higher order programming. The ﬁnal aim is to compare the higher order style with the “skeletons and techniques” approach to program development, one of the many approaches based on program patterns, schemata and cliches."
+
+-----
+
+**Higher-order extensions to PROLOG: are they needed?**
+
+   - https://aitopics.org/doc/classics:C65CF540/
+   - D. H. D. Warren
+   - 1982-02
+
+_Abstract_: PROLOG is a simple and powerful progamming language based on first-order logic. This paper examines two possible extensions to the language which would generally be considered "higher-order". The first extension introduces lambda expressions and predicate variables so that functions and relations can be treated as 'first class' data objects. We argue that this extension does not add anything to the real power of the language. The other extension concerns the introduction of set expressions to denote the set of all (provable) solutions to some goal [i.e. the predicate setof/3]. We argue that this extension does indeed fill a real gap in the language, but must be defined with care.
+
+[...]
+
+The translation is such that it does not involve any unbounded increase in either the size of the program or in the number of execution steps. I therefore claim that the extensions do not add anything to the strict power of PROLOG; i.e., they do not make it feasible to program anything that was not feasible before [...]. Of course "power" is often used more loosely to cover such language properties as conciseness, clarity, or implementation efficiency (measured in bytes and milliseconds). So let us consider, on such wider grounds, two possible arguments for nevertheless incorporating these extensions into PROLOG.
+
+   1. The extensions should be provided as primitive in the language so that they can    be implemented efficiently.
+   2. The extended syntax is much nicer to read and to use and should be provided as standard
+
+Most PROLOG users would argue that one of PROLOG's main strengths is that it avoids deeply nested expressions. Instead the program is broken down into smaller, more easily comprehended units. The resulting program may be slightly longer, but it is easier to read and (what is especially important) easier to modify. Now the effect of introducing lambda expressions is directly contrary to this philosophy. It results in bigger, more deeply-nested expressions. I am therefore certainly against this part of the extension. The introduction of predicate variables, however, seems to have a certain elegance.
+
+------
+
+There is more theory in:
+
+**Higher-order Aspects of Logic Programming**
+
+   - https://www.cs.bham.ac.uk/~udr/papers/higher.pdf
+   - Uday S. Reddy
+   - In: "Extensions of Logic Programming - Proceedings of the 4th International Workshop, ELP '93" (March 29-April 1, 1993), Roy Dyckhoff (Ed.), Springer LNCS 798
+
+_Abstract_: Are higher-order extensions to logic programming needed? We suggest a negative answer by showing that higher-order features are already available in pure logic programming. It is demonstrated that higher-order lambda calculus-based languages can be compositionally embedded in logic programming languages preserving their semantics and abstraction facilities. Further, we show that such higher-order techniques correspond to programming techniques often practiced in logic programming.
+
+...
+
+In an early paper [War82], Warren raised the question whether higher-order extensions to Prolog were necessary. He suggested that they were not necessary by modelling higher-order concepts in logic programs. His proposal modelled functions and relations intensionally by their names. As is well-known in Lisp community, such an encoding does not obtain the full power of higher-order programming. In particular, lambda abstraction and "upward" function values are absent.
+
+An entirely different approach to the issue was pursued by Miller et al. in Lambda Prolog [MN86]. The objective here seems to be not higher-order logic programming, but logic programming over higher-order terms. While this approach has many interesting applications, particularly in meta-logical frameworks, it still leaves open the question of whether higher-order programming is possible in a standard logic programming setting. A similar comment applies to other higher-order languages like HiLog [CKW89]. In this paper, we return to Warren's question and suggest another negative answer. Using new insights obtained from the connection between linear logic and logic programming [Laf87, Abr91, Abr93, Red93b], we contend that idealized logic programming is "already higher-order" in its concept, even though one might wish to add some syntactic sugar to obtain convenience. A similar answer is also suggested by Saraswat's work [Sar92] showing that concurrent logic programming is higher-order in a categorical sense. We argue that idealized logic programming is higher-order by presenting two forms of evidence:
+
+ - We exhibit a compositional, semantics-preserving translation from higher-order lambda calculus-based languages to logic programs.
+ - We show that higher-order programming techniques are already in use in logic programming (albeit in a limited form) and that these can be generalized.

@@ -1,0 +1,103 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=!/0
+
+## Doc-needs-help
+
+The expression
+
+==
+t4 :- \+(a, !, fail).
+==
+
+is invalid. There must be a space after \+ or double parentheses must be used.
+
+## Extended examples
+
+==
+a(a0).
+a(a1).
+a(a2).
+b(b0).
+b(b1).
+b(b2).
+c(c0).
+c(c1).
+c(c2).
+
+% parentheses added for clarity below
+
+t0(A,B)   :- a(A),!,b(B).
+t0(x,x).
+
+t1(A,B)   :- (a(A),!,fail);b(B).
+t1(x,x).
+
+t2(A,B,C) :- (a(A) -> (b(B),!)) ; c(C).    
+t2(x,x,x).
+
+t3(A,B)   :- call(((a(A),!,fail);b(B))).
+t3(x,x).
+
+t4(A)     :- \+ (a(A),!,fail).     % there must be a space after \+
+t4_bis(A) :- \+((a(A),!,fail)).    % ... or use double parentheses
+
+% Bonus round
+
+d1(A,B)   :- call((a(A),!,b(B))).  % ! is part of the called goal
+
+d2(X)     :- a(X);!;b(X);c(X).     % actually 4 clauses, one of which is d2(X) :- !,true.
+
+d3(X)     :- a(X);(b(X),!);c(X).   % actually 3 clauses, one of which is d3(X) :- b(X),!,true.
+==
+
+Use write_canonical/1 to print a term lacking in parentheses if you are unsure about parenthetization. The term will be printed in prefix order. For example:
+
+==
+?- write_canonical(((a(A), !, fail ; b(B)))).             
+;(','(a(_),','(!,fail)),b(_))
+==
+
+And thus:
+
+==
+?- findall([A,B],t0(A,B),Found).
+Found = [[a0, b0], [a0, b1], [a0, b2]].
+==
+
+==
+?- findall([A,B],t1(A,B),Found).
+Found = [].
+==
+
+==
+?- findall([A,B,C],t2(A,B,C),Found).
+Found = [[a0, b0, _8678]].
+==
+
+==
+?- findall([A,B],t3(A,B),Found).
+Found = [[x, x]].
+==
+
+==
+?- findall([A],t4(A),Found). % binding of A is not retained outside of \+
+Found = [[_6518]].
+
+?- findall([A],t4_bis(A),Found).
+Found = [[_6324]].
+==
+
+==
+?- findall([A,B],d1(A,B),Found).
+Found = [[a0, b0], [a0, b1], [a0, b2]].
+==
+
+==
+?- findall([X],d2(X),Found).
+Found = [[a0], [a1], [a2], [_9990]].
+==
+
+==
+?- findall([X],d3(X),Found).
+Found = [[a0], [a1], [a2], [b0]].
+==
+

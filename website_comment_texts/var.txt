@@ -1,5 +1,3 @@
-https://eu.swi-prolog.org/pldoc/doc_for?object=var/1
-
 Some notes on the ambiguity concerning the word "variable" can be found [**here**](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_concept_of_variable/README.md)
 
 Note that the above text uses "free", which is inappropriate IMHO.
@@ -8,4 +6,18 @@ When you ask `var(X)` you are actually asking whether the _variable name_ `X` cu
 
 The predicate would be less confusing if it had been named `unbound(X)`. 
 
+Compare with Common Lisp's function
+
+[`boundp`](http://www.lispworks.com/documentation/HyperSpec/Body/f_boundp.htm)
+
+==
+(setq x 1) =>  1
+(boundp 'x) =>  true
+(makunbound 'x) =>  X
+(boundp 'x) =>  false
+==
+
+It behaves like nonvar/1: `boundp(x)` evaluates to `false` if the cell 
+designated by symbol `x` is still "free" (i.e. if the variable `x` is not bound). 
+(It throws the argument is not actually a symbol). Unlike in Prolog, you can make a bound symbol "unbound" again.
 

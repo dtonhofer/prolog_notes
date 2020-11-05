@@ -36,7 +36,7 @@ move_to_next_node(CurNode,NextNode) :-
 % and History is the reversed list of markov network nodes visited up to now.
 % ===
 
-markov :- 
+markov :-
    get_state(CurState),
    debug(markov,"Client: Got state ~q",[CurState]),
    maybe_loop(CurState).
