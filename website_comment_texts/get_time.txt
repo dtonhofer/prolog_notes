@@ -1,0 +1,31 @@
+Returns a float!
+
+Compare with Unix `date` command's "seconds since 1970-01-01 00:00:00 UTC" (watch out for the difference in leap seconds between actual UTC and [Unix time](https://en.wikipedia.org/wiki/Unix_time) and the difference between [TAI](https://en.wikipedia.org/wiki/International_Atomic_Time) and UTC).
+
+==
+?- get_time(T),float(T),process_create('/usr/bin/date',['+%s'],[]).
+1604652321  
+T = 1604652321.0266113.
+==
+
+**The naming is ... lousy**
+
+It should be an arithmetic function and it should be written:
+
+==
+T is the_time()
+==
+
+possibly
+
+==
+T is the_time_of(now)
+== 
+
+which would make much more sense.
+
+
+`get_time(T)` reads as
+
+   - "`get_time` is an attribute of T", or
+   - "Find me a T so that get_time(T) is true" (there is no such T, really)

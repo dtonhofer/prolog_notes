@@ -1,0 +1,108 @@
+https://eu.swi-prolog.org/pldoc/man?section=delcont
+
+## Playing around with a booby-trapped "iterator" implementation
+
+See further below for the extensively documented implementation.
+
+The predicate-to-call takes a list of stuff which are then generated one-by-one by an "iterator" coroutine and printed to stdout by the with_write/1 "manager" coroutine. The content of the list can elicit some occurrences of interest:
+
+==
+with_write(IteratorGoal) :-
+  reset(IteratorGoal,yield(X),IteratorCont),
+  tag_cont(IteratorCont,TaggedCont),
+  branch(TaggedCont,yield(X)).
+
+branch(zero,_) :-
+   format("Iterator succeeded\n").
+
+branch(cont(IteratorCont),yield(X)) :-
+   format("Iterator yielded ~q\n",[X]),
+   with_write(IteratorCont).
+
+% helper to tag a continuation (not really needed)
+
+tag_cont(0,zero) :- !.
+tag_cont(Cont,cont(Cont)).
+
+% the iterator, generating successive values that are communicated
+% to the manager by a call to shift/1
+
+from_list([X|Xs]) :-
+   ((X == fail; X == false)         % elicit failure
+   -> fail
+   ;
+   (X == throw)                     % elicit exception
+   -> domain_error(this,that)
+   ;
+   (X == badshift)                  % elicit shift not unifiable by reset/3 call
+   -> shift(bad(X))
+   ;
+   (X == recur)                     % elicit matrioshka reset/3 call
+   -> with_write(from_list([sub1,sub2,sub3]))
+   ;
+   shift(yield(X))),                % bravely default
+   from_list(Xs).                   % tail recursive loop
+
+from_list([]).
+
+% main predicate, call from toplevel
+
+run(L) :-
+   must_be(list,L),
+   with_write(from_list(L)).
+==
+
+And so:
+
+==
+?- run([a,b,c]).
+Iterator yielded a
+Iterator yielded b
+Iterator yielded c
+Iterator succeeded
+true.
+
+?- run([a,fail,c]).
+Iterator yielded a
+false.
+
+?- run([a,throw,c]).
+Iterator yielded a
+ERROR: Domain error: `this' expected, found `that'
+
+?- run([a,badshift,c]).
+Iterator yielded a
+ERROR: reset/3 `bad(badshift)' does not exist
+
+?- run([a,recur,c]).
+Iterator yielded a
+Iterator yielded sub1
+Iterator yielded sub2
+Iterator yielded sub3
+Iterator succeeded
+Iterator yielded c
+Iterator succeeded
+true.
+==
+
+## Reading
+
+(**The PDF in the manual page is the preprint of the Prolog ISO Standard draft update of 2005, which doesn't mention continuations; this is certainly wrong**) 
+
+The link to "Schrijvers et al., 2013." just goes to the bibliography page, where you are then stranded because there is no further link.
+
+Might as well add the link directly:
+
+Delimited continuations for Prolog: https://www.swi-prolog.org/download/publications/iclp2013.pdf - The PDF says it has been written in 2003, but it has really been written in 2013. It's a preprint. 
+
+It has been published in [Theory and Practice of Logic Programming](https://www.cambridge.org/core/journals/theory-and-practice-of-logic-programming/article/delimited-continuations-for-prolog/DD08147828169E26212DFAF743C8A9EB) in 2013.
+
+## Examples
+
+On [this page](https://github.com/dtonhofer/prolog_notes/tree/master/swipl_notes/about_continuations/code/):
+
+Inspired "Schrijvers et al., 2013.":
+
+   - Coroutines implementing an "iterator" that generates output on behalf of a "master predicate" which then sends the output to a user-selectable destination (in this case, write/1): [`iterator.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_continuations/code/iterator/iterator.pl)
+   - Effect handler keeping track of state on behalf of client code. Examples of a Markov Network visitor and a counter-to-zero are given.
+
