@@ -26,25 +26,19 @@
 % The "master coroutine": It writes the values yielded by "Goal" to stdout.
 % ===
 
-with_write(Goal) :-
-  reset(Goal,Loot,Cont),       % "Loot" is the term yieled by the "iterator", should be "yield(X)".
-  tag_cont(Cont,TaggedCont),   % This just tags the continuation term "Cont".
-  branch(TaggedCont,Loot).     % This will result in success or a tail-recursive call.
+with_write(Goal) :-            % "Goal" is the initial iterator goal or later the iterator continuation.
+  reset(Goal,Loot,Cont),       % "Loot" is the term yielded from within "Goal" by a shift/1. Should be "yield(X)".
+  assertion(nonvar(Cont)),
+  branch(Cont,Loot).           % branch by value of Cont. This will result in final success or a tail-recursive call.
 
-branch(zero,_).                % Successful "end of loop" because "Goal" succeeded.
+branch(0,_) :- !.              % 0 means the Goal called by reset/3 succeeded. 
+                               % As there is nothing to backtrack, the predicate with_write/1 also succeeds.
+                               % The "!" commits to the case of Cont == 0, so no need to check Cont \== 0 below.
 
-branch(cont(Cont),yield(X)) :-
-   write(X),write('.'),        % Iterator yielded X; do something with it.
-   with_write(Cont).           % Tail-recursive call into a new context where Cont is the new Goal.
-
-% ===
-% Tag the continuation "Cont" for easy pattern-directed branching.
-% "zero" vs. "cont(_)" is better to make a branching descision than
-% "0" vs "some unknown structure that can be used as a goal"
-% ===
-
-tag_cont(0,zero) :- !.
-tag_cont(Cont,cont(Cont)).
+branch(Cont,yield(X)) :-
+   assertion(compound(Cont)),  % If not 0, then Cont is compound.
+   format("~q.",[X]),          % Iterator yielded X; do something with it.
+   with_write(Cont).           % Tail-recursive call. In the new context, reset/3 will call "Cont".
 
 % ===
 % Two example "iterators"
@@ -52,7 +46,7 @@ tag_cont(Cont,cont(Cont)).
 
 % ---
 % yield/1 is just a shift/1 of the "yield term" carrying the value that
-% that shall be communicated to the master coroutine.
+% that shall be communicated to the master coroutine. 
 % ---
 
 yield(X) :- shift(yield(X)).
@@ -94,10 +88,16 @@ from_interval(X,X).
 
 % ===
 % Run it
+%
+% ?- run(X).
+% 0.1.2.3.4.5.6.7.8.9.
+% X = interval ;
+% a.b.c.d.e.f.
+% X = list.
 % ===
 
 run(interval) :-
-   with_write(from_interval(0,100)).
+   with_write(from_interval(0,10)).
 
 run(list) :-
    with_write(from_list([a,b,c,d,e,f])).
