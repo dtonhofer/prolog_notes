@@ -66,8 +66,9 @@ down to "trash everything and then ask around".
 
 ## Missing possibilities.
 
-The ISO-Standard is missing entries for a "can't happen",  "illegal state reached" or "assertion violated". This is just to be
-expected, no specification can hope to be complete & precise in an open problem domain like a programming language. 
+The ISO-Standard is missing entries for a "can't happen",  "illegal state reached", "assertion violated",
+"disallowed switch statement case". This is just to be expected, no specification can hope to be complete 
+and precise in an open problem domain like a programming language. 
 
 In SWI-Prolog, some non-ISO exceptions may be encountered. 
 
