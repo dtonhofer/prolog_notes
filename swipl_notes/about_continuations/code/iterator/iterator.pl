@@ -23,7 +23,8 @@
 % ~~~~~~~
 
 % ===
-% The "master coroutine": It writes the values yielded by "Goal" to stdout.
+% The "master coroutine": It writes the values yielded by the "iterator"
+% represented by "Goal" to stdout.
 % ===
 
 with_write(Goal) :-            % "Goal" is the initial iterator goal and later the iterator continuation.
