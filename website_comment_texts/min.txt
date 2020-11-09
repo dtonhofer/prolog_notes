@@ -34,4 +34,6 @@ V = 1.
 
 And so, code: [`extremal.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/prolog_exercises/extremal.pl)
 
+This totally does not use function `min/2` or function `max/2` at all. 
 
+(Why isn't there a special notation to distinguish functions from predicates anyway? One could write `min/~2` for example.)
