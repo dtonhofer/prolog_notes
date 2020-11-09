@@ -69,19 +69,35 @@ put_state(S) :- shift(put_state(S)).
 
 with_state(Goal,StateCur,StateOut) :-
    debug(with_state,"Effect handler: calling reset/3",[]),
-   reset(Goal,Cmd,Cont),                     % "Cmd" is the command term: get_state/1 or put_state/1
-   tag_cont(Cont,TaggedCont),                % This just tags the continuation term "Cont".
-   branch(TaggedCont,Cmd,StateCur,StateOut). % This will result in success or a tail-recursive call.
+   reset(Goal,Cmd,Cont),               % "Cmd" is the command term: get_state/1 or put_state/1
+   branch(Cont,Cmd,StateCur,StateOut). % This will result in success or a tail-recursive call.
 
-branch(zero,_,State,State) :-
+% A continuation equal to the number 0 means the goal called by reset/3 succeeded. 
+% We don't bother with backtracking into that goal (there is nothing anyway).
+% And thus we have with_state/3 succeed, too. The final "StateOut" is unified with "StateIn".
+% The "!" commits to the case of "Cont" == 0 (so no need to check "Cont" \== 0 below).
+ 
+branch(0,_,State,State) :- !,
    debug(with_state,"Effect handler: continuation is 0; goal succeeded",[]).
 
-branch(cont(Cont),get_state(StateCur),StateCur,StateOut) :-
-   !,
+% The "Cmd" received unifies with get_state(X). The X is an unbound variable
+% held by the client code. Unifying it with the current state thus communicates
+% the current state to the client code.
+% After that, perform a tail-recursive loop that does not change the state
+% of the new with_state/3 activation.
+% The "!" makes sure the choicepoint is dropped, which is vital for long-running
+% programs: the Prolog Processor can clear resources after the recursive call.
+
+branch(Cont,get_state(StateCur),StateCur,StateOut) :- !,
    debug(with_state,"Effect handler: return from reset/3 with get_state/1. Unifying command variable with ~q",[StateCur]),
    with_state(Cont,StateCur,StateOut).
 
-branch(cont(Cont),put_state(StateNew),_,StateOut) :-
+% The "Cmd" received unifies with put_state(X). The X is an bound variable
+% holding the new intended state communiated to the effect handler by the client code. 
+% After that, perform a tail-recursive loop that changes the state
+% of the new with_state/3 activation to the received state.
+
+branch(Cont,put_state(StateNew),_,StateOut) :-
    debug(with_state,"Effect handler: return from reset/3 with put_state/1. Received ~q from command variable",[StateNew]),
    with_state(Cont,StateNew,StateOut).
 

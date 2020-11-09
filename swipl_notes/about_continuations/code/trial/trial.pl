@@ -1,22 +1,26 @@
-with_write(IteratorGoal) :-
-  reset(IteratorGoal,yield(X),IteratorCont),
-  tag_cont(IteratorCont,TaggedCont),
-  branch(TaggedCont,yield(X)).
+% ===
+% The "master coroutine": It writes the values yielded by the "iterator"
+% represented by "Goal" to stdout.
+% ===
 
-branch(zero,_) :-
+with_write(Goal) :-
+  reset(Goal,yield(X),Cont),
+  branch(Cont,yield(X)).
+
+branch(0,_) :- !,
    format("Iterator succeeded\n").
 
-branch(cont(IteratorCont),yield(X)) :-
+branch(Cont,yield(X)) :- 
    format("Iterator yielded ~q\n",[X]),
-   with_write(IteratorCont).
+   with_write(Cont).
 
-% helper to tag a continuation
-
-tag_cont(0,zero) :- !.
-tag_cont(Cont,cont(Cont)).
-
-% the iterator, generating successive values that are communicated
-% to the manager by a call to shift/1
+% ===
+% The "iterator", generating successive values (read from a list in
+% this case) that are communicated to the master coroutine by a call
+% to shift/1.
+% However, the "iterator" behaves in peculiar ways depending on the
+% element encountered because we want to see what happens exactly.
+% ==
 
 from_list([X|Xs]) :-
    ((X == fail; X == false)         % elicit failure
@@ -36,7 +40,9 @@ from_list([X|Xs]) :-
 
 from_list([]).
 
-% main predicate, call from toplevel
+% ==
+% Main predicate, call from toplevel
+% ==
 
 run(L) :-
    must_be(list,L),

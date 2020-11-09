@@ -26,19 +26,20 @@
 % The "master coroutine": It writes the values yielded by "Goal" to stdout.
 % ===
 
-with_write(Goal) :-            % "Goal" is the initial iterator goal or later the iterator continuation.
-  reset(Goal,Loot,Cont),       % "Loot" is the term yielded from within "Goal" by a shift/1. Should be "yield(X)".
+with_write(Goal) :-            % "Goal" is the initial iterator goal and later the iterator continuation.
+  reset(Goal,Loot,Cont),       % "Loot" is the term yielded from within "Goal" by a shift/1. Expect to always be "yield(X)".
   assertion(nonvar(Cont)),
-  branch(Cont,Loot).           % branch by value of Cont. This will result in final success or a tail-recursive call.
+  branch(Cont,Loot).           % Branch by value of "Cont".
 
-branch(0,_) :- !.              % 0 means the Goal called by reset/3 succeeded. 
-                               % As there is nothing to backtrack, the predicate with_write/1 also succeeds.
-                               % The "!" commits to the case of Cont == 0, so no need to check Cont \== 0 below.
+branch(0,_) :- !.              % 0 means the goal called by reset/3 succeeded. 
+                               % We don't bother with backtracking into that goal (there is nothing anyway)
+                               % and thus we have with_write/1 succeed, too.
+                               % The "!" commits to the case of "Cont" == 0 (so no need to check "Cont" \== 0 below).
 
 branch(Cont,yield(X)) :-
-   assertion(compound(Cont)),  % If not 0, then Cont is compound.
-   format("~q.",[X]),          % Iterator yielded X; do something with it.
-   with_write(Cont).           % Tail-recursive call. In the new context, reset/3 will call "Cont".
+   assertion(compound(Cont)),  % If "Cont" is not 0, then "Cont" is a (callable) compound term (a goal or a continuation).
+   format("~q.",[X]),          % The iterator yielded X; do something with it. In this case, print it!
+   with_write(Cont).           % Tail-recursive call. In the next context, reset/3 will call "Cont".
 
 % ===
 % Two example "iterators"
