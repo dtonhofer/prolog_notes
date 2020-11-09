@@ -101,12 +101,4 @@ branch(Cont,put_state(StateNew),_,StateOut) :-
    debug(with_state,"Effect handler: return from reset/3 with put_state/1. Received ~q from command variable",[StateNew]),
    with_state(Cont,StateNew,StateOut).
 
-% ===
-% Tag the continuation "Cont" for easy pattern-directed branching.
-% "zero" vs. "cont(_)" is better to make a branching descision than
-% "0" vs "some unknown structure that can be used as a goal"
-% ===
-
-tag_cont(0,zero) :- !.
-tag_cont(Cont,cont(Cont)).
 
