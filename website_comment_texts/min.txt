@@ -1,0 +1,39 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=f(min/2)
+
+## Possible extension
+
+This should really be extended to take vectors:
+
+==
+Min is min(ListOfExpressions).
+==
+
+as in
+
+==
+Min is min([1,-1,X*44,Y-3]).
+==
+
+## A min/max predicate over dicts
+
+Sometimes one has a set of pairs Key-Value and one wants to find the pair with the extremal value (either max or min) and _also_ know the corresponding key:
+
+==
+?-  min_entry_of_dict(_{a:1,b:2,c:3,d:1,e:1,f:5},K,V).
+K = a,
+V = 1.
+
+?- max_entry_of_dict(_{a:3,b:5,c:4},K,V).
+K = b,
+V = 5.
+
+?- extremal_entry_of_dict(_{a:1,b:2,c:3,d:1,e:1,f:5},K,V,min,latest).
+K = e,
+V = 1.
+==
+
+And so, code: [`extremal.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/prolog_exercises/extremal.pl)
+
+This totally does not use function `min/2` or function `max/2` at all. 
+
+(Why isn't there a special notation to distinguish functions from predicates anyway? One could write `min/~2` for example.)
