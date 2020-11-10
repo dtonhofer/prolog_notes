@@ -8,7 +8,7 @@ with_write(Goal) :-
   branch(Cont,yield(X)).
 
 branch(0,_) :- !,
-   format("Iterator succeeded\n").
+   format("Iterator succeeded\n"). % The X of the yield(X) is unbound
 
 branch(Cont,yield(X)) :- 
    format("Iterator yielded ~q\n",[X]),

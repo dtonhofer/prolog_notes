@@ -1,6 +1,7 @@
 % =============================================================================
 % Implement a Markov Network traversal using the "effect handler" infrastructure.
 % =============================================================================
+% Run with ?- run_markov.
 
 :- use_module('effect_handler.pl').
 
@@ -59,7 +60,7 @@ maybe_loop([end,_]). % stop the loop, we are done
 % implements the actual traversal and is managed/called by the generic effect
 % handler predicate with_state/3.
 
-run(markov) :-
+run_markov :-
    with_state(markov,[s0,[s0]],Out),
    debug(markov,"Final state is ~q",[Out]).
 

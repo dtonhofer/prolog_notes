@@ -8,6 +8,8 @@
 %  https://www.swi-prolog.org/download/publications/iclp2013.pdf
 %  (the "iterator coroutine" example is on page 4)
 % =============================================================================
+% Run with ?- run_interval.
+%          ?- run_list.
 
 % ~~~~~~
 % At page 4 of the cited paper, we read [text below has been adapted]:
@@ -98,9 +100,9 @@ from_interval(X,X).
 % X = list.
 % ===
 
-run(interval) :-
+run_interval :-
    with_write(from_interval(0,10)).
 
-run(list) :-
+run_list :-
    with_write(from_list([a,b,c,d,e,f])).
 

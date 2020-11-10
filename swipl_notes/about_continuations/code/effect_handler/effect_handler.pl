@@ -10,9 +10,9 @@
 % =============================================================================
 
 % ~~~~~~
-% Effect handler expressing the "state monad", i.e. a series of state changes
-% by functions which receive a "monad value" describing a state t and from that
-% create a new "monad value" describing a state t+1.
+% Effect handler expressing the "state monad", i.e. a sequence of state changes
+% through functions which receive a "monad value" describing a state at step t
+% and from that create a new "monad value" describing a state at step t+1.
 %
 % At page 2 of the cited paper, we read [text below has been adapted]:
 %
@@ -21,22 +21,43 @@
 % class of applications: "effect handlers". Effect handlers are an elegant way
 % to add many kinds of side-effectful operations to language and far less
 % intrusive than monads (Moggi, E. 1991: "Notions of computation and monads".
-% Inf. Comput. 93, 1). [Other authors might disagree]
+% Inf. Comput. 93, 1). 
+%
+% [Other authors might disagree about whether monads are less intrusive]
 %
 % Implicit State Passing. [Example] defines an effect handler for an implicit
 % state passing feature. The feature provides two primitive operations:
 % [get_state/1] for reading the implicit state, and [put_state/1] for writing
-% it. [...]
+% it. 
+%
+% [...]
 %
 % The effect handler decouples the syntax of the new operations from their
 % semantics. The put_state/1 and get_state/1 predicates are all syntax and no
-% semantics; they simply _shift_ their own term representation [communicating
-% with the effect handler predicate which holds the current state representation
-% in the current activation, which is is replaced by a recursive call].
+% semantics; they simply _shift_ their own term representation. 
+%
+% [...communicating with the effect handler which always holds the currently
+% valid state representation. The state representation is updated naturally 
+% by change the context of the effect handler via a tail-recursive call]
+%
 % The semantics is supplied by the handler predicate run_state/3. This handler
 % predicate runs a goal and interprets the two primitive operations whenever
 % they are shifted. For the interpretation, run_state recursively "threads
 % a state".
+%
+% [...but there seems to be a problem: the client code to which the effect 
+% handler switches via reset/3 must be unique - one cannot generalize to 
+% several client code routines. The client can always push state to the effect
+% handler via put_state/1 but for get_state/1 to work, there must be certainty
+% that the S in get_state(S) is still valid when execution flow switches back 
+% to the requesting routine via reset/3 - however if there are more than 
+% one routine, arbitrary put_state/1 may happen before that reset/3, and S
+% may be very stale when the execution flow switches back, having long been
+% replaced by fresher S. The only way to be sure to "get the latest state"
+% seems to be to use "global variables" with nb_setval/2, nb_getval/2
+% (https://eu.swi-prolog.org/pldoc/man?section=gvar) or to have every routine
+% keep a variable to an open list to which a representation of the latest 
+% state is appended on each put_state/1, and thus can be found.]
 % ~~~~~~
 
 % We pack the "effect handler" into a module for reuse
@@ -93,7 +114,7 @@ branch(Cont,get_state(StateCur),StateCur,StateOut) :- !,
    with_state(Cont,StateCur,StateOut).
 
 % The "Cmd" received unifies with put_state(X). The X is an bound variable
-% holding the new intended state communiated to the effect handler by the client code. 
+% holding the new intended state communicated to the effect handler by the client code. 
 % After that, perform a tail-recursive loop that changes the state
 % of the new with_state/3 activation to the received state.
 

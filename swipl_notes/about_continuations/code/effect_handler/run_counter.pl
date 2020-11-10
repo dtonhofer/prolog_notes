@@ -1,6 +1,7 @@
 % =============================================================================
 % Implement a simple counter using the "effect handler" infrastructure.
 % =============================================================================
+% Run with ?- run_counter.
 
 :- use_module('effect_handler.pl').
 
@@ -46,7 +47,7 @@ string_extend(Text,Counter,NewText) :-
 % implements the actual counting and is managed/called by the generic effect
 % handler predicate with_state/3.
 
-run(counter) :-
+run_counter :-
    with_state(count,["",4],Out),
    debug(count,"Final state is ~q",[Out]).
 
