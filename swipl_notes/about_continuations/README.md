@@ -13,7 +13,7 @@ The manual says:
    
 The correct link to the paper is:
 
-   - _Delimited continuations for Prolog_ https://www.swi-prolog.org/download/publications/iclp2013.pdf
+   - **Delimited continuations for Prolog**: https://www.swi-prolog.org/download/publications/iclp2013.pdf
    
 The PDF says it has been written in 2003, but it has really been written in 2013. It's a preprint. 
 
@@ -21,7 +21,7 @@ It has been [published](https://www.cambridge.org/core/journals/theory-and-pract
 
 ## Reading
 
-And also some Wikipedia entries:
+Some Wikipedia entries:
 
    - [call-with-current-continuation](https://en.wikipedia.org/wiki/Call-with-current-continuation)
    - [Coroutine](https://en.wikipedia.org/wiki/Coroutine)
@@ -29,7 +29,7 @@ And also some Wikipedia entries:
    
 Papers:
 
-[_Abstracting Control_](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.43.8753) (Olivier Danvy and Andrzej Filinski), appears in _Proceedings of the 1990 ACM Conference on LISP and Functional Programming_
+[**Abstracting Control**](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.43.8753) (Olivier Danvy and Andrzej Filinski), appears in _Proceedings of the 1990 ACM Conference on LISP and Functional Programming_
 
 ...which introduces `shift` and `reset` operations but it's a very technical paper (I don't get it ... yet)
 
@@ -53,7 +53,7 @@ Ok, this needs more study.
 
 An eminently readable one:
 
-[_Call with current continuation patterns_](https://www.researchgate.net/publication/228576802_Call_with_current_continuation_patterns) 
+[**Call with current continuation patterns**](https://www.researchgate.net/publication/228576802_Call_with_current_continuation_patterns) 
 (Darrell Ferguson and Dwight Deugo), September 2001.
 
 This explores patterns in Scheme that employ `call-with-current-continuation`, not patterns in Prolog that use `reset/3`/`shift/1`
