@@ -1,6 +1,8 @@
+:- debug(iterator).
+
 % ===
-% The "master coroutine": It writes the values yielded by the "iterator"
-% represented by "Goal" to stdout.
+% The "master predicate": It writes the values yielded by the "iterator predicate" 
+% (represented by "Goal") to stdout.
 % ===
 
 with_write(Goal) :-
@@ -8,18 +10,17 @@ with_write(Goal) :-
   branch(Cont,yield(X)).
 
 branch(0,_) :- !,
-   format("Iterator succeeded\n"). % The X of the yield(X) is unbound
+   debug(iterator,"Iterator succeeded",[]).
 
-branch(Cont,yield(X)) :- 
-   format("Iterator yielded ~q\n",[X]),
+branch(Cont,yield(X)) :-
+   debug(iterator,"Iterator yielded ~q",[X]),
    with_write(Cont).
 
 % ===
-% The "iterator", generating successive values (read from a list in
-% this case) that are communicated to the master coroutine by a call
-% to shift/1.
-% However, the "iterator" behaves in peculiar ways depending on the
-% element encountered because we want to see what happens exactly.
+% The "iterator predicate", generating successive values (read from a list in
+% this case) that are communicated to the master predicate by a call to shift/1.
+% However, the "iterator" behaves in specific ways depending on the
+% element encountered because ... we want to see what happens next!!
 % ==
 
 from_list([X|Xs]) :-
@@ -47,4 +48,3 @@ from_list([]).
 run(L) :-
    must_be(list,L),
    with_write(from_list(L)).
-
