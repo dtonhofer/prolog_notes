@@ -29,13 +29,13 @@ Some Wikipedia entries:
    - [setjmp.h](https://en.wikipedia.org/wiki/Setjmp.h)
    
 ### Papers
-
-_As indicated in the SWI-Prolog manual:_
  
 [**Delimited continuations for Prolog**](https://www.swi-prolog.org/download/publications/iclp2013.pdf)
    - SCHRIJVERS, T., DEMOEN, B., DESOUTER, B., & WIELEMAKER, J.
    - 2013
    - Theory and Practice of Logic Programming, 13(4-5), 533-546. doi:10.1017/S1471068413000331
+
+(As indicated in the SWI-Prolog manual)
 
 From that paper:
 
@@ -44,14 +44,12 @@ From that paper:
 > continuations are more light-weight, more robust with respect to changes and do not require pervasive changes to existing code bases.
 
 The [publication page of that paper](https://www.cambridge.org/core/journals/theory-and-practice-of-logic-programming/article/delimited-continuations-for-prolog/DD08147828169E26212DFAF743C8A9EB) has a lot of live links to the the references, in particular:
-
-_Technical Report:_
  
 [**Delimited continuations in Prolog: semantics, use, and implementation in the WAM**](https://biblio.ugent.be/publication/5646080)
    - Tom Schrijvers (UGent), Bart Demoen and Benoit Desouter (UGent) 
    - March 13, 2013
 
-This is an excellent resource for background information.
+Technical Report. This is an excellent resource.
 
 Abstract:
 
@@ -74,11 +72,11 @@ Section 7.6:
 > Dubaet al. added first-class continuations to the statically typed ML language [Typing first-class continuations in ML, POPL '91].  
 > Flattet al.implementeda production version in Scheme [Adding delimited and composable control to a production programming environment, 2007]
 
-_This one introduces `shift` and `reset` operations but it's a very technical paper (I don't get it ... yet)_
-
 [**Abstracting Control**](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.43.8753) 
 - Olivier Danvy and Andrzej Filinski
 - appears in _Proceedings of the 1990 ACM Conference on LISP and Functional Programming_
+
+This one introduces `shift` and `reset` operations but it's a very technical paper (I don't get it ... yet).
 
 We read:
 
@@ -98,11 +96,11 @@ We read:
 
 Ok, this needs more study.
 
-_An eminently readable one:_
-
 [**Call with current continuation patterns**](https://www.researchgate.net/publication/228576802_Call_with_current_continuation_patterns)
 - Darrell Ferguson and Dwight Deugo
 - September 2001.
+
+Eminently readable!
 
 This explores patterns in Scheme that employ `call-with-current-continuation` (aka. `call/cc`), not patterns in Prolog that use `reset/3`/`shift/1`
 but once one notices the relationship between `call/cc` and `reset/3` that becomes less important.
