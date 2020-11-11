@@ -59,7 +59,7 @@ Authors Info & Affiliations
    - Marc Denecker, Joost Vennekens, Hanne Vlaeminck, Johan Wittocx, Maurice Bruynooghe
    - Springer LNAI 6565
    - _Stable Semantics_ 
-- 2012-04 [**Programming Paradigms for Dummies: What Every Programmer Should Know](https://www.researchgate.net/publication/241111987_Programming_Paradigms_for_Dummies_What_Every_Programmer_Should_Know)
+- 2012-04 [**Programming Paradigms for Dummies: What Every Programmer Should Know**](https://www.researchgate.net/publication/241111987_Programming_Paradigms_for_Dummies_What_Every_Programmer_Should_Know)
    - Peter Van Roy (Université Catholique de Louvain)
 - 2013-05 [**Truth versus Information in Logic Programming**](https://arxiv.org/abs/1305.0141v2)
    - Lee Naish, Harold Sondergaard
