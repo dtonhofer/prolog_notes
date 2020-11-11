@@ -1,61 +1,255 @@
-# Continuations
+# Delimited Continuations
 
-(Work in progresss)
+This is additional material for the page [Delimited Continuations](https://eu.swi-prolog.org/pldoc/man?section=delcont) of the SWI-Prolog manual.
 
-(But why are they "delimited"?)
+## Errata
 
-(The use of continuations to express an alorithm seems to be in competition with the use of monads to do the same. 
-Some people says "monads are better", some differ. In Prolog, it seems to me that monads are rebarbative to implement
-as the "monad object" carries context state valid at creation time, same as a closure. So it has to be represented by
-some structured object, maybe a dict, which would be a leaf in a tree-of-context. More on this another time maybe.)
+The manual says:
 
-In the SWI-Prolog manual: 
+"Delimited continuation for Prolog is described in [Schrijvers et al., 2013](https://eu.swi-prolog.org/pldoc/man?section=bibliography#DBLP%3Ajournals/tplp/SchrijversDDW13) [(preprint PDF)]."
 
-- [Delimited Continuations (eu.swi-prolog.org)](https://eu.swi-prolog.org/pldoc/man?section=delcont)
-- [Delimited Continuations (www.swi-prolog.org)](https://www.swi-prolog.org/pldoc/man?section=delcont)
+   - The link for "Schrijvers et al., 2013" just leads to the bibliography page where one is stranded because there are no live links to continue.
+   - The link for "preprint PDF" leads to a preprint of the ISO Standardization effort for the C language. Shurely some mistake?
+   
+The correct link to the paper is:
 
-These are the same èages but the comment sections differ.
+   - _Delimited continuations for Prolog_ https://www.swi-prolog.org/download/publications/iclp2013.pdf
+   
+The PDF says it has been written in 2003, but it has really been written in 2013. It's a preprint. 
 
-From \[DCP13\] (see below for reference): 
-
-> Delimited continuations enable the definition of new high-level language features at the program level (e.g. in libraries)
-> rather than at the meta-level as program transformations. As a consequence, feature extensions based on delimited 
-> continuations are more light-weight, more robust with respect to changes and do not require pervasive changes to existing code bases.
+It has been [published](https://www.cambridge.org/core/journals/theory-and-practice-of-logic-programming/article/delimited-continuations-for-prolog/DD08147828169E26212DFAF743C8A9EB) in _Theory and Practice of Logic Programming_ in 2013.
 
 ## Reading
 
-- \[DCP13\]: [Delimited continuations for Prolog](https://www.swi-prolog.org/download/publications/iclp2013.pdf) (Preprint PDF), 2013
-   - Tom Schrijvers, Bert Demoen, Benoit Desouter, Jan Wielemaker
-   - Reference [here](https://www.cambridge.org/core/journals/theory-and-practice-of-logic-programming/article/delimited-continuations-for-prolog/DD08147828169E26212DFAF743C8A9EB)
-   - (The PDF wrongly indicates the year "2003")
+And also some Wikipedia entries:
 
-## More Reading
+   - [call-with-current-continuation](https://en.wikipedia.org/wiki/Call-with-current-continuation)
+   - [Coroutine](https://en.wikipedia.org/wiki/Coroutine)
+   - [Continuation](https://en.wikipedia.org/wiki/Continuation)
+   
+Papers:
 
-- Wikipedia: [`setjmp.h`](https://en.wikipedia.org/wiki/Setjmp.h)
-- Wikipedia: [Continuation](https://en.wikipedia.org/wiki/Continuation) (as usual, Prolog is not listed as supporting this)
-- Wikipedia: [`call-with-current-continuation`](https://en.wikipedia.org/wiki/Call-with-current-continuation)
+[_Abstracting Control_](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.43.8753) (Olivier Danvy and Andrzej Filinski), appears in _Proceedings of the 1990 ACM Conference on LISP and Functional Programming_
 
-- [Abstracting control](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.43.8753)
-   - Olivier Danvy , Andrzej Filinski 
-   - In _Proceedings of the 1990 ACM Conference on LISP and Functional Programming_ pp. 151-160
-      
-## Example: Effect handler for state
+...which introduces `shift` and `reset` operations but it's a very technical paper (I don't get it ... yet)
 
-In \[DCP13\]: 
+We read:
 
-> Effect handlers are an elegant way to add many kinds of side-effectful operations to a language
-> and \[are\] far less instrusive than monads ... the effect handler decouples the syntax of the
-> new operations from their semantics"
+> `Shift` abstracts the current context as an ordinary, composable procedure and `reset` delimits the scope of such a context.
+> `Shift` also differs from `escape`  by not duplicating the current continuation. (...) While the effects of these operators are
+> very similar to operators control and prompt of [Felleisen 88: The Theory and Practice of First-Class Prompts], there is a 
+> significant semantical difference between `shift`/`reset` and `control`/`prompt`: the context abstracted by `shift` is determined
+> statically by the program text, while `control` captures the context up to the nearest dynamically enclosing `prompt`.
+> In general, this leads to different behavior.
+> 
+> Programming with continuations has appeared as an intriguing possibility offered by control operators such as Landin's `J`, Reynolds's `escape`,
+> and `call-with-current-continuation` in Scheme. Such first-class continuations are more general than MacLisp's `catch`/`throw` mechanism
+> and ML's `exceptions` since they allow a previous scope to be restored, just like applying a functional value reestablishes
+> an earlier environment. First-class continuations have been investigated mainly as powerful, but unstructured devices requiring a
+> deep intuition and operational skill [Friedman, Haynes, & Kohlbecker 84] [Haynes & Friedman 87]. However, some progress has
+> been made towards a more declarative view of them, based on a category-theoretical duality between values and continuations [Filinski 89].
 
-**Code: [state_handler.pl](code/state_handler.pl)**
+Ok, this needs more study.
 
-Diagram it, more or less:
+An eminently readable one:
 
-![State Handler](pics/state_handler.svg)
+[_Call with current continuation patterns_](https://www.researchgate.net/publication/228576802_Call_with_current_continuation_patterns) 
+(Darrell Ferguson and Dwight Deugo), September 2001.
 
-## Example: Iterator
+This explores patterns in Scheme that employ `call-with-current-continuation`, not patterns in Prolog that use `reset/3`/`shift/1`
+but once one notices the relationship between `call-with-current-continuation` and `reset/3` that becomes less important.
+Plus it provides an excellent intro.
 
-This can be used to model the behaviour of an IO monad for sure. But that needs to be explained and coded in detail.
+## Similarity to `throw`/`catch`
 
-**Code: [iterator.pl](code/iterator.pl)**
+Note the similarity between exception handling and delimited continuations. This is not an accident:
 
+   - `catch(:Goal, +Catcher, :Recover)` ([`catch/3`](https://eu.swi-prolog.org/pldoc/man?predicate=catch/3)) and
+   - `throw(+Exception)` ([`throw/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=throw/1))
+    
+vs 
+    
+   - `reset(:Goal, ?Ball, -Continuation)` ([`reset/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=reset/3)) and
+   - `shift(+Ball)` ([`shift/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=shift/1))
+
+Indeed, the exception handling operations are a specialization of the delimited continuation operations whereby the `Recover`
+goal is called if `Goal` calls `shift/1` with an exception term. The `Continuation` is discarded.
+
+Similarly, if the call stack contains several points where `reset/3` was called (i.e. there are nested `reset/3` calls)
+and the currently executing procedure calls ` shift/1` with a term `T`, then execution flow goes to the nearest `reset/3`
+call point that has a unifying `Ball` - in the same way as as execution flow goes to the nearest `catch/3` that 
+unifies `Catcher` with `E`, where `E` is the term thrown by `throw/1`.
+
+## Examples
+
+On [this page](swipl_notes/about_continuations/code/)
+
+Inspired _Schrijvers et al., 2013_:
+
+- [iterator](/swipl_notes/about_continuations/code/iterator): An implementation of "iterators" (which are apparently
+  "generators", which are "semi-coroutines") that generate output on behalf of a "master predicate".
+  The "master predicate" sends the output to a user-selectable destination (in this case, stdout).
+   - [`iterator.pl`](swipl_notes/about_continuations/code/iterator/iterator.pl)
+   - [Illustration](swipl_notes/about_continuations/code/iterator/pics/iterator_and_master_coroutine.svg)
+- [effect handler](swipl_notes/about_continuations/code/effect_handler): An implementation of an "effect handler" (state handler?)
+  keeping track of state on behalf of client code. State (now behind the curtain) is accessed by get/set commands
+  which are terms passed to `shift/1`. This comes with two examples: a Markov Network visitor and a counter-to-zero.
+  This works only for a single "thread" of client code. Once you have producer/consumer coroutines accessing
+  the same state, the "get" no longer works and you need to use [global variables](https://eu.swi-prolog.org/pldoc/man?section=gvar)
+  or something similar.
+
+And also:
+
+- [producer/consumer](swipl_notes/about_continuations/code/producer_consumer): 
+   - [`producer_consumer_master.pl`](swipl_notes/code/producer_consumer/producer_consumer_master.pl): a producer-consumer
+     coroutine example with a central "master" that dishes out the `reset/3` calls. (There seems no way to make the
+     producer and consumer subroutines look symmetric using `reset`/`shift` and not having a "master" makes the code
+     and unholy mess, so ... we have a "master")
+
+## Playing around with a booby-trapped "iterator" implementation
+
+Quite instructive to run this.
+
+The predicate-to-call takes a list, the elements of which are then "generated" (i.e. emitted)
+one-by-one by an "iterator" and printed to stdout by the `with_write/1` "master"
+
+Change the contents of the list passed to `run/1` to elicit some occurrences of interest from `reset/3`:
+
+```
+:- debug(iterator).
+
+% ===
+% The "master predicate": It writes the values yielded by the "iterator predicate" 
+% (represented by "Goal") to stdout.
+% ===
+
+with_write(Goal) :-
+  reset(Goal,yield(X),Cont),
+  branch(Cont,yield(X)).
+
+branch(0,_) :- !,
+   debug(iterator,"Iterator succeeded",[]).
+
+branch(Cont,yield(X)) :-
+   debug(iterator,"Iterator yielded ~q",[X]),
+   with_write(Cont).
+
+% ===
+% The "iterator predicate", generating successive values (read from a list in
+% this case) that are communicated to the master predicate by a call to shift/1.
+% However, the "iterator" behaves in specific ways depending on the
+% element encountered because ... we want to see what happens next!!
+% ==
+
+from_list([X|Xs]) :-
+   ((X == fail; X == false)         % elicit failure
+   -> fail
+   ;
+   (X == throw)                     % elicit exception
+   -> domain_error(this,that)
+   ;
+   (X == badshift)                  % elicit shift not unifiable by reset/3 call
+   -> shift(bad(X))
+   ;
+   (X == recur)                     % elicit matrioshka reset/3 call
+   -> with_write(from_list([sub1,sub2,sub3]))
+   ;
+   shift(yield(X))),                % bravely default
+   from_list(Xs).                   % tail recursive loop
+
+from_list([]).
+
+% ==
+% Main predicate, call from toplevel
+% ==
+
+run(L) :-
+   must_be(list,L),
+   with_write(from_list(L)).
+```
+
+And so:
+
+```
+?- run([a,b,c]).
+% Iterator yielded a
+% Iterator yielded b
+% Iterator yielded c
+% Iterator succeeded
+true.
+
+?- run([a,fail,c]).
+% Iterator yielded a
+false.
+
+?- run([a,throw,c]).
+% Iterator yielded a
+ERROR: Domain error: `this' expected, found `that'
+
+?- run([a,badshift,c]).
+% Iterator yielded a
+ERROR: reset/3 `bad(badshift)' does not exist
+
+?- run([a,recur,c]).
+% Iterator yielded a
+% Iterator yielded sub1
+% Iterator yielded sub2
+% Iterator yielded sub3
+% Iterator succeeded
+% Iterator yielded c
+% Iterator succeeded
+true.
+```
+
+## The "continuation" term is a compound term
+
+At least in the current implementation. If you run the following on a continuation `Cont`:
+
+```
+compound_name_arity(Cont,Name,Arity),
+format("The continuation has name '~q' and ~d arguments ~q\n",[Name,Arity]).
+```
+
+you get:
+
+```
+The continuation has name 'call_continuation' and 1 arguments
+```
+
+which is why a valid continuation is guaranteed distinguishable from 0.
+
+It is actually an atomic goal: a call to `call_continuation/1` with 1 argument prefilled.
+
+This is also why `reset/3` can take both an atomic goal on the first round and a continuation returned by a previous `reset/3`.
+
+## Edge cases
+
+There is nothing to do for the continuation of `shift/1` itself:
+
+```
+?- reset(shift(mine),mine,C).
+C = call_continuation([]).
+
+?- reset(shift(mine),mine,C), call(C).
+C = call_continuation([]).
+```
+
+There is something to do if there is a true following the `shift/1`, namely, succeed:
+
+```
+?- reset((shift(mine),true),mine,C).
+C = call_continuation(['$cont$'(<clause>(0x23a5510), 15, '<inactive>', user, 125, '<inactive>', true)]).
+
+?- reset((shift(mine),true),mine,C), call(C).
+C = call_continuation(['$cont$'(<clause>(0x23a5510), 15, '<inactive>', user, 125, '<inactive>', true)]).
+```
+
+There is something to do if there is a false following the `shift/1`, namely, fail:
+
+```
+?- reset((shift(mine),false),mine,C).
+C = call_continuation(['$cont$'(<clause>(0x23a5510), 15, '<inactive>', user, 125, '<inactive>', false)]).
+
+?- reset((shift(mine),false),mine,C), call(C).
+false.
+```
