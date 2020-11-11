@@ -30,7 +30,12 @@ Some Wikipedia entries:
    
 ### Papers
 
-[**Delimited continuations for Prolog**](https://www.swi-prolog.org/download/publications/iclp2013.pdf) as indicated in the manual.
+_As indicated in the SWI-Prolog manual:_
+ 
+[**Delimited continuations for Prolog**](https://www.swi-prolog.org/download/publications/iclp2013.pdf)
+   - SCHRIJVERS, T., DEMOEN, B., DESOUTER, B., & WIELEMAKER, J.
+   - 2013
+   - Theory and Practice of Logic Programming, 13(4-5), 533-546. doi:10.1017/S1471068413000331
 
 From that paper:
 
@@ -40,9 +45,11 @@ From that paper:
 
 The [publication page of that paper](https://www.cambridge.org/core/journals/theory-and-practice-of-logic-programming/article/delimited-continuations-for-prolog/DD08147828169E26212DFAF743C8A9EB) has a lot of live links to the the references, in particular:
 
-[**Delimited continuations in Prolog: semantics, use, and implementation in the WAM**](https://biblio.ugent.be/publication/5646080) Technical Report
+_Technical Report:_
+ 
+[**Delimited continuations in Prolog: semantics, use, and implementation in the WAM**](https://biblio.ugent.be/publication/5646080)
    - Tom Schrijvers (UGent), Bart Demoen and Benoit Desouter (UGent) 
-   - 2013
+   - March 13, 2013
 
 Abstract:
 
@@ -54,11 +61,11 @@ Abstract:
 > implementations. The constructs are compared with similar ones in BinProlog and Haskell. Their interaction with other 
 > parts of Prolog is discussed.
 
+_This one introduces `shift` and `reset` operations but it's a very technical paper (I don't get it ... yet)_
+
 [**Abstracting Control**](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.43.8753) 
 - Olivier Danvy and Andrzej Filinski
 - appears in _Proceedings of the 1990 ACM Conference on LISP and Functional Programming_
-
-...which introduces `shift` and `reset` operations but it's a very technical paper (I don't get it ... yet)
 
 We read:
 
@@ -78,7 +85,7 @@ We read:
 
 Ok, this needs more study.
 
-An eminently readable one:
+_An eminently readable one:_
 
 [**Call with current continuation patterns**](https://www.researchgate.net/publication/228576802_Call_with_current_continuation_patterns)
 - Darrell Ferguson and Dwight Deugo
