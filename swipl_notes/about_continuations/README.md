@@ -202,6 +202,8 @@ On [this page](/swipl_notes/about_continuations/code/)
      producer and consumer subroutines look symmetric using `reset`/`shift` and not having a "master" makes the code
      and unholy mess, so ... we have a "master")
 
+## More examples 
+
 ### "Shifting" is not like backtracking
 
 Variables that have been bound in the procedure called by `reset/3` stay bound after a `shift/1`:
