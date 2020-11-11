@@ -19,13 +19,20 @@ The PDF says it has been written in 2003, but it has really been written in 2013
 
 It has been [published](https://www.cambridge.org/core/journals/theory-and-practice-of-logic-programming/article/delimited-continuations-for-prolog/DD08147828169E26212DFAF743C8A9EB) in _Theory and Practice of Logic Programming_ in 2013.
 
+From that paper:
+
+> Delimited continuations enable the definition of new high-level language features at the program level (e.g. in libraries)
+> rather than at the meta-level as program transformations. As a consequence, feature extensions based on delimited 
+> continuations are more light-weight, more robust with respect to changes and do not require pervasive changes to existing code bases.
+
 ## Reading
 
 Some Wikipedia entries:
 
-   - [call-with-current-continuation](https://en.wikipedia.org/wiki/Call-with-current-continuation)
+   - [Call-with-current-continuation](https://en.wikipedia.org/wiki/Call-with-current-continuation)
    - [Coroutine](https://en.wikipedia.org/wiki/Coroutine)
-   - [Continuation](https://en.wikipedia.org/wiki/Continuation)
+   - [Continuation](https://en.wikipedia.org/wiki/Continuation) (as usual, Prolog is not listed as supporting this; well, it _isn't_ in the ISO Standard)
+   - [setjmp.h](https://en.wikipedia.org/wiki/Setjmp.h)
    
 ### Papers
 
@@ -59,8 +66,8 @@ An eminently readable one:
 - Darrell Ferguson and Dwight Deugo
 - September 2001.
 
-This explores patterns in Scheme that employ `call-with-current-continuation`, not patterns in Prolog that use `reset/3`/`shift/1`
-but once one notices the relationship between `call-with-current-continuation` and `reset/3` that becomes less important.
+This explores patterns in Scheme that employ `call-with-current-continuation` (aka. `call/cc`), not patterns in Prolog that use `reset/3`/`shift/1`
+but once one notices the relationship between `call/cc` and `reset/3` that becomes less important.
 Plus it provides an excellent intro.
 
 ## Similarity to `throw`/`catch`
@@ -83,31 +90,148 @@ and the currently executing procedure calls ` shift/1` with a term `T`, then exe
 call point that has a unifying `Ball` - in the same way as as execution flow goes to the nearest `catch/3` that 
 unifies `Catcher` with `E`, where `E` is the term thrown by `throw/1`.
 
+## Relationship between `call/cc` and `reset/3`
+
+The Scheme function `call/cc` is called with a "receiver" function that takes one continuation argument.
+`call/cc` invokes the receiver with the continuation which continues after `call/cc`. The receiver function
+is meant to call that continuation to "get out" of some nested computation. 
+
+The counterpart is `reset(Goal, Ball, Continuation)`. It actually creates a continuation "behind the scenes" which
+can be retrieved and called by a `shift/1` called from `Goal` (the argument to `shift/1` just needs to match `Ball` 
+to retrieve the appropriate continuation somewhere on the call stack). So unlike for `call/cc` the continuation 
+at the `call/cc` point stays invisible. However, you get the continuation for the `shift/1` point for free. With
+`call/cc` you have to pass through some hoops to obtain it.
+
 ## Examples
 
-On [this page](swipl_notes/about_continuations/code/)
+### Inspired _Schrijvers et al., 2013_
 
-Inspired _Schrijvers et al., 2013_:
+On [this page](/swipl_notes/about_continuations/code/)
 
 - [iterator](/swipl_notes/about_continuations/code/iterator): An implementation of "iterators" (which are apparently
   "generators", which are "semi-coroutines") that generate output on behalf of a "master predicate".
   The "master predicate" sends the output to a user-selectable destination (in this case, stdout).
-   - [`iterator.pl`](swipl_notes/about_continuations/code/iterator/iterator.pl)
-   - [Illustration](swipl_notes/about_continuations/code/iterator/pics/iterator_and_master_coroutine.svg)
-- [effect handler](swipl_notes/about_continuations/code/effect_handler): An implementation of an "effect handler" (state handler?)
+   - [`iterator.pl`](/swipl_notes/about_continuations/code/iterator/iterator.pl)
+   - [Illustration](/swipl_notes/about_continuations/code/iterator/pics/iterator_and_master_coroutine.svg)
+- [effect handler](/swipl_notes/about_continuations/code/effect_handler): An implementation of an "effect handler" (state handler?)
   keeping track of state on behalf of client code. State (now behind the curtain) is accessed by get/set commands
   which are terms passed to `shift/1`. This comes with two examples: a Markov Network visitor and a counter-to-zero.
   This works only for a single "thread" of client code. Once you have producer/consumer coroutines accessing
   the same state, the "get" no longer works and you need to use [global variables](https://eu.swi-prolog.org/pldoc/man?section=gvar)
   or something similar.
 
-And also:
+### Producer/Consumer
 
-- [producer/consumer](swipl_notes/about_continuations/code/producer_consumer): 
-   - [`producer_consumer_master.pl`](swipl_notes/code/producer_consumer/producer_consumer_master.pl): a producer-consumer
+- [producer/consumer](/swipl_notes/about_continuations/code/producer_consumer): 
+   - [`producer_consumer_master.pl`](/swipl_notes/code/producer_consumer/producer_consumer_master.pl): a producer-consumer
      coroutine example with a central "master" that dishes out the `reset/3` calls. (There seems no way to make the
      producer and consumer subroutines look symmetric using `reset`/`shift` and not having a "master" makes the code
      and unholy mess, so ... we have a "master")
+
+### "shifting" is not like backtracking
+
+Variables that have been bound stay bound:
+
+```
+:- debug(changee).
+
+changee :-
+   debug(changee,"Changee says the variable is ~q",[N]),
+   reset(call(changer,N),mine,_),
+   debug(changee,"Changee now says the variable is ~q",[N]).
+   
+changer(N) :-
+   N = foo,
+   shift(mine).
+```
+
+And so:
+
+```
+?- changee.
+% Changee says the variable is _10566
+% Changee now says the variable is foo
+true.
+```
+
+### There is backtracking over the goal of `reset/3`
+
+```
+:- debug(multi).
+ 
+multi :-   
+   debug(multi,"Calling 'possible' through 'reset'",[]),
+   reset(possible,mine,_),
+   debug(multi,"Back in 'multi'",[]).
+       
+possible :-
+   debug(multi,"In 'possible'",[]),
+   shift(mine).
+   
+possible :-   
+   debug(multi,"In alternate 'possible'",[]),
+   shift(mine).
+```
+
+And so:
+
+```
+?- multi.
+% Calling 'possible' through 'reset'
+% In 'possible'
+% Back in 'multi'
+true ;
+% In alternate 'possible'
+% Back in 'multi'
+true.
+```
+
+### How about a little loop
+
+This loop is rather generic, as one can switch the code executed in the loop-pass, i.e. `loopcontent/1`.
+
+Note the indirect call to `loopcontent/1` from within `reset/3` via `call/2` - this
+is needed because we want to pass `N`.
+
+```
+:- debug(loop).
+
+loop(N) :-
+   (N>0) ->   
+   (
+     debug(loop,"Switching to loopcontent(~d)",[N]),
+     reset(call(loopcontent,N),mine,_),
+     debug(loop,"Back in loop",[]),
+     Nm is N-1,
+     loop(Nm)
+  )
+  ;
+  debug(loop,"Loop is done",[]).
+   
+loopcontent(N) :-
+  debug(loop,"In loopcontent(~d)",[N]),
+  shift(mine).
+```   
+
+And so:
+
+```
+?- loop(4).
+% Switching to loopcontent(4)
+% In loopcontent(4)
+% Back in loop
+% Switching to loopcontent(3)
+% In loopcontent(3)
+% Back in loop
+% Switching to loopcontent(2)
+% In loopcontent(2)
+% Back in loop
+% Switching to loopcontent(1)
+% In loopcontent(1)
+% Back in loop
+% Loop is done
+true.
+```
 
 ## Playing around with a booby-trapped "iterator" implementation
 
