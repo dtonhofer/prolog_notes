@@ -51,6 +51,8 @@ _Technical Report:_
    - Tom Schrijvers (UGent), Bart Demoen and Benoit Desouter (UGent) 
    - March 13, 2013
 
+This is an excellent resource for background information.
+
 Abstract:
 
 > An implementation of a delimited continuations, known in the functional programming world, is shown in the context of the
@@ -60,6 +62,17 @@ Abstract:
 > usefulness is shown in a series of examples. The idea behind this implementation can be adapted to other Prolog
 > implementations. The constructs are compared with similar ones in BinProlog and Haskell. Their interaction with other 
 > parts of Prolog is discussed.
+
+Section 7.6:
+
+> **7.6 The Origin of Delimited Continuations**
+>
+> Felleisen introduced reset and shift (“prompt applications”) using the untyped lambda-calculus [The theory and practice of first-class prompts, 1988]. 
+> He defined the semantics via translation to a stack-machine, but did notprovide an actual implementation. 
+> One of his examples was a yield-mechanism on a tree. Felleisen already pointed out the relation of
+> continuations to stream-programming, although he did not distinguish yield as a separate operator.
+> Dubaet al. added first-class continuations to the statically typed ML language [Typing first-class continuations in ML, POPL '91].  
+> Flattet al.implementeda production version in Scheme [Adding delimited and composable control to a production programming environment, 2007]
 
 _This one introduces `shift` and `reset` operations but it's a very technical paper (I don't get it ... yet)_
 
