@@ -19,12 +19,6 @@ The PDF says it has been written in 2003, but it has really been written in 2013
 
 It has been [published](https://www.cambridge.org/core/journals/theory-and-practice-of-logic-programming/article/delimited-continuations-for-prolog/DD08147828169E26212DFAF743C8A9EB) in _Theory and Practice of Logic Programming_ in 2013.
 
-From that paper:
-
-> Delimited continuations enable the definition of new high-level language features at the program level (e.g. in libraries)
-> rather than at the meta-level as program transformations. As a consequence, feature extensions based on delimited 
-> continuations are more light-weight, more robust with respect to changes and do not require pervasive changes to existing code bases.
-
 ## Reading
 
 Some Wikipedia entries:
@@ -35,6 +29,30 @@ Some Wikipedia entries:
    - [setjmp.h](https://en.wikipedia.org/wiki/Setjmp.h)
    
 ### Papers
+
+[**Delimited continuations for Prolog**](https://www.swi-prolog.org/download/publications/iclp2013.pdf) as indicated in the manual.
+
+From that paper:
+
+> Delimited continuations enable the definition of new high-level language features at the program level (e.g. in libraries)
+> rather than at the meta-level as program transformations. As a consequence, feature extensions based on delimited 
+> continuations are more light-weight, more robust with respect to changes and do not require pervasive changes to existing code bases.
+
+The [publication page of that paper](https://www.cambridge.org/core/journals/theory-and-practice-of-logic-programming/article/delimited-continuations-for-prolog/DD08147828169E26212DFAF743C8A9EB) has a lot of live links to the the references, in particular:
+
+[**Delimited continuations in Prolog: semantics, use, and implementation in the WAM**](https://biblio.ugent.be/publication/5646080) Technical Report
+   - Tom Schrijvers (UGent), Bart Demoen and Benoit Desouter (UGent) 
+   - 2013
+
+Abstract:
+
+> An implementation of a delimited continuations, known in the functional programming world, is shown in the context of the
+> WAM, and more particular in hProlog. Three new predicates become available to the user: reset/3 and shift/1 for delimiting
+> and capturing the continuation, and call continuation/1 for calling it. The underlying low-level built-ins and modifications 
+> to the system are described in detail. While these do not turn continuations into first-class Prolog citizens, their 
+> usefulness is shown in a series of examples. The idea behind this implementation can be adapted to other Prolog
+> implementations. The constructs are compared with similar ones in BinProlog and Haskell. Their interaction with other 
+> parts of Prolog is discussed.
 
 [**Abstracting Control**](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.43.8753) 
 - Olivier Danvy and Andrzej Filinski
@@ -345,7 +363,8 @@ The continuation has name 'call_continuation' and 1 arguments
 
 which is why a valid continuation is guaranteed distinguishable from 0.
 
-It is actually an atomic goal: a call to `call_continuation/1` with 1 argument prefilled.
+It is actually an atomic goal: a call to `call_continuation/1` with 1 argument prefilled. That predicate is not documented but
+it evidently calls the continuation.
 
 This is also why `reset/3` can take both an atomic goal on the first round and a continuation returned by a previous `reset/3`.
 
