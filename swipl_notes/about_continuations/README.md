@@ -202,21 +202,21 @@ On [this page](/swipl_notes/about_continuations/code/)
      producer and consumer subroutines look symmetric using `reset`/`shift` and not having a "master" makes the code
      and unholy mess, so ... we have a "master")
 
-### "shifting" is not like backtracking
+### "Shifting" is not like backtracking
 
-Variables that have been bound stay bound:
+Variables that have been bound in the procedure called by `reset/3` stay bound after a `shift/1`:
 
 ```
 :- debug(changee).
 
 changee :-
    debug(changee,"Changee says the variable is ~q",[N]),
-   reset(call(changer,N),mine,_),
+   reset(changer(N),changed_it,_),
    debug(changee,"Changee now says the variable is ~q",[N]).
    
 changer(N) :-
    N = foo,
-   shift(mine).
+   shift(changed_it).
 ```
 
 And so:
@@ -228,7 +228,7 @@ And so:
 true.
 ```
 
-### There is backtracking over the goal of `reset/3`
+### There is proper backtracking over the goal called by `reset/3`
 
 ```
 :- debug(multi).
@@ -260,12 +260,56 @@ true ;
 true.
 ```
 
+### An `observer` which observes an open list being grown by an `appender` invoking siad `observer` 
+
+```
+:- debug(observer).
+
+starter :- 
+   Tip=Fin,                                    % The Tip and Fin of an open list, initialy the sam unbound variable
+   reset(observer(Tip),_,ObsCont),             % Call the observer with the Tip of the open list; it always references the same "cell" in memory
+   appender([a,b,c,d],Fin,ObsCont,_).          % Append the given list to the open list at Fin (which references different cells over time)
+
+appender([X|Xs],Fin,ObsCont,_) :-
+   Fin=[X|NewFin],                             % Append X to the open list, giving a new fin, NewFin
+   reset(ObsCont,obs(Stop),ObsContNew),        % The "Stop" will be communicated to the next activation of appender/4
+   appender(Xs,NewFin,ObsContNew,Stop).        % Loop around for more growing (or for closing the list)
+   
+appender([],Fin,ObsCont,Stop) :-               % To make dataflow clear, we dont cram everything into the head
+   Fin = [],                                   % Close list
+   Stop = stop,                                % This will tell observer/1 to stop on next reset call as it binds the variable of the _previous_ reset
+   reset(ObsCont,_,N),                         % On return, N will be 0 because the observer succeeded
+   assertion(N==0).
+   
+observer(Tip) :-
+  debug(observer,"Observer sees: ~q",[Tip]),
+  shift(obs(Stop)),
+  ((Stop == stop)
+   -> debug(observer,"Observer received stop. Last observation: ~q",[Tip])
+   ;  (debug(observer,"Observer loops",[]),observer(Tip))).
+```
+
+And so:
+
+```
+?- starter.
+% Observer sees: _10550
+% Observer loops
+% Observer sees: [a|_14110]
+% Observer loops
+% Observer sees: [a,b|_14350]
+% Observer loops
+% Observer sees: [a,b,c|_14590]
+% Observer loops
+% Observer sees: [a,b,c,d|_14830]
+% Observer received stop. Last observation: [a,b,c,d]
+true.
+```
+
 ### How about a little loop
 
 This loop is rather generic, as one can switch the code executed in the loop-pass, i.e. `loopcontent/1`.
-
-Note the indirect call to `loopcontent/1` from within `reset/3` via `call/2` - this
-is needed because we want to pass `N`.
+Although this needs to be done manually here, the procedure name could also be a parameter to a `loop/2`.
 
 ```
 :- debug(loop).
@@ -274,7 +318,7 @@ loop(N) :-
    (N>0) ->   
    (
      debug(loop,"Switching to loopcontent(~d)",[N]),
-     reset(call(loopcontent,N),mine,_),
+     reset(loopcontent(N),mine,_),
      debug(loop,"Back in loop",[]),
      Nm is N-1,
      loop(Nm)
