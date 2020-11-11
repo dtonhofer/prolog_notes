@@ -27,9 +27,11 @@ Some Wikipedia entries:
    - [Coroutine](https://en.wikipedia.org/wiki/Coroutine)
    - [Continuation](https://en.wikipedia.org/wiki/Continuation)
    
-Papers:
+### Papers
 
-[**Abstracting Control**](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.43.8753) (Olivier Danvy and Andrzej Filinski), appears in _Proceedings of the 1990 ACM Conference on LISP and Functional Programming_
+[**Abstracting Control**](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.43.8753) 
+- Olivier Danvy and Andrzej Filinski
+- appears in _Proceedings of the 1990 ACM Conference on LISP and Functional Programming_
 
 ...which introduces `shift` and `reset` operations but it's a very technical paper (I don't get it ... yet)
 
@@ -53,8 +55,9 @@ Ok, this needs more study.
 
 An eminently readable one:
 
-[**Call with current continuation patterns**](https://www.researchgate.net/publication/228576802_Call_with_current_continuation_patterns) 
-(Darrell Ferguson and Dwight Deugo), September 2001.
+[**Call with current continuation patterns**](https://www.researchgate.net/publication/228576802_Call_with_current_continuation_patterns)
+- Darrell Ferguson and Dwight Deugo
+- September 2001.
 
 This explores patterns in Scheme that employ `call-with-current-continuation`, not patterns in Prolog that use `reset/3`/`shift/1`
 but once one notices the relationship between `call-with-current-continuation` and `reset/3` that becomes less important.
