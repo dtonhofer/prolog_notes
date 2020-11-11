@@ -6,7 +6,7 @@ This is additional material for the page [Delimited Continuations](https://eu.sw
 
 The manual says:
 
-"Delimited continuation for Prolog is described in [Schrijvers et al., 2013](https://eu.swi-prolog.org/pldoc/man?section=bibliography#DBLP%3Ajournals/tplp/SchrijversDDW13) [(preprint PDF)]."
+> Delimited continuation for Prolog is described in [Schrijvers et al., 2013](https://eu.swi-prolog.org/pldoc/man?section=bibliography#DBLP%3Ajournals/tplp/SchrijversDDW13) (preprint PDF).
 
    - The link for "Schrijvers et al., 2013" just leads to the bibliography page where one is stranded because there are no live links to continue.
    - The link for "preprint PDF" leads to a preprint of the ISO Standardization effort for the C language. Shurely some mistake?
