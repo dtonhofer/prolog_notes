@@ -33,7 +33,7 @@ Missed in the above:
   theorem prover (or rather, "enumerating consequence checker") of Prolog. And how do you direct search in a theorem prover anyway?
   The NP desert is not for the faint of heart.
 
-What is Prolog? In a 2012 paper by Peter Van Roy, [**Programming Paradigms for Dummies: What Every Programmer Should Know**](https://www.researchgate.net/publication/241111987_Programming_Paradigms_for_Dummies_What_Every_Programmer_Should_Know), the following diagram can be found:
+What is Prolog? In a 2012 paper by Peter Van Roy, [**Programming Paradigms for Dummies: What Every Programmer Should Know**](https://www.researchgate.net/publication/241111987_Programming_Paradigms_for_Dummies_What_Every_Programmer_Should_Know), the following diagram can be found on page 13:
    
 ![Taxonomy of programming Paradigms (by Peter van Roy)](pics/various/Taxonomy%20of%20programming%20Paradigms%20(by%20Peter%20van%20Roy).png)
    
