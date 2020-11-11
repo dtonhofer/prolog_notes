@@ -106,6 +106,43 @@ This explores patterns in Scheme that employ `call-with-current-continuation` (a
 but once one notices the relationship between `call/cc` and `reset/3` that becomes less important.
 Plus it provides an excellent intro.
 
+In particular the chapter on "Non-blind Backtracking" on pages 20 ff. seems to apply to `reset/3`/`shift/1` operations:
+
+> In [FHK84: Friedman, Haynes, Kohlbecker: "Programming with Continuations" (In P. Pepper, editor,
+> Program Transformation and Programming Environments), 1984.] the concept of _devils_, _angels_ 
+> and _milestones_ is presented. 
+
+Sounds like `shift/1`:
+
+> A devil will return us to the context in which the last milestone 
+> was created. The devil will pass to the continuation the value that was passed to it. Now this
+> value is used as if it were the result of the original milestone expression, possibly allowing
+> us to follow a different path.
+
+Sounds like calling the continuation obatined from `reset/3`. We can
+pass a value "forwards" to the point where the `shift/1` occurred via the continuation
+obtained from `reset/3`, but we _can_ bind an unbound variable communicated to the
+point of `reset/3` via the term shifted by `shift/1`:
+
+> An angel will send the computation forward to the last encounter with a devil. Again, the
+> value passed to the angel will be given to the devil’s continuation allowing us to return to
+> the context of the devil with this value replacing the value returned by the devil. This will
+> allow us to move to more advanced states. 
+
+Sounds like `reset/3`: 
+
+> A milestone will record the current context to be used by any encountered devils.
+
+> As a metaphor, we can take the example given in the introduction of this pattern language. 
+> We begin by reading the first paper and we reach a point where we realize that
+> we need further knowledge. We set a milestone (remembering where we were in this first
+> paper) and begin reading the references and other material. When we feel that we have
+> sufficient knowledge to continue with the original paper, we return to that paper (equivalent
+> to invoking a devil). Possibly, we didn’t read all the references and other related material
+> before we went back to this original paper. If this is the case, after finishing the original
+> paper we decide to go back to reading the remaining references and other material. This is
+> equivalent to invoking an angel.
+
 ## Similarity to `throw`/`catch`
 
 Note the similarity between exception handling and delimited continuations. This is not an accident:
