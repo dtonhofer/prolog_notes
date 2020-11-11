@@ -1,0 +1,63 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=sleep/1
+ 
+## Example sleeptimes
+
+Run:
+
+==
+bagof([Sleep,Delta]
+   ,T_begin^T_end^(member(Sleep,[-1,0,0.5,1,5]),
+     get_time(T_begin),
+     sleep(Sleep),
+     get_time(T_end),
+     Delta is max(0,T_end-T_begin))
+   ,Bag).
+==
+
+After a few seconds you get something like:
+
+==
+Bag = [[-1, 1.9073486328125e-6],
+       [0, 5.9604644775390625e-5], 
+       [0.5, 0.5000655651092529], 
+       [1, 1.0000708103179932],
+       [5, 5.000069856643677]].
+==
+
+## Missed opportunity!
+
+This is a miss for the use of `is`. One could have done this:
+
+==
+ActuallySlept is sleep(WantedSleep).
+==
+
+or at least the non-logical predicate:
+
+==
+sleep(WantedSleep,ActuallySlept).
+==
+
+## Is sleep interruptible?
+
+Documentation says;
+
+_On most non-realtime operating systems we can only ensure execution is suspended for at least Time seconds._
+ 
+Compare with Java's [`Thread.sleep()`](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/lang/Thread.html#sleep%28long%29) which sleeps **at least** the specified time, but may be **interrupted early**. It must be interruptible because some other thread could tell your thread you to shut down: https://www.javaspecialists.eu/archive/Issue056.html
+
+==
+public void run() {
+   while (true) {
+      System.out.print(".");
+      System.out.flush();
+      try {
+         Thread.sleep(1000);
+      } catch (InterruptedException ex) {
+         Thread.currentThread().interrupt(); // very important
+         break;
+      }
+   }
+   System.out.println("Shutting down thread");
+}
+==

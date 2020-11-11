@@ -126,6 +126,39 @@ all_false(List) :-
 
 Simple!
 
+## Another example
+
+Filtering the elements in a list that occur more than "limit" times. This is effortlessly done using dicts
+
+==
+filter_occurrences(List,Limit,Reacheds,Finals) :-
+   foldl(inc_for_key,List,_{},Finals),
+   findall(Key,(Finals.Key >= Limit),Reacheds).
+
+inc_for_key(Key,DictIn,DictOut) :-
+   (get_dict(Key,DictIn,X) -> succ(X,XP) ; XP=1),
+   put_dict(Key,DictIn,XP,DictOut).
+   
+:- begin_tests(filter_occurrences_less_than_n).
+
+test("filter empty list",true(R == [])) :-
+   filter_occurrences([],3,R,_).
+
+test("filter nonempty list #1 (limit 3)",true([R,Finals] == [[a,c],foo{a:4,b:2,c:3,d:1,e:1,f:1}])) :-
+   filter_occurrences([a,b,c,d,c,e,b,a,a,f,a,c],3,R,Finals),
+   dict_pairs(Finals,foo,_). % Sets the tag of the Finals dict to "foo"
+
+test("filter nonempty list #2 (limit 4)",true([R,Finals] == [[a],foo{a:4,b:2,c:3,d:1,e:1,f:1}])) :-
+   filter_occurrences([a,b,c,d,c,e,b,a,a,f,a,c],4,R,Finals),
+   dict_pairs(Finals,foo,_). % Sets the tag of the Finals dict to "foo"
+
+test("filter nonempty list #3 (limit 5)",true([R,Finals] == [[],foo{a:4,b:2,c:3,d:1,e:1,f:1}])) :-
+   filter_occurrences([a,b,c,d,c,e,b,a,a,f,a,c],5,R,Finals),
+   dict_pairs(Finals,foo,_). % Sets the tag of the Finals dict to "foo"
+
+:- end_tests(filter_occurrences_less_than_n).
+==
+
 ## An interesting example: A pipeline of operations
 
 ==
@@ -233,3 +266,4 @@ foldl(:Goal, +List, +V0, -V, +W0, -W, +K0, -K)
 ==
 
 One can of course pack the multiple accumulators into a single one.
+

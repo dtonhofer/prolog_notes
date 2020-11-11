@@ -1,38 +1,48 @@
 % =============================================================================
-% Coroutines implementing a Producer-Consumer pair.
+% Multiple Producer-Consumer coroutines working on the same pipe.
 % =============================================================================
-% The "producer" and "consumer" goals/coroutines are managed by a "master" 
-% goal/coroutine. "producer" and "consumer" communicate over a "pipe" which is
-% naturally-for-Prolog implemented using an "open list" (i.e. a list that does 
-% not have an [] at final position but an unbound variable: one can append to
-% it). That list need not be known to the "master" coroutine.
-% 
-% - The producer appends to the open list (appends at the list's FIN position)
-%   and closes it (sets the FIN to []) when there is nothing more that will be
-%   producede .
-% - The consumer reads a single element at the head of the list (reads the TIP
-%   position and moves tailwards). Once it reaches [], it knows the list 
-%   has been closed and all elements have been consumed.
+% Multiple producers write to the pipe.
+% Multiple consumers read from the pipe.
+% A master coroutine arbitrates and calls reset/3 on producers & consumers.
 %
-% Alternatively one could shift the execution flow between "producer" and 
-% "consumer" directly - but having a central "master" goal feels more natural.
+% The pipe has a limited number of "places". Once full, production stops.
+% Once empty, consumption stops.
+%
+% The pipe is basically an open list to which producers append at the tail
+% (the FIN) and from which consumers remove at the head (the TIP).
+%
+% To pack all information about the pipe into a single "object", the pipe
+% is represented by an SWI-Prolog dict: _{tip:Tip, fin:Fin, len:Len}.
+% 
+% While all coroutines can easily build a new "pipe dict" and hand it to the
+% master via shift/1 calls, coroutines have trouble obtaining the latest
+% pipe dict via another shift/1 call: when they get reactivated, the pipe
+% dict communicated to them via a fresh variable X in shift(get_pipe(X))
+% is likely completely out of date. We could use "global variables" but 
+% instead implement a stream of pipe dicts via another open list: the 
+% latest pipe dict is always at the far end of the list.
 
-:- debug(with_state).
+% Run with ?- run_pcmulti.
+
+:- debug(master).
 :- debug(consumer).
 :- debug(producer).
 
-run :-
-   producer_consumer_setup(producer,consumer). % the "Goals" are just the names of the predicates
+% In this example, we have 2 producers and 2 consumers.
+
+run_pcmulti :-
+   setup_producer_consumer_multi(
+      [producer(producer1),producer(producer2)],
+      [consumer(consumer1),consumer(consumer2)]).
+
+% Some constants.
 
 const(max_pipe_len,10).
 const(producer_success_probability,0.01).
 
-consumer_producer :-
-   pipe_init(Pipe),
-   consumer(Pipe,producer).
-
 % ===
-% SWI-Prolog dict representing the pipe, with some (traditional) predicates
+% SWI-Prolog dict representing the state of the pipe, with some (traditional,
+% instead of dict-associated) predicates.
 % ===
 
 % pipe_init(+NewPipe)
@@ -89,33 +99,61 @@ pipe_full(_{tip:Tip, fin:Fin, len:Len}) :-
    Len == MaxPipeLen.
 
 % ===
-% "The keeper of the pipe" - This is basically an effect handler / state 
-% handler / cmd handler. It switches between the producer and consumer 
-% coroutines by selecting a continuation at random and calling reset/3 on it.
-% So the coroutine predicates must be prepared to deal with that.
-% The keeper of the pipe handles the commands to "get the pipe" and "set the
-% pipe" emitted via shift/1 by the coroutines. 
-% The continuations of the coroutines are held in list. Once that list is 
-% empty, i.e. once all the coroutines have run to success, we are done.
+% Setting up
 % ===
 
-with_pipe(Goals) :-   
+setup_producer_consumer_multi(Producers,Consumers) :-
    pipe_init(Pipe),
-   with_pipe_2(Pipe,Goals).
+   with_producer_consumer_multi(Producers,Consumers,Pipe).
 
-with_pipe_2(_,[]) :- !.
+% ===
+% "The keeper of the pipe". It switches between coroutines by selecting a 
+% continuation at random and calling reset/3 on it.
+%
+% So the coroutines cannot make any assumption about call order. 
+%
+% The continuations of the coroutines are held in list. Once that list is 
+% empty, i.e. once all the coroutines have run to success, we are done.
+%
+% The keeper of the pipe handles the commands to "set the pipe" emitted via 
+% shift/1 by the coroutines. 
+% ===
 
-with_pipe_2(Pipe,Goals) :-
+with_producer_consumer_multi([],[],Pipe) :-
+   !,
+   assertion(pipe_closed_and_empty(Pipe)),
+   debug(master,"Master: *** Nothing left to call. Success! ***",[]).
+
+with_producer_consumer_multi([],Consumers,Pipe) :-
+   !,
+   assertion(pipe_closed_and_empty(Pipe)),
+ 
+
+with_producer_consumer_multi(Producers,[],Pipe) :-
+
+with_producer_consumer_multi(Producers,Consumers,Pipe) :-
+
+
+
    assertion(Goals = [_|_]),
+   select_goal(Goals,Goal,Rest),
+   reset(Goal,Cmd,Continuation),
+   branch(Continuation,Cmd,Rest,Pipe).
+   
+select_goal(Goals,Selected,Rest) :-
    length(Goals,NumGoals),
    random_between(1,NumGoals,Index1),
-   nth1(Index1,Goals,Goal),
-   reset(Goal,Cmd,Continuation),
-   (Continuation == 0) 
-   -> nth1(Index1,Goals,_,NewGoals),with_pipe_2(Pipe,LessGoals)
-   ;  Cmd = put_pipe(NewPipe),with_pipe_2(NewPipe,Goals)
-   ;  Cmd = get_pipe(Pipe),
+   nth1(Index1,Goals,Selected,Rest).
+
+branch(0,_,Rest,Pipe) :-
+   !,
+   with_producer_consumer_multi(Rest,Pipe).
+
+branch(Continuation,put_pipe(NewPipe),Rest,Pipe) :-
+   !,
+   with_producer_consumer_multi([Continuation|Rest],NewPipe).
    
+branch(Continuation,get_pipe(),Rest,Pipe) :-
 
    consumer_cmd(Cmd,Pipe,Pipe2),
 

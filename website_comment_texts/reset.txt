@@ -1,0 +1,75 @@
+## No matching `Ball`
+
+If the argument of shift/1 _cannot_ be unified with any `Ball` of any reset/3 on the stack, shift/1 throws an exception:
+
+==
+existence_error('reset/3',Ball).
+==
+
+## What happens if...
+
+"Goal does not call shift/1" means Goal succeeds.
+
+   - If Goal succeeds, then reset/3 succeeds with the `Continuation` == 0, which is distinguishable from callable continuations, which are goals (compound terms or possibly an atom)
+   - If Goal fails, then reset/3 fails.
+   - If Goal throws, then reset/3 throws.
+   - If Goal calls shift/1 and the shifted term unifies with a `Ball` used at a reset/3 point on the call stack (if there are several, the nearest one), then execution flow continues as if reset/3 had succeeded, with
+      - The unification of `Ball` performed (which may communicate information **from** the coroutine or unify a local variable with an unbound variable held by the coroutine, which can then be unified with a term to communicate information **to** the coroutine)
+      - With `Continuation` instantiated to a compound term: a callable goal to transfer the execution flow back to the coroutine through another reset/3.
+
+## Passing initial arguments to `Goal`
+
+https://eu.swi-prolog.org/pldoc/doc_for?object=reset/3
+
+If you have to pass additional arguments to an _atomic_ Goal before calling it, simply do:
+
+==
+reset(call(Goal,AnotherArg),Ball,Cont)
+==
+
+for example, to call `append([1,2],[3,4],X)`: 
+
+==
+?- reset(call(append([1,2]),[3,4],X),Ball,Cont).
+X = [1, 2, 3, 4],
+Cont = 0.
+==
+
+## More `Goal` tricks
+
+`Goal` may be a complex goal
+
+==
+?- reset((bagof(X,member(X,[1,2,3]),Bag),memberchk(1,Bag)),Ball,Cont).
+Bag = [1, 2, 3],
+Cont = 0.
+==
+
+Backtracking over reset/3 actually works. This goal succeeds 3 times:
+
+==
+?- reset(member(X,[1,2,3]),Ball,Cont).
+X = 1,
+Cont = 0 ;
+X = 2,
+Cont = 0 ;
+X = 3,
+Cont = 0.
+==
+
+Two successes, and one open choicepoint which does not lead to success at the end:
+
+==
+?- reset(member(1,[1,2,1,3]),Ball,Count).
+Count = 0 ;
+Count = 0 ;
+false.
+==
+
+You can collect the results of reset/3 normally:
+
+==
+?- bagof([X-Cont],reset(member(X,[1,2,3]),Ball,Cont),Bag).
+Bag = [[1-0], [2-0], [3-0]].
+==
+

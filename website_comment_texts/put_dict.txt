@@ -1,0 +1,105 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=put_dict/3
+
+## Improvement
+
+The argument `New` should really be called `Updates` or `NewKeyValuePairs` because these are updates which are merged with `DictIn` to give `DictOut`.
+
+## Test cases
+
+==
+:- begin_tests(put_dict).
+ 
+empty_dict(Tag,Dict)    :- dict_pairs(Dict,Tag,[]).
+nonempty_dict(Tag,Dict) :- dict_pairs(Dict,Tag,[a-x,b-y,c-z]).
+
+test("Add nothing, using empty dict (predicate call notation)",
+     true(DictNext == foo{})) :- 
+      empty_dict(foo,DictCur),
+      put_dict(_{},DictCur,DictNext).
+
+test("Add nothing, using empty dict (OO function call notation)",
+     true(DictNext == foo{})) :-
+      empty_dict(foo,DictCur),
+      DictNext = DictCur.put(_{}).
+      
+test("Add nothing, using empty list (predicate call notation)",
+     true(DictNext == foo{})) :-
+      empty_dict(foo,DictCur),
+      put_dict([],DictCur,DictNext).
+
+test("Add nothing, using empty list (OO function call notation)",
+     true(DictNext == foo{})) :-
+      empty_dict(foo,DictCur),
+      DictNext = DictCur.put([]).
+            
+test("Add/replace something using list of pairs (predicate call notation)",
+     true(DictNext == foo{a:2,b:y,c:z,d:1})) :-
+      nonempty_dict(foo,DictCur),
+      put_dict([a-2,d-1],DictCur,DictNext).
+
+test("Add/replace something using list of pairs (OO function call notation)",
+     true(DictNext == foo{a:2,b:y,c:z,d:1})) :-
+      nonempty_dict(foo,DictCur),
+      DictNext = DictCur.put([a-2,d-1]).
+      
+test("Add/replace something using list of colon-separated pairs (predicate call notation)",
+     true(DictNext == foo{a:2,b:y,c:z,d:1})) :-
+      nonempty_dict(foo,DictCur),
+      put_dict([a:2,d:1],DictCur,DictNext).
+
+test("Add/replace something using list of colon-separated pairs (OO function call notation)",
+     true(DictNext == foo{a:2,b:y,c:z,d:1})) :-
+      nonempty_dict(foo,DictCur),
+      DictNext = DictCur.put([a:2,d:1]).
+           
+test("Add/replace something using list of '='-separated_pairs (predicate call notation)",
+     true(DictNext == foo{a:2,b:y,c:z,d:1})) :-
+      nonempty_dict(foo,DictCur),
+      put_dict([a=2,d=1],DictCur,DictNext).
+
+test("Add/replace something using list of '='-separated_pairs (OO function call notation)",
+     true(DictNext == foo{a:2,b:y,c:z,d:1})) :-
+      nonempty_dict(foo,DictCur),
+      DictNext = DictCur.put([a=2,d=1]).
+      
+test("Add/replace something using list of tagged values (predicate call notation)",
+     true(DictNext == foo{a:2,b:y,c:z,d:1})) :-
+      nonempty_dict(foo,DictCur),
+      put_dict([a(2),d(1)],DictCur,DictNext). 
+
+test("Add/replace something using list of tagged values (OO function call notation)",
+     true(DictNext == foo{a:2,b:y,c:z,d:1})) :-
+      nonempty_dict(foo,DictCur),
+      DictNext = DictCur.put([a(2),d(1)]).
+            
+test("Add/replace something using dict (predicate call notation)",
+     true(DictNext == foo{a:2,b:y,c:z,d:1})) :-
+      nonempty_dict(foo,DictCur),
+      put_dict(_{a:2,d:1},DictCur,DictNext).
+      
+test("Add/replace something using dict (OO function call notation)",
+     true(DictNext == foo{a:2,b:y,c:z,d:1})) :-
+      nonempty_dict(foo,DictCur),
+      DictNext = DictCur.put(_{a:2,d:1}).
+      
+test("Add/replace something using dict with different tag (predicate call notation)",
+     true(DictNext == foo{a:2,b:y,c:z,d:1})) :-
+      nonempty_dict(foo,DictCur),
+      put_dict(bar{a:2,d:1},DictCur,DictNext). % tag value doesn't change anything
+      
+test("Add/replace something using dict with different tag (OO function call notation)",
+     true(DictNext == foo{a:2,b:y,c:z,d:1})) :-
+      nonempty_dict(foo,DictCur),
+      DictNext = DictCur.put(bar{a:2,d:1}). % tag value doesn't change anything
+
+:- end_tests(put_dict).
+==
+
+And so:
+
+==
+?- run_tests.
+% PL-Unit: put_dict ................ done
+% All 16 tests passed
+true.
+==

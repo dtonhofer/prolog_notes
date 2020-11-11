@@ -1,75 +1,163 @@
-***
-*** https://eu.swi-prolog.org/pldoc/doc_for?object=get_dict/3
-***
+https://eu.swi-prolog.org/pldoc/doc_for?object=get_dict/3
 
 ## Simple test code
 
 ==
-:- begin_tests(dict).
+:- begin_tests(get_dict).
+  
+%% A few dictionsaries
 
-xyz_dict(foodict{x:alpha, y:beta, z:gamma}).
+empty_dict(_{}).
+xyz_dict(_{x:alpha, y:bravo, z:charlie}).
+idx_dict(_{id1:v(11), id2:w(22), id3:w(33), id4:v(44), id5:w(55), id6:w(66)}).
+twice_200_dict(foo{x:100, y:200, z:300, t:200}).   
 
-test(get_valid_key,[true(Val == alpha)]) :-
-    xyz_dict(Dc), get_dict(x,Dc,Val).
+%% A special predicate for retrieval
 
-test(get_missing_key,[fail])  :-
+bagof_call(Value,Dict,Key) :-
+   Value = Dict.Key.
+
+test("get value for existing key", true(Val == alpha)) :-
+   xyz_dict(Dc), 
+   get_dict(x,Dc,Val).
+
+test(".Key direct access with hardcoded key", true(R == [alpha,bravo,charlie])) :-   
+   xyz_dict(Dict),
+   R = [Dict.x,Dict.y,Dict.z].
+
+test("attempt to get value for missing key",[fail])  :-
    xyz_dict(Dc), get_dict(bar,Dc,_).
 
-test(check_key_ok, [true]) :-
+test("verify value for key, and value unified") :-
    xyz_dict(Dc), get_dict(x,Dc,alpha).
 
-test(check_key_notok, [fail]) :-
-   xyz_dict(Dc), get_dict(x,Dc,ahpla).
+test("verify value for key, but value does not unify",[fail]) :-
+   xyz_dict(Dc), get_dict(x,Dc,something_or_other).
 
-test(get_all_keys,[true((SortedBag == [x-alpha,y-beta,z-gamma]))]) :-
+test("get all keys",true(SortedBag == [x-alpha,y-bravo,z-charlie])) :-
    xyz_dict(Dc),
    bagof((Key-Val),get_dict(Key,Dc,Val),Bag),
    keysort(Bag,SortedBag).
 
-:- end_tests(dict).
+test("get selected keys",true(SortedBag == [id2-22,id3-33,id5-55,id6-66])) :-
+   idx_dict(Dc),
+   bagof((Key-Val),get_dict(Key,Dc,w(Val)),Bag), % select ALSO on the form of the value
+   keysort(Bag,SortedBag).
 
-rt(dict) :- run_tests(dict).
+test("findall/3 using '.Key' direct access", true(SortedBag == [x-alpha, y-bravo, z-charlie])) :-
+   xyz_dict(Dict),
+   findall(Key-Value, (Value = Dict.Key), Bag),
+   keysort(Bag,SortedBag).
+
+test("findall/3 using '.get/1' dot-call", true(SortedBag == [x-alpha, y-bravo, z-charlie])) :-
+   xyz_dict(Dict),
+   findall(Key-Value, (Value = Dict.get(Key)), Bag),
+   keysort(Bag,SortedBag).
+      
+test("findall/3 using dedicated predicate bagof_call/3", true(SortedBag == [x-alpha, y-bravo, z-charlie])) :-
+   xyz_dict(Dict),
+   findall(Key-Value, bagof_call(Value,Dict,Key), Bag),
+   keysort(Bag,SortedBag).
+      
+test("findall/3 using get_dict/3", true(SortedBag == [x-alpha, y-bravo, z-charlie])) :-
+   xyz_dict(Dict),
+   findall(Key-Value, get_dict(Key,Dict,Value), Bag),
+   keysort(Bag,SortedBag).   
+      
+% Using bagof/3 to get all key-value pairs out of a dict
+%%% bagof/3 had some problems when an expansion of a dict call is done.
+%%% See https://github.com/SWI-Prolog/swipl-devel/issues/637
+   
+test("bagof/3 using .Key direct access", true(SortedBag == [x-alpha, y-bravo, z-charlie])) :-
+   xyz_dict(Dict),
+   bagof(Key-Value, (Value = Dict.Key), Bag),  
+   keysort(Bag,SortedBag).
+
+test("bagof/3 using .get/1", true(SortedBag == [x-alpha, y-bravo, z-charlie])) :-
+   xyz_dict(Dict),
+   bagof(Key-Value, Value = Dict.get(Key), Bag),
+   keysort(Bag,SortedBag).
+      
+test("bagof/3 using dedicated predicate", true(SortedBag == [x-alpha, y-bravo, z-charlie])) :-
+   xyz_dict(Dict),
+   bagof(Key-Value, bagof_call(Value,Dict,Key), Bag),
+   keysort(Bag,SortedBag).
+      
+test("bagof/3 using get_dict/3", true(SortedBag == [x-alpha, y-bravo, z-charlie])) :-
+   xyz_dict(Dict),
+   bagof(Key-Value, get_dict(Key,Dict,Value), Bag),
+   keysort(Bag,SortedBag).
+   
+test("getting keys via their associated value, direct access", true(SortedBag == [t,y])) :-
+   twice_200_dict(Dict),
+   findall(Key, Dict.Key == 200, Bag), % do not unify =, just check ==
+   sort(Bag,SortedBag).
+
+test("getting keys via their associated value using .get/1", true(SortedBag == [t,y])) :-
+   twice_200_dict(Dict),
+   findall(Key, Dict.get(Key) == 200, Bag), % do not unify =, just check ==
+   sort(Bag,SortedBag).
+
+test("getting keys via their associated value using get_dict/3", true(SortedBag == [t,y])) :-
+   twice_200_dict(Dict),
+   findall(Key, (get_dict(Key,Dict,Value), Value == 200), Bag), % do not unify =, just check ==
+   sort(Bag,SortedBag).      
+      
+test("missing key using direct access means exception",[error(existence_error(_,_,_),_)]) :-
+   empty_dict(Dict),
+   (_ = Dict.x). 
+      
+test("missing key using .get/1 access means failure",fail) :-
+   empty_dict(Dict),
+   Dict.get(x).
+      
+:- end_tests(get_dict).
+==
+
+==
+?- run_tests.
+% PL-Unit: get_dict .................... done
+% All 20 tests passed
+true.
 ==
 
 ## Using a dict to count atomic values encountered during processing:
 
 ==
 % ===
-% inc(+Din,?Dout,+Key)
-% Increment the counter for "Key" in dict "Din", giving "Dout".
-% If the counter does not exist, add a new entry with initial counter value 1.
+% inc(+Key,+DictIn,?DictOut)
+% Increment the counter for "Key" in (immutable) dict "DictIn", giving "DictOut".
+% If there is not entry for "Key, add a new entry with initial counter value 1.
 % ===
 
-inc(Din,Dout,Key) :-
-   (get_dict(Key,Din,X) -> succ(X,XX) ; XX=1),
-   put_dict(Key,Din,XX,Dout).
+inc_for_key(Key,DictIn,DictOut) :- 
+   (get_dict(Key,DictIn,X) -> succ(X,XP) ; XP=1), 
+   put_dict(Key,DictIn,XP,DictOut).
+   
+:- begin_tests(inc_for_key).
 
-:- begin_tests(inc).
+test("just increment for 'a'",true(Do == quux{a:1})) :- 
+   Di = quux{}, 
+   inc_for_key(a,Di,Do).
 
-   test(inc1,[ true(T) ]) :-
-      Di = quux{}, inc(Di,Do,a),
-      T = (Do == quux{a:1}).
+test("increment for 'a' twice",true(Do == quux{a:2})) :- 
+   Di = quux{},
+   inc_for_key(a,Di,D2),
+   inc_for_key(a,D2,Do).
 
-   test(inc2,[ true(T) ]) :-
-      Di = quux{}, inc(Di,Dt,a),
-      inc(Dt,Do,a),
-      T = (Do == quux{a:2}).
+test("increment for 'a' and 'b'",true(Do == quux{a:1,b:1})) :- 
+   Di = quux{}, 
+   inc_for_key(a,Di,D2),
+   inc_for_key(b,D2,Do).
 
-   test(inc3,[ true(T) ]) :-
-      Di = quux{},
-      inc(Di,Dt,a), inc(Dt,Do,b),
-      T = (Do == quux{a:1,b:1}).
+:- end_tests(inc_for_key).
+==
 
-   % This is a NO: You cannot use fresh variables ("names of holes") as keys
-   % Di = quux{}, inc(Di,Dt1,X),inc(Dt1,Dt2,_),inc(Dt2,Dt3,X).
-
-   test(no, [ error(instantiation_error) ]) :-
-      Di = quux{},
-      inc(Di,Dt1,X),inc(Dt1,Dt2,_),inc(Dt2,_Dt3,X).
-
-:- end_tests(inc).
-
-rt(inc) :- run_tests(inc).
+==
+?- run_tests.
+% PL-Unit: inc_for_key ... done
+% All 3 tests passed
+true.
 ==
 
 ## Sum (over keys) the integer values contained in a dictionary
@@ -77,23 +165,27 @@ rt(inc) :- run_tests(inc).
 Using library(aggregate)
 
 ==
-dict_sum(_{} ,0)     :- !.
-dict_sum(Dict,Total) :- aggregate(sum(Val), Key^get_dict(Key,Dict,Val), Total).
+sum_all_values(_{} ,0)     :- !.
+sum_all_values(Dict,Total) :- aggregate(sum(V), Key^get_dict(Key,Dict,V), Total).
 
-:- begin_tests(sum).
+:- begin_tests(sum_all_values).
 
-   test(sum1, [ true(T) ]) :-
-      Dict = quux{},
-      dict_sum(Dict,Total),
-      T = ( Total == 0 ).
+test("Sum over empty dict", true(Total == 0)) :- 
+   Dict = quux{},
+   sum_all_values(Dict,Total).
 
-   test(sum2, [ true(T) ]) :-
-      Dict = quux{x:1,y:2},
-      dict_sum(Dict,Total),
-      T = ( Total == 3 ).
+test("Sum over nonempty dict", true(Total == 3)) :- 
+   Dict = quux{x:1,y:2},
+   sum_all_values(Dict,Total).
 
-:- end_tests(sum).
+:- end_tests(sum_all_values).
+==
 
-rt(sum) :- run_tests(sum).
+==
+?- run_tests.
+% PL-Unit: inc_for_key ... done
+% PL-Unit: sum_all_values .. done
+% All 5 tests passed
+true.
 ==
 

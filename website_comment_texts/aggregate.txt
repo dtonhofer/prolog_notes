@@ -1,0 +1,67 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=aggregate/3
+
+## Beware of the empty solution 
+
+"The aggregate/3 version performs bagof/3 on Goal." means that the call will **fail** when there are no solutions. This may be unexpected:
+
+Take this logic program:
+
+==
+fact(a,a).
+fact(a,b).
+fact(a,c).
+==
+
+Then
+
+==
+?- aggregate(count, X^fact(a,X), Count).
+Count = 3.
+==
+
+But instead of `Count==0`, you get a failure if there are no solutions:
+
+==
+?- aggregate(count, X^fact(c,X), Count).
+false.
+==
+
+To make sure use the if-then-else operator ->/2.
+
+==
+?- (aggregate(count, X^fact(c,X), Count) -> true ; Count=0).
+Count = 0.
+==
+
+Or use aggregate_all/3, which is based on findall/3, which doesn't fail if the solution is empty.
+
+That predicate doesn't use the caret notation because findall/3 doesn't use the caret notation:
+
+==
+?- aggregate_all(count, fact(c,X), Count).
+Count = 0.
+
+?- aggregate_all(count, fact(a,X), Count).
+Count = 3.
+==
+
+## Example with a dict
+
+Suppose you have an SWI-Prolog dict with integer values and you want to sum over those values:
+
+==
+dict_sum(_{} ,0) :- !.
+
+dict_sum(Dict,Total) :- 
+   aggregate(sum(Val), Key^get_dict(Key,Dict,Val), Total).
+   
+:- begin_tests(sum).
+
+test(sum1, [ true(Total == 0) ]) :-
+   dict_sum(_{},Total).
+   
+test(sum2, [ true(Total == 3) ]) :-
+   dict_sum(_{x:1,y:2},Total).
+
+:- end_tests(sum).
+==
