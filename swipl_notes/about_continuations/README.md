@@ -260,6 +260,8 @@ one-by-one by an "iterator" and printed to stdout by the `with_write/1` "master"
 
 Change the contents of the list passed to `run/1` to elicit some occurrences of interest from `reset/3`:
 
+(Source also here: [trial.pl](swipl_notes/about_continuations/code/trial/trial.pl)
+
 ```
 :- debug(iterator).
 
