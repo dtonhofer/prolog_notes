@@ -535,3 +535,69 @@ C = call_continuation(['$cont$'(<clause>(0x23a5510), 15, '<inactive>', user, 125
 ?- reset((shift(mine),false),mine,C), call(C).
 false.
 ```
+
+## Adapting the patterns from "Call with current continuation patterns"
+
+As said earlier, the paper 
+
+   - **Call with current continuation patterns**
+   - https://www.researchgate.net/publication/228576802_Call_with_current_continuation_patterns
+   - Darrell Ferguson and Dwight Deugo
+   - September 2001.
+
+explores patterns in Scheme that employ `call-with-current-continuation` (aka. `call/cc`), not patterns in Prolog that use `reset/shift`.
+
+Let's try to recode them!
+
+### Loop
+
+In Scheme, as given in the paper, a bit modified:
+
+The "looper" which slaps an infinite loop around its argument, `action-procedure`.
+
+```scheme
+(define infinite-loop
+   (lambda (action-procedure)
+      (letrec ((loop (lambda ()
+                # ... code to execute before each action ...
+                (action-procedure)
+                # ... code to execute after each action ...
+                (loop))))
+          (loop))))
+```
+
+A sample action procedure which counts to _n_, displaying each number as it counts.
+At _n_, the function will escape the loop and return _n_.
+
+```Scheme
+(define snake-plissken
+   (lambda (n)
+      (let ((receiver (lambda (exit-procedure)
+                         (let ((count 0))
+                               (infinite-loop
+                                   (lambda ()
+                                        (if (= count n)
+                                           (exit-procedure count)
+                                           (begin
+                                              (write-line ”The count is: ”)
+                                              (write-line count)
+                                              (set! count (+ count 1))))))))))
+            (call/cc receiver))))
+```                       
+
+In Prolog:
+
+(TBD)
+
+
+
+
+
+
+### Escape from recursion
+### Loop via continuations
+### Escape from and reentry into recursion
+### Coroutines
+### Non-blind backtracking
+### Multitasking
+
