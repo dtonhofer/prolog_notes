@@ -278,7 +278,7 @@ true ;
 true.
 ```
 
-### An `observer` which observes an open list being grown by an `appender` invoking siad `observer` 
+### An `observer` which observes an open list being grown by an `appender` invoking said `observer` 
 
 ```
 :- debug(observer).
