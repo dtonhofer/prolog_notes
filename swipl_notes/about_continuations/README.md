@@ -45,7 +45,7 @@ From that paper:
 > rather than at the meta-level as program transformations. As a consequence, feature extensions based on delimited 
 > continuations are more light-weight, more robust with respect to changes and do not require pervasive changes to existing code bases.
 
-The [publication page of that paper]((https://www.cambridge.org/core/journals/theory-and-practice-of-logic-programming/article/delimited-continuations-for-prolog/DD08147828169E26212DFAF743C8A9EB) has a lot of live links to the the references.
+The [publication page of that paper](https://www.cambridge.org/core/journals/theory-and-practice-of-logic-programming/article/delimited-continuations-for-prolog/DD08147828169E26212DFAF743C8A9EB) has a lot of live links to the the references.
 
 #### Delimited continuations in Prolog: semantics, use, and implementation in the WAM
 
