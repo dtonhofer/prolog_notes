@@ -158,7 +158,9 @@ We read:
 
 Ok, this needs more study.
 
-## Similarity of `reset`/`shift` to `catch`/`throw`
+## Concept linking
+
+### Similarity of `reset`/`shift` to `catch`/`throw`
 
 Note the similarity between exception handling and delimited continuations. This is not an accident:
 
@@ -178,7 +180,7 @@ and the currently executing procedure calls ` shift/1` with a term `T`, then exe
 call point that has a unifying `Ball` - in the same way as as execution flow goes to the nearest `catch/3` that 
 unifies `Catcher` with `E`, where `E` is the term thrown by `throw/1`.
 
-## Relationship between `call/cc` and `reset/3`
+### Relationship between `call/cc` and `reset/3`
 
 The Scheme function `call/cc` is called with a "receiver" function that takes one continuation argument.
 `call/cc` invokes the receiver with the continuation which continues after `call/cc`. The receiver function
