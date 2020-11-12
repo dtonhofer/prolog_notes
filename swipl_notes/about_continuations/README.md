@@ -21,21 +21,23 @@ It has been [published](https://www.cambridge.org/core/journals/theory-and-pract
 
 ## Reading
 
-Some Wikipedia entries:
+### Some Wikipedia entries:
 
    - [Call-with-current-continuation](https://en.wikipedia.org/wiki/Call-with-current-continuation)
    - [Coroutine](https://en.wikipedia.org/wiki/Coroutine)
    - [Continuation](https://en.wikipedia.org/wiki/Continuation) (as usual, Prolog is not listed as supporting this; well, it _isn't_ in the ISO Standard)
    - [setjmp.h](https://en.wikipedia.org/wiki/Setjmp.h)
    
-### Papers
- 
-[**Delimited continuations for Prolog**](https://www.swi-prolog.org/download/publications/iclp2013.pdf)
+### Papers and Reports
+
+#### Delimited continuations for Prolog
+
+As given in the SWI-Prolog manual.
+
+   - https://www.swi-prolog.org/download/publications/iclp2013.pdf
    - SCHRIJVERS, T., DEMOEN, B., DESOUTER, B., & WIELEMAKER, J.
    - 2013
-   - Theory and Practice of Logic Programming, 13(4-5), 533-546. doi:10.1017/S1471068413000331
-
-(As indicated in the SWI-Prolog manual)
+   - Appears in: [Theory and Practice of Logic Programming, 13(4-5), 533-546. doi:10.1017/S1471068413000331](https://www.cambridge.org/core/journals/theory-and-practice-of-logic-programming/article/delimited-continuations-for-prolog/DD08147828169E26212DFAF743C8A9EB)
 
 From that paper:
 
@@ -43,13 +45,15 @@ From that paper:
 > rather than at the meta-level as program transformations. As a consequence, feature extensions based on delimited 
 > continuations are more light-weight, more robust with respect to changes and do not require pervasive changes to existing code bases.
 
-The [publication page of that paper](https://www.cambridge.org/core/journals/theory-and-practice-of-logic-programming/article/delimited-continuations-for-prolog/DD08147828169E26212DFAF743C8A9EB) has a lot of live links to the the references, in particular:
- 
-[**Delimited continuations in Prolog: semantics, use, and implementation in the WAM**](https://biblio.ugent.be/publication/5646080)
+The [publication page of that paper]((https://www.cambridge.org/core/journals/theory-and-practice-of-logic-programming/article/delimited-continuations-for-prolog/DD08147828169E26212DFAF743C8A9EB) has a lot of live links to the the references.
+
+#### Delimited continuations in Prolog: semantics, use, and implementation in the WAM
+
+Technical Report. This is an excellent resource, IMHO better than the first one!
+
+   - https://biblio.ugent.be/publication/5646080
    - Tom Schrijvers (UGent), Bart Demoen and Benoit Desouter (UGent) 
    - March 13, 2013
-
-Technical Report. This is an excellent resource.
 
 Abstract:
 
@@ -72,40 +76,24 @@ Section 7.6:
 > Dubaet al. added first-class continuations to the statically typed ML language [Typing first-class continuations in ML, POPL '91].  
 > Flattet al.implementeda production version in Scheme [Adding delimited and composable control to a production programming environment, 2007]
 
-[**Abstracting Control**](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.43.8753) 
-- Olivier Danvy and Andrzej Filinski
-- appears in _Proceedings of the 1990 ACM Conference on LISP and Functional Programming_
+#### Call with current continuation patterns
 
-This one introduces `shift` and `reset` operations but it's a very technical paper (I don't get it ... yet).
-
-We read:
-
-> `Shift` abstracts the current context as an ordinary, composable procedure and `reset` delimits the scope of such a context.
-> `Shift` also differs from `escape`  by not duplicating the current continuation. (...) While the effects of these operators are
-> very similar to operators control and prompt of [Felleisen 88: The Theory and Practice of First-Class Prompts], there is a 
-> significant semantical difference between `shift`/`reset` and `control`/`prompt`: the context abstracted by `shift` is determined
-> statically by the program text, while `control` captures the context up to the nearest dynamically enclosing `prompt`.
-> In general, this leads to different behavior.
-> 
-> Programming with continuations has appeared as an intriguing possibility offered by control operators such as Landin's `J`, Reynolds's `escape`,
-> and `call-with-current-continuation` in Scheme. Such first-class continuations are more general than MacLisp's `catch`/`throw` mechanism
-> and ML's `exceptions` since they allow a previous scope to be restored, just like applying a functional value reestablishes
-> an earlier environment. First-class continuations have been investigated mainly as powerful, but unstructured devices requiring a
-> deep intuition and operational skill [Friedman, Haynes, & Kohlbecker 84] [Haynes & Friedman 87]. However, some progress has
-> been made towards a more declarative view of them, based on a category-theoretical duality between values and continuations [Filinski 89].
-
-Ok, this needs more study.
-
-[**Call with current continuation patterns**](https://www.researchgate.net/publication/228576802_Call_with_current_continuation_patterns)
-- Darrell Ferguson and Dwight Deugo
-- September 2001.
-
-Eminently readable!
+   - https://www.researchgate.net/publication/228576802_Call_with_current_continuation_patterns
+   - Darrell Ferguson and Dwight Deugo
+   - September 2001.
 
 The paper explores patterns in Scheme that employ `call-with-current-continuation` (aka. `call/cc`), not patterns in Prolog that use `reset/shift`
-but once one notices the relationship between `call/cc` and `reset` that becomes less important.
+but once one notices the relationship between `call/cc` and `reset` that becomes less important. Plus it provides an excellent intro.
 
-Plus it provides an excellent intro.
+Patterns explored:
+
+   1. Loop
+   1. Escape from recursion
+   1. Loop via continuations
+   1. Escape from and reentry into recursion
+   1. Coroutines
+   1. Non-blind backtracking
+   1. Multitasking
 
 In particular the chapter on _Non-blind Backtracking_ on pages 20 ff. seems to apply to `reset/shift` operations:
 
@@ -144,7 +132,33 @@ point of `reset` via the term shifted by `shift`.
 > paper we decide to go back to reading the remaining references and other material. This is
 > equivalent to invoking an angel.
 
-## Similarity to `throw`/`catch`
+#### Abstracting Control
+
+   - http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.43.8753
+   - Olivier Danvy and Andrzej Filinski
+   - appears in _Proceedings of the 1990 ACM Conference on LISP and Functional Programming_
+
+This one introduces `shift` and `reset` operations but it's a very technical paper (I don't get it ... yet).
+
+We read:
+
+> `Shift` abstracts the current context as an ordinary, composable procedure and `reset` delimits the scope of such a context.
+> `Shift` also differs from `escape`  by not duplicating the current continuation. (...) While the effects of these operators are
+> very similar to operators control and prompt of [Felleisen 88: The Theory and Practice of First-Class Prompts], there is a 
+> significant semantical difference between `shift`/`reset` and `control`/`prompt`: the context abstracted by `shift` is determined
+> statically by the program text, while `control` captures the context up to the nearest dynamically enclosing `prompt`.
+> In general, this leads to different behavior.
+> 
+> Programming with continuations has appeared as an intriguing possibility offered by control operators such as Landin's `J`, Reynolds's `escape`,
+> and `call-with-current-continuation` in Scheme. Such first-class continuations are more general than MacLisp's `catch`/`throw` mechanism
+> and ML's `exceptions` since they allow a previous scope to be restored, just like applying a functional value reestablishes
+> an earlier environment. First-class continuations have been investigated mainly as powerful, but unstructured devices requiring a
+> deep intuition and operational skill [Friedman, Haynes, & Kohlbecker 84] [Haynes & Friedman 87]. However, some progress has
+> been made towards a more declarative view of them, based on a category-theoretical duality between values and continuations [Filinski 89].
+
+Ok, this needs more study.
+
+## Similarity of `reset`/`shift` to `catch`/`throw`
 
 Note the similarity between exception handling and delimited continuations. This is not an accident:
 
@@ -194,7 +208,7 @@ On [this page](/swipl_notes/about_continuations/code/)
   the same state, the "get" no longer works and you need to use [global variables](https://eu.swi-prolog.org/pldoc/man?section=gvar)
   or something similar.
 
-### Producer/Consumer
+### Producer/Consumer example
 
 - [producer/consumer](/swipl_notes/about_continuations/code/producer_consumer): 
    - [`producer_consumer_master.pl`](/swipl_notes/code/producer_consumer/producer_consumer_master.pl): a producer-consumer
@@ -464,7 +478,9 @@ ERROR: reset/3 `bad(badshift)' does not exist
 true.
 ```
 
-## The "continuation" term is a compound term
+## Moreover
+
+### The "continuation" term is a compound term
 
 At least in the current implementation. If you run the following on a continuation `Cont`:
 
@@ -486,7 +502,7 @@ it evidently calls the continuation.
 
 This is also why `reset/3` can take both an atomic goal on the first round and a continuation returned by a previous `reset/3`.
 
-## Edge cases
+### Edge cases
 
 There is nothing to do for the continuation of `shift/1` itself:
 
