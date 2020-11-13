@@ -1,4 +1,4 @@
-% Trying out SWI-Prolog Delimited Continuations
+% Trying SWI-Prolog delimited continuations
 %
 % This is a looping observer/1 predicate which has the tip of an open list
 % and can observe it growing as it is called (via reset/3) by the looping
