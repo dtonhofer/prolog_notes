@@ -43,7 +43,7 @@ that `infinitizer-2` calls a defined action-function potentially infinitely
 often. However, the continuation helps the action-function to escape from
 the loop.
 
-```
+```scheme
 (define loop-until
    (lambda (n)
       (let
