@@ -194,9 +194,19 @@ at the `call/cc` point stays invisible. However, you get the continuation for th
 
 ## Examples
 
-### Jumpin around in the call stack
-
-A little exercise to jump around in the call stack: [`jumping_around.pl`](/swipl_notes/about_continuations/code/exercise/jumping_around.pl)
+   - [`looping.pl`](/swipl_notes/about_continuations/code/exercise/looping.pl):    
+     in an unexiting development, we can build a loop that calls `reset/3` to activate a 
+     loop-worker-predicate on each loop passage instead of just *calling* the predicate.
+     directly. To make things more interesting, we can store the continuations of 
+     loop-worker-predicate obtained from `reset/3` and call them for finalization at the end.   
+   - [`jumping_around.pl`](/swipl_notes/about_continuations/code/exercise/jumping_around.pl): jumping around between `reset/3` points
+     on the call stack by emitting the appropriate `shift/1` calls. 
+   - [`appender_observer.pl`](/swipl_notes/about_continuations/code/exercise/appender_observer.pl): an appender-observer pair communicating
+     via an open list.
+   - [`producer_consumer_master.pl`](/swipl_notes/code/producer_consumer/producer_consumer_master.pl): a producer-consumer
+     (coroutine) example with a central "master" that dishes out the `reset/3` calls. There seems no way to make the
+     producer and consumer subroutines look symmetric using `reset`/`shift` and not having a "master" makes the code
+     and unholy mess, so ... we have a "master"!
 
 ### Inspired _Schrijvers et al., 2013_
 
@@ -213,14 +223,6 @@ On [this page](/swipl_notes/about_continuations/code/)
   This works only for a single "thread" of client code. Once you have producer/consumer coroutines accessing
   the same state, the "get" no longer works and you need to use [global variables](https://eu.swi-prolog.org/pldoc/man?section=gvar)
   or something similar.
-
-### Producer/Consumer example
-
-- [producer/consumer](/swipl_notes/about_continuations/code/producer_consumer): 
-   - [`producer_consumer_master.pl`](/swipl_notes/code/producer_consumer/producer_consumer_master.pl): a producer-consumer
-     coroutine example with a central "master" that dishes out the `reset/3` calls. (There seems no way to make the
-     producer and consumer subroutines look symmetric using `reset`/`shift` and not having a "master" makes the code
-     and unholy mess, so ... we have a "master")
 
 ## More examples 
 
@@ -282,68 +284,8 @@ true ;
 true.
 ```
 
-### An `observer` which observes an open list being grown by an `appender` invoking said `observer` 
 
 
-
-### How about a little loop
-
-In an unexiting development, we can build a loop that calls `reset/3` to activate a 
-loop-worker-predicate on each loop passage instead of just calling the predicate.
-
-To make things more interesting, we can store the continuations of 
-loop-worker-predicate obtained from `reset/3` and call them for finalization later.
-
-```
-:- debug(loop).
-
-loop(N) :-
-   loop_2(N,[],WConts),
-   maplist(
-      [WCont]>>(reset(WCont,_,C),assertion(C==0)), % use a library(yall) lambda
-      WConts).
-
-loop_2(0,WConts,WConts) :- 
-   !,
-   debug(loop,"Loop is done",[]).
-
-loop_2(N,WContsDown,[WCont|WContsUp]) :-   % accumulate worker continuations in-order
-   assertion(N>0),
-   debug(loop,"Switching to loop_worker(~d)",[N]),
-   reset(loop_worker(N),mine,WCont),
-   debug(loop,"Back in loop",[]),
-   Nm is N-1,
-   loop_2(Nm,WContsDown,WContsUp).         % tail-recursive call
-       
-loop_worker(N) :-
-  debug(loop,"In loop_worker(~d)",[N]),
-  shift(mine),
-  debug(loop,"Finalizing loop_worker(~d)",[N]).
-```   
-
-And so:
-
-```
-?- loop(4).
-% Switching to loop_worker(4)
-% In loop_worker(4)
-% Back in loop
-% Switching to loop_worker(3)
-% In loop_worker(3)
-% Back in loop
-% Switching to loop_worker(2)
-% In loop_worker(2)
-% Back in loop
-% Switching to loop_worker(1)
-% In loop_worker(1)
-% Back in loop
-% Loop is done
-% Finalizing loop_worker(4)
-% Finalizing loop_worker(3)
-% Finalizing loop_worker(2)
-% Finalizing loop_worker(1)
-true.
-```
 
 ## Playing around with a booby-trapped "iterator" implementation
 
