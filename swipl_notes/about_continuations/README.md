@@ -194,6 +194,10 @@ at the `call/cc` point stays invisible. However, you get the continuation for th
 
 ## Examples
 
+### Jumpin around in the call stack
+
+A little exercise to jump around in the call stack: [`jumping_around.pl`](/swipl_notes/about_continuations/code/exercise/jumping_around.pl)
+
 ### Inspired _Schrijvers et al., 2013_
 
 On [this page](/swipl_notes/about_continuations/code/)
@@ -280,49 +284,7 @@ true.
 
 ### An `observer` which observes an open list being grown by an `appender` invoking said `observer` 
 
-```
-:- debug(observer).
 
-starter :- 
-   Tip=Fin,                                    % The Tip and Fin of an open list, initialy the sam unbound variable
-   reset(observer(Tip),_,ObsCont),             % Call the observer with the Tip of the open list; it always references the same "cell" in memory
-   appender([a,b,c,d],Fin,ObsCont,_).          % Append the given list to the open list at Fin (which references different cells over time)
-
-appender([X|Xs],Fin,ObsCont,_) :-
-   Fin=[X|NewFin],                             % Append X to the open list, giving a new fin, NewFin
-   reset(ObsCont,obs(Stop),ObsContNew),        % The "Stop" will be communicated to the next activation of appender/4
-   appender(Xs,NewFin,ObsContNew,Stop).        % Loop around for more growing (or for closing the list)
-   
-appender([],Fin,ObsCont,Stop) :-               % To make dataflow clear, we dont cram everything into the head
-   Fin = [],                                   % Close list
-   Stop = stop,                                % This will tell observer/1 to stop on next reset call as it binds the variable of the _previous_ reset
-   reset(ObsCont,_,N),                         % On return, N will be 0 because the observer succeeded
-   assertion(N==0).
-   
-observer(Tip) :-
-  debug(observer,"Observer sees: ~q",[Tip]),
-  shift(obs(Stop)),
-  ((Stop == stop)
-   -> debug(observer,"Observer received stop. Last observation: ~q",[Tip])
-   ;  (debug(observer,"Observer loops",[]),observer(Tip))).
-```
-
-And so:
-
-```
-?- starter.
-% Observer sees: _10550
-% Observer loops
-% Observer sees: [a|_14110]
-% Observer loops
-% Observer sees: [a,b|_14350]
-% Observer loops
-% Observer sees: [a,b,c|_14590]
-% Observer loops
-% Observer sees: [a,b,c,d|_14830]
-% Observer received stop. Last observation: [a,b,c,d]
-true.
-```
 
 ### How about a little loop
 
