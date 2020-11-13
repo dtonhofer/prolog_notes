@@ -1,4 +1,53 @@
+% Playing around with a booby-trapped "iterator" implementation
+% 
+% The predicate-to-call takes a list, the elements of which are then 
+% "generated" (i.e. emitted) one-by-one by an "iterator" and printed
+% to stdout by the with_write/1 "master". However, certain elements
+% make the from_list/1 goal behave in unruly ways.
+% 
+% Change the contents of the list passed to `run/1` to elicit some 
+% occurrences of interest from `reset/3`:
+
+/* 
+?- run([a,b,c]).
+% Iterator yielded a
+% Iterator yielded b
+% Iterator yielded c
+% Iterator succeeded
+true.
+
+?- run([a,fail,c]).
+% Iterator yielded a
+false.
+
+?- run([a,throw,c]).
+% Iterator yielded a
+ERROR: Domain error: `this' expected, found `that'
+
+?- run([a,badshift,c]).
+% Iterator yielded a
+ERROR: reset/3 `bad(badshift)' does not exist
+
+?- run([a,recur,c]).
+% Iterator yielded a
+% Iterator yielded sub1
+% Iterator yielded sub2
+% Iterator yielded sub3
+% Iterator succeeded
+% Iterator yielded c
+% Iterator succeeded
+true.
+*/
+
 :- debug(iterator).
+
+% ==
+% Main predicate, call from toplevel
+% ==
+
+run(L) :-
+   must_be(list,L),
+   with_write(from_list(L)).
 
 % ===
 % The "master predicate": It writes the values yielded by the "iterator predicate" 
@@ -41,10 +90,4 @@ from_list([X|Xs]) :-
 
 from_list([]).
 
-% ==
-% Main predicate, call from toplevel
-% ==
 
-run(L) :-
-   must_be(list,L),
-   with_write(from_list(L)).
