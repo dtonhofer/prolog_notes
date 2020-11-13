@@ -22,7 +22,8 @@ exception term `error(assertion_error(Reason,Culprit),Context)`.
 Another non-ISO standard exception term is thrown by [`dict_pairs/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=dict_pairs/3)
 (and probably other dict-handling predicates): `error(duplicate_key(Key),Context)`.
 
-Note that the above exceptions terms use a non-standard formal term but retain the structure of the ISO standard exception term.
+Note that the above exceptions terms use a non-standard formal term but retain the structure of the ISO standard exception term,
+`error(Formal,Context)`.
 
 ## "It actually works"
 
@@ -31,8 +32,62 @@ As the page for [`throw/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=throw
 > ISO demands that `throw/1` make a copy of `Exception`, walk up the stack to a `catch/3` call, backtrack 
 > and try to unify the copy of `Exception` with `Catcher`.
 
-It not only "makes a copy", but "makes a copy that survives backtracking to the catch point" as otherwise
-one would never see the values bound to the variables that can be found in the catcher term. It's quite "un-Prolog-y" in fact.
+A copy is made to transport the content of a variable visible at the point-of-throw to the point-of-catch 
+while backtracking is performed on anything else.
+
+Here is an example:
+
+```
+top(X) :-
+   Tip=Fin,               % Create an empty "open list" structure rooted at "Tip" to which we will append
+   trial(X,Tip,Fin),
+   format("Tip at top/1 has been rolled back to ~q\n",[Tip]).
+  
+trial(X,Tip,Fin) :-
+   Fin=[level1|NewFin],   % The open list grows at "Fin" but stays rooted at "Tip"
+   catch(inner(X,Tip,NewFin),
+         level1(Tip2,Fin2),
+         format("Caught level1(~q,~q) while Tip=~q, Fin=~q\n",[Tip2,Fin2,Tip,Fin])).
+   
+inner(X,Tip,Fin) :-
+   Fin=[level2|NewFin],   % The open list grows at "Fin" but stays rooted at "Tip"
+   catch(innerer(X,Tip,NewFin),
+         level2(Tip2,Fin2),
+         format("Caught level2(~q,~q) while Tip=~q, Fin=~q\n",[Tip2,Fin2,Tip,Fin])).
+
+innerer(X,Tip,Fin) :-
+   Fin=[level3|NewFin],   % The open list grows at "Fin" but stays rooted at "Tip"
+   catch(innerest(X,Tip,NewFin),
+         level3(Tip2,Fin2),
+         format("Caught level3(~q,~q) while Tip=~q, Fin=~q\n",[Tip2,Fin2,Tip,Fin])).
+   
+innerest(X,Tip,Fin) :-
+   compound_name_arguments(T,X,[Tip,Fin]),
+   format("Throwing ~q\n",[T]),  
+   throw(T).
+```   
+
+Then
+
+```
+?- top(level2).
+Throwing level2([level1,level2,level3|_10906],_10906)
+Caught level2([level1,level2,level3|_112],_112) while Tip=[level1,level2|_108], Fin=[level2|_108]
+Tip at top/1 has been rolled back to [level1,level2|_108]
+true.
+
+?- top(level1).
+Throwing level1([level1,level2,level3|_1210],_1210)
+Caught level1([level1,level2,level3|_1068],_1068) while Tip=[level1|_1054], Fin=[level1|_1054]
+Tip at top/1 has been rolled back to [level1|_1054]
+true.
+```
+
+As one can see, the open list rooted at `Tip` is `[level1,level2,level3|_]` at `innerest/3`, and this
+structure is wholly communicated to the catch point (although with different unbound variables due to
+copying). On the other other, the catch point only sees the rolled-back original `Tip` after the
+catch: `[level1,level2|_108]` or `[level1|_1054]` instead of the whole structure reachable from 
+`Tip` when the `throw/1` was performed.
 
 See also: [Salvaging a term out of a dropped search branch](../about_salvaging_a_term_out_of_a_dropped_search_branch)
 
