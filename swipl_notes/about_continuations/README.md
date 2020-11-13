@@ -192,39 +192,7 @@ to retrieve the appropriate continuation somewhere on the call stack). So unlike
 at the `call/cc` point stays invisible. However, you get the continuation for the `shift/1` point for free. With
 `call/cc` you have to pass through some hoops to obtain it.
 
-## Examples
-
-   - [`looping.pl`](/swipl_notes/about_continuations/code/exercise/looping.pl):    
-     in an unexiting development, we can build a loop that calls `reset/3` to activate a 
-     loop-worker-predicate on each loop passage instead of just *calling* the predicate.
-     directly. To make things more interesting, we can store the continuations of 
-     loop-worker-predicate obtained from `reset/3` and call them for finalization at the end.   
-   - [`jumping_around.pl`](/swipl_notes/about_continuations/code/exercise/jumping_around.pl): jumping around between `reset/3` points
-     on the call stack by emitting the appropriate `shift/1` calls. 
-   - [`appender_observer.pl`](/swipl_notes/about_continuations/code/exercise/appender_observer.pl): an appender-observer pair communicating
-     via an open list.
-   - [`producer_consumer_master.pl`](/swipl_notes/code/producer_consumer/producer_consumer_master.pl): a producer-consumer
-     (coroutine) example with a central "master" that dishes out the `reset/3` calls. There seems no way to make the
-     producer and consumer subroutines look symmetric using `reset`/`shift` and not having a "master" makes the code
-     and unholy mess, so ... we have a "master"!
-
-### Inspired _Schrijvers et al., 2013_
-
-On [this page](/swipl_notes/about_continuations/code/)
-
-- [iterator](/swipl_notes/about_continuations/code/iterator): An implementation of "iterators" (which are apparently
-  "generators", which are "semi-coroutines") that generate output on behalf of a "master predicate".
-  The "master predicate" sends the output to a user-selectable destination (in this case, stdout).
-   - [`iterator.pl`](/swipl_notes/about_continuations/code/iterator/iterator.pl)
-   - [Illustration](/swipl_notes/about_continuations/code/iterator/pics/iterator_and_master_coroutine.svg)
-- [effect handler](/swipl_notes/about_continuations/code/effect_handler): An implementation of an "effect handler" (state handler?)
-  keeping track of state on behalf of client code. State (now behind the curtain) is accessed by get/set commands
-  which are terms passed to `shift/1`. This comes with two examples: a Markov Network visitor and a counter-to-zero.
-  This works only for a single "thread" of client code. Once you have producer/consumer coroutines accessing
-  the same state, the "get" no longer works and you need to use [global variables](https://eu.swi-prolog.org/pldoc/man?section=gvar)
-  or something similar.
-
-## More examples 
+## Note
 
 ### "Shifting" is not like backtracking
 
@@ -284,108 +252,6 @@ true ;
 true.
 ```
 
-
-
-
-## Playing around with a booby-trapped "iterator" implementation
-
-Quite instructive to run this.
-
-The predicate-to-call takes a list, the elements of which are then "generated" (i.e. emitted)
-one-by-one by an "iterator" and printed to stdout by the `with_write/1` "master"
-
-Change the contents of the list passed to `run/1` to elicit some occurrences of interest from `reset/3`:
-
-Source also here: [trial.pl](/swipl_notes/about_continuations/code/trial/trial.pl).
-
-```
-:- debug(iterator).
-
-% ===
-% The "master predicate": It writes the values yielded by the "iterator predicate" 
-% (represented by "Goal") to stdout.
-% ===
-
-with_write(Goal) :-
-  reset(Goal,yield(X),Cont),
-  branch(Cont,yield(X)).
-
-branch(0,_) :- !,
-   debug(iterator,"Iterator succeeded",[]).
-
-branch(Cont,yield(X)) :-
-   debug(iterator,"Iterator yielded ~q",[X]),
-   with_write(Cont).
-
-% ===
-% The "iterator predicate", generating successive values (read from a list in
-% this case) that are communicated to the master predicate by a call to shift/1.
-% However, the "iterator" behaves in specific ways depending on the
-% element encountered because ... we want to see what happens next!!
-% ==
-
-from_list([X|Xs]) :-
-   ((X == fail; X == false)         % elicit failure
-   -> fail
-   ;
-   (X == throw)                     % elicit exception
-   -> domain_error(this,that)
-   ;
-   (X == badshift)                  % elicit shift not unifiable by reset/3 call
-   -> shift(bad(X))
-   ;
-   (X == recur)                     % elicit matrioshka reset/3 call
-   -> with_write(from_list([sub1,sub2,sub3]))
-   ;
-   shift(yield(X))),                % bravely default
-   from_list(Xs).                   % tail recursive loop
-
-from_list([]).
-
-% ==
-% Main predicate, call from toplevel
-% ==
-
-run(L) :-
-   must_be(list,L),
-   with_write(from_list(L)).
-```
-
-And so:
-
-```
-?- run([a,b,c]).
-% Iterator yielded a
-% Iterator yielded b
-% Iterator yielded c
-% Iterator succeeded
-true.
-
-?- run([a,fail,c]).
-% Iterator yielded a
-false.
-
-?- run([a,throw,c]).
-% Iterator yielded a
-ERROR: Domain error: `this' expected, found `that'
-
-?- run([a,badshift,c]).
-% Iterator yielded a
-ERROR: reset/3 `bad(badshift)' does not exist
-
-?- run([a,recur,c]).
-% Iterator yielded a
-% Iterator yielded sub1
-% Iterator yielded sub2
-% Iterator yielded sub3
-% Iterator succeeded
-% Iterator yielded c
-% Iterator succeeded
-true.
-```
-
-## Moreover
-
 ### The "continuation" term is a compound term
 
 At least in the current implementation. If you run the following on a continuation `Cont`:
@@ -440,6 +306,44 @@ C = call_continuation(['$cont$'(<clause>(0x23a5510), 15, '<inactive>', user, 125
 false.
 ```
 
+## Examples
+
+Hands-on testing (try it!):
+
+   - [`jumping_around.pl`](/swipl_notes/about_continuations/code/exercise/jumping_around.pl): jumping around between `reset/3` points
+     on the call stack by emitting the appropriate `shift/1` calls. 
+   - [`trial.pl`](/swipl_notes/about_continuations/code/exercise/trial.pl): The predicate-to-call takes a list, the elements of
+     which are then "generated" (i.e. emitted) one-by-one by an "iterator" and printed to stdout by the `with_write/1` "master".
+     However, certain elements make the from_list/1 goal behave in unruly ways. Basically tests what happens at the `reset/3` point.
+
+Simple patterns:
+
+   - [`looping.pl`](/swipl_notes/about_continuations/code/exercise/looping.pl): in an unexiting development, we can build a
+     loop that calls `reset/3` to activate a 
+     loop-worker-predicate on each loop passage instead of just *calling* the predicate.
+     directly. To make things more interesting, we can store the continuations of 
+     loop-worker-predicate obtained from `reset/3` and call them for finalization at the end.   
+   - [`appender_observer.pl`](/swipl_notes/about_continuations/code/exercise/appender_observer.pl): an appender-observer pair communicating
+     via an open list.
+   - [`producer_consumer_master.pl`](/swipl_notes/about_continuations/code/producer_consumer/producer_consumer_master.pl): a producer-consumer
+     (coroutine) example with a central "master" that dishes out the `reset/3` calls. There seems no way to make the
+     producer and consumer subroutines look symmetric using `reset`/`shift` and not having a "master" makes the code
+     and unholy mess, so ... we have a "master"!
+
+Inspired _Schrijvers et al., 2013_
+
+   - [iterator](/swipl_notes/about_continuations/code/iterator): An implementation of "iterators" (which are apparently
+     "generators", which are "semi-coroutines") that generate output on behalf of a "master predicate".
+     The "master predicate" sends the output to a user-selectable destination (in this case, stdout).
+      - [`iterator.pl`](/swipl_notes/about_continuations/code/iterator/iterator.pl)
+      - [Illustration](/swipl_notes/about_continuations/code/iterator/pics/iterator_and_master_coroutine.svg)
+   - [effect handler](/swipl_notes/about_continuations/code/effect_handler): An implementation of an "effect handler" (state handler?)
+     keeping track of state on behalf of client code. State (now behind the curtain) is accessed by get/set commands
+     which are terms passed to `shift/1`. This comes with two examples: a Markov Network visitor and a counter-to-zero.
+     This works only for a single "thread" of client code. Once you have producer/consumer coroutines accessing
+     the same state, the "get" no longer works and you need to use [global variables](https://eu.swi-prolog.org/pldoc/man?section=gvar)
+     or something similar.
+
 ## Adapting the patterns from "Call with current continuation patterns"
 
 As said earlier, the paper 
@@ -453,84 +357,11 @@ explores patterns in Scheme that employ `call-with-current-continuation` (aka. `
 
 Let's try to recode them!
 
-### Loop
-
-In Scheme, as given in the paper, a bit modified:
-
-The "infinitizer" which slaps an infinite loop around its (function) argument:
-
-```scheme
-; "infinitizer" runs "action-function" infinitely often
-; inside a (tail-recursive) loop
-
-(define infinitizer
-   (lambda (action-function)
-      ; "loop" is a closure taking no parameters which calls
-      ; "action-procedure" and then calls "loop".
-      ; After defining it, just call "loop".
-      (letrec
-         ((loop
-            (lambda ()
-               (begin
-                  ; ... code to execute before each action would go here ...
-                  (action-function)
-                  ; ... code to execute after each action would go here ...
-                  (loop)))))
-         (loop))))
-
-; the above seems convoluted; one may write it simpler as:
-
-(define infinitizer-2
-   (lambda (action-function)
-      (begin
-         ;;; ... code to execute before each action would go here ...
-         (action-function)
-         ;;; ... code to execute after each action would go here ...
-         (infinitizer-2 action-function))))
-```
-
-The function to be called at the toplevel as `(loop-until 4)` for example 
-(here hardcoded to use `infinitizer-2`). It grabs the continuation active
-ar start, then uses `infinitizer-2` in an inversion-of-control mode, so
-that `infinitizer-2` calls a defined action-function potentially infinitely
-often. However, the continuation helps the action-function to escape from
-the loop.
-
-```
-(define loop-until
-   (lambda (n)
-      (let
-         ((receiver
-            (lambda (exit-function)  ; exit-function will be the "current continuation" at call
-               (let ((count 0))            ; count will be mutated using "set!"
-                  (infinitizer-2
-                     (lambda ()                 ; this is the action-function
-                        (if (= count n)              ; breakoff criterium
-                           (exit-function count)         ; call received continuation with exit value
-                           (begin
-                              (display "The count is: ")
-                              (display count)
-                              (newline)
-                              ; communicate with the next action-function
-                              ; instance by POKE-ing count
-                              (set! count (+ count 1)
-                              ))))))))) ; end of receiver definition
-         (call/cc receiver)))) ; call with the above receiver
-```
-
-In Prolog:
-
-(TBD)
-
-
-
-
-
-
-### Escape from recursion
-### Loop via continuations
-### Escape from and reentry into recursion
-### Coroutines
-### Non-blind backtracking
-### Multitasking
+   - [Loop](/swipl_notes/about_continuations/adaptations/loop.md) (in progress)
+   - Escape from recursion (TBD)
+   - Loop via continuations (TBD)
+   - Escape from and reentry into recursion (TBD)
+   - Coroutines (TBD)
+   - Non-blind backtracking (TBD)
+   - Multitasking (TBD)
 
