@@ -6,8 +6,6 @@ In Scheme, as given in
 [Call with current continuation patterns](https://www.researchgate.net/publication/228576802_Call_with_current_continuation_patterns), 
 a bit modified:
 
-The "infinitizer" service function which slaps an infinite loop around its (function) argument:
-
 ```scheme
 ; "infinitizer" runs "action-function" infinitely often inside a (tail-recursive) loop
 
@@ -25,20 +23,19 @@ The "infinitizer" service function which slaps an infinite loop around its (func
                   (loop)))))
          (loop))))
 
-; the above seems convoluted; one may write it simpler as:
+; the above seems convoluted; one may write it simpler (employing a "named let") as:
 
-(define infinitizer-2
-   (lambda (action-function)
-      (begin
-         ;;; ... code to execute before each action would go here ...
-         (action-function)
-         ;;; ... code to execute after each action would go here ...
-         (infinitizer-2 action-function))))
+(define (infinitizer-2 action-function)
+   (let loop()
+      ;;; ... code to execute before each action would go here ...
+      (action-function)
+      ;;; ... code to execute after each action would go here ...
+      (loop)))
 ```
 
 The function to be called at the toplevel, for example: `(loop-until 4)`.
 
-It is hardcoded to use the `infinitizer-2` service function. 
+It is hardcoded to use the `infinitizer-2` higher-order function. 
 
 - It grabs the continuation active before the loop starts, then
 - Uses `infinitizer-2` in an inversion-of-control mode, so that
@@ -65,6 +62,17 @@ It is hardcoded to use the `infinitizer-2` service function.
                               (set! count (+ count 1)
                               ))))))))) ; end of receiver definition
          (call/cc receiver)))) ; call with the above receiver
+```
+
+Try it on repl.it: https://repl.it/@dtonhofer/ContinuationBasedLoopBreakout
+
+```
+(loop-until 4)
+The count is: 0
+The count is: 1
+The count is: 2
+The count is: 3
+=> 4
 ```
 
 ## In Prolog:
