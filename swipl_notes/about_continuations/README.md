@@ -349,9 +349,9 @@ Inspired _Schrijvers et al., 2013_
 As said earlier, the paper 
 
    - **Call with current continuation patterns**
-   - https://www.researchgate.net/publication/228576802_Call_with_current_continuation_patterns
-   - Darrell Ferguson and Dwight Deugo
-   - September 2001.
+      - https://www.researchgate.net/publication/228576802_Call_with_current_continuation_patterns
+      - Darrell Ferguson and Dwight Deugo
+      - September 2001.
 
 explores patterns in Scheme that employ `call-with-current-continuation` (aka. `call/cc`), not patterns in Prolog that use `reset/shift`.
 
