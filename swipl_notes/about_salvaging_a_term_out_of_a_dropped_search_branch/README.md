@@ -26,7 +26,7 @@ Out = f(a, a) ;
 Out = g(a, a).
 ```
 
-## Memoryhole the computation beyond the call of `call1(In,Out)` using _not-not_
+## Discard the computation beyond the call of `call1(In,Out)` using _not-not_
 
 ```
 call0(In,Out) :- 
@@ -46,7 +46,7 @@ really executed in a context that is dropped and disappears forever once the com
 true.
 ```   
 
-## Memoryhole the computation beyond the call of `call1(In,Out)` using _throw-catch_
+## Discard the computation beyond the call of `call1(In,Out)` using _throw-catch_
 
 ```
 call0(In,Out) :- 
