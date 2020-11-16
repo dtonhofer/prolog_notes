@@ -276,7 +276,7 @@ This is also why `reset/3` can take both an atomic goal on the first round and a
 
 ### Edge cases
 
-There is nothing to do for the continuation of `shift/1` itself:
+**There is nothing to do for the continuation of `shift/1` itself:**
 
 ```
 ?- reset(shift(mine),mine,C).
@@ -286,7 +286,11 @@ C = call_continuation([]).
 C = call_continuation([]).
 ```
 
-There is something to do if there is a true following the `shift/1`, namely, succeed:
+The above brings about the idea that in case a predicate calls `shift/1` on the last position, one 
+could have `reset/3` just yield 0 on the continuation parameter place instead of `call_continuation([])`
+but this brings unknown complications for little gain: [issue#788](https://github.com/SWI-Prolog/swipl-devel/issues/708).
+
+**There is something to do if there is a `true` following the `shift/1`, namely, succeed:**
 
 ```
 ?- reset((shift(mine),true),mine,C).
@@ -296,7 +300,7 @@ C = call_continuation(['$cont$'(<clause>(0x23a5510), 15, '<inactive>', user, 125
 C = call_continuation(['$cont$'(<clause>(0x23a5510), 15, '<inactive>', user, 125, '<inactive>', true)]).
 ```
 
-There is something to do if there is a false following the `shift/1`, namely, fail:
+**There is something to do if there is a `false` following the `shift/1`, namely, fail:**
 
 ```
 ?- reset((shift(mine),false),mine,C).
