@@ -312,7 +312,7 @@ false.
 
 ## Examples
 
-Hands-on testing (try it!):
+**Hands-on testing**
 
    - [`jumping_around.pl`](/swipl_notes/about_continuations/code/exercise/jumping_around.pl): jumping around between `reset/3` points
      on the call stack by emitting the appropriate `shift/1` calls. 
@@ -320,7 +320,7 @@ Hands-on testing (try it!):
      which are then "generated" (i.e. emitted) one-by-one by an "iterator" and printed to stdout by the `with_write/1` "master".
      However, certain elements make the from_list/1 goal behave in unruly ways. Basically tests what happens at the `reset/3` point.
 
-Simple patterns:
+**Simple patterns**
 
    - [`looping.pl`](/swipl_notes/about_continuations/code/exercise/looping.pl): in an unexiting development, we can build a
      loop that calls `reset/3` to activate a 
@@ -334,7 +334,7 @@ Simple patterns:
      producer and consumer subroutines look symmetric using `reset`/`shift` and not having a "master" makes the code
      and unholy mess, so ... we have a "master"!
 
-Inspired _Schrijvers et al., 2013_
+**Inspired _Schrijvers et al., 2013_**
 
    - [iterator](/swipl_notes/about_continuations/code/iterator): An implementation of "iterators" (which are apparently
      "generators", which are "semi-coroutines") that generate output on behalf of a "master predicate".
