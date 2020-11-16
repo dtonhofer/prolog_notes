@@ -30,12 +30,12 @@ It has been [published](https://www.cambridge.org/core/journals/theory-and-pract
    
 ### Papers and Reports
 
-#### Delimited continuations for Prolog
+#### "Delimited continuations for Prolog"
 
 As given in the SWI-Prolog manual.
 
    - https://www.swi-prolog.org/download/publications/iclp2013.pdf
-   - SCHRIJVERS, T., DEMOEN, B., DESOUTER, B., & WIELEMAKER, J.
+   - Tom Schrijvers, Bart Demoen, Benoit Desouter, Jan Wielemaker
    - 2013
    - Appears in: [Theory and Practice of Logic Programming, 13(4-5), 533-546. doi:10.1017/S1471068413000331](https://www.cambridge.org/core/journals/theory-and-practice-of-logic-programming/article/delimited-continuations-for-prolog/DD08147828169E26212DFAF743C8A9EB)
 
@@ -47,12 +47,12 @@ From that paper:
 
 The [publication page of that paper](https://www.cambridge.org/core/journals/theory-and-practice-of-logic-programming/article/delimited-continuations-for-prolog/DD08147828169E26212DFAF743C8A9EB) has a lot of live links to the the references.
 
-#### Delimited continuations in Prolog: semantics, use, and implementation in the WAM
+#### "Delimited continuations in Prolog: semantics, use, and implementation in the WAM"
 
 Technical Report. This is an excellent resource, IMHO better than the first one!
 
    - https://biblio.ugent.be/publication/5646080
-   - Tom Schrijvers (UGent), Bart Demoen and Benoit Desouter (UGent) 
+   - Tom Schrijvers, Bart Demoen, Benoit Desouter
    - March 13, 2013
 
 Abstract:
@@ -76,11 +76,11 @@ Section 7.6:
 > Dubaet al. added first-class continuations to the statically typed ML language [Typing first-class continuations in ML, POPL '91].  
 > Flattet al.implementeda production version in Scheme [Adding delimited and composable control to a production programming environment, 2007]
 
-#### Call with current continuation patterns
+#### "Call with current continuation patterns"
 
    - https://www.researchgate.net/publication/228576802_Call_with_current_continuation_patterns
-   - Darrell Ferguson and Dwight Deugo
-   - September 2001.
+   - Darrell Ferguson, Dwight Deugo
+   - September 2001
 
 The paper explores patterns in Scheme that employ `call-with-current-continuation` (aka. `call/cc`), not patterns in Prolog that use `reset/shift`
 but once one notices the relationship between `call/cc` and `reset` that becomes less important. Plus it provides an excellent intro.
@@ -132,10 +132,10 @@ point of `reset` via the term shifted by `shift`.
 > paper we decide to go back to reading the remaining references and other material. This is
 > equivalent to invoking an angel.
 
-#### Abstracting Control
+#### "Abstracting Control"
 
    - http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.43.8753
-   - Olivier Danvy and Andrzej Filinski
+   - Olivier Danvy, Andrzej Filinski
    - appears in _Proceedings of the 1990 ACM Conference on LISP and Functional Programming_
 
 This one introduces `shift` and `reset` operations but it's a very technical paper (I don't get it ... yet).
