@@ -252,6 +252,7 @@ true ;
 true.
 ```
 
+
 ### The "continuation" term is a compound term
 
 At least in the current implementation. If you run the following on a continuation `Cont`:
@@ -273,6 +274,198 @@ It is actually an atomic goal: a call to `call_continuation/1` with 1 argument p
 it evidently calls the continuation.
 
 This is also why `reset/3` can take both an atomic goal on the first round and a continuation returned by a previous `reset/3`.
+
+### The `reset` point behaves as a resource on the call stack
+
+The `reset` point behaves as a resource: You can only emerge from it (via `shift/1`) once.
+
+Here is a faulty program that _calls_ the continuation instead of performing another `reset/3` with the
+continuation. There are two "reset points" on the stack. The first call uses up one, the second
+call uses up the other. The third call has nowhere to go:
+
+```none
+upper :-
+   reset(middle,A,Cont),
+   format("Back in upper with A = ~q\n",[A]),
+   ((Cont == 0) -> true ; call(Cont)).
+
+middle :-
+   reset(lower([a,b,c,d]),A,Cont),
+   format("Back in middle with A = ~q\n",[A]),
+   ((Cont == 0) -> true ; call(Cont)).
+
+lower([X|Xs]) :-
+   format("Sending ~q\n",[X]),
+   shift(X),
+   format("Back in lower\n",[]),
+   lower(Xs).
+```
+
+And so:
+
+```
+?- upper.
+Sending a
+Back in middle with A = a
+Back in lower
+Sending b
+Back in upper with A = b
+Back in lower
+Sending c
+ERROR: reset/3 `c' does not exist
+ERROR: In:
+ERROR:   [14] shift(c)
+ERROR:   [13] lower([c,d]) at user://1:18
+```
+
+Illustrated, a bit informally (I have no real formal way to depict this):
+
+![reset points as resources](pics/reset_points_as_resources.svg)
+
+Or even more informally, the call stack:
+
+![reset points as resources call stack](pics/reset_points_as_resources_call_stack.svg)
+
+This works for limited cases of course:
+
+```
+upper :-
+   reset(middle,A,Cont),
+   format("Back in upper with A = ~q\n",[A]),
+   ((Cont == 0) -> true ; call(Cont)).
+
+middle :-
+   reset(lower([a,b,c,d]),A,Cont),
+   format("Back in middle with A = ~q\n",[A]),
+   ((Cont == 0) -> true ; call(Cont)).
+
+lower([X|_Xs]) :-
+   format("Sending ~q\n",[X]),
+   shift(X),
+   format("Back in lower\n",[]).
+```
+
+And so:
+
+```
+?- upper.
+Sending a
+Back in middle with A = a
+Back in lower
+Back in upper with A = _6052
+true.
+```
+
+![limited application](pics/limited_application.svg)
+
+### Correct switching
+
+To switch continually between two branches of the call stack (created at the first `reset/3` call),
+you need to use recursion to perform new `reset/3` calls:
+
+```none
+go :- middle(lower([a,b])).
+  
+middle(Goal) :-
+   reset(Goal,A,Cont),
+   format("Back in middle with A = ~q\n",[A]),
+   ((Cont == 0) -> true ; middle(Cont)).
+
+lower([X|Xs]) :-
+   format("Sending ~q\n",[X]),
+   shift(X),
+   format("Back in lower\n",[]),
+   lower(Xs).
+```
+
+And thus:
+
+```none
+?- go.
+Sending a
+Back in middle with A = a
+Back in lower
+Sending b
+Back in middle with A = b
+Back in lower
+false.
+```
+
+![Successfully switching between 2 branches on the stack](pics/successfully_switching_between_2_branches_on_the_stack.svg)
+
+Alternatively, using backtracking (failure-driven loop) in `lower/1`.
+Note that backtracking into `shift/1` means that we backtrack out of the 
+corresponfing `reset/3`.
+
+```none
+go :- middle(0,lower([a,b])).
+
+middle(Count,Goal) :-
+   (true;(format("B/T out of reset with Count = ~d\n",[Count]),fail)),
+   reset(Goal,A,Cont),
+   format("Back in middle with A = ~q, Count = ~d\n",[A,Count]),
+   CountP is Count+1,
+   ((Cont == 0) -> true ; middle(CountP,Cont)).
+
+lower(L) :-
+   member(X,L),
+   format("Sending ~q\n",[X]),
+   shift(X),
+   format("Back in lower\n",[]),
+   fail.
+```
+
+And thus:
+
+```
+?- go.
+Sending a
+Back in middle with A = a, Count = 0
+Back in lower
+B/T out of reset with Count = 1
+Sending b
+Back in middle with A = b, Count = 0
+Back in lower
+B/T out of reset with Count = 1
+B/T out of reset with Count = 0
+false.
+```
+
+This one just backtracks over the goal called by `reset/3`. Here, 
+we still emerge only once from a `reset/3` - it's just that backtracking into 
+`reset/3` emerges from the preceding `shift/1`. This is actually amazing. 
+
+```none
+go :- middle(lower([a,b])).
+
+middle(Goal) :-
+   reset(Goal,A,Cont),                                 % Backtracking into this, we emerge from the shift
+   format("Back in middle with A = ~q\n",[A]),
+   ((Cont == 0) -> true ; fail).                       % Failure-driven loop if Cont \== 0
+
+lower(L) :-
+   format("Calling member\n"),
+   member(X,L),    
+   format("Sending ~q\n",[X]),
+   (true;(format("B/T out of shift(~q)\n",[X]),fail)),
+   shift(X),                                           % Called twice; brings us back to the reset/3 point
+   format("Back in lower\n"),                          % Never reached
+   fail.
+```
+
+And thus:
+
+```none
+?- go.
+Calling member
+Sending a
+Back in middle with A = a
+B/T out of shift(a)
+Sending b
+Back in middle with A = b
+B/T out of shift(b)
+false.
+```
 
 ### Edge cases
 

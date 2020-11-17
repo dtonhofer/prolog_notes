@@ -1,0 +1,57 @@
+https://eu.swi-prolog.org/pldoc/man?predicate=same_length/2
+
+## Missed opportunity
+
+There is room for same_length/3 which not only checks sameness, but also yield the length. 
+
+This helps to avoid having to immediately call length/2 in some generative cases.
+
+same_length(?List1,?List2,?Length)
+
+## Example
+
+In the same way that length/2 can generate lists of fresh unbound variables:
+
+==
+?- length(L,3).
+L = [_22942, _22948, _22954].
+==
+
+so can same_length/2
+
+==
+?- same_length(L,[0,1,2,3,4]).
+L = [_7972, _7978, _7984, _7990, _7996].
+
+?- same_length([0,1,2,3,4],R).
+R = [_8914, _8920, _8926, _8932, _8938].
+==
+
+Non-determinism if both arguments are unbound variables:
+
+==
+?- same_length(L,R).
+
+L = R, R = [] ;
+L = [_10602], R = [_10608] ;
+L = [_10602, _11640], R = [_10608, _11646] ;
+L = [_10602, _11640, _12678], R = [_10608, _11646, _12684] 
+...
+==
+
+Also works with "open lists" (i.e. lists which have an unbound variable as tail)
+
+==
+?- same_length([1,2|X],[2,4|Y]).
+X = Y, Y = [] ;
+X = [_8562],
+Y = [_8568] ;
+X = [_8562, _9696],
+Y = [_8568, _9702] .
+
+?- same_length([1,2|X],[2,4|X]).
+X = [] ;
+X = [_12618] ;
+X = [_12618, _13354] ;
+X = [_12618, _13354, _14090] 
+==

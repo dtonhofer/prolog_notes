@@ -77,9 +77,12 @@ The count is: 3
 
 ## In Prolog:
 
-The "service predicate" which creates an an infinite loop of calls to `Goal`.
-We don't add a "!" anywhere because `Goal` may have several solutions (though here it does not).
-This may thus fill the stack with leftover activations.
+### With a global variable
+
+First create the "service predicate" which creates an an infinite loop of calls of `Goal`.
+We don't add a `!` anywhere because `Goal` may have several solutions (though here it
+does not) - it is thus possible that the stack will be filled with leftover activations
+because the choicepoints cannot be pruned.
 
 ```erlang
 infinitizer(Goal) :-
@@ -87,16 +90,21 @@ infinitizer(Goal) :-
    infinitizer(Goal).
 ```
 
-The predicate making use of `infinitizer/1` to create a potentially infinite loop. But,
-given the following communication protocol to be followed by `in_loop_action`:
+Then write the predicate which makes use of `infinitizer/1` to create a loop, which
+is is infinite but from which one can get out with a call to `shift/1`.
 
-- Call `shift(escape_from_loop(Arg))` to escape the loop
+The communication protocol to be followed by an "in-loop action" is:
 
-we should be fine!
+- _Call `shift(escape_from_loop(Arg))` to escape the loop_
 
-There is a _hidden_ part of the communication protocol: 
+There is a _hidden_ part of the communication protocol which allows the 
+"in-loop action" to determine whether it should stop:
 
-- There is a variable in the "global variables" namespace called `count` which is your current invocation count.
+- The "global variables" called `count` which is the current invocation count.
+  
+The global variable is read with
+[`nb_getval/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=nb_getval/2) and set
+with [`nb_setval/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=nb_setval/2).
 
 ```erlang
 loop_until(N) :-
@@ -108,12 +116,12 @@ loop_until(N) :-
    format("The final count is (unsurprisingly) equal to ~d: ~d\n",[N,FinalN]).
 ```
 
-The "action predicate" called inside the `infinitizer` loop. The actual `in-loop-action`
-has been broken out because Prolog forces us to write all predicates at the toplevel. 
-No nested predicates (and thus no "real closures" because there can be no particular
-context of a predicate). This is generally not a hindrance, and is not in this case.
-We get the current `Count` not from the predicate context as in Scheme, but from the 
-"global variables" namespace. 
+The "in-loop action" predicate is called inside the `infinitizer` loop, can check
+its stop criterium and can escape the loop.
+
+The actual `in-loop-action` has been moved out (code-wide) because Prolog forces us
+to write all predicates at the toplevel. There are no nested predicates nor are
+there closures. This is generally not a hindrance, and is not in this case. 
 
 ```erlang
 in_loop_action(N) :-
@@ -136,6 +144,17 @@ The count is 2
 The final count is (unsurprisingly) equal to 3: 3
 true.
 ```
+
+## Without a global variable
+
+Can we keep the `Count` variable in a local context? 
+
+An idea: We can manage it through an "effect handler" pattern: the uppermost
+activation could handle "read" and "write" commands received through `shift/1`. 
+Let's try that! (Success is not guaranteed.)
+
+
+
 
 
    
