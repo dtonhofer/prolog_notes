@@ -21,16 +21,14 @@ It has been [published](https://www.cambridge.org/core/journals/theory-and-pract
 
 ## Reading
 
-### Some Wikipedia entries:
+### Some Wikipedia entries
 
    - [Call-with-current-continuation](https://en.wikipedia.org/wiki/Call-with-current-continuation)
    - [Coroutine](https://en.wikipedia.org/wiki/Coroutine)
    - [Continuation](https://en.wikipedia.org/wiki/Continuation) (as usual, Prolog is not listed as supporting this; well, it _isn't_ in the ISO Standard)
    - [setjmp.h](https://en.wikipedia.org/wiki/Setjmp.h)
    
-### Papers and Reports
-
-#### "Delimited continuations for Prolog"
+### "Delimited continuations for Prolog"
 
 As given in the SWI-Prolog manual.
 
@@ -47,7 +45,7 @@ From that paper:
 
 The [publication page of that paper](https://www.cambridge.org/core/journals/theory-and-practice-of-logic-programming/article/delimited-continuations-for-prolog/DD08147828169E26212DFAF743C8A9EB) has a lot of live links to the the references.
 
-#### "Delimited continuations in Prolog: semantics, use, and implementation in the WAM"
+### "Delimited continuations in Prolog: semantics, use, and implementation in the WAM"
 
 Technical Report. This is an excellent resource, IMHO better than the first one!
 
@@ -76,7 +74,7 @@ Section 7.6:
 > Dubaet al. added first-class continuations to the statically typed ML language [Typing first-class continuations in ML, POPL '91].  
 > Flattet al.implementeda production version in Scheme [Adding delimited and composable control to a production programming environment, 2007]
 
-#### "Call with current continuation patterns"
+### "Call with current continuation patterns"
 
    - https://www.researchgate.net/publication/228576802_Call_with_current_continuation_patterns
    - Darrell Ferguson, Dwight Deugo
@@ -132,7 +130,7 @@ point of `reset` via the term shifted by `shift`.
 > paper we decide to go back to reading the remaining references and other material. This is
 > equivalent to invoking an angel.
 
-#### "Abstracting Control"
+### "Abstracting Control"
 
    - http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.43.8753
    - Olivier Danvy, Andrzej Filinski
