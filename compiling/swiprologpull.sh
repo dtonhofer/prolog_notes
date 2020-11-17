@@ -77,7 +77,7 @@ set -o nounset
 perso_github_account=https://github.com/dtonhofer
 swipl_github_account=https://github.com/SWI-Prolog
 system_install_dir=/usr/local/logic
-toplevel_dir_fq="$HOME/Development/2020_10/swiplmaking"  # where to put stuff locally
+toplevel_dir_fq="$HOME/Development/2020_11/swiplmaking2"  # where to put stuff locally
 
 url_and_dir() {
    local finality=${1:-}                  # "jpl" or "docu" or "system"
@@ -474,51 +474,59 @@ copy() {
 
 }
 
-# ===========================================================================
-# Build an SWI-Prolog distribution that has already been downloaded from
-# github.
-# ===========================================================================
+# ===
+# Directory changing code
+# ===
 
 # ---
-# The global variable that will be set in build_swipl() to the fully
-# qualified build dir.
+# The function to check the presence of and pushd to a "working directory" in which we can compile
+#
+#
+# $toplevel_dir_fq
+#               |
+#               +----- $finality                     $work_dir_fq (dirname is "jpl","docu","system") 
+#                             |
+#                             +------ $infra_dir     something like "swipl-devel_forked"
 # ---
 
-valueout_build_dir_fq=
-valueout_install_dir_fq=
+dirchange_finality() {
 
-# ---
-# The function
-# ---
-
-build() {
-
-   local toplevel_dir_fq=${1:-}            # the directory we will be working in
-   local finality=${2:-}                   # "jpl" or "docu" or "system"
-   local rebuild=${3:-}                    # if set to "rebuild", then just "rebuild" if possible
+   local toplevel_dir_fq=${1:-}
+   local finality=${2:-}
+   local routine_name=${3:-}
 
    if [[ -z "$toplevel_dir_fq" || ! -d "$toplevel_dir_fq" ]]; then
-      echo "You must pass an existing (fully qualified) toplevel directory to subroutine build()" >&2
-      echo "but it seems '$toplevel_dir_fq' either doesn't exist or is not a directory -- exiting!" >&2
+      echo "You must pass an existing (fully qualified) toplevel directory to subroutine $routine_name()" >&2
+      echo "It seems directory '$toplevel_dir_fq' either doesn't exist or is not a directory -- exiting!" >&2
       exit 1
    fi
 
    if [[ -z "$finality" || ( $finality != jpl && $finality != docu && $finality != system ) ]]; then
-      echo "You must indicate the finality ('jpl', 'docu', 'system') to subroutine build() -- exiting" >&2
+      echo "You must indicate the finality ('jpl', 'docu', 'system') to subroutine $routine_name() -- exiting" >&2
       exit 1
    fi
 
-   # cd to the finality-dependent subdir
+   # cd to the finality-dependent subdir, the "work_dir_fq"
    # the work directory must exist because it contains the downloaded distribution we want to build!
 
    local work_dir_fq="$toplevel_dir_fq/$finality"
-
-   # >>>>>> work_dir_fq
 
    pushd "$work_dir_fq" >/dev/null || {
       echo "Could not cd to '$work_dir_fq' (maybe you first have to clone the repository?) -- exiting" >&2
       exit 1
    }
+
+   global_work_dir_fq="$work_dir_fq"  # push to global variable
+
+}
+
+dirchange_finality_infra() {
+
+   local toplevel_dir_fq=${1:-}
+   local finality=${2:-}
+   local routine_name=${3:-}
+
+   dirchange_finality "$toplevel_dir_fq" "$finality" "$routine_name"
 
    local url_and_dir_infra
    url_and_dir_infra=$(url_and_dir "$finality" infra) || {
@@ -538,7 +546,19 @@ build() {
       exit 1
    }
 
-   # The repository has a VERSION file
+   install_location=$(echo "$url_and_dir_infra" | cut --field=4 --delimiter='|')
+   install_location=$(trim "$install_location")
+
+   global_infra_dir="$infra_dir"                  # push to global variable
+   global_install_location="$install_location"    # push to global variable
+
+}
+
+# ===========================================================================
+# Supposing the current directory is the repository, look for a VERSION file
+# ===========================================================================
+
+look_for_version_file() {
 
    local version
 
@@ -547,18 +567,81 @@ build() {
          echo "Could not generate a version string from the version $(pwd)/VERSION -- exiting" >&2
          exit 1
       }
-      echo "The version string obtained from the version file is '$version'" >&2
    else
       echo "There is no VERSION file in '$work_dir_fq/$infra_dir' -- exiting" >&2
       exit 1
    fi
 
-   # Where to install? It depends!
+   global_version=$version
 
-   local install_location=
+}
+
+# ===========================================================================
+# Checking what is checked out
+# ===========================================================================
+
+look() {
+
+   local toplevel_dir_fq=${1:-}        # the directory we will be working in
+   local finality=${2:-}               # "jpl" or "docu" or "system"
+
+   dirchange_finality_infra "$toplevel_dir_fq" "$finality" "look"  # exits in case of problem
+
+   local work_dir_fq="$global_work_dir_fq"  # pull from global variable
+   local infra_dir="$global_infra_dir"      # pull from global variable; this is the relative repository directory
+
+   # the above "pushd" to "work_dir_fq" and then "cd" to "infra_dir": we are in the repository directory
+
+   echo "---"
+   echo "Latest git log entry"
+   echo "---"
+
+   git log -n 1 --date=iso
+
+   echo "---"
+   echo "Any differences between the remote master and this master?"
+   echo "---"
+
+   git diff remotes/origin/master..master
+
+   echo "---"
+   echo "The VERSION file says"
+   echo "---"
+
+   look_for_version_file
+   echo "$global_version"
+
+   echo "---"
+   echo "git status says"
+   echo "---"
+
+   git status
+}
+
+# ===========================================================================
+# Build or rebuild an SWI-Prolog distribution that has already been
+# downloaded from github.
+# ===========================================================================
+
+build() {
+
+   local toplevel_dir_fq=${1:-}        # the directory we will be working in
+   local finality=${2:-}               # "jpl" or "docu" or "system"
+   local rebuild=${3:-}                # if set to "rebuild", then just "rebuild" if possible
+
+   dirchange_finality_infra "$toplevel_dir_fq" "$finality" "build"  # exits in case of problem
+
+   local work_dir_fq="$global_work_dir_fq"  # pull from global variable
+   local infra_dir="$global_infra_dir"      # pull from global variable; this is the relative repository directory
+   local install_location="$global_install_location"
    local install_dir_fq=
 
-   install_location=$(echo "$url_and_dir_infra" | cut --field=4 --delimiter='|') ; install_location=$(trim "$install_location")
+   # the above "pushd" to "work_dir_fq" and then "cd" to "infra_dir": we are in the repository directory
+
+   look_for_version_file
+   local version="$global_version"
+
+   # Where to install? It depends!
 
    if [[ $install_location == locally ]]; then
       # relative directory based on version string
@@ -571,7 +654,7 @@ build() {
       install_dir_fq="${install_location}/swiplexe_${version}"
    fi
 
-   # As we are currently in the directory with the distribution; configure & compile in here!
+   # As we are currently in the distro directory, configure & compile in here!
 
    local build_dir="build"
 
@@ -721,8 +804,8 @@ build() {
 
    # retain the build directory
 
-   valueout_build_dir_fq=$(pwd)
-   valueout_install_dir_fq="$install_dir_fq"
+   global_build_dir_fq=$(pwd)
+   global_install_dir_fq="$install_dir_fq"
 
    # <<<<<< work_dir_fq
 
@@ -750,10 +833,15 @@ if [[ $cmd == copy ]]; then
    exit 0
 fi
 
+if [[ $cmd == look ]]; then
+   look "$toplevel_dir_fq" "$finality"
+   exit 0
+fi
+
 if [[ $cmd == build ]]; then
    build "$toplevel_dir_fq" "$finality" xxxxxxx
    if [[ $finality == system ]]; then
-      echo "You have to run 'ninja install' as root in '$valueout_build_dir_fq' to install the compilate into '$valueout_install_dir_fq'" >&2
+      echo "You have to run 'ninja install' as root in '$global_build_dir_fq' to install the compilate into '$global_install_dir_fq'" >&2
    fi
    exit 0
 fi
@@ -761,7 +849,7 @@ fi
 if [[ $cmd == rebuild ]]; then
    build "$toplevel_dir_fq" "$finality" rebuild
    if [[ $finality == system ]]; then
-      echo "You have to run 'ninja install' as root in '$valueout_build_dir_fq' to install the compilate into '$valueout_install_dir_fq'" >&2
+      echo "You have to run 'ninja install' as root in '$global_build_dir_fq' to install the compilate into '$global_install_dir_fq'" >&2
    fi
    exit 0
 fi
@@ -775,36 +863,36 @@ Expecting:
 
 For cloning remote repo
 
-- clone system      : To clone the original SWI Prolog repo, including submodules, in order to build for a systemwide distribution
-- clone jpl forked  : To clone the modified jpl package from the personal github account, for editing
-- clone jpl infra   : To clone the original SWI Prolog repo, including submodules, in order to build for jpl testing
-- clone docu forked : To clone the modified SWI Prolog repo from the personal github account, for editing the documentation
-- clone docu infra  : To clone the original SWI Prolog repo, including submodules, in order to build the documentation
+    clone system      : To clone the original SWI Prolog repo, including submodules, in order to build for a systemwide distribution
+    clone jpl forked  : To clone the modified jpl package from the personal github account, for editing
+    clone jpl infra   : To clone the original SWI Prolog repo, including submodules, in order to build for jpl testing
+    clone docu forked : To clone the modified SWI Prolog repo from the personal github account, for editing the documentation
+    clone docu infra  : To clone the original SWI Prolog repo, including submodules, in order to build the documentation
 
-For preparing for build
+For preparing to build
 
-- copy jpl          : To copy files from the modified jpl package to the SWI Prolog repo meant for build/testing of jpl
-- copy docu         : To copy files from the modified SWI Prolog for documentation update for building documentation
+    copy (jpl,docu)           : To copy files from 
+                                - the modified jpl package 
+                                  to the SWI Prolog repo meant for build/testing of jpl
+                                - the modified SWI Prolog for docu changes
+                                  to the SWI Prolog repo meant for build/testing of documentation
 
 For building/rebuilding
 
-- build system      : Configure-Build-Test the distro meant for systemwide distribution.
-                      There is no installation, which has to be done manually as root.
-                      If a build already exists, it is removed.
-- rebuild system    : Same as above, without removal of existing build and not doing
-                      configuration if the build exists.
+    build (system,docu,jpl)   : Configure-Build-Test-Install the distro meant for
+                                - systemwide distribution if 'system' is given,
+                                  (installation will have to be done manually as root);
+                                - testing documentation if 'docu' is given;
+                                - testing jpl if 'jpl' is given.
+                                If a build already exists, it is removed.
 
-- build docu        : Configure-Build-Test-Install the distro meant for testing documentation.
-                      If a build already exists, it is removed.
-- rebuild docu      : Same as above, without removal of existing build.
+    rebuild (system,docu,jpl) : Same as above, but without removal of existing build.
 
-- build jpl         : Configure-Build-Test-Install the distro meant for testing jpl.
-                      If a build already exists, it is removed.
-- rebuild jpl       : Same as above, without removal of existing build.
+    look (system,docu,build)  : Get information about the status of the currently checked-out files.
 
 Manual commands:
 
-To branch : Run something like "git checkout -b docu_202007"
+    To branch : Run something like "git checkout -b docu_202007"
 
 TEXT
 
