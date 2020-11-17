@@ -190,66 +190,7 @@ to retrieve the appropriate continuation somewhere on the call stack). So unlike
 at the `call/cc` point stays invisible. However, you get the continuation for the `shift/1` point for free. With
 `call/cc` you have to pass through some hoops to obtain it.
 
-## Note
-
-### "Shifting" is not like backtracking
-
-Variables that have been bound in the procedure called by `reset/3` stay bound after a `shift/1`:
-
-```
-:- debug(changee).
-
-changee :-
-   debug(changee,"Changee says the variable is ~q",[N]),
-   reset(changer(N),changed_it,_),
-   debug(changee,"Changee now says the variable is ~q",[N]).
-   
-changer(N) :-
-   N = foo,
-   shift(changed_it).
-```
-
-And so:
-
-```
-?- changee.
-% Changee says the variable is _10566
-% Changee now says the variable is foo
-true.
-```
-
-### There is proper backtracking over the goal called by `reset/3`
-
-```
-:- debug(multi).
- 
-multi :-   
-   debug(multi,"Calling 'possible' through 'reset'",[]),
-   reset(possible,mine,_),
-   debug(multi,"Back in 'multi'",[]).
-       
-possible :-
-   debug(multi,"In 'possible'",[]),
-   shift(mine).
-   
-possible :-   
-   debug(multi,"In alternate 'possible'",[]),
-   shift(mine).
-```
-
-And so:
-
-```
-?- multi.
-% Calling 'possible' through 'reset'
-% In 'possible'
-% Back in 'multi'
-true ;
-% In alternate 'possible'
-% Back in 'multi'
-true.
-```
-
+## Empirical research
 
 ### The "continuation" term is a compound term
 
@@ -272,6 +213,65 @@ It is actually an atomic goal: a call to `call_continuation/1` with 1 argument p
 it evidently calls the continuation.
 
 This is also why `reset/3` can take both an atomic goal on the first round and a continuation returned by a previous `reset/3`.
+
+### Calling `shift/1` is not like backtracking
+
+It's just continuing with the "instruction stream" at another place.
+Variables that have been bound during the procedure called by `reset/3` _stay_ bound after a `shift/1`:
+
+```
+:- debug(changee).
+
+changee :-
+   debug(changee,"Changee says the variable is ~q",[N]),
+   reset(changer(N),changed_it,_),
+   debug(changee,"Changee now says the variable is ~q",[N]).
+   
+changer(N) :-
+   N = foo,            % bind the passed N to 'foo'
+   shift(changed_it).
+```
+
+And so:
+
+```
+?- changee.
+% Changee says the variable is _10566
+% Changee now says the variable is foo
+true.
+```
+
+### There is proper backtracking over the goal called by `reset/3`
+
+See further below for more on this.
+
+```
+:- debug(multi).
+ 
+multi :-   
+   debug(multi,"Calling 'possible' through 'reset'",[]),
+   reset(possible,mine,_),
+   debug(multi,"Back in 'multi'",[]).
+       
+possible :-
+   debug(multi,"In 'possible'",[]).
+   
+possible :-   
+   debug(multi,"In alternate 'possible'",[]).
+```
+
+And so:
+
+```
+?- multi.
+% Calling 'possible' through 'reset'
+% In 'possible'
+% Back in 'multi'
+true ;
+% In alternate 'possible'
+% Back in 'multi'
+true.
+```
 
 ### The `reset` point behaves as a resource on the call stack
 
