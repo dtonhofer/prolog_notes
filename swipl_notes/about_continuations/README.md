@@ -356,7 +356,7 @@ true.
 
 ![limited application](pics/limited_application.svg)
 
-### Correct switching
+### Correct switching using (tail) recursion to generate new reset points
 
 To switch continually between two branches of the call stack (created at the first `reset/3` call),
 you need to use recursion to perform new `reset/3` calls:
@@ -391,9 +391,11 @@ false.
 
 ![Successfully switching between 2 branches on the stack](pics/successfully_switching_between_2_branches_on_the_stack.svg)
 
+### Correct switching using a "failure-driven loop" in the "lower" predicate
+
 Alternatively, using backtracking (failure-driven loop) in `lower/1`.
 Note that backtracking into `shift/1` means that we backtrack out of the 
-corresponfing `reset/3`.
+corresponding `reset/3`!
 
 ```none
 go :- middle(0,lower([a,b])).
@@ -428,6 +430,8 @@ B/T out of reset with Count = 1
 B/T out of reset with Count = 0
 false.
 ```
+
+### Weirdness: Using a failure-driven loop in the "upper" predicate
 
 This one just backtracks over the goal called by `reset/3`. Here, 
 we still emerge only once from a `reset/3` - it's just that backtracking into 
