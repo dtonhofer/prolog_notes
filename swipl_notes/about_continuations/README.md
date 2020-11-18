@@ -556,7 +556,7 @@ explores patterns in Scheme that employ `call-with-current-continuation` (aka. `
 
 Let's try to recode them!
 
-   - [Loop](/swipl_notes/about_continuations/adaptations/loop.md) (in progress)
+   - [Loop](/swipl_notes/about_continuations/adaptations/loop.md) 
    - Escape from recursion (TBD)
    - Loop via continuations (TBD)
    - Escape from and reentry into recursion (TBD)
