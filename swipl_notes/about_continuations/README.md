@@ -27,6 +27,8 @@ It has been [published](https://www.cambridge.org/core/journals/theory-and-pract
    - [Coroutine](https://en.wikipedia.org/wiki/Coroutine)
    - [Continuation](https://en.wikipedia.org/wiki/Continuation) (as usual, Prolog is not listed as supporting this; well, it _isn't_ in the ISO Standard)
    - [setjmp.h](https://en.wikipedia.org/wiki/Setjmp.h)
+   - [COMEFROM instruction](https://en.wikipedia.org/wiki/COMEFROM) ( a `reset/3` is like a special label on the call stack which captures all `shift/1`
+     calls under that match the `Ball` term - it resembles a `COMEFROM`, the opposite of a `GOTO`)
    
 ### "Delimited continuations for Prolog"
 
