@@ -158,6 +158,25 @@ We read:
 
 Ok, this needs more study.
 
+### "Capturing the Future by Replaying the Past - Functional Pearl"
+
+   - https://hal.inria.fr/hal-01929178/document
+   - https://arxiv.org/abs/1710.10385
+   - James Koppel, Gabriel Scherer, Armando Solar-Lezama
+   - Proceedings of the ACM on Programming Languages, ACM, 2018, 2 (ICFP), pp.1- 29.
+
+> Delimited continuations are the mother of all monads! So goes the slogan inspired by Filinski’s 1994 paper,which showed that 
+> delimited continuations can implement any monadic effect, letting the programmer usean effect as easily as if it was built 
+> into the language. It’s a shame that not many languages have delimited continuations. Luckily, exceptions and state are also
+> the mother of all monads! In this Pearl, we show how to implement delimited continuations in terms of exceptions and state,
+> a construction we call _thermometer continuations_. While traditional implementations of delimited continuations require
+> some way of "capturing" an intermediate state of the computation, the insight of thermometer continuations is to reach this 
+> intermediate state by replaying the entire computation from the start, guiding it using a recording so that the same thing
+> happens until the captured point. Along the way, we explain delimited continuations and monadic reflection, show how the
+> Filinski construction lets thermometer continuations express any monadic effect, share an elegant special-case for 
+> nondeterminism, and discuss why our construction is not prevented by theoretical results that exceptions and state cannot
+> macro-express continuations.
+
 ## Concept linking
 
 ### Similarity of `reset`/`shift` to `catch`/`throw`
