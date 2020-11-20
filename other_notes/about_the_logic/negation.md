@@ -20,7 +20,7 @@ Who would have though that Negation is fraught like this?
    - 1986
    - [Springer Lecture Notes in Computer Science (LNCS) No. 238, Springer-Verlag Berlin Heidelberg 1986, 129 pages](https://link.springer.com/book/10.1007/BFb0021681)
 
-### Negation as Failure (Surveys by Sheperdson) (1984, 1985)
+### "Negation as Failure I & II" (Surveys by Sheperdson) (1984, 1985)
 
 **Negation as Failure: A Comparison of Clark's Completed Data Dase and Reiter's Closed World Assumption**
 
@@ -34,7 +34,7 @@ Who would have though that Negation is fraught like this?
    - https://www.sciencedirect.com/science/article/pii/0743106685900184
    - Appears in: _The Journal of Logic Programming, vol 3, 1985, pages 185-202._
 
-### A Kripke-like Model for Negation as Failure (1989)
+### "A Kripke-like Model for Negation as Failure" (1989)
 
    - James Harland, Department of Computer Science, University of Edinburgh
    - https://www.researchgate.net/publication/2818956_A_Kripke-like_Model_for_Negation_as_Failure
