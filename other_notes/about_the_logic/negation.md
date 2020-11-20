@@ -10,35 +10,35 @@ Who would have though that Negation is fraught like this?
 
 ### "Negation as Failure" (1978)
 
-   - The original paper by Keith Clark
+   - Keith Clark
    - 1978
    - http://www.doc.ic.ac.uk/~klc/neg.html
 
-### “Negation and Control in Prolog” (1985)
+### “Negation and Control in Prolog” (1986)
 
    - Lee Naish
-   - Springer Lecture Notes in Computer Science (LNCS) No. 238
-   - 129 pages
+   - 1986
+   - [Springer Lecture Notes in Computer Science (LNCS) No. 238, Springer-Verlag Berlin Heidelberg 1986, 129 pages](https://link.springer.com/book/10.1007/BFb0021681)
 
 ### Negation as Failure (Surveys by Sheperdson) (1984, 1985)
 
 **Negation as Failure: A Comparison of Clark's Completed Data Dase and Reiter's Closed World Assumption**
 
+   - J.C. Sheperdson   
    - https://www.sciencedirect.com/science/article/pii/0743106684900232
-   - J.C. Sheperdson
-   - Appears in: The Journal of Logic Programming, vol 1, 1984, pages 51–81.
+   - Appears in: _The Journal of Logic Programming, vol 1, 1984, pages 51–81._
    
 **Negation as Failure II**
 
    - J.C. Sheperdson
    - https://www.sciencedirect.com/science/article/pii/0743106685900184
-   - Appears in: The Journal of Logic Programming, vol 3, 1985, pages 185-202.
+   - Appears in: _The Journal of Logic Programming, vol 3, 1985, pages 185-202._
 
 ### A Kripke-like Model for Negation as Failure (1989)
 
-   - https://www.researchgate.net/publication/2818956_A_Kripke-like_Model_for_Negation_as_Failure
    - James Harland, Department of Computer Science, University of Edinburgh
-   - Appears in: Proceedings of the North American Conference on Logic Programming, 626-642, 1989.
+   - https://www.researchgate.net/publication/2818956_A_Kripke-like_Model_for_Negation_as_Failure
+   - Appears in: _Proceedings of the North American Conference on Logic Programming, 626-642, 1989._
    
 > We extend the Kripke-like model theory given in 
 > [D.A. Miller, A Logical Analysis of Modules in Logic Programming, Journal of Logic Programming 6:79-108, 1989].
@@ -53,18 +53,31 @@ Who would have though that Negation is fraught like this?
 > The resulting T operator is not monotonic, which necessitates a slight departure from the standard
 > procedure, but the important properties of the construction still hold.
 
-### "Logic Programming with Strong Negation" (1991)
+### "Logic Programming with Strong Negation" (1989)
 
-   - David Pearce, Gerd Wagner, FU Berlin, 1991
-   - Appears in [Springer LNAI 475](https://link.springer.com/book/10.1007/BFb0038689): 
-     Extensions of Logic Programming, International Workshop Tübingen, FRG, December 8–10, 1989 Proceedings
+   - David Pearce, Gerd Wagner, FU Berlin
+   - Appears in: _[Springer Lecture Notes in Computer Science (LNCS) No. 475](https://link.springer.com/book/10.1007/BFb0038689): Extensions of Logic Programming (ELP 1989), International Workshop Tübingen, FRG, December 8–10, 1989 Proceedings_
 
+### "Classical negation in logic programs and disjunctive databases" (1991)
+
+   - Michael Gelfond, Vladimir Lifschitz
+   - Appears in: _"New Generation Computing volume 9, pages 365–385 (1991)"_
+   - https://link.springer.com/article/10.1007%2FBF03037169 
+   - http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.56.7150 
+   
 ### "Logic programming and negation: A survey" (1994)
 
    - Krzysztof R. Apt, Roland N. Bol
    - https://www.sciencedirect.com/science/article/pii/0743106694900248
-   - Appears in: The Journal of Logic Programming, Volumes 19–20, Supplement 1, May–July 1994, Pages 9-71
+   - Appears in: _The Journal of Logic Programming, Volumes 19–20, Supplement 1, May–July 1994, Pages 9-71_
 
+### "A logical semantics for depth-first Prolog with ground negation" (1997)
+
+   - James Andrews
+   - https://www.sciencedirect.com/science/article/pii/S0304397596001387
+   - Appears in: Theoretical Computer Science, Volume 184, Issues 1–2, 30 September 1997, Pages 105-143
+   - _"This material was published earlier as a technical report and is the expanded version, including proofs, of a paper presented at the 1993 International Logic Programming Symposium (ILPS)."_
+   
 ### "How to Handle Negation in Prolog: Several Logical Approaches" (2008)
 
    - https://canbaskent.net/logic/early/prolog.pdf
@@ -75,9 +88,6 @@ Who would have though that Negation is fraught like this?
 > account is also mentioned.
    
 **References**   
-
-- ANDREWS, James; ”A Logical Semantics for Depth-First Prolog with Ground Negation”, Theoretical Computer Science, v. 184, October 1997, pp. 105-143.
-- GELFOND, M., LIFTSCHITZ, V.; “Classical Negation in Logic Programs and Disjunctive Databases”, New Generation Computing, vol. 9, pp. 365-385, 1991.
 
 - BLACKBURN, P; de RIJKE, M.; VENEMA, Y.; Modal Logic, Cambridge. 
 - HODGES, W.; “A Shorter Model Theory”, Oxford.
