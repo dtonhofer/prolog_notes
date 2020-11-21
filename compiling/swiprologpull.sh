@@ -77,7 +77,7 @@ set -o nounset
 perso_github_account=https://github.com/dtonhofer
 swipl_github_account=https://github.com/SWI-Prolog
 system_install_dir=/usr/local/logic
-toplevel_dir_fq="$HOME/Development/2020_11/swiplmaking2"  # where to put stuff locally
+toplevel_dir_fq="$HOME/Development/2020_11/swiplmaking3"  # where to put stuff locally
 
 url_and_dir() {
    local finality=${1:-}                  # "jpl" or "docu" or "system"
@@ -486,7 +486,7 @@ copy() {
 #               |
 #               +----- $finality                     $work_dir_fq (dirname is "jpl","docu","system") 
 #                             |
-#                             +------ $infra_dir     something like "swipl-devel_forked"
+#                             +------ $infra_dir     something like "swipl-devel_original"
 # ---
 
 dirchange_finality() {
@@ -795,8 +795,15 @@ build() {
       /bin/rm "$errfile"
    fi
 
+   # Run some standard checks from SWIPL (even though it has not been installed yet)
+   # See https://eu.swi-prolog.org/pldoc/doc/_SWI_/library/check_installation.pl
+
+   echo "Checking for installation problems using Prolog goal 'check_installation.'" >&2
+
+   ./src/swipl -g "check_installation,halt."
+ 
    # Maybe install
-   # What happens if the installation directory exists? Is it replaced?
+   # (What happens if the installation directory exists? Is it replaced?)
 
    if [[ $finality != system ]]; then
       ninja install
@@ -806,8 +813,6 @@ build() {
 
    global_build_dir_fq=$(pwd)
    global_install_dir_fq="$install_dir_fq"
-
-   # <<<<<< work_dir_fq
 
    popd >/dev/null || exit 1
 
