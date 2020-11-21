@@ -402,3 +402,13 @@ See also: [Salvaging a term out of a dropped search branch](/swipl_notes/about_s
 > Present paper surveys several formal and axiomatic methods to deal with the problem of negation in PROLOG. Furthermore, a brief philosophical
 > account is also mentioned.
 
+> The reason why the negation is problematic in Prolog is the fact that “it is not possible to express negative information with pure
+> Horn clauses” as Prolog’s resolution works by utilizing Horn clauses. In other words, it has been remarked that “a logic program is
+> a set of definite Horn clauses”.
+
+The following approaches are proposed:
+
+- Implement a four-valued logic with ordered truth values: F ≤ U ≤ T ≤ N, with U meaning "undefined" and F "floundering on negation", as 
+  described by James Andrews in _"A logical semantics for depth-first Prolog with ground negation"_
+- Extend programs with classical negation so that they include negative information explicitly. The author says _As a result, there will be two types of queries which do not succeed. One type does not succeed since it fails and the other does not succeed since its negation succeeds._ This means abandoning the Prolog model based on resolution and passing to the Answer-Set-Programming model based on Stable Models of Gelfond and Lifschitz.
+- Extending the Models for Negation: As proposed by James Harland in _A Kripke-like Model for Negation as Failure_. 
