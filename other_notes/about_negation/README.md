@@ -145,14 +145,14 @@ q(1).
 p(X) :- \+ q(X).
 ```
 
-Now ask _Is it true that `p(d)`?_ 
+Now ask: _Is it true that `p(d)`?_ 
 
 ```
 ?- p(d).
 true.
 ```
 
-The answer is _Yes, because `q(d)` fails ("there is no evidence that `q(d)` is true") and thus `\+ q(d)` succeeds_.
+The answer is: _Yes, because `q(d)` fails ("there is no evidence that `q(d)` is true") and thus `\+ q(d)` succeeds_.
 
 However, if you use a query with an unbound variable
 
@@ -161,13 +161,22 @@ However, if you use a query with an unbound variable
 false.
 ```
 
-The question is _Is there any `X` such that `p(X)`, i.e. such that `\+ q(X)`, i.e. such that there is no proof for `q(X)`_ ? 
+The question is 
+
+_Is there any `X` such that `p(X)`_ i.e. such that `\+ q(X)`, i.e. such that there is no proof for `q(X)`? 
+
 Note that this is a very weak question - it is highly likely that there is such an `X` (even in the actual domain of
-`q/1`) unless `q/1` is true everywhere. The correct answer would be 
+`q/1`) unless `q/1` is true everywhere. The correct answer would be
+
 _Yes, any `X` of the domain of `q/1` different from 1 fits_. 
+
 This is not expressible in Prolog but _would_ be expressed by an enumeration if the domain for `p/1` were finite.
-Prolog would generate all elements of the domain except 1. However, the goal `\+ q(X)` with unbound `X` has a
-different meaning than the intended one. It asks _is there no `X` such that `q(X)`?_.
+Prolog would generate all elements of the domain except 1. 
+
+However, the goal `\+ q(X)` with unbound `X` has a different meaning than the intended one. It asks 
+
+_is there no `X` such that `q(X)`?_
+
 This is `false` because there is `q(1)`. (Note that that 1 is never returned as answer, because the query fails at precisely that point,
 and that binding of `X` to 1 will be erased due to backtracking.)
 
@@ -252,9 +261,10 @@ If you want to run some goal in an "isolated context":
 \+ \+ Goal
 ```
 
-The above really makes clear that you are only interested in whether Goal will succeed or fail 
-and that any bindings shall be trashed and have no influence on further computation (except 
-for any side-effects generated when proving Goal, which are forever inscribed in the universe and cannot be rolled back).
+The above really makes clear that you are only interested in whether `Goal` will succeed or fail 
+and that any bindings shall be discarded and have no influence on further computation (except 
+for any side-effects generated when proving `Goal`, which are forever inscribed in the 
+outer universe and cannot be rolled back).
 
 Take the program:
 
@@ -270,7 +280,7 @@ X is now _7808
 A = 2.
 ```
 
-Especially useful if you want to isolate your debugging printouts lest they change something due to small detail:
+Especially useful if you want to isolate your debugging printouts lest they change something due to small error:
 
 ```
 ddd_isolate(X) :-
