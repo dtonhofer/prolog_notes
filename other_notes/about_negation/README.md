@@ -4,31 +4,36 @@ These are comments relative to the [page for the `\+` operator](https://eu.swi-p
 
 ## Interpretation
 
-Read `\+ p(X)` as "there is no evidence for p(X)" or "there is no proof for p(X)".
+Read `\+ p(X)` as 
 
-This is not the same as the "classical negation" (alias "strong negation") normally seen in logic, 
-but a kind of "default reasoning" whereby everything that cannot be proven by the program is assumed
-to have a special truth value "false by default" or "false unless proven differenty", which is
-conflated with the classical truth value "false".
+- _there is no evidence for `p(X)`_ or 
+- _there is no proof for `p(X)`_.
 
-This is often sufficient. Modeling some problems, however, demands classical negation.
+This is not the same as the "classical negation" (alias "strong negation") normally seen in logic. 
+Instead it is a kind of default reasoning whereby everything that cannot be proven by the program
+is assumed to have a special truth value "false by default" or "false unless proven differenty".
+One then conflates this truth value with the classical truth value `false` (maybe an error?).
+In literatue, the `\+` operator is sometimes written as `naf` (for negation-as-failure) or `~`.
+
+Using this "negation as failure" or "default negation" is often sufficient. Modeling 
+some problems, however, demands classical negation.
 
 An example of when classical negation is useful,
 from the _smodels_ manual ([Lparse 1.0 User's Manual](http://www.tcs.hut.fi/Software/smodels/lparse.ps.gz)), p.33:
 
 Suppose that we want to check whether it is safe to cross railroad tracks This could be expressed by the rule:
 
-==
+```
 safe :- \+ train.
-==
+```
 
 The problem here is that we consider the crossing to be safe if we can't prove that a train is coming.
 A more safe approach would be to declare the crossing safe only if we _can_ prove that the train is,
 indeed, _not_ coming:
 
-==
+```
 safe :- ¬train.
-==
+```
 
 In this case, approaches other than Prolog may be needed: Full first-order theorem provers
 like [Vampire](http://www.vprover.org/) or 
