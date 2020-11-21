@@ -40,11 +40,21 @@ like [Vampire](http://www.vprover.org/) or
 Answer-Set-Programming systems ("stable model semantics") like
 [smodels](http://www.tcs.hut.fi/Software/smodels/) or [Potassco](https://potassco.org/doc/).
 
+## Literature
+
+Wikipedia: ["Negation as Failure"](https://en.wikipedia.org/wiki/Negation_as_failure). Check out the references there, too.
+
+   - [Negation as failure](http://www.doc.ic.ac.uk/~klc/neg.html) (First Published in: Logic and Data Bases, editors Gallaire and Minker, 1978)
+   - Sheperdson Surveys: 
+      - [Negation as Failure: A Comparison of Clark's Completed Data Dase and Reiter's Closed World Assumption](https://www.sciencedirect.com/science/article/pii/0743106684900232) J.C. Sheperdson, in: The Journal of Logic Programming, vol 1, 1984, pages 51–81.
+      - [Negation as Failure II](https://www.sciencedirect.com/science/article/pii/0743106685900184) J.C. Sheperdson, in: The Journal of Logic Programming, vol 3, 1985, pages 185-202.
+   - [Logic programming and negation: A survey](https://www.sciencedirect.com/science/article/pii/0743106694900248), Krzysztof R. Apt, Roland N. Bol, in: The Journal of Logic Programming, Volumes 19–20, Supplement 1, May–July 1994, Pages 9-71
+
 ## Non-monotonicity
 
 Negation-as-failure is a "nonomontonic" computation of truth values in that, if the logic program
-is expanded by adding more true facts and rules to the Prolog database, some statements formerly
-`true` may flip to `false`:
+is expanded by adding positive facts (we can't add negative facts facts to a Prolog program)
+some statements formerly `true` may flip to `false`:
 
 ```
 :- dynamic(q/1).
@@ -62,7 +72,7 @@ false.
 true.
 ```
 
-But if we add a new fact `q(2)`, non-monotonicity arises. Not all the statements formerly `true` stay `true`:
+But if we add a new (and positive) fact `q(2)`, non-monotonicity arises. Not all the statements formerly `true` stay `true`:
 
 ```
 ?- assertz(q(2)).
@@ -72,20 +82,47 @@ true.
 false.
 ```
 
+In fact, in Prolog the problem of having a consistent program (a program that doesn't give both classical
+truth values to a statement) is whisked away by onyl allowing programs that give the value `true` to statements.
+All the remaining statements are assumed to be `default false`. However, as seen above, the `\+` allows
+one to indirectly give the value `true` to statements by passing through the pool of `default false` statements.
+
+Can we create a inconsistent program? One in which `p(2)` is both `true` and `false`?
+
+```
+q(1).
+q(2).
+p(2).
+p(X) :- \+ q(X).
+```
+
+Actually not:
+
+```
+?- p(2).      
+true ;        % p(2) is true, maybe there are other solutions
+false.        % No.
+```
+
+No, we can't! The success `p(2)` "paints over" the failure of `p(2)` via `q(2)`.  
+In Prolog, only success counts, and Prolog actively looks only for success, never for failure.
+It's quite "asymmetric".
+
+One could imagine a logic programming language with assigns truth values `true` or `false`, or better 
+one of the four values of Belnap's four-valued logic 
+namely `true`, `false`, `both`, `none` (arranged on a lattice) to statements, but it wouldn't be Prolog. 
+
+For more on Belnap's 4-valued logic see;
+
+   - [This overview](http://www.filosofia.unimi.it/dagostino/wp-content/uploads/2017/05/Belnap.pdf) (PDF) by Marcello D’Agostino
+   - [Original paper by Belnap](https://link.springer.com/chapter/10.1007/978-94-010-1161-7_2) at Strpinger (paywalled)
+   - [Paraconsistent Logic](https://plato.stanford.edu/entries/logic-paraconsistent/) at the Stanford Encyclopedia of Philosophy.
+   - [Four-valued logic](https://en.wikipedia.org/wiki/Four-valued_logic) at Wikipedia
+
 This can be an effect that is desired or not. See also:
 
 - [Non-monotonic Logic](https://plato.stanford.edu/entries/logic-nonmonotonic/)
 - [Logical Approaches to Defeasible Reasoning](https://plato.stanford.edu/entries/reasoning-defeasible/#LogiAppr)
-
-## Literature
-
-Wikipedia: ["Negation as Failure"](https://en.wikipedia.org/wiki/Negation_as_failure). Check out the references there, too.
-
-   - [Negation as failure](http://www.doc.ic.ac.uk/~klc/neg.html) (First Published in: Logic and Data Bases, editors Gallaire and Minker, 1978)
-   - Sheperdson Surveys: 
-      - [Negation as Failure: A Comparison of Clark's Completed Data Dase and Reiter's Closed World Assumption](https://www.sciencedirect.com/science/article/pii/0743106684900232) J.C. Sheperdson, in: The Journal of Logic Programming, vol 1, 1984, pages 51–81.
-      - [Negation as Failure II](https://www.sciencedirect.com/science/article/pii/0743106685900184) J.C. Sheperdson, in: The Journal of Logic Programming, vol 3, 1985, pages 185-202.
-   - [Logic programming and negation: A survey](https://www.sciencedirect.com/science/article/pii/0743106694900248), Krzysztof R. Apt, Roland N. Bol, in: The Journal of Logic Programming, Volumes 19–20, Supplement 1, May–July 1994, Pages 9-71
 
 ## "Floundering"
 
