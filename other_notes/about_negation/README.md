@@ -77,7 +77,7 @@ false.
 ```
 
 In fact, in Prolog the problem of having a consistent program (a program that doesn't give both classical
-truth values to a statement) is whisked away by onyl allowing programs that give the value `true` to statements.
+truth values to a statement) is whisked away by only allowing programs that give the value `true` to statements.
 All the remaining statements are assumed to be `default false`. However, as seen above, the `\+` allows
 one to indirectly give the value `true` to statements by passing through the pool of `default false` statements.
 
@@ -102,23 +102,89 @@ No, we can't! The success `p(2)` "paints over" the failure of `p(2)` via `q(2)`.
 In Prolog, only success counts, and Prolog actively looks only for success, never for failure.
 It's quite "asymmetric".
 
-One could imagine a logic programming language with assigns truth values `true` or `false`, or better 
-one of the four values of Belnap's four-valued logic 
-namely `true`, `false`, `both`, `none` (arranged on a lattice) to statements, but it wouldn't be Prolog. 
-
-For more on Belnap's 4-valued logic see;
-
-   - [This overview](http://www.filosofia.unimi.it/dagostino/wp-content/uploads/2017/05/Belnap.pdf) (PDF) by Marcello D’Agostino
-   - [Original paper by Belnap](https://link.springer.com/chapter/10.1007/978-94-010-1161-7_2) at Strpinger (paywalled)
-   - [Paraconsistent Logic](https://plato.stanford.edu/entries/logic-paraconsistent/) at the Stanford Encyclopedia of Philosophy.
-   - [Four-valued logic](https://en.wikipedia.org/wiki/Four-valued_logic) at Wikipedia
-
 This can be an effect that is desired or not. See also:
 
 - [Non-monotonic Logic](https://plato.stanford.edu/entries/logic-nonmonotonic/)
 - [Logical Approaches to Defeasible Reasoning](https://plato.stanford.edu/entries/reasoning-defeasible/#LogiAppr)
 
+## What's the meaning of this?
+
+I haven't found a discussion in literature concerning the "shift in meaning" that occurs due to `\+` but it must have been discussed somewhere.
+
+Prolog only admits to to truth values "Prolog True" (signalled by a query that succeeds) and "Prolog False"
+(signalled by a query that fails). Arguably there is also a potentially infinite number of out-of-band truth values
+signalled by exceptions, but let's not consider these. 
+There is an additonal peculiarity in that `fail`/ `failure` /`false` can also signal that the computation failed, for example
+because a value was out-of-domain. Let's not consider this either (restricting ourselves to "modeling" rather
+than "computation").
+
+Let a "positive proof" be one which encounters no `\+` during proof search. 
+
+Take the query `p`. Then:
+
+The proof for `q` is based on positive proofs only:
+
+- If `p` succeeds, the meaning is _"there is evidence for `p`, and `p` is strongly true"_, i.e. there is indeed at least one proof of `p`.
+- If `p` fails the meaning is _"there is no evidence for `p`, and `p` is weakly false"_, i.e. all the attempts at proving `p` failed and we assume that `p` takes on truth value `false` as default (closed world assumption).
+
+Suppose the proof for `p` involves a subgoal `q` wrapped by `\+`, and the proof of `q` is a positive proof. Then:
+
+- If `q` succeeds, the meaning is _"there is evidence for `q`, and `q` is strongly true"_.
+   - And thus `p` fails, but a reasonable meaning of that failure would be _"`p` is strongly false"_ (because `q` is strongly true).
+   - This is different from the meaning of _"`p` is weakly false"_ that is assumed (and implemented: you can override a failed `p` with another proof that succeeds).
+- If `q` fails, the meaning is _"there is no evidence for `q`, and `q` is weakly false"_.
+   - And thus `p` succeeds, but a reasonable meaning of that success would be _"`p` is weakly true"_ (because `q` is strongly false).
+   - Again, this is different from the meaning of _"`p` is strongly true"_ that is assumed (and implemented: you cannot override a successful `p` at all).
+   
+The "weakness" attribute (default assumption for a truth value) in Prolog only exists for the truth value `false`. However, it 
+seems an application of `\+` should switch it from the subgoal's truth value to the complementary goal's truth value.
+
+One could imagine a logic programming language with more truth values than "true" and "default false" to
+make the above clearer, or even consistent. It wouldn't be Prolog though. 
+
+![some extended logical values](pics/some_extended_logical_values.svg)
+
+### Logic programming with extended logics
+
+Belnap has a four-valued logic that abandons the pretense of classical logic at global consistency and determinate
+truth values `true` or `false` for every statement (so the idea of having "proofs by contradiction" is no longer applicable,
+but both the philosophy and the actual maintenance of large databases become viable). It uses the truth values
+ `true`, `false`, `both`, `none` (arranged on a lattice).
+
+On Belnap's 4-valued logic:
+
+   - [Four-valued logic](https://en.wikipedia.org/wiki/Four-valued_logic) at Wikipedia
+   - [An overview](http://www.filosofia.unimi.it/dagostino/wp-content/uploads/2017/05/Belnap.pdf) (PDF) by Marcello D’Agostino   
+   - Belnap's original paper (paywalled): [A Useful Four-Valued Logic](https://link.springer.com/chapter/10.1007/978-94-010-1161-7_2) (Nuel D. Belnap Jr.), 1977 
+     _appears in: Dunn J.M., Epstein G. (eds) Modern Uses of Multiple-Valued Logic. Episteme, vol 2. Springer, Dordrecht._ 
+   - A variation of Belnap's logic: [A Constructive Four-Valued Logic](http://www.cs.cas.cz/tacl2017/abstracts/TACL_2017_paper_66.pdf) 
+     (Yuanlei Lin and Minghui Ma)
+   - [Some Useful 16-Valued Logics: How a Computer Network Should Think](https://link.springer.com/article/10.1007/s10992-005-0556-5)
+     (Yaroslav Shramko, Heinrich Wansing), in: _Journal of Philosophical Logic volume 34, pages 121–153 (2005)_. 
+     ([PDF at Research Gate](https://www.researchgate.net/publication/226314931_Some_Useful_16-Valued_Logics_How_a_Computer_Network_Should_Think)).
+   
+For logics able to deal with proofs that yield both `true` and `false` see:
+
+   - [Paraconsistent Logic](https://plato.stanford.edu/entries/logic-paraconsistent/) at the Stanford Encyclopedia of Philosophy.
+   - [Quantitative Deduction and its Fixpoint Theory](https://www.sciencedirect.com/science/article/pii/0743106686900038) (M.H van Emden)
+     _appears in: The Journal of Logic Programming, Volume 3, Issue 1, April 1986, Pages 37-53_
+   - [Paraconsistent logic programming](https://www.sciencedirect.com/science/article/pii/0304397589901266) (Howard A.Blair, V.S.Subrahmanian)
+     _appears in: Theoretical Computer Science Volume 68, Issue 2, 30 October 1989, Pages 135-154_
+   - Chapter 6.1 - Paraconsistent Logic Programming in 
+     [Introduction to Annotated Logics: Foundations for Paracomplete and Paraconsistent Reasoning](https://www.springer.com/gp/book/9783319179117),
+     (Jair M Abe, Seiki Akama,  Kazumi Nakamatsu), Springer Intelligent Systems Reference Library 88, 2015.
+   
 ## "Floundering"
+
+"Flounding" suggest that the Prolog Processor trashes around or performs something repeatedly without progress:
+
+From [The Free Dictionary](https://www.thefreedictionary.com/floundering), _to flounder_:
+
+   1. To move clumsily or with little progress, as through water or mud.
+   2. To act or function in a confused or directionless manner; struggle:
+      _"Some ... floundered professionally, never quite deciding what they wanted to do"_ (Steve Olson).
+     
+but it's not a well-chosen vocabulary. "Faceplanting" is much closer to the intended meaning.
 
 In [Logic programming and negation: A survey](https://www.sciencedirect.com/science/article/pii/0743106694900248),
 (Krzysztof R.Apt, Roland N.Bol, 1994), we read:
@@ -132,7 +198,7 @@ In [Logic programming and negation: A survey](https://www.sciencedirect.com/scie
 
 This seems to be about the following problem:
 
-Consider the program
+Consider the program:
 
 ```
 q(1).
@@ -148,7 +214,7 @@ true.
 
 The answer is: _Yes, because `q(d)` fails ("there is no evidence that `q(d)` is true") and thus `\+ q(d)` succeeds_.
 
-However, if you use a query with an unbound variable
+However, if you use a query with an unbound variable:
 
 ```
 ?- p(X).
@@ -175,6 +241,8 @@ This is `false` because there is `q(1)`. (Note that that 1 is never returned as 
 and that binding of `X` to 1 will be erased due to backtracking.)
 
 **An inconsistency arises!**
+
+This seems to happen whenever the goal wrapped by `\+` contains unbound "free variables" that also occur outside the wrapped goal.
 
 Maybe the Prolog processor should throw an exception when it finds a body subject to floundering.
 
