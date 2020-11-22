@@ -124,21 +124,23 @@ Take the query `p`. Then:
 
 The proof for `q` is based on positive proofs only:
 
-- If `p` succeeds, the meaning is "there is evidence for `p`, and `p` is strongly `true`", i.e. there is indeed at least one proof of `p`.
-- If `p` fails the meaning is "there is no evidence for `p`, and `p` is weakly `false`", i.e. all the attempts at proving `p` failed and we assume that `p` takes on truth value `false` as default (closed world assumption).
+- If `p` succeeds, the meaning is _"there is evidence for `p`, and `p` is strongly true"_, i.e. there is indeed at least one proof of `p`.
+- If `p` fails the meaning is _"there is no evidence for `p`, and `p` is weakly false"_, i.e. all the attempts at proving `p` failed and we assume that `p` takes on truth value `false` as default (closed world assumption).
 
 Suppose the proof for `p` involves a subgoal `q` wrapped by `\+`, and the proof of `q` is a positive proof. Then:
 
-- If `q` succeeds, the meaning is "there is evidence for `q`, and `q` is strongly `true`"
-   - And thus `p` fails, but a reasonable meaning of that failure would be "`p` is strongly false" (because `q` is strongly `true`), different from the meaning of `p` is weakly false that is assumed (and implemented).
-- If `q` fails, the meaning is "there is no evidence for `q`, and `q` is weakly `false`"
-   - And thus `p` succeeds, but a reasonable meaning of that success would be "`p` is weakly true" (because `q` is strongly `false`), different from the meaning of `p` is strongly true that is assumed (and implemented).
+- If `q` succeeds, the meaning is _"there is evidence for `q`, and `q` is strongly true"_.
+   - And thus `p` fails, but a reasonable meaning of that failure would be _"`p` is strongly false"_ (because `q` is strongly true).
+   - This is different from the meaning of _"`p` is weakly false"_ that is assumed (and implemented: you can override a failed `p` with another proof that succeeds).
+- If `q` fails, the meaning is _"there is no evidence for `q`, and `q` is weakly false"_.
+   - And thus `p` succeeds, but a reasonable meaning of that success would be _"`p` is weakly true"_ (because `q` is strongly false).
+   - Again, this is different from the meaning of _"`p` is strongly true"_ that is assumed (and implemented: you cannot override a successful `p` at all).
    
-The "weakness" attribute (default assumption for a truth value) in Prolog only exists for `false` but 
-it seems `\+` should switch it from the subgoal's truth value to the complementary goal's truth value.
+The "weakness" attribute (default assumption for a truth value) in Prolog only exists for the truth value `false`. However, it 
+seems an application of `\+` should switch it from the subgoal's truth value to the complementary goal's truth value.
 
 One could imagine a logic programming language with more truth values than "true" and "default false" to
-make the above clearer. It wouldn't be Prolog though. 
+make the above clearer, or even consistent. It wouldn't be Prolog though. 
 
 [some extended logical values](some_extended_logical_values.svg)
 
