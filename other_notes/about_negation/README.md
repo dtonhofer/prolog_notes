@@ -77,7 +77,7 @@ false.
 ```
 
 In fact, in Prolog the problem of having a consistent program (a program that doesn't give both classical
-truth values to a statement) is whisked away by onyl allowing programs that give the value `true` to statements.
+truth values to a statement) is whisked away by only allowing programs that give the value `true` to statements.
 All the remaining statements are assumed to be `default false`. However, as seen above, the `\+` allows
 one to indirectly give the value `true` to statements by passing through the pool of `default false` statements.
 
@@ -113,8 +113,8 @@ I haven't found a discussion in literature concerning the "shift in meaning" tha
 
 Prolog only admits to to truth values "Prolog True" (signalled by a query that succeeds) and "Prolog False"
 (signalled by a query that fails). Arguably there is also a potentially infinite number of out-of-band truth values
-signalled by exceptions, but let's not consider these. Let's use the abbreviations `success` and `failure`.
-There is an additonal peculiarity in that `fail` can also signal that the computation failed, for example
+signalled by exceptions, but let's not consider these. 
+There is an additonal peculiarity in that `fail`/ `failure` /`false` can also signal that the computation failed, for example
 because a value was out-of-domain. Let's not consider this either (restricting ourselves to "modeling" rather
 than "computation").
 
@@ -122,7 +122,7 @@ Let a "positive proof" be one which encounters no `\+` during proof search.
 
 Take the query `p`. Then:
 
-Only positive proofs:
+The proof for `q` is based on positive proofs only:
 
 - If `p` succeeds, the meaning is "there is evidence for `p`, and `p` is strongly `true`", i.e. there is indeed at least one proof of `p`.
 - If `p` fails the meaning is "there is no evidence for `p`, and `p` is weakly `false`", i.e. all the attempts at proving `p` failed and we assume that `p` takes on truth value `false` as default (closed world assumption).
