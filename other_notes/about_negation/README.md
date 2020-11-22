@@ -388,8 +388,14 @@ See also: [Salvaging a term out of a dropped search branch](/swipl_notes/about_s
 
 ## Reading
 
-- On the philosophy of [Negation](https://plato.stanford.edu/entries/negation/) at the Stanford Encyclopedia of Philosophy
-- ["Negation as Failure"](https://en.wikipedia.org/wiki/Negation_as_failure) at Wikipedia
+### Negation
+
+- [Negation](https://plato.stanford.edu/entries/negation/) at the Stanford Encyclopedia of Philosophy
+- "A Natural History of Negation" by Laurence R. Horn, University of Chicago Press. Reissued, Stanford, CA: CSLI Publications, 2001. ([Book Presentation Page](http://web.stanford.edu/group/cslipublications/cslipublications/site/1575863367.shtml))
+
+### "Negation as Failure" Wikipedia page
+
+["Negation as Failure"](https://en.wikipedia.org/wiki/Negation_as_failure) at Wikipedia
 
 ### "Negation as Failure" (1978)
 
