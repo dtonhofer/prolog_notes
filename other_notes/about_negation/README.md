@@ -142,7 +142,7 @@ seems an application of `\+` should switch it from the subgoal's truth value to 
 One could imagine a logic programming language with more truth values than "true" and "default false" to
 make the above clearer, or even consistent. It wouldn't be Prolog though. 
 
-[some extended logical values](some_extended_logical_values.svg)
+![some extended logical values](pics/some_extended_logical_values.svg)
 
 ### Logic programming with extended logics
 
