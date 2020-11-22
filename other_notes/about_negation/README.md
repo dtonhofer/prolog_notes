@@ -467,10 +467,16 @@ See also: [Salvaging a term out of a dropped search branch](/swipl_notes/about_s
    - David Pearce, Gerd Wagner, FU Berlin
    - Appears in: _[Springer Lecture Notes in Computer Science (LNCS) No. 475](https://link.springer.com/book/10.1007/BFb0038689): Extensions of Logic Programming (ELP 1989), International Workshop Tübingen, FRG, December 8–10, 1989 Proceedings_
 
+### "A Transformational Approach to Negation in Logic Programming" (1990)
+
+   - Roberto Barbuti, Paolo Mancarella, Dino Pedreschi, Franoc Turini
+   - Appears in: _The Journal of Logic Programming, Volume 8, Issue 3, May 1990, Pages 201-228_
+   - https://www.sciencedirect.com/science/article/pii/074310669090023X
+   
 ### "Classical negation in logic programs and disjunctive databases" (1991)
 
    - Michael Gelfond, Vladimir Lifschitz
-   - Appears in: _"New Generation Computing volume 9, pages 365–385 (1991)"_
+   - Appears in: _New Generation Computing volume 9, pages 365–385 (1991)_
    - https://link.springer.com/article/10.1007%2FBF03037169 
    - http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.56.7150 
    
