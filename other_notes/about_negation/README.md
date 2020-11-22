@@ -2,6 +2,27 @@
 
 These are comments relative to the [page for the `\+` operator](https://eu.swi-prolog.org/pldoc/doc_for?object=(%5C%2B)/1) in the SWI-Prolog manual.
 
+## Literature links
+
+See the end of this page. 
+
+Wikipedia has a page on ["Negation as Failure"](https://en.wikipedia.org/wiki/Negation_as_failure).
+
+In [_"The Art of Prolog"_ (1st ed., Leon Sterling and Ehud Shapiro, 1988)](https://mitpress.mit.edu/books/art-prolog-second-edition)
+we read on p. 165-166 (Chapter 11.3, Negation):
+
+> The cut is the basis of implementing a limited form of negation in Prolog called _negation as failure_. Program
+> 11.6 is the standard definition of _not(Goal)_, which is true of _Goal_ fails. It uses the meta-varaible facility,
+> and a system predicate _fail_ that fails (i.e. there are no clauses defined for it). A conjunction of
+> cut and _fail_ is referred to as a _cut-fail_ combination. We assume that _not_ has been defined as a prefix operator.
+>
+> ```
+> not X :- X,!,fail.
+> not X.
+> ```
+> 
+> **Program 11.6**: Negation as failure.
+
 ## Interpretation
 
 Read `\+ p(X)` as 
@@ -39,10 +60,6 @@ In this case, approaches other than Prolog may be needed: Full first-order theor
 like [Vampire](http://www.vprover.org/) or 
 Answer-Set-Programming systems ("stable model semantics") like
 [smodels](http://www.tcs.hut.fi/Software/smodels/) or [Potassco](https://potassco.org/doc/).
-
-## Literature links
-
-See the end of this page.
 
 ## Non-monotonicity
 
@@ -184,7 +201,7 @@ From [The Free Dictionary](https://www.thefreedictionary.com/floundering), _to f
    2. To act or function in a confused or directionless manner; struggle:
       _"Some ... floundered professionally, never quite deciding what they wanted to do"_ (Steve Olson).
      
-but it's not a well-chosen vocabulary. "Faceplanting" is much closer to the intended meaning.
+but it's not a well-chosen vocabulary. In fact, "breakdown of `\+`" would be clearer.
 
 In [Logic programming and negation: A survey](https://www.sciencedirect.com/science/article/pii/0743106694900248),
 (Krzysztof R.Apt, Roland N.Bol, 1994), we read:
@@ -315,6 +332,13 @@ answer describing the complement of q(X) relative to the domain of p/1, somethin
 setof(X,q(X),Xs), complement(Xs,domain(p/1),Result).
 ```
 
+From _"The Art of Prolog"_ 1st ed. p. 166:
+
+> The implementation of negation as failure using the cut-fail combination does not work correctly for nonground
+> goals (...). In most standard implementations of Prolog, it is the responsibility of the programmer to ensure
+> that negated goals are grounded before they are solved. This can be done either by a static analysis of the
+> program, or by a runtime heck, using the predicate _ground_ (...)
+
 ## Using "double negation"
 
 If you want to run some goal in an "isolated context":
@@ -392,10 +416,6 @@ See also: [Salvaging a term out of a dropped search branch](/swipl_notes/about_s
 
 - [Negation](https://plato.stanford.edu/entries/negation/) at the Stanford Encyclopedia of Philosophy
 - "A Natural History of Negation" by Laurence R. Horn, University of Chicago Press. Reissued, Stanford, CA: CSLI Publications, 2001. ([Book Presentation Page](http://web.stanford.edu/group/cslipublications/cslipublications/site/1575863367.shtml))
-
-### "Negation as Failure" Wikipedia page
-
-["Negation as Failure"](https://en.wikipedia.org/wiki/Negation_as_failure) at Wikipedia
 
 ### "Negation as Failure" (1978)
 
