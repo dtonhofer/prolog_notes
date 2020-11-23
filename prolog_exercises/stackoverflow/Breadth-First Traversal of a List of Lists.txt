@@ -1,0 +1,23 @@
+Breadth-First traversal of list-of-lists by Will Ness:
+
+https://stackoverflow.com/questions/64936541/splice-in-sublists-in-a-list-without-using-flatten-2/
+
+In case you want to roll your own, here's breadth-first enumeration of arbitrarily nested lists:
+
+bfs( XS, L) :- bfs( s(z), [XS|Q], Q,  L, []).
+
+bfs( z, _, _, Z, Z).
+bfs( s(N), [[]   |P], Q,  L, Z) :- bfs( N, P, Q,  L, Z).
+bfs( s(N), [[A|B]|P], Q,  L, Z) :-
+  is_list(A) 
+  -> Q = [A|R], bfs( s(s(N)), [B|P], R,  L, Z)   % enqueue A, or
+  ;  L = [A|R], bfs(   s(N),  [B|P], Q,  R, Z).  % produce A
+
+The first argument is the distance between read and write point on the queue. When they meet the queue has become exhausted and we stop. Both the input queue and the output list are maintained as difference list pairs of head and tail variables.
+
+Trying it out:
+
+12 ?- bfs( [[[6]],1,2,[4,[[[[[7]]]]],5],3], A).
+A = [1, 2, 3, 4, 5, 6, 7] .
+
+You will need to augment it to skip the non-lists in the top level.
