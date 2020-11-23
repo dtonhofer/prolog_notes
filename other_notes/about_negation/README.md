@@ -410,6 +410,21 @@ true.
 
 See also: [Salvaging a term out of a dropped search branch](/swipl_notes/about_salvaging_a_term_out_of_a_dropped_search_branch/README.md)
 
+### A note on "double negation" from the Mercury manual
+
+In the Mercury language ("Prolog with types"), the compiler apparently gets rid of double negation:
+
+> [2.18 Elimination of double negation](https://mercurylang.org/information/doc-release/mercury_ref/Elimination-of-double-negation.html#Elimination-of-double-negation)
+> 
+> The treatment of inequality, universal quantification, implication, and logical equivalence
+> as abbreviations can cause the introduction of double negations which could make otherwise
+> well-formed code mode-incorrect. To avoid this problem, the language specifies that
+> after syntax analysis and implicit quantification, and before mode analysis is performed, the
+> implementation must delete any double negations and must replace any negations of con-
+> junctions of negations with disjunctions. (Both of these transformations preserve the logical
+> meaning and type-correctness of the code, and they preserve or improve mode-correctness:
+> they never transform code fragments that would be well-moded into ones that would be ill-moded.)
+
 ## Reading
 
 ### Negation
