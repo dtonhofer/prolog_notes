@@ -2,14 +2,10 @@
 
 These are comments relative to the [page for the `\+` operator](https://eu.swi-prolog.org/pldoc/doc_for?object=(%5C%2B)/1) in the SWI-Prolog manual.
 
-## Literature links
+For links to literature, see the end of this page.
 
-See the end of this page. 
-
-Wikipedia has a page on ["Negation as Failure"](https://en.wikipedia.org/wiki/Negation_as_failure).
-
-In [_"The Art of Prolog"_ (1st ed., Leon Sterling and Ehud Shapiro, 1988)](https://mitpress.mit.edu/books/art-prolog-second-edition)
-we read on p. 165-166 (Chapter 11.3, Negation):
+In ["The Art of Prolog"](https://mitpress.mit.edu/books/art-prolog-second-edition) (1st ed., Leon Sterling and Ehud Shapiro, 1988)
+we read on p. 165-166 (Chapter 11.3, "Negation"):
 
 > The cut is the basis of implementing a limited form of negation in Prolog called _negation as failure_. Program
 > 11.6 is the standard definition of _not(Goal)_, which is true of _Goal_ fails. It uses the meta-varaible facility,
@@ -22,6 +18,21 @@ we read on p. 165-166 (Chapter 11.3, Negation):
 > ```
 > 
 > **Program 11.6**: Negation as failure.
+
+In ["A Transformational Approach to Negation in Logic Programming"](https://www.sciencedirect.com/science/article/pii/074310669090023X) (Roberto Barbuti, Paolo Mancarella, Dino Pedreschi, Franoc Turini, 1990), we read in the introduction:
+
+> Negation as failure has been thoroughly studied as a means to deal with negative information in logic programming
+> [Clark 1978, Shperdson 1985, 1987]. It is a meta-inference-rule allowing one to prove the negation of a ground goal,
+> when the proof of the corresponding positive goal _finitely fails_. Starting from Clark’s paper [Clark 1978], a lot 
+> of effort has been devoted to establishing results about soundness and completeness of this rule with respect to
+> completed logic programs [Clark 1978][Jaffar & al. 1983],[Wolfram & al. 1984], and to extending these results to subclasses of 
+> _general logic programs_, i.e. programs containing negative literals in clause bodies.
+> 
+> The major drawback of a logic-programming system embodying negation as failure is that it does not allow a symmetric
+> treatment of positive and negative knowledge. In fact, negation as failure can be used only to check universally
+> quantified negative formulae, and by no means can it be used to compute solutions for existentially quantified
+> negative ones. Indeed, in many applications, such as deductive databases and expert systems, it would be useful to 
+> compute answers both for positive and negative queries in a homogeneous way.
 
 ## Interpretation
 
@@ -427,7 +438,9 @@ In the Mercury language ("Prolog with types"), the compiler apparently gets rid 
 
 ## Reading
 
-### Negation
+Wikipedia has a (short) page on ["Negation as Failure"](https://en.wikipedia.org/wiki/Negation_as_failure).
+
+### On "Negation" in general
 
 - [Negation](https://plato.stanford.edu/entries/negation/) at the Stanford Encyclopedia of Philosophy
 - "A Natural History of Negation" by Laurence R. Horn, University of Chicago Press. Reissued, Stanford, CA: CSLI Publications, 2001. ([Book Presentation Page](http://web.stanford.edu/group/cslipublications/cslipublications/site/1575863367.shtml))
@@ -495,11 +508,27 @@ In the Mercury language ("Prolog with types"), the compiler apparently gets rid 
    - https://link.springer.com/article/10.1007%2FBF03037169 
    - http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.56.7150 
    
+### "Logic Programming with Strong Negation and Inexact Predicates" (1991)
+
+   - Gerd Wagner
+   - https://academic.oup.com/logcom/article-abstract/1/6/835/943774 (Paywalled)
+   - Appears in: _Journal of Logic and Computation, Volume 1, Issue 6, December 1991, pp 835–859_
+   
+A book chapter with the same name appears in the book ["Vidid Logic: Knowledge-Based Reasoning with Two Kinds of Negation""](https://link.springer.com/book/10.1007/3-540-57604-5) (Springer LNCS 764, 1994) edited by Gerd Wagner
+
+   - https://link.springer.com/chapter/10.1007/3-540-57604-5_14 (Paywalled)   
+
 ### "Logic programming and negation: A survey" (1994)
 
    - Krzysztof R. Apt, Roland N. Bol
    - https://www.sciencedirect.com/science/article/pii/0743106694900248
    - Appears in: _The Journal of Logic Programming, Volumes 19–20, Supplement 1, May–July 1994, Pages 9-71_
+
+### "Classical" Negation in Non-Monotonic Reasoning and Logic Programming (1996) 
+
+   - José Alferes, Luís Moniz Pereira, Teodor C. Przymusinski
+   - http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.53.4127
+   - Appears in: _Proceedings of the European Workshop on Logic in Artificial Intelligence (JELIA'96), Springer LNAI 1126, pp 143-163_
 
 ### "A logical semantics for depth-first Prolog with ground negation" (1997)
 
