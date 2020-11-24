@@ -154,12 +154,20 @@ false.
    - [`get_dict/5`](https://eu.swi-prolog.org/pldoc/doc_for?object=get_dict/5) : Combined get/put, should really be called **fork_dict/5**. 
    - [`dict_create/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=dict_create/3) : Assemble a dict from a tag and "several possible forms of list".
    - [`dict_pairs/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=dict_pairs/3) : Assemble/Disassemble a dict from/to a tag and a key-value list.
-   - [`put_dict/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=put_dict/3) : Update a dict to a new dict from "several possible forms of list"  ; the predicate counterpart of `.put/1`
-   - [`put_dict/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=put_dict/4) : Update a dict to a new dict with single addition/replacement, where one can specify a path through nested dicts; the predicate counterpart of `.put/2`
+   - [`put_dict/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=put_dict/3) : Update a dict to a new dict from "several possible forms of
+     list"  ; the predicate counterpart of `.put/1`
+   - [`put_dict/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=put_dict/4) : Update a dict to a new dict with single addition/replacement,
+     where one can specify a path through nested dicts; the predicate counterpart of `.put/2`
    - [`del_dict/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=del_dict/4): Update a dict to a new dict with single deletion.
-   - [`:</2`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3A%3C)/2): "Selection operator" (I would really prefer "projection operator"): Project the right-hand dict onto the left-hand dict, unifying the values of common keys (thus either failing or continuing with possibly both dicts involved in the operation further refined). Fails if the left-hand dict has a key that is not in the right-hand dict.
-   - select_dict/3: Similar to the "Selection operator", but also retains the "Rest": those Key-Value pairs only present in the right-hand dict.
-   - >:</2: "Symmetric selection operator" or "partial unification" (vague) (I prefer "Symmetric projection operator"): Unify the values of common keys, ignoring any other keys, thus either failing or continuing with possibly both dicts involved in the operation further refined.
+   - [`:</2`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3A%3C)/2): "Selection operator" (I would really prefer
+     "projection operator"): Project the right-hand dict onto the left-hand dict, unifying the values of common keys (thus either failing
+     or continuing with possibly both dicts involved in the operation further refined). Fails if the left-hand dict has a key that is not in
+     the right-hand dict.
+   - [`select_dict/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=select_dict/3): Similar to the "selection operator", but also retains the
+     `Rest`: those `Key-Value` pairs only present in the right-hand dict.
+   - [`>:</2`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3E%3A%3C)/2): "Symmetric selection operator" or "partial unification" (vague)
+     (I prefer "Symmetric projection operator"): Unify the values of common keys, ignoring any other keys, thus either failing or
+     continuing with possibly both dicts involved in the operation further refined.
 
 ## Destructive assignment in dicts
 
