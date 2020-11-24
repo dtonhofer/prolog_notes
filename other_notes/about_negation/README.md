@@ -4,11 +4,13 @@ These are comments relative to the [page for the `\+` operator](https://eu.swi-p
 
 For links to literature, see the end of this page.
 
-In ["The Art of Prolog"](https://mitpress.mit.edu/books/art-prolog-second-edition) (1st ed., Leon Sterling and Ehud Shapiro, 1988)
-we read on p. 165-166 (Chapter 11.3, "Negation"):
+## Citations
+
+From [_The Art of Prolog_](https://mitpress.mit.edu/books/art-prolog-second-edition) (first edition, Leon Sterling and Ehud Shapiro, 1988)
+p. 165-166 (Chapter 11.3, "Negation"):
 
 > The cut is the basis of implementing a limited form of negation in Prolog called _negation as failure_. Program
-> 11.6 is the standard definition of _not(Goal)_, which is true of _Goal_ fails. It uses the meta-varaible facility,
+> \[below\] is the standard definition of _not(Goal)_, which is true of _Goal_ fails. It uses the meta-varaible facility,
 > and a system predicate _fail_ that fails (i.e. there are no clauses defined for it). A conjunction of
 > cut and _fail_ is referred to as a _cut-fail_ combination. We assume that _not_ has been defined as a prefix operator.
 >
@@ -16,16 +18,14 @@ we read on p. 165-166 (Chapter 11.3, "Negation"):
 > not X :- X,!,fail.
 > not X.
 > ```
-> 
-> **Program 11.6**: Negation as failure.
 
-In ["A Transformational Approach to Negation in Logic Programming"](https://www.sciencedirect.com/science/article/pii/074310669090023X) (Roberto Barbuti, Paolo Mancarella, Dino Pedreschi, Franoc Turini, 1990), we read in the introduction:
+From [_A Transformational Approach to Negation in Logic Programming_](https://www.sciencedirect.com/science/article/pii/074310669090023X) (Roberto Barbuti, Paolo Mancarella, Dino Pedreschi, Franoc Turini, 1990):
 
 > Negation as failure has been thoroughly studied as a means to deal with negative information in logic programming
-> [Clark 1978, Shperdson 1985, 1987]. It is a meta-inference-rule allowing one to prove the negation of a ground goal,
-> when the proof of the corresponding positive goal _finitely fails_. Starting from Clark’s paper [Clark 1978], a lot 
+> \[Clark 1978, Sheperdson 1985, 1987\]. It is a meta-inference-rule allowing one to prove the negation of a ground goal,
+> when the proof of the corresponding positive goal _finitely fails_. Starting from Clark’s paper \[Clark 1978\], a lot 
 > of effort has been devoted to establishing results about soundness and completeness of this rule with respect to
-> completed logic programs [Clark 1978][Jaffar & al. 1983],[Wolfram & al. 1984], and to extending these results to subclasses of 
+> completed logic programs \[Clark 1978\]\[Jaffar & al. 1983\],\[Wolfram & al. 1984\], and to extending these results to subclasses of 
 > _general logic programs_, i.e. programs containing negative literals in clause bodies.
 > 
 > The major drawback of a logic-programming system embodying negation as failure is that it does not allow a symmetric
