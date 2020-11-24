@@ -34,6 +34,33 @@ From [_A Transformational Approach to Negation in Logic Programming_](https://ww
 > negative ones. Indeed, in many applications, such as deductive databases and expert systems, it would be useful to 
 > compute answers both for positive and negative queries in a homogeneous way.
 
+From [_The Well-Founded Semantics for General Logic Programs_](https://www.researchgate.net/publication/2742259_The_Well-Founded_Semantics_for_General_Logic_Programs) (Allen Van Gelder, Kenneth A. Ross, John S. Schlipf, 1991):
+
+> Definition. 
+> 
+> A _general logic program_ is a finite set of _general rules_, which may have both positive and negative subgoals.
+> A general rule is written with its _head_, or conclusion on the left, and its subgoals (body), if any, to the 
+> right of the symbol "←" which may be read "if." For example,
+> 
+> `p(X) ← a(X); not b(X).`
+> 
+> is a rule in which `p(X)` is the head, `a(X)` is a positive subgoal, and `b(X)` is a negative subgoal. This rule
+> may be read as "`p(X)` if `a(X)` and not `b(X)`." A _Horn rule_ is one with no negative subgoals, and a _Horn logic program_
+> is one with only Horn rules.
+> 
+> ⧠
+>
+> Lloyd has recently adopted the word "normal" instead of "general" to describe rules whose bodies consist
+> of a conjunction of literals, and programs of such rules
+> [Foundations of Logic Programming. Springer-Verlag, New York, 2nd edition, 1987](https://www.springer.com/gp/book/9783642831911).
+> He reserves the word "general" to allow more involved constructs, such as
+>
+> `w(X) ← m(X,Y), not (m(Y,Z), not w(Z)).`
+>
+> where the first `not` applies to a conjunction rather than an atom. Although we avoid such constructs for
+> simplicity of presentation, the well-founded semantics is easily generalized to such syntax, so we continue to
+> use the word "general."
+
 ## Interpretation
 
 Read `\+ p(X)` as 
@@ -89,8 +116,8 @@ constructs can be used. Interaction computing is definitely proscribed.
 
 This gives another reading of `\+ Goal`, namely: _"does 'Goal' belong to the set NAF?"_. 
 
-A Proog program that uses the above principle is said to perform SLDNF proof search )SLD resolution
-plus the neagtion as failure rule)
+A Prolog program that uses the above principle is said to perform SLDNF proof search (SLD resolution
+plus the neagtion as failure rule).
 
 Pointers to pursue from "The Well-Founded Semantics for General Logic Programs"
 
