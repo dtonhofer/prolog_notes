@@ -532,6 +532,30 @@ A book chapter with the same name appears in the book ["Vidid Logic: Knowledge-B
 
    - https://link.springer.com/chapter/10.1007/3-540-57604-5_14 (Paywalled)   
 
+### "The Well-Founded Semantics for General Logic Programs" (1991)
+
+   - Allen Van Gelder, Kenneth A. Ross, John S. Schlipf
+   - https://www.researchgate.net/publication/2742259_The_Well-Founded_Semantics_for_General_Logic_Programs
+   - Appears in: _Journal of the ACM, Vol. 38, No. 3, July 1991, pp. 620-650_
+
+Abstract:
+
+> A general logic program is a set of rules that have both positive and negative subgoals. 
+> It is common to view a deductive database as a general logic program consisting
+> of rules (Intensional Ddatabase, IDB) sitting above elementary relations (Extensional
+> Database, EDB, facts). It is desirable to associate one Herbrand model with a program and think 
+> of that model as the "meaning of the program," or its "declarative semantics." Ideally, queries
+> directed to the program would be answered in accordance with this model.
+> 
+> Recent research indicates that some programs do not have a "satisfactory" _total_ model; for such programs,
+> the question of an appropriate _partial_ model arises. We introduce _unfounded_ sets and _well-founded partial models_,
+> and define the well-founded semantics of a program to be its well-founded partial model. If the
+> well-founded partial model is in fact a total model, we call it the _well-founded_ model. We show that the
+> class of programs possessing a total well-founded model properly includes previously studied classes of
+> "stratified" and "locally stratified" programs. We also compare our method with other proposals in the
+> literature, including Clark's "program completion," Fitting's and Kunen's 3-valued interpretations of it,
+> and the "stable models" of Gelfond and Lifschitz.
+
 ### "Logic programming and negation: A survey" (1994)
 
    - Krzysztof R. Apt, Roland N. Bol
