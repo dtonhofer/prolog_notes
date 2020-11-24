@@ -29,21 +29,20 @@ test("Selection: Properly works if values are dicts and they unify (as expected)
 % only makes sense for dicts, whereas unification makes sense for any value)
 % If projection should be applied to subdicts (and subsubdicts etc.) a special
 % predicate needs to be written for that.
-   
-test(Selection: Failure if subterms are dicts and they don't unify but would 'select'",fail) :-
+
+test("Selection: Failure if subterms are dicts and they don't unify but would 'select'",fail) :-
    DictLeft  = foo{x:alpha, y:subdict{ xx:_,     yy:charlie               }            },
    DictRight = foo{x:_    , y:subdict{ xx:bravo, yy:_       , zz:foxtrott }, z:foxtrott},
    DictLeft :< DictRight.
-      
+
 test("Selection: Success if left-dict keyset is smaller or equal than right-dict keyset",true([A,B] == [alpha,bravo])) :-
    DictLeft  = foo{x:A,     y:B },
    DictRight = foo{x:alpha, y:bravo, z:charlie },
    DictLeft :< DictRight.
-      
+
 test("Selection: Failure if left-dict keyset is larger than right-dict keyset",fail) :-
    DictLeft  = foo{x:_A,    y:bravo, z:charlie, k:foxtrott},
    DictRight = foo{x:alpha, y:bravo, z:_C},
    DictLeft :< DictRight.
-     
-:- end_tests(dict_selection).
 
+:- end_tests(dict_selection).
