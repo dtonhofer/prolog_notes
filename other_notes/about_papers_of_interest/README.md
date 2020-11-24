@@ -8,9 +8,6 @@ If the paper is directly downloadable, a link is given.
 - 1986 [**Seventy-Five Problems for Testing Automatic Theorem Provers**](https://www.researchgate.net/publication/220531947_Seventy-Five_Problems_for_Testing_Automatic_Theorem_Provers)
    - Francis Jeffry Pelletier
    - Journal of Automated Reasoning 2(2):191-216 (June 1986)
-- 1989 **Logic Programming with Strong Negation** 
-   - David Pearce, Gerd Wagner
-   - Springer LNAI 475, pp 311-326
 - 1989 [**What you always wanted to know about Datalog (and never dared to ask)**](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.210.1118) 
    - Stefan Ceri, Georg Gottlob, Letizia Tanca
    - [IEEE Transactions on Knowledge and Data Engineering](https://ieeexplore.ieee.org/document/43410), March 1989
@@ -26,9 +23,6 @@ Authors Info & Affiliations
 - 1991-02 [**A type system for logic programs**](https://www.sciencedirect.com/science/article/pii/074310669180002U)
    - Eyal Yardeni, Ehud Shapiro
    - Journal of Logic Programming_ Volume 10, Issue 2
-- 1991 [**Logic Programming with Strong Negation and Inexact Predicates**](https://academic.oup.com/logcom/article-abstract/1/6/835/943774) 
-   - Gerd Wagner
-   - Journal of Logic and Computation, Volume 1, Issue 6, December 1991, pp 835–859
 - 1991 [**Uniform Proofs as a Foundation for Logic Programming**](http://www.lix.polytechnique.fr/~dale/papers/apal91.pdf) 
    - Dale Miller, Gopalan Nadathur, Frank Pfenning, Andre Scedrov
    - _the Lambda-Prolog way_
@@ -37,9 +31,6 @@ Authors Info & Affiliations
 - 1995 [**leanTAP: Lean Tableau-based Deduction**](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.28.5925)
    - Bernhard Beckert, Joachim Posegga
    - Journal of Automated Reasoning, volume 15, pages 339–358 (1995)
-- 1996 [**"Classical" Negation in Non-Monotonic Reasoning and Logic Programming**](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.53.4127)
-   - José Alferes, Luís Moniz Pereira, Teodor C. Przymusinski
-   - Proceedings of the European Workshop on Logic in Artificial Intelligence (JELIA'96), Springer LNAI 1126, pp 143-163   
 - 2001-04 [**Logic Programming, Functional Programming, and Inductive Definitions**](https://www.researchgate.net/publication/1880293_Logic_Programming_Functional_Programming_and_Inductive_Definitions) 
    - Lawrence Paulson, Andrew W. Smith
 - 2001-10 [**Nominal Logic: A First Order Theory of Names and Binding**](https://www.sciencedirect.com/science/article/pii/S089054010300138X)
@@ -81,3 +72,16 @@ Authors Info & Affiliations
 - 2020-08 [**Effectiveness of Annotation-Based Static Type Inference**](https://arxiv.org/abs/2008.12545)
    - Isabel Wingen, Philipp Körner
 
+## Negation-as-Failure
+
+See the page on [Negation as Failure](/other_notes/about_negation/README.md)
+
+## The Event Calculus
+
+### The Event Calculus Explained
+
+   - Murray Shanahan
+   - https://www.doc.ic.ac.uk/~mpsha/ECExplained.pdf
+   - Appears in: _[Artificial Intelligence Today: Recent Trends and Developments](https://link.springer.com/book/10.1007/3-540-48317-9), Springer LNAI 1600, 1999, pp 409-430_ ([Paper's page](https://link.springer.com/chapter/10.1007/3-540-48317-9_17))
+   
+   
