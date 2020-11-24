@@ -153,7 +153,7 @@ false.
    - [`get_dict/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=get_dict/3) : Same as `.get/1`  dot-call but fails if key does not exist.
    - [`get_dict/5`](https://eu.swi-prolog.org/pldoc/doc_for?object=get_dict/5) : Combined get/put, should really be called **fork_dict/5**. 
    - [`dict_create/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=dict_create/3) : Assemble a dict from a tag and "several possible forms of list".
-   - [`dict_pairs/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=dict_pairs/3) : Assemble/Disassemble a dict from/to a tag and a key-value list.
+   - [`dict_pairs/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=dict_pairs/3) : Assemble/disassemble a dict from/to a tag and a key-value list.
    - [`put_dict/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=put_dict/3) : Update a dict to a new dict from "several possible forms of
      list"  ; the predicate counterpart of `.put/1`
    - [`put_dict/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=put_dict/4) : Update a dict to a new dict with single addition/replacement,
