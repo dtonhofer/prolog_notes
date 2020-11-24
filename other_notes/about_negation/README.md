@@ -72,6 +72,20 @@ like [Vampire](http://www.vprover.org/) or
 Answer-Set-Programming systems ("stable model semantics") like
 [smodels](http://www.tcs.hut.fi/Software/smodels/) or [Potassco](https://potassco.org/doc/).
 
+## The set "NAF"
+
+If we interprete Negation-as-Failure as defining the set of ground goals for which a Prolog program P
+finitely fails after exhaustive, but unsuccessful proof search, then we can draw this tree of subset
+relationships, which clarifies the relationship between "NAF" and the "Closed World Assumption".
+
+In this diagram, we assume the program is a "positive program", i.e. it does not itself contain a
+`\+` call. (Needs another diagram for that case, TODO). It is also unclear whether "impure" program
+constructs can be used. Interaction computing is definitely proscribed.
+
+![Where is the set of NAF](pics/where_is_the_set_naf.svg)
+
+This gives another reading of `\+ Goal`, namely: _"does 'Goal' belong to the set NAF?"_. 
+
 ## Non-monotonicity
 
 Negation-as-failure is a "nonomontonic" computation of truth values in that, if the logic program
