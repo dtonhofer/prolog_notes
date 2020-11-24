@@ -74,6 +74,9 @@ Answer-Set-Programming systems ("stable model semantics") like
 
 ## The set "NAF"
 
+- A _positive logic program_ is a set of rules that has no negative subgoals (is this terminology in common use?)
+- A _general logic program_ is a set of rules that have both positive and negative subgoals (this terminology _is_ in common use)
+
 If we interprete Negation-as-Failure as defining the set of ground goals for which a Prolog program P
 finitely fails after exhaustive, but unsuccessful proof search, then we can draw this tree of subset
 relationships, which clarifies the relationship between "NAF" and the "Closed World Assumption".
@@ -85,6 +88,19 @@ constructs can be used. Interaction computing is definitely proscribed.
 ![Where is the set of NAF](pics/where_is_the_set_naf.svg)
 
 This gives another reading of `\+ Goal`, namely: _"does 'Goal' belong to the set NAF?"_. 
+
+A Proog program that uses the above principle is said to perform SLDNF proof search )SLD resolution
+plus the neagtion as failure rule)
+
+Pointers to pursue from "The Well-Founded Semantics for General Logic Programs"
+
+- Apparently "Clarke's completed database" yields exactly the truth values of SLDNF. 
+- The "Closed World Assumption" is due to Reiter (R. Reiter. On closed world databases. In Gallaire and Minker, 
+  editors, Logic and Databases, pages 55{76. Plenum Press, New York, 1978.)
+- The "generalized closed world assumption" was proposed by Minker to handle disjunctive 
+  databases (J. Minker. On indefinite databases and the closed world assumption. In Sixth Conference
+  on Automated Deduction, pages 292-308, New York, 1982. Springer-Verlag.) without producing the
+  inconsistency typical of the closed world assumption. 
 
 ## Non-monotonicity
 
@@ -537,7 +553,9 @@ A book chapter with the same name appears in the book ["Vidid Logic: Knowledge-B
    - Allen Van Gelder, Kenneth A. Ross, John S. Schlipf
    - https://www.researchgate.net/publication/2742259_The_Well-Founded_Semantics_for_General_Logic_Programs
    - Appears in: _Journal of the ACM, Vol. 38, No. 3, July 1991, pp. 620-650_
-
+   - An early version of this paper appears as "Unfounded sets and well-founded semantics for general
+     logic programs". In _ACM Symposium on Principles of Database Systems, pages 221-230, 1988._
+   
 Abstract:
 
 > A general logic program is a set of rules that have both positive and negative subgoals. 
