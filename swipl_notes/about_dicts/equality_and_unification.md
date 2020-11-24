@@ -23,33 +23,6 @@ Some [`plunit`](https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packag
 
 - [`dict_equality_testing.pl`](code/dict_equality_testing.pl) (uses `dict_equality_sans_tag/2`)
 - [`dict_unification_testing.pl`](code/dict_equality_testing.pl)
-
+- [`dict_assembly_disassembly_testing.pl`](code/dict_assembly_disassembly_testing.pl)
  
-==
 
-==
-
-Ugly disassembly using the basic "compound_name_arguments/3" predicate.
-Don't do this, use dict_pairs/3!
-Plus, this is not guaranteed to work if a new implementation comes out-
-
-==
-:- begin_tests(cna_dict).
-
-dict_functor_name(FN) :- compound_name_arity(_{},FN,_).
-
-test("compound_name_arguments/3 on empty dict", true([Name,Args] == [FN,[alpha]])) :-
-   dict_functor_name(FN),
-   compound_name_arguments(alpha{},Name,Args).
-
-test("compound_name_arguments/3 on nonempty dict", true([Name,Args] == [FN,[alpha, 1, x, 2, y]])) :-
-   dict_functor_name(FN),
-   compound_name_arguments(alpha{x:1,y:2},Name,Args).
-
-test("compound_name_arguments/3 on nonempty anonymous dict", true([Name,Args] == [FN,[X, 1, x, 2, y]])) :-
-   dict_functor_name(FN),
-   compound_name_arguments(_{x:1,y:2},Name,Args),
-   Args = [X|_Rest].
-
-:- end_tests(cna_dict).
-==
