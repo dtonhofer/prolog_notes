@@ -21,19 +21,22 @@ Test code to assemble/analyze a dict: [`dict_assembly_disassembly_testing.pl`](c
 
 ### See also
 
-For an alternative using a library (as opposed to a language built-in), take a look at
+For an alternative using a library (as opposed to a language built-in), take a look at:
+
 [`library(assoc)`: Association lists](https://eu.swi-prolog.org/pldoc/man?section=assoc)
-written by Richard A. O'Keefe, L.Damas, V.S.Costa and Markus Triska.
 
 ### Helper library
 
-There is an additional helper library: [`library(dicts)`](https://eu.swi-prolog.org/pldoc/man?section=dicts). 
-It _defines utilities that operate on lists of dicts, notably to make lists of dicts consistent by adding missing keys,
-converting between lists of compounds and lists of dicts, joining and slicing lists of dicts._
+There is an additional helper library:
+
+[`library(dicts)`](https://eu.swi-prolog.org/pldoc/man?section=dicts).
+
+It "defines utilities that operate on lists of dicts, notably to make lists of dicts consistent by adding missing keys,
+converting between lists of compounds and lists of dicts, joining and slicing lists of dicts".
 
 (A pretty printer seems to be missing in that library. TODO!).
 
-## Comnparison and unification
+## Comparison and unification
 
 When comparing two dicts, you can use:
 
@@ -151,10 +154,10 @@ false.
    - [`get_dict/5`](https://eu.swi-prolog.org/pldoc/doc_for?object=get_dict/5) : Combined get/put, should really be called **fork_dict/5**. 
    - [`dict_create/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=dict_create/3) : Assemble a dict from a tag and "several possible forms of list".
    - [`dict_pairs/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=dict_pairs/3) : Assemble/Disassemble a dict from/to a tag and a key-value list.
-   - put_dict/3 : Update a Dict to a new Dict from "several possible forms of list"  ; the predicate counterpart of .put/1
-   - put_dict/4 : Update a Dict to a new Dict with single addition/replacement, where one can specify a path through nested dicts; the predicate counterpart of .put/2
-   - del_dict/4: Update a Dict to a new Dict with single deletion
-   - :</2: "Selection operator" (I prefer "Projection operator"): Project the right-hand dict onto the left-hand dict, unifying the values of common keys (thus either failing or continuing with possibly both dicts involved in the operation further refined). Fails if the left-hand dict has a key that is not in the right-hand dict.
+   - [`put_dict/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=put_dict/3) : Update a dict to a new dict from "several possible forms of list"  ; the predicate counterpart of `.put/1`
+   - [`put_dict/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=put_dict/4) : Update a dict to a new dict with single addition/replacement, where one can specify a path through nested dicts; the predicate counterpart of `.put/2`
+   - [`del_dict/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=del_dict/4): Update a dict to a new dict with single deletion.
+   - [`:</2`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3A%3C)/2): "Selection operator" (I would really prefer "projection operator"): Project the right-hand dict onto the left-hand dict, unifying the values of common keys (thus either failing or continuing with possibly both dicts involved in the operation further refined). Fails if the left-hand dict has a key that is not in the right-hand dict.
    - select_dict/3: Similar to the "Selection operator", but also retains the "Rest": those Key-Value pairs only present in the right-hand dict.
    - >:</2: "Symmetric selection operator" or "partial unification" (vague) (I prefer "Symmetric projection operator"): Unify the values of common keys, ignoring any other keys, thus either failing or continuing with possibly both dicts involved in the operation further refined.
 
