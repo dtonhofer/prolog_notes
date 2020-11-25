@@ -3,6 +3,10 @@
 % https://eu.swi-prolog.org/pldoc/man?section=bidicts
 % ==========
 
+% ===
+% This plunit block tests/demonstrates "equality" between dicts using "==". 
+% ===
+
 :- begin_tests(dict_equality).
 
 % Check for "equality" using "==" between keys and values, but disregarding the tag.
