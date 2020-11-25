@@ -17,23 +17,35 @@
 % maplist([X]>>div_with_mod(X,3),InputList),
 % ============================================================================
 
+% This code uses two plunit unit test blocks.
+% Run the blocks with
+%
+% ?- run_tests.
+% ?- run_tests(key_value_sorting).
+% ?- run_tests(special_sorting).
+
+% "Sorting is stable" (which applies only to the ordering of pairs Key-Value by their
+% Key) means: elements having the same Key keep the ordering they have in the
+% subsequence of elements with that Key.
+
 % ===
+% sort_dispatch(+ListIn,?ListOut,+AtomSelectingSortAlgorithm)
 % Select the sorting predicate based on a third argument
 % ===
 
-% Sort to the "standard order of terms".
+% sort/2 -- Sort to the "standard order of terms".
 % Remove duplicates (which one is unimportant as equal terms are undistinguishable) 
 % https://eu.swi-prolog.org/pldoc/doc_for?object=sort/2
    
 sort_dispatch(Lin,Lout,iso_sort) :- !,sort(Lin,Lout).
 
-% Sort to the "standard order of terms".
+% msort/2 -- Sort to the "standard order of terms".
 % Keep duplicates. (stability is unimportant as equal terms are undistinguishable)
 % https://eu.swi-prolog.org/pldoc/doc_for?object=msort/2
 
 sort_dispatch(Lin,Lout,msort) :- !,msort(Lin,Lout).
-      
-% keysort/2 is made to sort a list of Key-Value pairs.
+
+% keysort/2 -- Sort a list of Key-Value pairs.
 % Works best with library(pairs): https://www.swi-prolog.org/pldoc/man?section=pairs
 % It sorts by Key on the "standard order of terms"-
 % Duplicates are retained. Sorting is stable.
@@ -41,33 +53,35 @@ sort_dispatch(Lin,Lout,msort) :- !,msort(Lin,Lout).
    
 sort_dispatch(Lin,Lout,keysort) :- !,keysort(Lin,Lout).
 
-% Sort by explicitly sorting on the first element of the "compound term" (i.e. the A in A-B)
-% to the "standard order for terms".
+% sort/4 with @< -- Sort by explicitly sorting on the first element of the "compound term" 
+% (i.e. the A in A-B) to the "standard order for terms".
 % In this case, remove duplicates, keeping first in-line only.
 % https://eu.swi-prolog.org/pldoc/doc_for?object=sort/4
    
 sort_dispatch(Lin,Lout,sort4nodups) :- !,sort(1,@<,Lin,Lout).
 
-% Sort by explicitly sorting on the first element of the "compound term" (i.e. the A in A-B)
-% to the "standard order for terms".
-% In this case, do retain duplicates. Sorting is stable.
+% sort/4 with @=< -- Sort by explicitly sorting on the first element of the "compound term"
+% (i.e. the A in A-B) to the "standard order for terms".
+% In this case, duplicates are retained. Sorting is stable.
 % https://eu.swi-prolog.org/pldoc/doc_for?object=sort/4
 
 sort_dispatch(Lin,Lout,sort4dups) :- !,sort(1,@=<,Lin,Lout).
 
-% Specify using a "sorting predicate".
-% Duplicates (those elements for which the sorting predicate returns "=") are removed, keeping first in-line only.
+% predsort/3 -- Sort by specifying a "sorting predicate".
+% Duplicates (those elements for which the sorting predicate returns "=") are 
+% removed, keeping the first element in "Lin" only!
+% Note the library(yall) lambda expression which calls compare/3 inline.
 
 sort_dispatch(Lin,Lout,predsort) :- !,predsort([X,A-_,B-_]>>compare(X,A,B),Lin,Lout).
 
 % Catchall in case of error.
 
 sort_dispatch(_,_,Behaviour) :- 
-   with_output_to(string(Buf),format("Unhandled behaviour '~q'",[Behaviour])),
+   format(string(Buf),"Unhandled behaviour '~q'",[Behaviour]),
    throw(Buf).
    
 % ===
-% Test 1
+% Helpers for unit tests
 % ===
 
 % You have two lists:
@@ -92,9 +106,9 @@ sort_keyfully(KeyList,ValList,Lout,Behaviour) :-
    sort_dispatch(Lready,Lsorted,Behaviour),
    maplist(ziptwo,_,Lout,Lsorted).
 
-% ---   
-% The unit test!
-% ---
+% ===
+% plunit unit tests, block #1
+% ===
 
 :- begin_tests(key_value_sorting).
 
@@ -116,14 +130,8 @@ test(predsort_0)    :- do(predsort    , [1,2,3,4]).       % sort by predicate (h
 
 :- end_tests(key_value_sorting).
 
-% ---
-% Running it
-% ---
-
-rt1 :- run_tests(key_value_sorting).
-
 % ===
-% Test 2
+% Helpers for unit tests
 % ===
 
 % You have one list of atoms.
@@ -157,9 +165,9 @@ sort_by_third_char(Lin,Lout,Behaviour) :-
    % format("~q\n",[Lsorted]),
    disassemble(Lsorted,Lout).
 
-% ---
-% The unit test!
-% ---
+% ===
+% plunit unit tests, block #2
+% ===
 
 :- begin_tests(special_sorting).
 
@@ -191,9 +199,3 @@ test(predsort_1) :- do(1,predsort,[aab,aac,aad]).
 test(predsort_2) :- do(2,predsort,[zzb]).
 
 :- end_tests(special_sorting).
-
-% ---
-% Running it
-% ---
-
-rt2 :- run_tests(special_sorting).
