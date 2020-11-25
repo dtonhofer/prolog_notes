@@ -4,6 +4,7 @@ Some notes on [`freeze/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=freeze
 
 This is classed under "coroutining", this being common terminology. 
 However, a ["coroutine"](https://en.wikipedia.org/wiki/Coroutine) is much more general. 
+In fact, this is an _application_ of coroutines.
 
 The intention is to freeze evaluation of a goal until a variable that is used by that goal has been bound. The
 reason would be that the goal cannot compute if that variable is unbound: We will skip the goal (pretending
