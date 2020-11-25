@@ -61,6 +61,35 @@ From [_The Well-Founded Semantics for General Logic Programs_](https://www.resea
 > simplicity of presentation, the well-founded semantics is easily generalized to such syntax, so we continue to
 > use the word "general."
 
+The [Flora-2 Manual](http://flora.sourceforge.net/docs/floraManual.pdf) (PDF), _Chapter 20: Negation_ (p 86 ff.) explains the
+extensions of Flora-2/XSB relative to Prolog:
+
+> Flora-2 supports three kinds of negation: a _Prolog-style negation_ `\+`; _default negation_ based
+> on _well-founded semantics_, denoted `\naf`; and explicit negation `\neg`, which is analogous
+> to what is called “classical” negation in \[Classical negation in logic programs and disjunctive databases\].
+
+The manual describes the problem of `\+` in the context of `\naf` (note a different syntax whereby
+variables are the tokens which start with a `?`, not the tokens with star with an uppercase letter):
+
+> One major difference with other implementations of the well-founded default negation is that
+> Flora-2 lets one apply it to formulas that contain variables. Normally, systems either require
+> that the formula under `\naf` is ground or they interpret something like `\naf p(?X)` as meaning
+> _“not exists `?X` such that `p(?X)` is true”_ — the so-called **Not-Exists semantics**. 
+
+This is what Prolog does with `\+`.
+
+> However, this is not the right semantics in many cases. The right semantics is usually 
+> _“there exists `?X` such that `p(?X)` is not true.”_  This semantics is known as the **Exists-Not semantics**.
+> Indeed, the standard convention for variables that occur in the rule body but not in the head is existential.
+> For instance, if `?X` does not occur in the head of some rule, `p(?X)` in the body of that rule is
+> interpreted as `∃?X p(?X)`. Negation should not be treated differently, i.e., `\naf p(?X)` should be
+> interpreted as `∃?X \naf p(?X)`. Worse yet, if `?X` does occur in the rule head then it is confusing
+> and error-prone to interpret `h(?X) :- \naf p(?X)` as `h(?X) :- \naf ∃?X p(?X)` using the Naf-Exists
+> semantics. And without the Naf-Exists semantics, `\naf p(?X)` has no meaning, if `?X` happens to be non-ground.
+>
+> Flora-2 takes a different approach. For body-only variables that appear under `\naf` the
+> semantics is Exists-Not. 
+
 ## Interpretation
 
 Read `\+ p(X)` as 
@@ -564,7 +593,22 @@ Wikipedia has a (short) page on ["Negation as Failure"](https://en.wikipedia.org
    - Appears in: _New Generation Computing volume 9, pages 365–385 (1991)_
    - https://link.springer.com/article/10.1007%2FBF03037169 
    - http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.56.7150 
-   
+
+This is about "stable models" and "Answer Set Programming".
+
+Abstract:
+
+> An important limitation of traditional logic programming as a knowledge representation tool, in
+> comparison with classical logic, is that logic programming does not allow us to deal directly with
+> incomplete information. In order to overcome this limitation, we extend the class of general logic
+> programs by including classical negation, in addition to negation-as-failure. The semantics of
+> such extended programs is based on the method of stable models. The concept of a disjunctive
+> database can be extended in a similar way. We show that some facts of commonsense knowledge
+> can be represented by logic programs and disjunctive databases more easily when classical negation
+> is available. Computationally, classical negation can be eliminated from extended programs by a
+> simple preprocessor. Extended programs are identical to a special case of default theories in the
+> sense of Reiter.
+
 ### "Logic Programming with Strong Negation and Inexact Predicates" (1991)
 
    - Gerd Wagner
@@ -582,7 +626,9 @@ A book chapter with the same name appears in the book ["Vidid Logic: Knowledge-B
    - Appears in: _Journal of the ACM, Vol. 38, No. 3, July 1991, pp. 620-650_
    - An early version of this paper appears as "Unfounded sets and well-founded semantics for general
      logic programs". In _ACM Symposium on Principles of Database Systems, pages 221-230, 1988._
-   
+   - See also:
+      - A. Van Gelder. The alternating fixpoint of logic programs with negation. In _ACM Principles of Database Systems, pages 1–10, New York, 1989. ACM._
+
 Abstract:
 
 > A general logic program is a set of rules that have both positive and negative subgoals. 
