@@ -73,7 +73,8 @@ Some [`plunit`](https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packag
 
 ## dot-calls involving dicts
 
-"Function calls associated to a dict" are detected when the `./2` notation appears (we could thus call those calls "dot calls").  
+"Function calls associated to a dict" are detected when the `./2` notation appears 
+(we could thus call those calls **dot calls** and given them a special notation e.g. `.get/1` but so far the only one who does so is me).  
 The dot call is replaced by the method-returned term (which may in particular be a dict or a uninstantiated term).
 
 With the provided dot calls and some additional conventions, one may be able to use them as objects 
@@ -89,9 +90,9 @@ There is nothing special about those.
 
 The following [predefined ones exist](https://eu.swi-prolog.org/pldoc/man?section=ext-dicts-predefined):
 
-   - `.get(?Key)` - throws if key does not exist
-   - `.put(+NewKeyValuePairs)` - evaluates to a new dict with additions/replacements, the method counterpart of `put_dict/3`; `NewKeyValuePairs` can take one of several different forms
-   - `.put(+KeyPath, +Value)` - evaluates to a new dict with single addition/replacement, where one can specify a path through nested dicts; the method counterpart of `put_dict/4`
+   - [`.get(?Key)`](https://eu.swi-prolog.org/pldoc/man?section=ext-dicts-predefined#m-get-1) - throws if key does not exist
+   - [`.put(+NewKeyValuePairs)`](https://eu.swi-prolog.org/pldoc/man?section=ext-dicts-predefined#m-put-1) - evaluates to a new dict with additions/replacements, the method counterpart of `put_dict/3`; `NewKeyValuePairs` can take one of several different forms
+   - [`.put(+KeyPath, +Value)`](https://eu.swi-prolog.org/pldoc/man?section=ext-dicts-predefined#m-put-2) - evaluates to a new dict with single addition/replacement, where one can specify a path through nested dicts; the method counterpart of `put_dict/4`
 
 ### User-defined dot-calls
 
