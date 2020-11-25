@@ -57,7 +57,27 @@ Stack Overflow: [How to write/edit own coroutines in Prolog?](https://stackoverf
 A goal is "attached" to an unbound variable `W`.
 
 `freeze/2` performs this "attachment", but otherwise, behaves normally, i.e. it succeeds.
-If `W` is already bound at `freeze/2` time, `freeze/2` executes the goal immediately, i.e. behaves as `call/1` and succeeds or fails accordingly.
+
+If `W` is not an unbound variable `freeze/2` time, `freeze/2` executes the goal immediately, i.e. behaves as `call/1` and succeeds or fails accordingly.
+
+Call the goal immediately if the first argument is not an unbound variable (i.e. `nonvar(X)`):
+
+```
+?- freeze(true,format("thawed!\n")).
+thawed!
+true.
+
+?- freeze(g(A),format("thawed!\n")).
+thawed!
+true.
+```
+
+Delay the goal only if the first argument is an unbound variable (i.e. `var(X)`):
+
+```
+?- freeze(A,format("thawed!\n")).
+freeze(A, format("thawed!\n")).    <--- success with residual goal
+```
 
 Immediately after a unification involving `W`, the attached goal is "thawed" and is let to run. 
 If the thawed goal has multiple solutions, Prolog backtracks over them:
