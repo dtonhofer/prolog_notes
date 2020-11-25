@@ -41,7 +41,12 @@ converting between lists of compounds and lists of dicts, joining and slicing li
 
 ## Assembly/Disassembly
 
-Test code to assemble/disassemble a dict: [`dict_assembly_disassembly_testing.pl`](code/dict_assembly_disassembly_testing.pl)
+To provide some examples, here is some [`plunit`](https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/plunit.html%27))
+test code to assemble/disassemble a dict: 
+
+[`dict_assembly_disassembly_testing.pl`](code/dict_assembly_disassembly_testing.pl)
+
+As usual, one can run it with `?- run_tests.` once loaded.
 
 ## Comparison and unification
 
