@@ -1,4 +1,11 @@
+% ==========
+% Testing SWI-Prolog dicts as described at 
+% https://eu.swi-prolog.org/pldoc/man?section=bidicts
+% ==========
+
 :- begin_tests(dict_equality).
+
+% Check for "equality" using "==" between keys and values, but disregarding the tag.
 
 dict_equality_sans_tag(D1,D2) :-
    ((var(D1);is_dict(D1)) -> true ; type_error("dict or var",D1)),
