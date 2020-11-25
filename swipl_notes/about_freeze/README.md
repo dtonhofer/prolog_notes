@@ -22,6 +22,8 @@ the unification corresponding fails or succeeds. In effect, we are sticking addi
 variables. This is the view of ["attributed variables"](https://eu.swi-prolog.org/pldoc/man?section=attvar),
 which are actually used to implement `freeze/2` and friends.
 
+Te thought arises that this could also be used for general debugging, to monitor instantiation of a variable. A bit borderline.
+
 ## Historical note
 
 From 
@@ -366,4 +368,46 @@ The above outputs something along these lines:
 % bucket arrived: [d,c,b,a]
 ```
 
+If you change the `bucket_brigade4` predicate to do perform unification of `Vout` directly in the head, like this:
+
+```
+bucket_brigade(Name,Vin,[Name|Vin],Ws) :-
+   debug(bb,"bucket_brigade(~q): Woke up with Vin = ~q!",[Name,Vin]),
+   what_is_frozen(Name,Ws).
+```
+
+Then the following happens. All the frozen goals are thawed via the head unification and
+the printout occurs in reverse (last goal thawed prints first):
+
+``` 
+?- bb.
+% bb : A Goal is frozen on: _4580
+% bb : A Goal is frozen on: _4610
+% bb : A Goal is frozen on: _4640
+% bb : A Goal is frozen on: _4670
+% wait for it...
+% thawing bucket_brigade(a)
+% bucket_brigade(d): Woke up with Vin = [c,b,a]!
+% d : Nothing is frozen on: []
+% d : Nothing is frozen on: [a]
+% d : Nothing is frozen on: [b,a]
+% d : Nothing is frozen on: [c,b,a]
+% bucket_brigade(c): Woke up with Vin = [b,a]!
+% c : Nothing is frozen on: []
+% c : Nothing is frozen on: [a]
+% c : Nothing is frozen on: [b,a]
+% c : Nothing is frozen on: [c,b,a]
+% bucket_brigade(b): Woke up with Vin = [a]!
+% b : Nothing is frozen on: []
+% b : Nothing is frozen on: [a]
+% b : Nothing is frozen on: [b,a]
+% b : Nothing is frozen on: [c,b,a]
+% bucket_brigade(a): Woke up with Vin = []!
+% a : Nothing is frozen on: []
+% a : Nothing is frozen on: [a]
+% a : Nothing is frozen on: [b,a]
+% a : Nothing is frozen on: [c,b,a]
+% bucket arrived: [d,c,b,a]
+true.
+```    
 
