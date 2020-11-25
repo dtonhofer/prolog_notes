@@ -76,44 +76,79 @@ true.
 
 Delay the goal only if the first argument is an unbound variable (i.e. `var(X)`):
 
+ Here, the goal results in a (at least computational, but otherwise unreal) success with
+ two "residual goals" / "delayed goals" printed out:
+ 
 ```
-?- freeze(A,format("thawed!\n")).
-freeze(A, format("thawed!\n")).    <--- a (at least computational) success with residual goal / delayed goal printed out
+?- freeze(X,format("Hello,")),freeze(X,format("World")).
+freeze(X, format("Hello,")),
+freeze(X, format("World")).
 ```
 
 Immediately after a unification involving `W`, the attached goal is "thawed" and is let to run. 
+
+```
+?- freeze(X,format("World")),format("Hello,"),X=1.
+Hello,World
+X = 1.
+```
+
 If the thawed goal has multiple solutions, Prolog backtracks over them:
 
 ```
-?- freeze(X,(format("Hello ");format("World!"))),X=1,format(" EOL ").
-Hello  EOL 
+?- freeze(X,(format("Hello,");format("World"))),X=1,format(" EOL ").
+Hello, EOL 
 X = 1 ;
-World! EOL 
+World EOL 
 X = 1.
 ```
 
 With a cut:
 
 ```
-?- freeze(X,(format("Hello "),!;format("World!"))),X=1,format(" EOL ").
-Hello  EOL 
+?- freeze(X,(format("Hello,"),!;format("World"))),X=1,format(" EOL ").
+Hello, EOL 
 X = 1.
 ```
 
 If there are multiple goals, Prolog runs them in order of attachment:
 
 ```
-?- freeze(X,format("Hello ")),freeze(X,format("World!")),X=1.
-Hello World!
+?- freeze(X,format("Hello,")),freeze(X,format("World")),X=1.
+Hello,World
 X = 1.
 ```
 
 and they all must succeed for the unification to succeed:
 
 ```
-?- freeze(X,format("Hello ")),freeze(X,false),freeze(X,format("World!")),X=1.
-Hello 
+?- freeze(X,format("Hello,")),freeze(X,false),freeze(X,format("World")),X=1.
+Hello,
 false.
+```
+
+If the unification keeps the variable unbound (but merges it with another), the goal is not executed yet:
+
+```
+?- freeze(X,format("Hello,")),freeze(X,format("World")),X=Y.
+X = Y,
+freeze(Y, format("Hello,")),
+freeze(Y, format("World")).
+```
+
+```
+?- freeze(X,format("Hello,")),freeze(Y,format("World")),X=Y.
+X = Y,
+freeze(Y, format("Hello,")),
+freeze(Y, format("World")).
+```
+
+But:
+
+```
+?- freeze(X,format("Hello,")),freeze(Y,format("World")),X=Y,X=1.
+Hello,World
+X = Y, Y = 1.
 ```
 
 The value of `W` can be used to select various actions of the attached goals:
