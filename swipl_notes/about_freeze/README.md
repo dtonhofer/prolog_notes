@@ -76,7 +76,7 @@ Delay the goal only if the first argument is an unbound variable (i.e. `var(X)`)
 
 ```
 ?- freeze(A,format("thawed!\n")).
-freeze(A, format("thawed!\n")).    <--- success with residual goal
+freeze(A, format("thawed!\n")).    <--- a (at least computational) success with residual goal / delayed goal printed out
 ```
 
 Immediately after a unification involving `W`, the attached goal is "thawed" and is let to run. 
