@@ -1,3 +1,12 @@
+% ==========
+% Demonstrating/Testing SWI-Prolog dicts as described at 
+% https://eu.swi-prolog.org/pldoc/man?section=bidicts
+% ==========
+
+% ===
+% Here, we demonstrate the selection operator ':<'
+% ===
+
 :- begin_tests(dict_selection).
 
 test("After selection, unbound-variable tags are 'the same'",true(A == B)) :-
