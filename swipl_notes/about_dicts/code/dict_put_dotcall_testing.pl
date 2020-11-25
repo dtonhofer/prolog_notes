@@ -1,5 +1,5 @@
 % ==========
-% Testing SWI-Prolog dicts as described at 
+% Demonstrating/Testing SWI-Prolog dicts as described at 
 % https://eu.swi-prolog.org/pldoc/man?section=bidicts
 % ==========
 
