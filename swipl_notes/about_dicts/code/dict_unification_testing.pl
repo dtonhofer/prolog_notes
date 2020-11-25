@@ -1,21 +1,30 @@
+% ==========
+% Demonstrating/Testing SWI-Prolog dicts as described at 
+% https://eu.swi-prolog.org/pldoc/man?section=bidicts
+% ==========
+
+% ===
+% Here, we test unification of two dicts
+% ===
+
 :- begin_tests(dict_unification).
 
-test("empty dict") :- 
+test("unify two empty dicts") :- 
    foo{} = foo{}.
    
-test("nonempty dict") :-
+test("unify two nonempty dict which built from the same literal") :-
    foo{a:x,b:y} = foo{a:x,b:y}.
    
-test("nonempty dict arbitrarily ordered") :-
+test("unify two nonempty dict arbitrarily ordered, but otherwise built from the same literal") :-
    foo{a:x,b:y,c:z} = foo{c:z,b:y,a:x}.
 
-test("same dict pairs, tags can unify #1") :-
+test("unify two anonymous (and otherwise identical) dicts; the tags can unify") :-
    _{a:x,b:y,c:z} = _{a:x,b:y,c:z}.
 
-test("same dict pairs, tags can unify #2") :-
+test("unify two dicts with same key-value pairs; the tags can unify #2") :-
    _{a:x,b:y,c:z} = foo{a:x,b:y,c:z}.
 
-test("unifiable, tags and dict values can unify #2") :-
+test("unifiy two dicts with unifiable key-value pairs and unifiable tags") :-
    _{a:_X,b:y,c:_Z,k:K} = foo{a:x,b:y,c:z,k:K}.
       
 test("unification success if both keysets are equal and values unify",true([A,B] == [alpha,bravo])) :-
