@@ -1,45 +1,54 @@
+% ==========
+% Testing SWI-Prolog dicts as described at 
+% https://eu.swi-prolog.org/pldoc/man?section=bidicts
+% ==========
+
+% ===
+% This plunit block tests/demonstrates the .put/1 dotcall.
+% ===
+
 :- begin_tests(dict_put_dotcall).
  
-% "Dict" is an empty dict with tag "Tag"
+% Helper: "Dict" is an empty dict with tag "Tag"
 
 empty_dict(Tag,Dict) :-
    dict_pairs(Dict,Tag,[]).
 
-% "Dict" is a dict with some content and with tag "Tag"
+% Helper: "Dict" is a dict with some content and with tag "Tag"
 
 nonempty_dict(Tag,Dict) :-
    dict_pairs(Dict,Tag,[a-x,b-y,c-z]).
    
-test("Add nothing, using empty dict (dotcall)",true(DictNext == foo{})) :- 
+test(".put/1 dotcall: add nothing, using empty dict",true(DictNext == foo{})) :- 
    empty_dict(foo,DictCur),
    DictNext = DictCur.put(_{}).
       
-test("Add nothing, using empty list (dotcall)",true(DictNext == foo{})) :- 
+test(".put/1 dotcall: add nothing, using empty list",true(DictNext == foo{})) :- 
    empty_dict(foo,DictCur),
    DictNext = DictCur.put([]).
             
-test("Add/replace something using 'list of pairs' (dotcall)",true(DictNext == foo{a:2,b:y,c:z,d:1})) :- 
+test(".put/1 dotcall: add/replace something using 'list of pairs'",true(DictNext == foo{a:2,b:y,c:z,d:1})) :- 
    nonempty_dict(foo,DictCur),
    DictNext = DictCur.put([a-2,d-1]).
 
-test("Add/replace something using 'list of : separated pairs' (dotcall)",true(DictNext == foo{a:2,b:y,c:z,d:1})) :- 
+test(".put/1 dotcall: add/replace something using 'list of : separated pairs'",true(DictNext == foo{a:2,b:y,c:z,d:1})) :- 
    nonempty_dict(foo,DictCur),
    DictNext = DictCur.put([a:2,d:1]).
          
-test("Add/replace something using 'list of = separated_pairs' (dotcall)",true(DictNext == foo{a:2,b:y,c:z,d:1})) :- 
+test(".put/1 dotcall: add/replace something using 'list of = separated_pairs'",true(DictNext == foo{a:2,b:y,c:z,d:1})) :- 
    nonempty_dict(foo,DictCur),
    DictNext = DictCur.put([a=2,d=1]).
       
-test("Add/replace something using 'list of tagged values' (dotcall)",true(DictNext == foo{a:2,b:y,c:z,d:1})) :- 
+test(".put/1 dotcall: add/replace something using 'list of tagged values'",true(DictNext == foo{a:2,b:y,c:z,d:1})) :- 
    nonempty_dict(foo,DictCur),
    DictNext = DictCur.put([a(2),d(1)]).
                   
-test("Add/replace something using 'dict' (dotcall)",true(DictNext == foo{a:2,b:y,c:z,d:1})) :- 
+test(".put/1 dotcall: add/replace something using 'dict'",true(DictNext == foo{a:2,b:y,c:z,d:1})) :- 
    nonempty_dict(foo,DictCur),
    DictNext = DictCur.put(_{a:2,d:1}).
       
-test("Add/replace something using 'dict with different tag' (OO method call notation)",true(DictNext == foo{a:2,b:y,c:z,d:1})) :- 
+test(".put/1 dotcall: add/replace something using 'dict with different tag'",true(DictNext == foo{a:2,b:y,c:z,d:1})) :- 
    nonempty_dict(foo,DictCur),
-   DictNext = DictCur.put(bar{a:2,d:1}). % tag value doesnt change anything
+   DictNext = DictCur.put(bar{a:2,d:1}). % tag value doesn't change anything
 
 :- end_tests(dict_put_dotcall).
