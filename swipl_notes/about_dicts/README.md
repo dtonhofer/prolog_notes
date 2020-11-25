@@ -7,15 +7,20 @@ This is companion information for the SWI-Prolog manual page [Dicts: structures 
 _Dicts_ are an SWI-Prolog-specific extension (at least for now, maybe they will find a way into the ISO standard one day).
 
 They are the SWI-Prolog equivalent of "maps", "hashes", "hashmap", "dictionaries" or "association lists" in other programming languages.
-The goal is to associate a (possibly complex) value to a key inside a container. The implementation of the container is, however, given,
-unlike in languages like Java for example, where one gets to choose the actual implementation to realize an instance of the
-[`Map` interface](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/Map.html).
+The idea is to associate a (possibly complex or recursive) _value_ to a _key_ inside a _container_. 
+Unlike in languages like Java for example, where one gets to choose the actual implementation to realize an instance of the
+[`Map` interface](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/Map.html), the 
+implementation of the dict is fixed.
 
-Dicts are opaque structures (actually compound terms, but you are not supposed to notice that) composed of
-a _tag_ and 0..N _key-value pairs_ where the keys are unique and must be an atom or a "small integer". 
+Dicts are opaque structures (they are actually 
+<a href="https://eu.swi-prolog.org/pldoc/man?section=bidicts#sec:ext-dicts-implementation">compound terms</a>, 
+but you are not supposed to make use of that detail) composed of
+a _tag_ and 0..N _key-value pairs_ where the keys are unique and must be an atom or a "small integer" (in practice, a
+very large integer).
 
-The tag should be an atomic type or an unbound variable ("anonymous dict"). (You actually _can_ use any term whatsover
-as tag, even the dict itself, but this is an implementation artifact; do not go overboard here!)
+The tag should be an atomic type (generally an atom) or an unbound variable ("anonymous dict"). 
+You actually _can_ use any term whatsover as tag, even the dict itself, but this is an implementation artifact; 
+do not go overboard here!
 
 The dict is essentially an immutable data structure. Using the dict in Prolog can be done by having dicts
 with initially unbound variables as values that are refined as computation progresses ("logic programming style")
@@ -46,7 +51,7 @@ test code to assemble/disassemble a dict:
 
 [`dict_assembly_disassembly_testing.pl`](code/dict_assembly_disassembly_testing.pl)
 
-As usual, one can run it with `?- run_tests.` once loaded.
+As usual, one can run it with `run_tests.` once loaded.
 
 ## Comparison and unification
 
