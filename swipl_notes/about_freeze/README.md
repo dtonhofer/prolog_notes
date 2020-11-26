@@ -1,9 +1,13 @@
 # About `freeze/2`
 
-Some notes on [`freeze/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=freeze/2)
+Some notes on [`freeze/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=freeze/2) to complement the SWI-Prolog manual.
 
-This is classed under "coroutining", this being common terminology. 
+`freeze/2` is classed under "coroutining", this being common terminology. 
 However, a ["coroutine"](https://en.wikipedia.org/wiki/Coroutine) is much more general. 
+In fact, `freeze/2`  can be implemented with coroutines.
+On the page [Delimited Continuations](https://eu.swi-prolog.org/pldoc/man?section=delcont)
+the SWI-Prolog manual says _"coroutines \[are\] two or more routines whose execution is interleaved, while they exchange data."_ 
+which sounds correct.
 
 The intention is to freeze evaluation of a goal until a variable that is used by that goal has been bound. The
 reason would be that the goal cannot compute if that variable is unbound: We will skip the goal (pretending
