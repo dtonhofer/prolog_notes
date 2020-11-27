@@ -1,4 +1,4 @@
-# About `findall/3`
+# Notes about `findall/3`
 
 _This is companion information to the SWI-Prolog manual page of the [`findall/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=findall/3) predicate._
 
@@ -149,7 +149,7 @@ Bag = [].
 Bag = [].
 ```
 
-### `findall/3` will always generate all solutions of subgoal, but the `Bag` size determines failure or success
+### `findall/3` will always generate all solutions of subgoal, `Bag` size determines failure/success
 
 Generally one passes a `Bag` that is an unbound variable. `findall/3` will then
 unify `Bag` with the list of solutions collected once the collection is done (this behaviour is according to ISO standard specification,
@@ -242,7 +242,7 @@ false.
 ERROR: Stack limit (1.0Gb) exceeded
 ```
 
-### No caret syntax to "shield off/existentially quantify" variables
+### `findall/3` has no caret syntax to existentially quantify variables
 
 `findall/3` does not have a special syntax to indicate which variables in `Goal`
 should be "shielded off" (existentially quantified) from the namespace of variables existing outside of `Goal`. 
@@ -337,7 +337,7 @@ Bag = [c, d].
 
 The value to which `Y` is bound is visble in the subgoal.
 
-**`findall/3` always behaves like the "existentially quantified" `bagof/3`
+**`findall/3` always behaves like the "existentially quantified" `bagof/3`**
 
 ```
 ?- findall(X,f(X,Y),Bag).
