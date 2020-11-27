@@ -31,6 +31,42 @@ In _Programming in Prolog_, (William Clocksin, Christopher Mellish,2003, Springe
 in chapter 7.8.3. (p. 167 ff), and an implementation in Prolog that uses `asserta/1` and `retract/1` to 
 store solutions prior to unifying a list of the same with the `Instances` argument is provided.
 
+## Notes on history (incomplete)
+
+- The _User's Guide to DECSystem-10 Prolog_ (Luis Moniz Pereira, Fernando Pereira, David Warren) of **October 1978**
+  ([PDF](https://userweb.fct.unl.pt/~lmp/publications/online-papers/USER%20GUIDE%20TO%20DECSYSTEM-10%20PROLOG.pdf))
+  lists neither of the collection metapredicates yet.
+- David Warren introduces `setof/3` in _Higher-order extensions to PROLOG: are they needed?_ This paper can be found 
+  in _Hayes, J. E., Michie, D., and Pao, Y.-H. (Eds.), Machine Intelligence 10, **1982**. Ellis Horwood._
+  ([Online at AAAI AITopics](https://aitopics.org/doc/classics:C65CF540/)). See also the _Papers_ section of
+  the page [Prolog and Logic Programming Historical Sources Archive](www.softwarepreservation.org/projects/prolog/) at 
+  the Computer History Museum.   
+- The `findall/3` predicate can be found in [Prolog II](http://prolog-heritage.org/fr/ph20.html) of **1984**.
+- The CProlog User's Manual V1.2 (edited by Fernando Pereira) of **September 1984**
+  ([http://www.softwarepreservation.org/projects/prolog/edinburgh/doc/CPrologUMV1.2.pdf](PDF)) lists `bagof/3` and `setof/3`
+  but not `findall/3`.
+  
+In _Higher-order extensions to PROLOG: are they needed?_ David Warren writes:
+
+> I believe it is possible to replace these ad hoc solutions with a single more
+> principled extension to PROLOG, which preserves the "declarative" aspect of
+> the language. This extension has already been incorporated in the latest version
+> of DEC-10 PROLOG. The implementation is essentially an encapsulation of the
+> standard hack in a more general and robust form.
+>
+> The extension takes the form of a new built-in predicate:
+>
+> `setof(X,P,S)`
+>
+> to be read as:
+>
+> "The set of instances of `X` such that `P` is provable is `S`".
+>
+> The term `P` represents a goal or goals, specified exactly as in the right-hand side
+> of a clause. The term `X` is a variable occurring in `P`, or more generally any term
+> containing such variables. The set `S` is represented as a list whose elements are
+> sorted into a standard order, without any duplicates.
+
 ## Some examples for findall/3
 
 In the following text, parameter names shall be given by `findall(+Template, :Goal, -Bag)` 
@@ -397,40 +433,4 @@ Bag = [_15438, _15432, _15426].
 ```
 
 You cannot transparently "look for variables" that way.
-
-## Notes on history (incomplete)
-
-- The _User's Guide to DECSystem-10 Prolog_ (Luis Moniz Pereira, Fernando Pereira, David Warren) of **October 1978**
-  ([PDF](https://userweb.fct.unl.pt/~lmp/publications/online-papers/USER%20GUIDE%20TO%20DECSYSTEM-10%20PROLOG.pdf))
-  lists neither of the collection metapredicates yet.
-- David Warren introduces `setof/3` in _Higher-order extensions to PROLOG: are they needed?_ This paper can be found 
-  in _Hayes, J. E., Michie, D., and Pao, Y.-H. (Eds.), Machine Intelligence 10, **1982**. Ellis Horwood._
-  ([Online at AAAI AITopics](https://aitopics.org/doc/classics:C65CF540/)). See also the _Papers_ section of
-  the page [Prolog and Logic Programming Historical Sources Archive](www.softwarepreservation.org/projects/prolog/) at 
-  the Computer History Museum.   
-- The `findall/3` predicate can be found in [Prolog II](http://prolog-heritage.org/fr/ph20.html) of **1984**.
-- The CProlog User's Manual V1.2 (edited by Fernando Pereira) of **September 1984**
-  ([http://www.softwarepreservation.org/projects/prolog/edinburgh/doc/CPrologUMV1.2.pdf](PDF)) lists `bagof/3` and `setof/3`
-  but not `findall/3`.
-  
-In _Higher-order extensions to PROLOG: are they needed?_ David Warren writes:
-
-> I believe it is possible to replace these ad hoc solutions with a single more
-> principled extension to PROLOG, which preserves the "declarative" aspect of
-> the language. This extension has already been incorporated in the latest version
-> of DEC-10 PROLOG. The implementation is essentially an encapsulation of the
-> standard hack in a more general and robust form.
->
-> The extension takes the form of a new built-in predicate:
->
-> `setof(X,P,S)`
->
-> to be read as:
->
-> "The set of instances of `X` such that `P` is provable is `S`".
->
-> The term `P` represents a goal or goals, specified exactly as in the right-hand side
-> of a clause. The term `X` is a variable occurring in `P`, or more generally any term
-> containing such variables. The set `S` is represented as a list whose elements are
-> sorted into a standard order, without any duplicates.
 
