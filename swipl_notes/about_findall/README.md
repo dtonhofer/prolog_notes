@@ -1,4 +1,4 @@
-# Notes about `findall/3`
+# Notes about findall/3
 
 _This is companion information to the SWI-Prolog manual page of the [`findall/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=findall/3) predicate._
 
@@ -31,7 +31,7 @@ In _Programming in Prolog_, (William Clocksin, Christopher Mellish,2003, Springe
 in chapter 7.8.3. (p. 167 ff), and an implementation in Prolog that uses `asserta/1` and `retract/1` to 
 store solutions prior to unifying a list of the same with the `Instances` argument is provided.
 
-## Some examples for `findall/3`
+## Some examples for findall/3
 
 In the following text, parameter names shall be given by `findall(+Template, :Goal, -Bag)` 
 
@@ -127,7 +127,7 @@ Jan Wielemaker writes:
 > reuses the same location if the scopes do not overlap (and even if not, the damage is really small).
 > So yes, a linter issue.
 
-### `findall/3` succeeds if there is no solution
+### Unlike bagof/3, findall/3 succeeds even if there is no solution
 
 Unlike `bagof/3` and `setof/3`, `findall/3` succeeds with an empty `Bag` if there are no solutions:
 
@@ -149,7 +149,7 @@ Bag = [].
 Bag = [].
 ```
 
-### `findall/3` will always generate all solutions of subgoal, `Bag` size determines failure/success
+### findall/3 always generates all solutions of subgoal, irrespective of bag size
 
 Generally one passes a `Bag` that is an unbound variable. `findall/3` will then
 unify `Bag` with the list of solutions collected once the collection is done (this behaviour is according to ISO standard specification,
@@ -229,7 +229,7 @@ that does not unify). In fact, there could even be a `findall_overflow/4` which 
 [Continuation](https://eu.swi-prolog.org/pldoc/man?section=delcont) that can be called for
 more solutions if the `Bag` turns out to be too small after all. To your editors!
 
-### Edge case; bad `Bag`
+### Edge case; bad bag
 
 Edge case: `findall/3` accepts a non-list `Bag` instead of throwing a type error.
 Might be useful to fix that. In the first case below, the unification fails trivially, in the second, it loops forever:
@@ -242,7 +242,7 @@ false.
 ERROR: Stack limit (1.0Gb) exceeded
 ```
 
-### `findall/3` has no caret syntax to existentially quantify variables
+### findall/3 has no "caret syntax" to existentially quantify variables
 
 `findall/3` does not have a special syntax to indicate which variables in `Goal`
 should be "shielded off" (existentially quantified) from the namespace of variables existing outside of `Goal`. 
