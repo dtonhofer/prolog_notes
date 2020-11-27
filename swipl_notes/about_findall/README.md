@@ -108,7 +108,7 @@ X = [1, 2, 3].
 
 is allowed but bad style. The same variable name `X` appears in two distinct roles, in two distinct contexts. 
 
-WHat is being asked is
+What we are asking is:
 
 > the sequence of X such_that member(X,[1,2,3]) is true
 
