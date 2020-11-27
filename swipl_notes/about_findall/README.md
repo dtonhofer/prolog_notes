@@ -1,8 +1,8 @@
 # About `findall/3`
 
-** IN PROGRESS ** 
-
 _This is companion information to the SWI-Prolog manual page of the [`findall/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=findall/3) predicate._
+
+## Intro
 
 `findall/3` is one of the traditional "collection meta-predicates/higher-order predicates", of which there are:
 
