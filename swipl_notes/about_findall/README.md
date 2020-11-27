@@ -23,13 +23,12 @@ _This is companion information to the SWI-Prolog manual page of the [`findall/3`
 
 That's pretty difficult to parse, although it _is_ followed by a pseudocode description.
 
-In _The Art of Prolog: Advanced Programming Techniques_,
-(Leon Sterling, Ehud Shapiro, 1st edition 1984, MIT Press), the predicates `bag_of/3`, `set_of/3` and `find_all_dl/3`
-(corresponding to `findall/4`) are discussed in _Chapter 17: Second-Order Programming_, pages 266 ff.
-
-In _Programming in Prolog_, (William Clocksin, Christopher Mellish,2003, Springer), `findall/3` is explained 
-in chapter 7.8.3. (p. 167 ff), and an implementation in Prolog that uses `asserta/1` and `retract/1` to 
-store solutions prior to unifying a list of the same with the `Instances` argument is provided.
+- In **The Art of Prolog: Advanced Programming Techniques**, (Leon Sterling and Ehud Shapiro, 1st edition 1984, MIT Press),
+  the predicates `bag_of/3`, `set_of/3` and `find_all_dl/3` (corresponding to `findall/4`) are discussed in
+  Chapter 17: "Second-Order Programming", pages 266 ff.
+- In **Programming in Prolog**, (William Clocksin and Christopher Mellish, 2003, Springer), `findall/3` is explained 
+  in chapter 7.8.3. (p. 167 ff), and an implementation in Prolog that uses `asserta/1` and `retract/1` to 
+  store solutions prior to unifying a list of the same with the `Instances` argument is provided.
 
 ## Notes on history (incomplete)
 
