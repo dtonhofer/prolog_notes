@@ -2,14 +2,14 @@
 
 ** IN PROGRESS ** 
 
-This is some companion information to the SWI-Prolog manual page of the [`findall/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=findall/3) predicate.
+_This is companion information to the SWI-Prolog manual page of the [`findall/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=findall/3) predicate._
 
-This is one of the traditional "collection meta-predicates/higher-order predicates", of which there are:
+`findall/3` is one of the traditional "collection meta-predicates/higher-order predicates", of which there are:
 
-- [`findall/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=findall/3) (from Marseille Prolog)   
-- [`setof/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=setof/3) (from Edinburgh Prolog)
-- [`bagof/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=bagof/3) (from Edinburgh Prolog)
-- [`findall/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=findall/4) (which is `findall/3` using a difference list, so you can perform "stream processing" on an _open list_ from which one continuously reads at the TIP and appends at the FIN)
+- [`findall/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=findall/3) (via Marseille Prolog)   
+- [`setof/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=setof/3) (via Edinburgh Prolog)
+- [`bagof/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=bagof/3) (via Edinburgh Prolog)
+- [`findall/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=findall/4) (which is `findall/3` using a difference list, so you can perform "stream processing" on an _open list_ from which one continuously reads at the front and appends at the end)
 
 `findall/3` is described in the ISO/IEC 13211-1 (1995 version) Prolog standard on page 82 as follows:
 
@@ -21,16 +21,28 @@ This is one of the traditional "collection meta-predicates/higher-order predicat
 > performed, where there are likely to be shared variable between `Goal` and `Template` to 
 > "collect information from the call to `Goal`"; but that's not mandatory\].
 
-That's pretty difficult to parse, although it _is_ followed by pseudocode description.
+That's pretty difficult to parse, although it _is_ followed by a pseudocode description.
 
 In _The Art of Prolog: Advanced Programming Techniques_,
-(Leon Sterling, Ehud Shapiro, 1st edition 1984), the predicates `bag_of/3`, `set_of/3` and `find_all_dl/3`
+(Leon Sterling, Ehud Shapiro, 1st edition 1984, MIT Press), the predicates `bag_of/3`, `set_of/3` and `find_all_dl/3`
 (corresponding to `findall/4`) are discussed in _Chapter 17: Second-Order Programming_, pages 266 ff.
+
+In _Programming in Prolog_, (William Clocksin, Christopher Mellish,2003, Springer), `findall/3` is explained 
+in chapter 7.8.3. (p. 167 ff), and an implementation in Prolog that uses `asserta/1` and `retract/1` to 
+store solutions prior to unifying a list of the same with the `Instances` argument is provided.
 
 ## Some examples for `findall/3`
 
-The parameter names shall be given by `findall(+Template, :Goal, -Bag)` 
-(for the _mode indicators_, see [Notation of Predicate Descriptions](https://eu.swi-prolog.org/pldoc/man?section=preddesc))
+In the following text, parameter names shall be given by `findall(+Template, :Goal, -Bag)` 
+
+The _mode indicators_ are as follows (text from [Notation of Predicate Descriptions](https://eu.swi-prolog.org/pldoc/man?section=preddesc)):
+
+- `+`	"At call time, the argument must be instantiated to a term satisfying some (informal) type specification. The argument need not
+      necessarily be ground." In this case `Template` need just be some (probably nonground) term, probably simply an unbound variable, 
+      and probably sharing variables with `Goal`.
+- `:`	"Argument is a meta-argument, for example a term that can be called as goal." 
+- `-`	"Argument is an output argument. It may or may not be bound at call-time. If the argument is bound at call time,
+      the goal behaves as if the argument were unbound, and then unified with that term after the goal succeeds. This is what is called being _steadfast_".
 
 ### Standard behaviour
 
@@ -95,12 +107,12 @@ X = [1, 2, 3].
 ```
 
 is allowed but bad style. The same variable name `X` appears in two distinct roles, in two distinct contexts. 
-If we add fantasy syntax to make clear what we are asking:
 
-```
-findall( { ∃ X : member(X,[1,2,3]) } , X )
-```
+WHat is being asked is
 
+> the sequence of X such_that member(X,[1,2,3]) is true
+
+and the result is just put into a the bag which happens to be called `X`.
 The first two `X` appear in a "goal context". The `X` designating the bag has nothing to do with it! 
 
 This should be caught by a Prolog [code linter](https://sourcelevel.io/blog/what-is-a-linter-and-why-your-team-should-use-it).
@@ -137,10 +149,11 @@ Bag = [].
 Bag = [].
 ```
 
-### `findall/3` will always generate all solutions of subgoal, whether `Bag` fits or not
+### `findall/3` will always generate all solutions of subgoal, but the `Bag` size determines failure or success
 
 Generally one passes a `Bag` that is an unbound variable. `findall/3` will then
-unify `Bag` with the list of solutions collected once the collection is done (this is according to ISO standard specification).
+unify `Bag` with the list of solutions collected once the collection is done (this behaviour is according to ISO standard specification,
+and also is indicated by the mode indicator `-` of the third parameter).
 
 ```
 ?- findall(X,(between(0,4,X),format("Found ~q\n",[X])),Bag).
@@ -216,7 +229,7 @@ that does not unify). In fact, there could even be a `findall_overflow/4` which 
 [Continuation](https://eu.swi-prolog.org/pldoc/man?section=delcont) that can be called for
 more solutions if the `Bag` turns out to be too small after all. To your editors!
 
-### Edge case
+### Edge case; bad `Bag`
 
 Edge case: `findall/3` accepts a non-list `Bag` instead of throwing a type error.
 Might be useful to fix that. In the first case below, the unification fails trivially, in the second, it loops forever:
@@ -243,6 +256,8 @@ f(c,2).
 f(d,2).
 ```
 
+**`bagof/3` without caret**
+
 With `bagof/3`: 
 
 ```
@@ -261,6 +276,10 @@ Bag = [c, d].
 - The the second call to the subgoal `f(X,Y)` fixes `Y` to 2 (that's pretty magical, actually; Prolog retains what solutions have been generated?)
 - Then `bagof/3` runs to completion with the constraing `Y=2`, resulting in the bag `[c, d]`.
 
+What we are asking for is:
+
+> the sequence of `(Y,Bag)` such that : `Y` exists and `Bag` is the sequence of `X` such that : `f(X,Y)` is true
+
 This works even if the database has a different order, no solutions are lost:
 
 ```
@@ -276,26 +295,25 @@ Y = 2,
 Bag = [d, c].
 ```
 
-Dayum!
+(Not sure how this is done though).
+
+**`bagof/3` with caret**
 
 **Conversely**, you can tell bagof/3 to _internally_ backtrack over `Y`,
-by "existentially quantifying Y" with `Y^` thus separating it from any connection to a namespace outside of the inner goal:
+by "existentially quantifying Y" with `Y^`, thus separating it from any connection to a namespace outside of the inner goal:
 
-Again, with the database
-
-```
-f(a,1).
-f(b,1).
-f(c,2).
-f(d,2).
-```
+With the same database:
 
 ```
 ?- bagof(X,Y^f(X,Y),Bag).
 Bag = [a, b, c, d].
 ```
 
-which is the same as de-inlining the inner goal like this:
+What we are asking for is:
+
+> the sequence `Bag` of `X` such that : there is some `Y` such that : `f(X,Y)` is true
+
+This is the same as de-inlining the inner goal like this:
 
 ```
 subgoal(X) :- f(X,_).
@@ -304,16 +322,31 @@ subgoal(X) :- f(X,_).
 Bag = [a, b, c, d].
 ```
 
-With `findall/3`, one gets **only** the "existentially non-qualified" behaviour.
+**`bagof/3` with ineffective caret**
 
-Here, `Y` is a "don't care" variable:
+However, if `Y` is bound prior to call to `bagof/3`, the existential quantification of `Y` by a `Y^` might as well not exist.
+This is frankly unexpected and IMHO, should not be handled like this:
+
+```
+?- Y=2,bagof(X,Y^f(X,Y),Bag).
+Y = 2,
+Bag = [c, d].
+```
+
+> the sequence of `(Y,Bag)` such that : `Y` == 2 and `Bag` is the sequence of `X` such that : `f(X,Y)` is true
+
+The value to which `Y` is bound is visble in the subgoal.
+
+**`findall/3` always behaves like the "existentially quantified" `bagof/3`
 
 ```
 ?- findall(X,f(X,Y),Bag).
 Bag = [a, b, c, d].
 ```
 
-If `Y` is instantiated from outside the call, selection of solutions takes place:
+> the sequence `Bag` of `X` such that : there is some `Y` such that : `f(X,Y)` is true
+
+The same phenomenon as for `bagof/3` occurs if a variable is bound before the call (this looks correct, unlike for  `bagof/3`) 
 
 ```
 ?- Y=2,findall(X,f(X,Y),Bag).
@@ -321,39 +354,51 @@ Y = 2,
 Bag = [c, d].
 ```
 
-The above in fantasy syntax:
+> the sequence of `(Y,Bag)` such that : `Y` == 2 and `Bag` is the sequence of `X` such that : `f(X,Y)` is true
+
+### Beware the copying of unbound variables
+
+Note that if the `findall/3` subgoal emits variables, these are not the same variables as those that can be found in `Bag`.
+Those in `Bag` are fresh, they denote different empty cells in memory.
 
 ```
-Y=2, findall( { ∃ X : f(X,Y) } , Bag )
+?- findall(X,member(X,[A,B,C]),Bag). 
+Bag = [_26582, _26576, _26570].         % The solution contains fresh variables, not A,B,C
 ```
 
-Same as:
+More involved:
 
 ```
-?- Y=2,bagof(X,f(X,Y),Bag). 
-Y = 2,
-Bag = [c, d].
+subgoal_p(X,L) :-
+   member(X,L),
+   format("X is now ~q\n",[X]).
+   
+?- L=[A,B,C],format("L is now: ~q\n",[L]),findall(X,subgoal_p(X,L),Bag).
+L is now: [_8208,_8214,_8220]    % fresh variables in L
+X is now _8208                   % the fresh variable at L[0] is correctly seen by subgoal_p/2
+X is now _8214                   % the fresh variable at L[0] is correctly seen by subgoal_p/2
+X is now _8220                   % the fresh variable at L[0] is correctly seen by subgoal_p/2 
+L = [A, B, C],                 
+Bag = [_9222, _9216, _9210].     % none of the variables of L is in Bag
 ```
 
-But not the same as: 
+More practical, changing `L` after `findall/3` doesn't change `Bag`:
 
 ```
-?- Y=2,Y^bagof(X,f(X,Y),Bag).
-Y = 2,
-Bag = [c, d].
+?- L=[A,B,C],findall(X,subgoal_p(X,L),Bag),L=[1,2,3].
+X is now _14416
+X is now _14422
+X is now _14428
+L = [1, 2, 3],
+A = 1,
+B = 2,
+C = 3,
+Bag = [_15438, _15432, _15426].
 ```
 
+You cannot transparently "look for variables" that way.
 
-?- Y=2,bagof(X,f(X,Y),Bag).
-Y = 2,
-Bag = [c, d].
-==
-
-The feel when -- one gets the impression some proper syntax is missing.
-
-
-
-## Incomplete notes on history
+## Notes on history (incomplete)
 
 - The _User's Guide to DECSystem-10 Prolog_ (Luis Moniz Pereira, Fernando Pereira, David Warren) of **October 1978**
   ([PDF](https://userweb.fct.unl.pt/~lmp/publications/online-papers/USER%20GUIDE%20TO%20DECSYSTEM-10%20PROLOG.pdf))
