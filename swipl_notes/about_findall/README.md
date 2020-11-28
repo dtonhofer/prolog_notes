@@ -32,18 +32,18 @@ That's pretty difficult to parse, although it _is_ followed by a pseudocode desc
 
 ## Notes on history (incomplete)
 
-- The _User's Guide to DECSystem-10 Prolog_ (Luis Moniz Pereira, Fernando Pereira, David Warren) of **October 1978**
+- 1978: The "User's Guide to DECSystem-10 Prolog" (Luis Moniz Pereira, Fernando Pereira, David Warren - October 1978)
   ([PDF](https://userweb.fct.unl.pt/~lmp/publications/online-papers/USER%20GUIDE%20TO%20DECSYSTEM-10%20PROLOG.pdf))
   lists neither of the collection metapredicates yet.
-- David Warren introduces `setof/3` in _Higher-order extensions to PROLOG: are they needed?_ This paper can be found 
-  in _Hayes, J. E., Michie, D., and Pao, Y.-H. (Eds.), Machine Intelligence 10, **1982**. Ellis Horwood._
+- 1982: David Warren introduces `setof/3` in "Higher-order extensions to PROLOG: are they needed?" This paper can be found 
+  in _Hayes, J. E., Michie, D., and Pao, Y.-H. (Eds.), Machine Intelligence 10, 1982. Ellis Horwood._
   ([Online at AAAI AITopics](https://aitopics.org/doc/classics:C65CF540/)). See also the _Papers_ section of
   the page [Prolog and Logic Programming Historical Sources Archive](www.softwarepreservation.org/projects/prolog/) at 
-  the Computer History Museum.   
-- The `findall/3` predicate can be found in [Prolog II](http://prolog-heritage.org/fr/ph20.html) of **1984**.
-- The CProlog User's Manual V1.2 (edited by Fernando Pereira) of **September 1984**
-  ([PDF](http://www.softwarepreservation.org/projects/prolog/edinburgh/doc/CPrologUMV1.2.pdf)) lists `bagof/3` and `setof/3`
-  but not `findall/3`.
+  the Computer History Museum.
+- 1984: The `findall/3` predicate can be found in [Prolog II](http://prolog-heritage.org/fr/ph20.html).
+- 1984: The CProlog User's Manual V1.2 (edited by Fernando Pereira - September 1984)
+  ([PDF](http://www.softwarepreservation.org/projects/prolog/edinburgh/doc/CPrologUMV1.2.pdf)) 
+  lists `bagof/3` and `setof/3` but not `findall/3`.
   
 In _Higher-order extensions to PROLOG: are they needed?_ David Warren writes:
 
