@@ -162,9 +162,9 @@ Jan Wielemaker writes:
 > reuses the same location if the scopes do not overlap (and even if not, the damage is really small).
 > So yes, a linter issue.
 
-### Unlike bagof/3, findall/3 succeeds even if there is no solution
+### What if there is no solution for the subgoal?
 
-Unlike `bagof/3` and `setof/3`, `findall/3` succeeds with an empty `Bag` if there are no solutions:
+`bagof/3` and also `setof/3` fail if there are no solutions for the subgoal:
 
 ```
 ?- bagof(X,member(X,[]),Bag).
@@ -174,7 +174,7 @@ false.
 false.
 ```
 
-But, maybe more friendly depending on what you want to do:
+Unlike the above `findall/3` _succeeds with an empty `Bag`_ if there are no solutions:
 
 ```
 ?- findall(X,member(X,[]),Bag).
@@ -184,18 +184,48 @@ Bag = [].
 Bag = [].
 ```
 
-If you keep to having a `Bag` that is an unbound variable (to avoid problems with steadfastness), you
-can implement the behaviour of `findall/3` for `bagof/3` by using the [if-then-else](https://eu.swi-prolog.org/pldoc/doc_for?object=(-%3E)/2)
-construct (a non-logical construct):
+At first sight, this looks user friendly - it's an approach that reminds one of an imperative language. 
+On second sight, there is a problem with the logical interpretation. 
+Leaving out the ancillary condition of whether an instantiated `Bag` unifies with the `Bag` of 
+results actually collected (the subgoal's proof witnesses), `findall/3` succeeds in all cases.
+If there is no proof of the subgoal, `bagof/3` properly fails whereas `findall/3` is
+[vacuously true](https://en.wikipedia.org/wiki/Vacuous_truth): all elements of `[]` are a solution of the subgoal.
+But we _do_ want failure: a predicate is _supposed_ to fail if there is no proofs of any subgoal, that's the idea. 
+
+In fact, one can implement negation-as-failure (mis-)using `findall/3`'s "succeed even on failure" approach
+simply through checking whether the resulting `Bag` is `[]` (see the end of this page).
+
+One may recover logically-acceptable behaviour by following up with a comparison against `[]` (we don't even
+need to use [if-then-else](https://eu.swi-prolog.org/pldoc/doc_for?object=(-%3E)/2)
+
+For example (how do I generalize this to arbitrary (`Template`,`Subgoal`) pairs?):
 
 ```
-?- (bagof(X,member(X,[]),Bag) -> true ; Bag=[]).
-Bag = [].
+foo(1) :- write("Called 1\n").
+foo(2) :- write("Called 2\n").
+findall_which_fails(Bag,M) :- findall(X,(foo(X),X>M),Bag), Bag \== [].
 ```
 
-`findall/3`'s approach is what one is used to in an imperative language but it's not "logical": If there are no solutions, a predicate is _supposed_ to fail.
+Then:
 
-### findall/3 always generates all solutions of subgoal, irrespective of bag size
+```
+?- findall_which_fails(Bag,0).
+Called 1
+Called 2
+Bag = [1, 2].
+
+?- findall_which_fails(Bag,1).
+Called 1
+Called 2
+Bag = [2].
+
+?- findall_which_fails(Bag,3).
+Called 1
+Called 2
+false.
+```
+
+### findall/3 always generates all solutions of subgoal, irrespective of the size of Bag
 
 Generally one passes a `Bag` that is an unbound variable. `findall/3` will then
 unify `Bag` with the list of solutions collected once the collection is done (this behaviour is according to ISO standard specification,
