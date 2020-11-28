@@ -184,6 +184,17 @@ Bag = [].
 Bag = [].
 ```
 
+If you keep to having a `Bag` that is an unbound variable (to avoid problems with steadfastness), you
+can implement the behaviour of `findall/3` for `bagof/3` by using the [if-then-else](https://eu.swi-prolog.org/pldoc/doc_for?object=(-%3E)/2)
+construct (a non-logical construct):
+
+```
+?- (bagof(X,member(X,[]),Bag) -> true ; Bag=[]).
+Bag = [].
+```
+
+`findall/3`'s approach is what one is used to in an imperative language but it's not "logical": If there are no solutions, a predicate is _supposed_ to fail.
+
 ### findall/3 always generates all solutions of subgoal, irrespective of bag size
 
 Generally one passes a `Bag` that is an unbound variable. `findall/3` will then
@@ -439,4 +450,163 @@ Bag = [_15438, _15432, _15426].
 ```
 
 You cannot transparently "look for variables" that way.
+
+## Beware the reuse of variable names
+
+This has been discussed above, but to reiterate:
+
+```
+bagit(X,Bag)        :- bagof(X,member(X,[1,2,3]),Bag).    % There is a messy variable name clash here
+
+findit(X,Bag)       :- findall(X,member(X,[1,2,3]),Bag).  % There is a messy variable name clash here
+
+bagit_caret(X,Bag)  :- bagof(X,X^member(X,[1,2,3]),Bag).  % There is STILL a messy variable name clash here
+
+findit_solid(_,Bag) :- findit_name_isolate(Bag).          % Let's fix this!
+
+findit_name_isolate(Bag) :- 
+   nth0(0,[_],X), % create a named fresh variable
+   findall(X,member(X,[1,2,3]),Bag).
+   
+bagit_solid(_,Bag)  :- bagit_name_isolate(Bag).           % Let's fix this!
+
+bagit_name_isolate(Bag) :- 
+   nth0(0,[_],X), % create a named fresh variable
+   bagof(X,member(X,[1,2,3]),Bag).
+```
+
+Then:
+
+`bagit/2` and `findit/2` have the same problem: they only work correctly if `X` is unbound.
+
+```
+?- bagit(X,Bag).
+Bag = [1, 2, 3].
+
+?- bagit(a,Bag).
+false.
+
+?- bagit(1,Bag).
+Bag = [1].
+```
+
+```
+?- findit(X,Bag).
+Bag = [1, 2, 3].
+
+?- findit(a,Bag).
+Bag = [].
+
+?- findit(1,Bag).
+Bag = [1].
+```
+
+Using the caret doesn't help:
+
+```
+?- bagit_caret(X,Bag).
+Bag = [1, 2, 3].
+
+?- bagit_caret(a,Bag).
+false.
+
+?- bagit_caret(1,Bag).
+Bag = [1].
+```
+
+Only isolation works:
+
+```
+?- bagit_solid(X,Bag).
+Bag = [1, 2, 3].
+
+?- bagit_solid(a,Bag).
+Bag = [1, 2, 3].
+
+?- bagit_solid(1,Bag).
+Bag = [1, 2, 3].
+```
+
+```
+?- findit_solid(X,Bag).
+Bag = [1, 2, 3].
+
+?- findit_solid(a,Bag).
+Bag = [1, 2, 3].
+
+?- findit_solid(1,Bag).
+Bag = [1, 2, 3].
+```
+
+## Uncommon usage
+
+Via Peter Ludemann, as apparently originally pointed out by Lee Naish (I haven't tracked down that reference yet):
+
+### Construct `\+`
+
+Using the fact that the Bag of `findall/3` is unified with the empty list if its Goal fails, we can 
+implement a `findall/3`-based version of the (non-logical) negation-as-failure:
+
+```
+another_not(Goal) :- findall(., Goal, []).
+```
+
+Then:
+
+```
+?- another_not(false).
+true.
+
+?- another_not(true).
+false.
+```
+
+### Construct `var/1`
+
+Remember that `var/1` asks whether the argument is an unbound variable at call time (it's not logic, it's a question about the state of the computation, and it should have been called `unbound/1`):
+
+```
+another_var(X) :- findall(X, (X=a; X=b), [_,_]).
+```
+
+```
+?- another_var(X).
+true.
+
+?- another_var(foo).
+false.
+```
+
+This works because:
+
+- only a unbound variable can successively unify with `a` and `b`, giving exactly solutions. Consider a debugging extension:
+- the `X` in the Goal of `findall/3` is the `X` from the outside naming context, it is not "shadowed"
+by using `X` as the template (confusing? yes!).
+
+Consider the debugging version:
+
+```
+another_var(X,[U,V]) :- findall(X, ((X=a,write("unif(a)\n")); (X=b,write("unif(b)\n"))), [U,V]).
+```
+
+Then:
+
+```
+?- another_var(foo,[U,V]).
+false.
+
+?- another_var(a,[U,V]).
+unif(a)
+false.
+
+?- another_var(b,[U,V]).
+unif(b)
+false.
+
+?- another_var(X,[U,V]).
+unif(a)
+unif(b)
+U = a,
+V = b.
+```
 
