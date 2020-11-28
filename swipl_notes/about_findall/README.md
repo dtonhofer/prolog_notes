@@ -409,7 +409,7 @@ Bag = [c, d].
 
 > the sequence of `(Y,Bag)` such that : `Y` == 2 and `Bag` is the sequence of `X` such that : `f(X,Y)` is true
 
-### Beware the copying of unbound variables
+## Beware the copying of unbound variables
 
 Note that if the `findall/3` subgoal emits variables, these are not the same variables as those that can be found in `Bag`.
 Those in `Bag` are fresh, they denote different empty cells in memory.
