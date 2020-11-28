@@ -465,13 +465,11 @@ bagit_caret(X,Bag)  :- bagof(X,X^member(X,[1,2,3]),Bag).  % There is STILL a mes
 findit_solid(_,Bag) :- findit_name_isolate(Bag).          % Let's fix this!
 
 findit_name_isolate(Bag) :- 
-   nth0(0,[_],X), % create a named fresh variable
    findall(X,member(X,[1,2,3]),Bag).
    
 bagit_solid(_,Bag)  :- bagit_name_isolate(Bag).           % Let's fix this!
 
 bagit_name_isolate(Bag) :- 
-   nth0(0,[_],X), % create a named fresh variable
    bagof(X,member(X,[1,2,3]),Bag).
 ```
 
