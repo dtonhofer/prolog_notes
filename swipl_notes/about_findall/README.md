@@ -42,7 +42,7 @@ That's pretty difficult to parse, although it _is_ followed by a pseudocode desc
   the Computer History Museum.   
 - The `findall/3` predicate can be found in [Prolog II](http://prolog-heritage.org/fr/ph20.html) of **1984**.
 - The CProlog User's Manual V1.2 (edited by Fernando Pereira) of **September 1984**
-  ([http://www.softwarepreservation.org/projects/prolog/edinburgh/doc/CPrologUMV1.2.pdf](PDF)) lists `bagof/3` and `setof/3`
+  ([PDF](http://www.softwarepreservation.org/projects/prolog/edinburgh/doc/CPrologUMV1.2.pdf)) lists `bagof/3` and `setof/3`
   but not `findall/3`.
   
 In _Higher-order extensions to PROLOG: are they needed?_ David Warren writes:
