@@ -264,6 +264,13 @@ that does not unify). In fact, there could even be a `findall_overflow/4` which 
 [Continuation](https://eu.swi-prolog.org/pldoc/man?section=delcont) that can be called for
 more solutions if the `Bag` turns out to be too small after all. To your editors!
 
+(Is demanding steadfastness from a predicate, as the ISO standard demands of `findall/3`,
+ even reasonable? I doubt it. Predicates should "fail fast"
+ with the full information that can be obtained from the arguments they have been given. 
+ If you absolutely want steadfastness, you can always pass an 
+ unbound variable (which gives nothing away) at the parameter position marked `-` and unify 
+ that with a not-full-unbound term afterwards.)
+
 ### Edge case; bad bag
 
 Edge case: `findall/3` accepts a non-list `Bag` instead of throwing a type error.
