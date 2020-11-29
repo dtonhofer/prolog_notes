@@ -594,7 +594,7 @@ false.
 Remember that `var/1` asks whether the argument is an unbound variable at call time (it's not logic, it's a question about the state of the computation, and it should have been called `unbound/1`):
 
 ```
-another_var(X) :- findall(X, (X=a; X=b), [_,_]).
+another_var(X) :- findall(_, (X=a; X=b), [_,_]).
 ```
 
 ```
@@ -614,7 +614,7 @@ by using `X` as the template (confusing? yes!).
 Consider the debugging version:
 
 ```
-another_var(X,[U,V]) :- findall(X, ((X=a,write("unif(a)\n")); (X=b,write("unif(b)\n"))), [U,V]).
+another_var(X,[U,V]) :- findall(_, ((X=a,write("unif(a)\n")); (X=b,write("unif(b)\n"))), [U,V]).
 ```
 
 Then:
@@ -638,3 +638,39 @@ U = a,
 V = b.
 ```
 
+This phenomenon is discussed in "Negation and Control in Prolog" by Lee Naish, 1985 on page 13:
+
+> 1.7.3.1. Declarative Semantics
+> 
+> If the convention of findall is used to determine what variables are local, then it is generally
+> not possible to determine what relation is computed from the program text. The semantics of the
+> call depends on which variables are local - and this depends on the variable bindings when the call is
+> executed. For example, the var predicate can be defined as follows:
+> 
+> ```
+> var(X) :- findall(_,(X=1;X=2),[_,_]).
+> ```
+> 
+> If `X` is a \[unbound\] variable when var(X) is called, it will be treated as a local variable. Two solutions to
+> the goal _∃X (X=1 ⋁ X=2)_ are found and `var(X)` succeeds. If `X` is not a variable, however, it acts as a
+> global variable and the goal has one solution at most, so the call fails. Declarative semantics can be
+> given only if it is known exactly which variables will be bound at the time of the call. Variables that
+> appear only in the call to solutions cannot be bound, but the bindings of other variables depend on
+> the order of calls. Calls to all can be made safe by explicitly declaring all these variables to be
+> global.
+> 
+> With `setof`, etc., local variables can be determined from the program text so the semantics are
+> clear. However, if local variables appear outside the call they may become bound and change the
+> `setof` call. Ensuring that variables declared to be local are indeed local should be done when a
+> program is read. Unfortunately, current implementations do not do this.
+
+This is still the case 35 years later.
+
+## References
+
+- **Negation and Control in Prolog**
+   - Lee Naish
+   - Springer Lecture Notes in Computer Science, N° 238
+   - Springer-Verlag 1985 
+   - [Book Page](https://www.springer.com/gp/book/9783540168157)
+   
