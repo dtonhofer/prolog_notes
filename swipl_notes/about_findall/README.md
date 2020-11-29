@@ -2,9 +2,16 @@
 
 _This is companion information to the SWI-Prolog manual page of the [`findall/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=findall/3) predicate._
 
+## Warning
+
+This predicate has been behaving non-declaratively for at least 35 years (i.e. at least since Lee Naish wrote
+"Negation and Control in Prolog" in 1985 - reference at the end of this page). It still made it into the
+ISO Standard of 1995. Shouldn't it be deprecated?
+
 ## Intro
 
-`findall/3` is one of the traditional "collection meta-predicates/higher-order predicates", of which there are:
+`findall/3` is one of the traditional "all-solution predicates" (which are "higher-order predicates" aka "metapredicates"),
+There are:
 
 - [`findall/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=findall/3) (via Marseille Prolog)   
 - [`setof/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=setof/3) (via Edinburgh Prolog)
@@ -30,41 +37,9 @@ That's pretty difficult to parse, although it _is_ followed by a pseudocode desc
   in chapter 7.8.3. (p. 167 ff), and an implementation in Prolog that uses `asserta/1` and `retract/1` to 
   store solutions prior to unifying a list of the same with the `Instances` argument is provided.
 
-## Notes on history (incomplete)
+## Notes on history
 
-- 1978: The "User's Guide to DECSystem-10 Prolog" (Luis Moniz Pereira, Fernando Pereira, David Warren - October 1978)
-  ([PDF](https://userweb.fct.unl.pt/~lmp/publications/online-papers/USER%20GUIDE%20TO%20DECSYSTEM-10%20PROLOG.pdf))
-  lists neither of the collection metapredicates yet.
-- 1982: David Warren introduces `setof/3` in "Higher-order extensions to PROLOG: are they needed?" This paper can be found 
-  in _Hayes, J. E., Michie, D., and Pao, Y.-H. (Eds.), Machine Intelligence 10, 1982. Ellis Horwood._
-  ([Online at AAAI AITopics](https://aitopics.org/doc/classics:C65CF540/)). See also the _Papers_ section of
-  the page [Prolog and Logic Programming Historical Sources Archive](www.softwarepreservation.org/projects/prolog/) at 
-  the Computer History Museum.
-- 1984: The `findall/3` predicate can be found in [Prolog II](http://prolog-heritage.org/fr/ph20.html).
-- 1984: The CProlog User's Manual V1.2 (edited by Fernando Pereira - September 1984)
-  ([PDF](http://www.softwarepreservation.org/projects/prolog/edinburgh/doc/CPrologUMV1.2.pdf)) 
-  lists `bagof/3` and `setof/3` but not `findall/3`.
-  
-In _Higher-order extensions to PROLOG: are they needed?_ David Warren writes:
-
-> I believe it is possible to replace these ad hoc solutions with a single more
-> principled extension to PROLOG, which preserves the "declarative" aspect of
-> the language. This extension has already been incorporated in the latest version
-> of DEC-10 PROLOG. The implementation is essentially an encapsulation of the
-> standard hack in a more general and robust form.
->
-> The extension takes the form of a new built-in predicate:
->
-> `setof(X,P,S)`
->
-> to be read as:
->
-> "The set of instances of `X` such that `P` is provable is `S`".
->
-> The term `P` represents a goal or goals, specified exactly as in the right-hand side
-> of a clause. The term `X` is a variable occurring in `P`, or more generally any term
-> containing such variables. The set `S` is represented as a list whose elements are
-> sorted into a standard order, without any duplicates.
+See at the end of this page.
 
 ## Some examples for findall/3
 
@@ -429,7 +404,8 @@ Bag = [a, b, c, d].
 
 > the sequence `Bag` of `X` such that : there is some `Y` such that : `f(X,Y)` is true
 
-The same phenomenon as for `bagof/3` occurs if a variable is bound before the call (this looks correct, unlike for  `bagof/3`) 
+The same phenomenon as for `bagof/3` occurs if a variable is bound before the call (this looks correct, unlike for  `bagof/3` where the `^` 
+muddies the water) 
 
 ```
 ?- Y=2,findall(X,f(X,Y),Bag).
@@ -568,7 +544,7 @@ Bag = [1, 2, 3].
 
 ## Uncommon usage
 
-Via Peter Ludemann, as apparently originally pointed out by Lee Naish (I haven't tracked down that reference yet):
+Via Peter Ludemann:
 
 ### Construct `\+`
 
@@ -664,7 +640,104 @@ This phenomenon is discussed in "Negation and Control in Prolog" by Lee Naish, 1
 > `setof` call. Ensuring that variables declared to be local are indeed local should be done when a
 > program is read. Unfortunately, current implementations do not do this.
 
-This is still the case 35 years later.
+Rather disconcertingly, this is still the case 35 years later.
+
+## Some notes on history
+
+- 1978: The "User's Guide to DECSystem-10 Prolog" (Luis Moniz Pereira, Fernando Pereira, David Warren - October 1978)
+  ([PDF](https://userweb.fct.unl.pt/~lmp/publications/online-papers/USER%20GUIDE%20TO%20DECSYSTEM-10%20PROLOG.pdf))
+  lists neither of the all-solution predicates yet.
+- 1982: David Warren introduces `setof/3` in "Higher-order extensions to PROLOG: are they needed?" This paper can be found 
+  in _Hayes, J. E., Michie, D., and Pao, Y.-H. (Eds.), Machine Intelligence 10, 1982. Ellis Horwood._
+  ([Online at AAAI AITopics](https://aitopics.org/doc/classics:C65CF540/)). See also the _Papers_ section of
+  the page [Prolog and Logic Programming Historical Sources Archive](www.softwarepreservation.org/projects/prolog/) at 
+  the Computer History Museum.
+- 1984: The `findall/3` predicate can be found in [Prolog II](http://prolog-heritage.org/fr/ph20.html).
+- 1984: The CProlog User's Manual V1.2 (edited by Fernando Pereira - September 1984)
+  ([PDF](http://www.softwarepreservation.org/projects/prolog/edinburgh/doc/CPrologUMV1.2.pdf)) 
+  lists `bagof/3` and `setof/3` but not `findall/3`.
+  
+In _Higher-order extensions to PROLOG: are they needed?_ David Warren writes:
+
+> I believe it is possible to replace these ad hoc solutions with a single more
+> principled extension to PROLOG, which preserves the "declarative" aspect of
+> the language. This extension has already been incorporated in the latest version
+> of DEC-10 PROLOG. The implementation is essentially an encapsulation of the
+> standard hack in a more general and robust form.
+>
+> The extension takes the form of a new built-in predicate:
+>
+> `setof(X,P,S)`
+>
+> to be read as:
+>
+> "The set of instances of `X` such that `P` is provable is `S`".
+>
+> The term `P` represents a goal or goals, specified exactly as in the right-hand side
+> of a clause. The term `X` is a variable occurring in `P`, or more generally any term
+> containing such variables. The set `S` is represented as a list whose elements are
+> sorted into a standard order, without any duplicates.
+
+In "Negation and Control in Prolog", on page 12, Lee Naish lists implementations of "collection predicates" that existed in 1985:
+
+> **1.7.2.3. Implementations**
+> 
+> Many all-solutions predicates have been implemented. In this section we describe a selection of
+> them, concentrating of the differences with the solutions predicate we have described so far.
+> 
+> **Findall**
+> 
+> This is one of the simplest implementations, defined in PROLOG in \[Clocksin 84: "Programming in Prolog, 2nd edition"\]. The main
+> difference between _findall_ and _solutions_ is the way local variables are distinguished. All variables
+> which are unbound at the time of the call are treated as local. This ensures that calls to _findall_ are
+> deterministic.
+> 
+> **Collect**
+> 
+> The behaviour of _collect_ \[Kahn 84: "A Primitive for the Control of Logic Program"\] is the same as _findall_ except that it has features which
+> permit more flexible control of the execution. The solutions can be computed in a lazy, as needed,
+> fashion or eagerly, using a separate process.
+> 
+> **All**
+> 
+> This implementation is given in \[Pereira 81: "All Solutions"\] and also uses the same default as _findall_ for local
+> variables, but it can be overridden. Using a goal of the form _Goal same Global_vars_, forces variables
+> in the term _Global_vars_ to be global. Empty lists of solutions are never returned; _all_ just falls in this
+> case. One version of this predicate also removes duplicates from the list of solutions. If two
+> solutions can be unified, only the result (sometimes less general) is put in the list of solutions.
+> 
+> **Bagof**
+> 
+> This is provided in DEC-10 PROLOG \[Bowen 82: "DECSystem-10 Prolog User's Manual"\] and has the convention for declaring local
+> variables we have adopted for _solutions_. Like _all_, _bagof_ falls if there are no solutions to the goal.
+> 
+> **Setof**: 
+> 
+> _Setof_ \[Warren 82: "Higher-Order Extensions to Prolog: Are They Needed?"\] is the same as _bagof_ except
+> that the list of solutions is sorted and duplicates are removed. Unlike _all_, the most general solutions are retained.
+> 
+> **Quantified-bag-of**
+> 
+> This is available as part of the LM-PROLOG's "DEC-10 compatibility package" \[Carlsson 83: "LM-Prolog User Manual"\],
+> and is intended to be equivalent to _bagof_. However, according to our reading of the
+> manual, the treatment of local variables is similar to _all_, rather than _bagof_.
+> 
+> **Quantified-set-of**
+> 
+> This is the same as _quantified-bag-of_, except that duplicates are removed.
+> 
+> **Set Expressions**
+> 
+> In IC-PROLOG's set expressions \[Clark 80: "IC-Prolog - Language Features"\], variables that only occur within the set expression
+> are considered local, and the others are global. If a proof of the goal is found in which a global
+> variable is bound, the execution terminates with a control error. Set expression (and some variants)
+> have also been incorporated in some parallel logic programming languages, such as Parlog
+> \[Clark 83a: "PARLOG: A Paralel Logic Programming Language"\]. These languages are beyond the scope of this thesis.
+> 
+> **Set_of_all**
+> 
+> Rather than return a list, this proposed predicatet returns a set of solutions. Sets must be
+> implemented as a primitive data type of PROLOG.
 
 ## References
 
