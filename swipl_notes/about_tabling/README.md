@@ -53,3 +53,54 @@ Chapter 20: Negation_ (p 86 ff.) explains the extensions of Flora-2/XSB relative
 I suppose the XSB manual has a lot to say, too.
 
  http://flora.sourceforge.net/docs/floraManual.pdf (PDF), 
+
+In the SWI-Prolog manual
+
+- [Tabled execution (SLG resolution)](https://eu.swi-prolog.org/pldoc/man?section=tabling)
+- XSB Prolog (David Warrne, Terrance Swift) is the nexus of development here...
+- Also implemented in B-Prolog and thus availabe in Picat (which builds on B-Prolog) (Nah Feng-Zhou et al.)
+
+
+   - 
+   - 
+   
+What are "stratified programs"?
+
+### OLD Resolution with Tabulation 
+
+An earlier approach?
+
+   - 1986-07
+   - Taisuke Sato
+
+### Efficiently Implementing SLG Resolution
+
+   - 1994-01-25
+   - http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.49.5979
+   - Terrance Swift , David S. Warren 
+
+> SLG is a table-oriented resolution method that is gaining increasing attention due to its ability
+> to combine the deductive database, non-monotonic reasoning and logic programming paradigms. SLG
+> resembles SLD in that it admits a tuple-at-a-time resolution method, so it can make use of many of
+> the techniques developed in implementing SLD over the past decade. Indeed, a program can contain any
+> mixture of SLG and SLD evaluated predicates. As a result SLG forms a natural basis for extending Prolog
+> systems. SLG can be efficiently implemented using a WAM-style abstract machine, the SLG-WAM. The SLG-WAM
+> has been implemented for stratified programs, and design is underway for extensions to general programs.
+> Performance results for stratified programs are available. They indicate firstly when executing SLD,
+> the overhead of the SLG-WAM compared to a similar WAM implementation is minimal, and usually less than 10%.
+> Further results indicate that SLG derivation may be expected to be surprisingly competitive with SLD 
+> derivation on numerous datalog programs, even when SLD terminates and contains no redundant subcomputations.
+> Finally, performance comparisons indicate that the SLG-WAM is about an order of magnitude faster than current
+> deductive database systems even for datalog queries. The results, taken as a whole call into question
+> traditional arguments about top-down versus bottom-up evaluation effciency, and also indicate that implementation
+> of SLG evaluation is a field of research worthy of general study.
+
+## Memoing for Logic Programs
+
+   - David S. Warren
+   - Communications of the ACM 
+   - March 1992
+   - Vol 35, N. 3.
+   - Pages 94-111
+   
+Discusses: OLDT - Ordered Selection Strategy with Linear Resolution for Definite Clauses for Tabling, Abstract Interpretation, Partial Deduction
