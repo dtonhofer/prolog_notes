@@ -18,6 +18,8 @@ There are:
 - [`bagof/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=bagof/3) (via Edinburgh Prolog)
 - [`findall/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=findall/4) (which is `findall/3` using a difference list, so you can perform "stream processing" on an _open list_ from which one continuously reads at the front and appends at the end)
 
+## Where to find explainers
+
 - In **The Art of Prolog: Advanced Programming Techniques**, (Leon Sterling and Ehud Shapiro, 1st edition 1984, MIT Press),
   the predicates `bag_of/3`, `set_of/3` and `find_all_dl/3` (corresponding to `findall/4`) are discussed in
   Chapter 17: "Second-Order Programming", pages 266 ff.
