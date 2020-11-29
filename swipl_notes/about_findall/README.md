@@ -18,24 +18,21 @@ There are:
 - [`bagof/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=bagof/3) (via Edinburgh Prolog)
 - [`findall/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=findall/4) (which is `findall/3` using a difference list, so you can perform "stream processing" on an _open list_ from which one continuously reads at the front and appends at the end)
 
-`findall/3` is described in the ISO/IEC 13211-1 (1995 version) Prolog standard on page 82 as follows:
-
-> `findall (Template, Goal, Instances)` is true iff `Instances` unifies with the list of values to
-> which a variable `X` not occurring in `Template` or `Goal` \[i.e. a fresh variable\] would be 
-> instantiated by successive re-executions of `call(Goal), X=Template` after systematic
-> replacement of all variables in `X` by new variables \[i.e. `X` is term-copied, with any
-> variable therein replaced by a fresh variable, and then one round of `call(Goal), X=Template` is 
-> performed, where there are likely to be shared variable between `Goal` and `Template` to 
-> "collect information from the call to `Goal`"; but that's not mandatory\].
-
-That's pretty difficult to parse, although it _is_ followed by a pseudocode description.
-
 - In **The Art of Prolog: Advanced Programming Techniques**, (Leon Sterling and Ehud Shapiro, 1st edition 1984, MIT Press),
   the predicates `bag_of/3`, `set_of/3` and `find_all_dl/3` (corresponding to `findall/4`) are discussed in
   Chapter 17: "Second-Order Programming", pages 266 ff.
 - In **Programming in Prolog**, (William Clocksin and Christopher Mellish, 2003, Springer), `findall/3` is explained 
   in chapter 7.8.3. (p. 167 ff), and an implementation in Prolog that uses `asserta/1` and `retract/1` to 
   store solutions prior to unifying a list of the same with the `Instances` argument is provided.
+
+`findall/3` is described in the ISO/IEC 13211-1 (1995 version) Prolog standard on page 82 as follows:
+
+> _findall (Template, Goal, Instances)_ is true iff _Instances_ unifies with the list of values to
+> which a variable _X_ not occurring in _Template_ or _Goal_ \[i.e. a fresh variable\] would be 
+> instantiated by successive re-executions of _call(Goal), X=Template_ after systematic
+> replacement of all variables in _X_ by new variables.
+
+That's pretty obscure, although it _is_ followed by a pseudocode description. It's all "operational semantics" though.
 
 ## Notes on history
 
