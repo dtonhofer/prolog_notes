@@ -310,7 +310,7 @@ In [Logic programming and negation: A survey](https://www.sciencedirect.com/scie
 > - it arises as soon as a nonground negative literal is selected. Clearly, this small change has no effect on 
 > the theory of SLDNF resolution, since the original notion of floundering can be easily defined."
 
-In [Efficiently Iplementing SLG Resolution]() (Terrance Swift, David S. Warren, 1994), the following definition is provided in a footnote:
+In [Efficiently Iplementing SLG Resolution](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.49.5979) (Terrance Swift, David S. Warren, 1994), the following definition is provided in a footnote:
 
 > A program _flounders_ if there is an atom \[an "atom" in the logical sense, i.e. a positive literal, i.e. a non-negated atomic Prolog goal\] 
 > whose truth cannot be proven without making a call to a non-gound negative literal.
