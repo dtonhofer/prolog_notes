@@ -1,12 +1,14 @@
-# Notes about findall/3
+# Notes about _findall/3_
 
 _This is companion information to the SWI-Prolog manual page of the [`findall/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=findall/3) predicate._
 
-## `findall/3` is problematic!
+## _findall/3_ is somewhat problematic!
 
 This predicate has been behaving non-declaratively for at least 35 years (i.e. at least since Lee Naish wrote
 "Negation and Control in Prolog" in 1985 - reference at the end of this page). It still made it into the
 ISO Standard of 1995. Shouldn't it be deprecated?
+
+![wiley](pics/wiley.jpg)
 
 Note that it _does_ work with unbound variables that have constraints, at least in SWI Prolog. See "Will constraints be retained?" below.
 
@@ -282,11 +284,11 @@ that does not unify). In fact, there could even be a `findall_overflow/4` which 
 more solutions if the `Bag` turns out to be too small after all. To your editors!
 
 (Is demanding steadfastness from a predicate, as the ISO standard demands of `findall/3`,
- even reasonable? I doubt it. Predicates should "fail fast"
+ necessarily reasonable? Predicates could well "fail fast"
  with the full information that can be obtained from the arguments they have been given. 
- If you absolutely want steadfastness, you can always pass an 
+ If one absolutely wants steadfastness, one can always pass an 
  unbound variable (which gives nothing away) at the parameter position marked `-` and unify 
- that with a not-full-unbound term afterwards.)
+ that with a not-full-unbound/possibly ground term afterwards.)
 
 ### Edge case; bad bag
 
