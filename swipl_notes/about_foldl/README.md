@@ -1,4 +1,4 @@
-# Fun with `foldl`
+# Fun with _foldl_
 
 The _Goal_ in a `foldl` call is a predicate, which is either given by a predicate name,
 like `foo` (in which case `foldl` will look for a predicate with indicator `foo/3`), 
