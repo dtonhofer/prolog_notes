@@ -1,17 +1,21 @@
 https://eu.swi-prolog.org/pldoc/man?section=typetest
 
-## The Type Tree in ASCII
+## If you have a a term denoted by variable name T, what could it be?
 
 ==
-                                                                          any T
-                                                                            |
-                                                  +-------------------------+------------------------+
-                                                  |                                                  |
-                                                var(T)                                            nonvar(T)
-                                        "T is a variable name                            "the complement of var(T)"
-                                  that denotes an 'unbound variable'                                 |
-                                    (a 'hole') at the time of call"                                  |
-                                    (should be called unbound(T))                                    |
+                                                                       any T
+                                                                         |
+                                     +-----------------------------------+---------------------------+
+                                     |                                                               |
+                                   var(T)                                                         nonvar(T)
+                    "the variable name T denotes an 'unbound                              "the complement of var(T)"
+                    variable' (aka. uninstantiated variable),                                        |
+                    which is an empty memory cell distinguishable                                    |
+                    by '==' at the time the call to var/1 occurs"                                    |
+                    - a nonlogical predicate about the state of the                                  |
+                      computation                                                                    |
+                    - this predicate should have been called                                         |
+                      unbound(T); a historical accident!                                             |
                                                                          +---------------------------+-----------------------------+
                                                                          |                                                         |
                                                                      atomic(T)                                                 compound(T)
@@ -21,18 +25,19 @@ https://eu.swi-prolog.org/pldoc/man?section=typetest
                                   blob(T,_)                           string(T)                number(T)       "compound term            "compound term
                                       |                                                           |             of arity 0"                of arity > 0"
                                       |                                                           |                                              |
-              +-----------------------+-----------------------+                         +---------+---------+                   +----------------+-------------+
-              |                       |                       |                         |                   |                   |                |             |
-       (other blob types)    blob(T,reserved_symbol)     blob(T,text)           rational(T,Nu,De)        float(T)              dict          "head of       ...others
+              +-----------------------+-----------------------+                         +---------+---------+                   +----------------+----------------+
+              |                       |                       |                         |                   |                   |                |                |
+       (other blob types)    blob(T,reserved_symbol)     blob(T,text)           rational(T,Nu,De)        float(T)              dict      "first list cell of   ...others
       encapsulated foreign            |                    atom(T)                      |                                       |            of a list"
-           resources                  |                       |                         |                                (this seems to     '[|]'(H,Rs)
-                                      |                       |                         |                              be an encapsulated      [H|Rs]
-                             +--------+--------+              |              +----------+----------+                     data structure)         |
-                             |                 |              |              |                     |                                       (a nonlocal
-                           T==[]             T\==[]           |   rational(X),\+integer(X)      integer(T)                               structure; there
-                        empty list        dict functor        |      (proper rational)                                                    may or may not
-                                                              |                                                                            be an actual
-                                                              |                                                                        list beyond the head)
+           resources                  |                       |                         |                             (an encapsulated      '[|]'(H,Rs)
+                                      |                       |                         |                              data structure; for     [H|Rs]
+                             +--------+--------+              |              +----------+----------+                   now implemented as        |
+                             |                 |              |              |                     |                   a compound term)     (list is a *nonlocal*
+                           T==[]             T\==[]           |   rational(X),\+integer(X)      integer(T)                                   structure; there
+                        empty list        for now only        |      "proper rational"                                                       may or may not
+                                         the unfakeable       |                                                                              be an actual list
+                                        "dict" functor name   |                                                                             beyond the first cell)
+                                                              |
                                            +------------------+------------------+
                                            |                  |                  |
                                       lenghth=0           length=1            atom with
@@ -47,3 +52,9 @@ More [**complete in in SVG**](https://github.com/dtonhofer/prolog_notes/blob/mas
 Some [**notes I took**](https://github.com/dtonhofer/prolog_notes/tree/master/swipl_notes/about_swipl_data_types) about this.
 
 The SWI-Prolog Wiki has more on SWI-Prolog datatypes [here](https://eu.swi-prolog.org/datatypes.txt).
+
+## Thoughts
+
+   - Actual arrays with access-by-numeric-index can be implemented with (large) compound terms.
+   - The blob type gives the possibility to create unfakeable identifiers (i.e. enum types); there is absolutely use for this (think of manipulating a syntax tree where you really want to distinguish the variables that appear in the AST from the rest without awkward conventions about allowed names or using tagging) but it is not supported for now. You will have to add C code. See: [blob](https://eu.swi-prolog.org/pldoc/man?section=blob)
+   - Why is Prolog still not ["sorted"](https://en.wikipedia.org/wiki/Many-sorted_logic) after all these years? It would be Prolog++ of course. Would still be worth it.  
