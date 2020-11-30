@@ -1,5 +1,7 @@
 # Fun with _foldl_
 
+This is a companion README for the SWI-Prolog manual page [`fold/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=foldl/4).
+
 The _Goal_ in a `foldl` call is a predicate, which is either given by a predicate name,
 like `foo` (in which case `foldl` will look for a predicate with indicator `foo/3`), 
 or a Prolog-style closure, which is a predicate call with some of the leftmost arguments
@@ -36,6 +38,8 @@ Goal(Element,FromLeft,ToRight)
 ```
 
 it becomes rather clear what's going on.
+
+## Example 1: Simple atom concatenation
 
 Suppose we want to create an atom that starts with `Begin:`, then contains
 the concatenation of atoms found in the in input list. 
@@ -78,9 +82,7 @@ foldl([Element,FromLeft,ToRight]>>atom_concat(FromLeft,Element,ToRight),
 Out = 'Begin:'.
 ```
 
-or, exactly the same:
-
-## Another example
+## Example 2: Creating a list of monotonically increasing integers
 
 Creating a list of integers 0..5:
 
@@ -105,7 +107,7 @@ bagof(X,between(0,5,X),List).
 List = [0, 1, 2, 3, 4, 5].
 ```
 
-## Another example
+## Example 3: Logical operations over a list
 
 If you have a list containing atoms `true` and `false`, check whether it contains only `true`:
 
@@ -163,7 +165,7 @@ true.
 
 Simple!
 
-## Another example
+## Exammple 4: Filtering by occurence count
 
 Filtering the elements in a list that occur more than _limit_ times. This is effortlessly done using SWI-Prolog _dicts_.
 
@@ -209,7 +211,7 @@ And so:
 true.
 ```
 
-## An interesting example: A pipeline of operations
+## Example 5: A pipeline of operations
 
 First, a common base:
 
@@ -288,6 +290,68 @@ main_lazy(I,Out), I=14, Sought is Out.
 I = 14,
 Out = sqrt(14*12-4),
 Sought = 12.806248474865697.
+```
+
+## Example 6: maplist emulation
+
+As nothing holds us back from passing "rightwards" complex values, we can emulate `maplist/3`, passing 
+an ever-growing result list to append to.
+
+In fact, `foldl/4` can be used to emulate `maplist/3` but not the reverse.
+
+We do not make this fully general. Suppose we want to emulate "compute X^2 for each X of the input list".
+
+With `maplist/3`, one would do this:
+
+```
+maplist_pow2(Lin,Lout) :- maplist([X,Xpow2]>>(Xpow2 is X**2),Lin,Lout).
+```
+
+And so:
+
+```
+?- 
+maplist_pow2([],Lout).
+Lout = [].
+
+?- 
+maplist_pow2([0,1,2,3,4,5],Lout).
+Lout = [0, 1, 4, 9, 16, 25].
+```
+
+Let's base the same on `foldl/5` and a "difference list of an open list"
+so that growing a list at its end can be done efficiently. Then:
+
+```
+subgoal_pow2(X,Tip-Fin,Tip-FreshFin) :-
+   Xpow2 is X**2,         % Compute element value
+   Fin=[Xpow2|FreshFin].  % Wxtend the open list rooted at Tip at its Fin,
+                          % making Fin reference a new listcell with the 
+                          % newly computed value and a fresh Fin.
+   
+foldl_pow2(Lin,Lout) :-   
+   foldl(subgoal_pow2,Lin,T-T,Lout-[]).   
+%                          ^    ^  
+%                          |    |
+%                          |    +-- Final iteration of the Tip-Fin pair:
+%                          |        The Tip is unified with the result, the Fin is unified with [], closing the
+%                          |        open list rooted at Tip.
+%                          |
+%                          +-- Starter value: a pair of unbound variables.
+%                              The first pair element will be bound to the whole open list being constructed on first call.
+%                              (i.e. the first listcell of the list backbone, what I call Tip): Tip = [1,2,3|Fin]
+%                              The second pair element will always be an unbound variable and denote the empty cell                            
+%                              referenced by the final listcell of the list backbone, what I call Fin)
+```
+
+Then:
+
+```
+?- foldl_pow2([],Lout).
+Lout = [].
+
+?- foldl_pow2([0,1,2,3,4,5],Lout).
+Lout = [0, 1, 4, 9, 16, 25].
 ```
 
 ## Long-ish Explainer
