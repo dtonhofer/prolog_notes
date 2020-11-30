@@ -165,7 +165,7 @@ true.
 
 Simple!
 
-## Exammple 4: Filtering by occurence count
+## Example 4: Filtering by occurence count
 
 Filtering the elements in a list that occur more than _limit_ times. This is effortlessly done using SWI-Prolog _dicts_.
 
@@ -354,7 +354,7 @@ Lout = [].
 Lout = [0, 1, 4, 9, 16, 25].
 ```
 
-## Long-ish Explainer
+## Long-ish _foldl_ and _foldr_ explainers
 
 I had some fun explaining and writing a `foldl/4` and `foldr/4`, complete with test cases.
 
