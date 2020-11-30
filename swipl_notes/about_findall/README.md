@@ -8,7 +8,7 @@ This predicate has been behaving non-declaratively for at least 35 years (i.e. a
 "Negation and Control in Prolog" in 1985 - reference at the end of this page). It still made it into the
 ISO Standard of 1995. Shouldn't it be deprecated?
 
-Moreover, it doesn't work with constraints and attributed variables, see "Beware the copying of unbound variables" below.
+Note that it _does_ work with unbound variables that have constraints, at least in SWI Prolog. See "Will constraints be retained?" below.
 
 ## Intro
 
