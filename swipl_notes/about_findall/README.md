@@ -2,11 +2,13 @@
 
 _This is companion information to the SWI-Prolog manual page of the [`findall/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=findall/3) predicate._
 
-## Warning
+## `findall/3` is problematic!
 
 This predicate has been behaving non-declaratively for at least 35 years (i.e. at least since Lee Naish wrote
 "Negation and Control in Prolog" in 1985 - reference at the end of this page). It still made it into the
 ISO Standard of 1995. Shouldn't it be deprecated?
+
+Moreover, it doesn't work with constraints and attributed variables, see "Beware the copying of unbound variables" below.
 
 ## Intro
 
@@ -455,6 +457,126 @@ Bag = [_15438, _15432, _15426].
 ```
 
 You cannot transparently "look for variables" that way.
+
+### Will constraints be retained?
+
+What about using `findall/3` on a term that has attributed variables or constraints?
+
+Will this result in a "neutered" collection?
+
+Consider:
+
+```
+:- use_module(library(clpfd)).
+
+constrain(X,Y,Z) :- 
+   (0 #=< X, X #< Y, Y #< Z, Z #=< 3).
+```
+
+Then, without passing the unbound variables in the constraint through a `findall/3` copy&mangle operation:
+
+```
+?- constrain(X,Y,Z),label([X,Y,Z]).
+X = 0,
+Y = 1,
+Z = 2 ;
+X = 0,
+Y = 1,
+Z = 3 ;
+X = 0,
+Y = 2,
+Z = 3 ;
+X = 1,
+Y = 2,
+Z = 3.
+```
+
+or, collecting all solutions, actually using  `findall/3` to do that:
+
+```
+?- constrain(X,Y,Z),findall([X,Y,Z], label([X,Y,Z]), All).
+
+All = [[0, 1, 2], [0, 1, 3], [0, 2, 3], [1, 2, 3]],  <--- all collected solutions
+X in 0..1,  <--- residual constraints on unlabled X,Y,Z
+X#=<Y+ -1,
+Y in 1..2,
+Y#=<Z+ -1,
+Z in 2..3.
+```
+
+Note that "residual constraints" are printed (I don't know whether that's the official term, but it
+sounds reasonable to call them that, in analogy to the "residual goals" of `dif/2` and family: 
+constraints that have not been resolved yet, indicating that you should make doubly sure that
+the program's success is due to actual success or rank optimism). The residual constraints
+are relative to the original `X`, `Y`, `Z`, which remain "unprocessed".
+
+Pleasingly, the above **also** works if the variables are first copied via `findall/3` (at least in SWI-Prolog. Apparently not in SICStus?)
+
+First, a SWI-Prolog specific item: we want to see the result term printed in full.
+
+```
+?- set_prolog_flag(answer_write_options,[max_depth(100)]).
+```
+
+Then:
+
+```
+?- constrain(X,Y,Z), 
+   findall(K,member(K,[X,Y,Z]),L),  % copy variables into L, creating fresh variables
+   label(L).                        % label the fresh variables
+   
+L = [0, 1, 2],   <--- a solution for L
+X in 0..1,       <--- residual constraints on unlabled X,Y,Z
+X#=<Y+ -1,
+Y in 1..2,
+Y#=<Z+ -1,
+Z in 2..3 ;      <--- more?
+L = [0, 1, 3],   <--- another solution for L
+X in 0..1,       <--- residual constraints on unlabled X,Y,Z
+X#=<Y+ -1,
+Y in 1..2,
+Y#=<Z+ -1,
+Z in 2..3 ;      <--- more? 
+```
+
+etc.
+
+Gotta collect them all using, yes, `findall/3`.
+Note that for some reason the [`numbervars(3)`](https://eu.swi-prolog.org/pldoc/doc_for?object=numbervars/3)
+notation is not resolved (i.e. there is a `write_term/2` somehwere which is not called with option 
+`numbervars(true)`).
+
+```
+?- constrain(X,Y,Z), 
+   findall(K,member(K,[X,Y,Z]),L),  % copy variables into L, creating fresh variables
+   findall(L, label(L), All).       % label whatever is in L now repeatedly, collecting solutions
+   
+L = [_59552,_59558,_59564],         <--- L has been left a list of unbound variables
+All = [[0,1,2],[0,1,3],             <--- The solutions have been collected in All
+       [0,2,2],[0,2,3],
+       [1,1,2],[1,1,3],
+       [1,2,2],[1,2,3]],
+$VAR(X)in 0..1,                     <--- residual constraints on unlabled X,Y,Z (but with a printing bug)
+$VAR(X)#=< $VAR(Y)+ -1,
+$VAR(Y)in 1..2,
+$VAR(Y)#=< $VAR(Z)+ -1,
+$VAR(Z)in 2..3,
+_59564 in 2..3,                     <--- residual constraints on variables left unused due to copying
+_59930#=<_59564+ -1,
+_59930 in 1..2,
+_59978#=<_59930+ -1,
+_59978 in 0..1,
+_59558 in 1..2,                    
+_59558#=<_60056+ -1,
+_60074#=<_59558+ -1,
+_60056 in 2..3,
+_60074 in 0..1,
+_59552 in 0..1,                    
+_59552#=<_60176+ -1,
+_60176 in 1..2,
+_60176#=<_60224+ -1,
+_60224 in 2..3.
+```
 
 ## Beware the reuse of variable names
 
