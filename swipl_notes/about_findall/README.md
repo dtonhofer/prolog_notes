@@ -460,9 +460,9 @@ You cannot transparently "look for variables" that way.
 
 ### Will constraints be retained?
 
-What about using `findall/3` on a term that has attributed variables or constraints?
+Will constraints on unbound variables be retained if they are copied to a bag via `findall/3`?
 
-Will this result in a "neutered" collection?
+TL;DR: Yes (at least in SWI-Prolog).
 
 Consider:
 
@@ -577,6 +577,41 @@ _60176 in 1..2,
 _60176#=<_60224+ -1,
 _60224 in 2..3.
 ```
+## Will variable attributes be retained?
+
+As constraints are retained, it is not surprising that unbound variable attributes are retained, too (see []()) 
+
+Consider the example code for setting an getting an attribute holding a list of allowed values (i.e. the domain of the variable):
+
+[enum_domain.pl](https://raw.githubusercontent.com/dtonhofer/prolog_notes/master/swipl_notes/about_attributed_variables/enum_domain.pl)
+
+Let's load the above file and see:
+
+```
+?- ['enum_domain.pl'].
+true.
+
+?- enum_domain_set(X, [foo,bar,baz], set), 
+   findall(K,member(K,[X]),[FreshX]) , 
+   enum_domain_get(FreshX, L).
+   
+L = [bar, baz, foo],                   <--- the attribute is there on the fresh variable
+enum_domain(X, bar, baz, foo),         <--- residual attributes are printed out
+enum_domain(FreshX, bar, baz, foo).
+```
+
+A direct test: set the variable to a value not in the domain.
+
+```
+?- enum_domain_set(X, [foo,bar,baz], set), 
+   findall(K,member(K,[X]),[FreshX]) , 
+   FreshX = notallowed.
+% enum_domain:attr_unify_hook called with ATTV = [bar,baz,foo], PUV = notallowed, attributes(PUV) = none
+% enum_domain:attr_unify_hook fails
+false.
+```
+
+Excellent.
 
 ## Beware the reuse of variable names
 
