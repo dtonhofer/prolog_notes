@@ -8,7 +8,7 @@ This predicate has been behaving non-declaratively for at least 35 years (i.e. a
 "Negation and Control in Prolog" in 1985 - reference at the end of this page). It still made it into the
 ISO Standard of 1995. Shouldn't it be deprecated?
 
-![wiley](pics/wiley.jpg)
+![wiley](pics/findall_is_pretty_acme.jpg)
 
 Note that it _does_ work with unbound variables that have constraints, at least in SWI Prolog. See "Will constraints be retained?" below.
 
