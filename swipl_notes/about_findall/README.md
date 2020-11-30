@@ -10,7 +10,7 @@ ISO Standard of 1995. Shouldn't it be deprecated?
 
 ![wiley](pics/findall_is_pretty_acme.jpg)
 
-Note that it _does_ work with unbound variables that have constraints, at least in SWI Prolog. See "Will constraints be retained?" below.
+Note that it _does_ work with unbound variables that have constraints or attributes, at least in SWI Prolog. See "Will constraints be retained?" below.
 
 ## Intro
 
