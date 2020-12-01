@@ -33,6 +33,10 @@ Currently (October 13, 2018) at Version 2.0 ("Pyrus nivalis"),
 
 Example from that paper:
 
+**is-a hierarchy**
+
+![isa-hierarchy](pics/parts of the isa hierarchy.png)
+
 **Facts**
 
    1. `faculty:bob[name -> "Bob",age -> 40,works -> dept:cs1[dname -> CS", mngr -> empl:phil]]`
