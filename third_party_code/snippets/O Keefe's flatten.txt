@@ -1,0 +1,20 @@
+
+
+flattenList(L,FL) :-
+   must_be(list,L),       % if L is unbound, the predicate does not terminate; make sure it's a list
+   flattenList(L,[],FL).
+
+% ===
+% flattenList(+In, +Suffix, +Flattened)
+%
+% "'Flattened' is the flattened 'In' (which is [In] if 'In' is not a list),
+% with the list 'Suffix' suffixed.
+% ===
+
+flattenList([],Suf,Suf).
+
+flattenList([H|T],Suf,Flat):- 
+   flattenList(T,Suf,LargerSuf),
+   flattenList(H,LargerSuf,Flat).
+
+flattenList(H,Suf,[H|Suf]):- \+ is_list(H).

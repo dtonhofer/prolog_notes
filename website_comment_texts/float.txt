@@ -1,0 +1,83 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=float/1
+
+## See also
+
+   - [`float/1`](https://eu.swi-prolog.org/pldoc/man?function=float/1) to convert to float.
+   - Wikipedia: [Double-precision floating-point format](https://en.wikipedia.org/wiki/Double-precision_floating-point_format)
+
+For fixed-point arithmetic (e.g. involving monetary amounts), "rational numbers" (provided by the GMP library) are the correct choice: 
+
+   - [Rational number examples](https://eu.swi-prolog.org/pldoc/man?section=rational)
+
+## What is a "float"? 
+
+According to the Prolog ISO standard (ISO/IEC 13211), chapter 7.1.3, a "floating point" value is a "a member of a set F, which is a finite subset of R" (should really be Q, right?) for which a floating-point representation exists (basically) with the standard using what's in [ISO/IEC 10967, Language independent arithmetic (LIA)](https://en.wikipedia.org/wiki/ISO/IEC_10967).
+
+There is no advocation in the standard for [IEEE 754 Floating-Points](https://en.wikipedia.org/wiki/IEEE_754) but practice that is what will be used as that is what: 
+
+   - is compatible with ISO/IEC 10967 (apparently) 
+   - is what the hardware supports (which leads to interesting questions about NaNs, +0, -0, +oo, -oo and floating point operation error flags)
+
+See:
+
+   - Notes on SWI-Prolog's [IEEE 754 floating point arithmetic](https://eu.swi-prolog.org/pldoc/man?section=ieee-float)
+   - Note on [ISO Prolog conflicting with IEEE 754](http://eclipseclp.org/Specs/core_update_float.html)
+
+Assuming we are using 64-bit double precision IEEE floating points, then:
+
+(The internal representation of a float uses base 2, so a base 10 is approximate)
+
+Largest float:
+
+==
+?- X=1.7976931348623157e308, Y is X+1, Y=X.
+==
+
+Smallest normalized float:
+
+==
+X = 2.2250738585072014e-308
+==
+
+Smallest unnormalized float:
+
+==
+?- X=4.9406564584124654e-324, Y is X/2.0.
+==
+
+Machine epsilon (the one, which, added to 1.0, still gives a result larger than 1.0):
+
+==
+efloat(C,E) :- 
+   erecur(C,1.0,E).
+
+erecur(C,X,E) :- 
+   Xhalf is X / 2.0, 
+   Xtest is C + Xhalf, 
+   Xtest \= C, 
+   !, 
+   format("~e/2.0 = ~20f\n",[Xhalf,Xtest]), 
+   erecur(Xhalf,E).
+
+erecur(C,X,X) :- 
+   Xhalf is X / 2.0, 
+   Xtest is C + Xhalf, 
+   Xtest = C, 
+   format("~e",[X]).
+==
+
+Then:
+
+==
+efloat(1.0,X).
+
+X = 2.220446049250313e-16.
+==
+
+or one can ask SWI-Prolog directly:
+
+==
+?- X is epsilon.
+
+X = 2.220446049250313e-16.
+==

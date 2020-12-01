@@ -1,6 +1,4 @@
-https://eu.swi-prolog.org/pldoc/man?section=typetest
-
-## If you have a a term denoted by variable name T, what could it be?
+## If you have a a Prolog term denoted by variable name `T`, what could it be?
 
 ==
                                                                        any T
@@ -8,10 +6,10 @@ https://eu.swi-prolog.org/pldoc/man?section=typetest
                                      +-----------------------------------+---------------------------+
                                      |                                                               |
                                    var(T)                                                         nonvar(T)
-                    "the variable name T denotes an 'unbound                              "the complement of var(T)"
+                    the variable name T denotes an 'unbound                               the complement of var(T)
                     variable' (aka. uninstantiated variable),                                        |
                     which is an empty memory cell distinguishable                                    |
-                    by '==' at the time the call to var/1 occurs"                                    |
+                    by '==' at the time the call to var/1 occurs                                     |
                     - a nonlogical predicate about the state of the                                  |
                       computation                                                                    |
                     - this predicate should have been called                                         |
@@ -22,26 +20,28 @@ https://eu.swi-prolog.org/pldoc/man?section=typetest
                                                                          |                                                         |
                                       +----------------------------------+------------------------+                 +--------------+-------------+
                                       |                                  |                        |                 |                            |
-                                  blob(T,_)                           string(T)                number(T)       "compound term            "compound term
-                                      |                                                           |             of arity 0"                of arity > 0"
+                                  blob(T,_)                           string(T)                number(T)       compound term              compound term
+                                      |                                                           |             of arity 0                 of arity > 0
+                                      |                                                           |          (SWI-Prolog only)                   |
+                                      |                                                           |                                              |                                      
                                       |                                                           |                                              |
-              +-----------------------+-----------------------+                         +---------+---------+                   +----------------+----------------+
-              |                       |                       |                         |                   |                   |                |                |
-       (other blob types)    blob(T,reserved_symbol)     blob(T,text)           rational(T,Nu,De)        float(T)              dict      "first list cell of   ...others
-      encapsulated foreign            |                    atom(T)                      |                                       |            of a list"
-           resources                  |                       |                         |                             (an encapsulated      '[|]'(H,Rs)
-                                      |                       |                         |                              data structure; for     [H|Rs]
-                             +--------+--------+              |              +----------+----------+                   now implemented as        |
-                             |                 |              |              |                     |                   a compound term)     (list is a *nonlocal*
-                           T==[]             T\==[]           |   rational(X),\+integer(X)      integer(T)                                   structure; there
-                        empty list        for now only        |      "proper rational"                                                       may or may not
-                                         the unfakeable       |                                                                              be an actual list
-                                        "dict" functor name   |                                                                             beyond the first cell)
+              +-----------------------+-----------------------+                         +---------+---------+                 +------------------+-------------------+
+              |                       |                       |                         |                   |                 |                  |                   |
+       (other blob types)    blob(T,reserved_symbol)     blob(T,text)           rational(T,Nu,De)        float(T)       SWI-Prolog dict      first listcell        others
+      encapsulated foreign            |                    atom(T)                      |                                                  of a list backbone
+           resources                  |                       |                         |                              an encapsulated       '[|]'(H,Rs)
+                                      |                       |                         |                              data structure; for   alias [H|Rs]
+                             +--------+--------+              |              +----------+----------+                   now implemented as        
+                             |                 |              |              |                     |                   a compound term)    "list" is a *nonlocal*
+                           T==[]             T\==[]           |   rational(X),\+integer(X)      integer(T)                                 structure based on convention
+                        empty list        for now only        |      "proper rational"                                                     there may or may not be an
+                                         the unfakeable       |                                                                            actual list beyond the first listcell
+                                       dict functor name      |
                                                               |
                                            +------------------+------------------+
                                            |                  |                  |
                                       lenghth=0           length=1            atom with
-                                   "the empty atom"      "character"          length>1
+                                    the empty atom      character/char        length>1
 
 ==
 
@@ -58,3 +58,13 @@ The SWI-Prolog Wiki has more on SWI-Prolog datatypes [here](https://eu.swi-prolo
    - Actual arrays with access-by-numeric-index can be implemented with (large) compound terms.
    - The blob type gives the possibility to create unfakeable identifiers (i.e. enum types); there is absolutely use for this (think of manipulating a syntax tree where you really want to distinguish the variables that appear in the AST from the rest without awkward conventions about allowed names or using tagging) but it is not supported for now. You will have to add C code. See: [blob](https://eu.swi-prolog.org/pldoc/man?section=blob)
    - Why is Prolog still not ["sorted"](https://en.wikipedia.org/wiki/Many-sorted_logic) after all these years? It would be Prolog++ of course. Would still be worth it.  
+
+The concept of the Prolog "term" is still very primitive. In [Higher-Order Logic Programming as Constraint Logic Programming](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.40.752) (Spiro Michaylov, Frank Pfenning), 1993, we read: 
+
+Higher-order logic programming (HOLP) languages typically use a typed λ-calculus as their domain of computation. In the case of λProlog it is the simply-typed λ-calculus, while in the case of Elf it is a dependently typed λ-calculus. These languages are particularly useful for various kinds of meta-programming and theorem proving tasks because of the logical support for variable binding via λ-abstraction. They have been used for a wide range of applications including theorem proving, programming language interpretation, type inference, compilation, and natural language parsing.
+
+However:
+
+Full unification in higher-order languages is clearly impractical, due to the non-existence of minimal complete sets of most-general unifiers. Therefore, work on λProlog has used Huet’s algorithm for pre-unification, where so-called flex-flex pairs (which are always unifiable) are maintained as constraints, rather than being incorporated in an explicit parametric form. Yet, even pre-unifiability is undecidable, and sets of most general pre-unifiers may be infinite. While undecidability has not turned out to be a severe problem, the lack of unique most general unifiers makes it difficult to accurately predict the run-time behavior of λProlog programs that attempt to take advantage of full higher-order pre-unification. It can result in thrashing when certain combinations of unification problems have to be solved by extensive backtracking. Moreover, in a straightforward implementation, common cases of unification incur a high overhead compared to first-order unification. These problems have led to a search for natural, decidable subcases of higher-order unification where most general unifiers exist. Miller has suggested a syntactic restriction (Lλ) to λProlog, easily extensible to related languages, where most general unifiers are unique modulo βηα-equivalence.
+
+

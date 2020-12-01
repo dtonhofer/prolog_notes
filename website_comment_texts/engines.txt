@@ -1,0 +1,52 @@
+https://eu.swi-prolog.org/pldoc/man?section=engines
+
+## Some text fixes needed
+
+"Asking an engine for the next answer attaches the engine to the calling operating system thread"
+
+does that mean that the engine is then animated by the OS thread of the engine caller?
+
+"After the engine yields or completes, it is detached from the operating system thread and the answer term is made available to the calling thread."
+
+So the engine is put on hold as the thread returns to animating the caller.
+
+Also:
+
+"The idea was pinned by Paul Tarau" -> "The idea was penned/developed by Paul Tarau"
+
+## More references
+
+_The reference given in the above text as Tarau 2011_:
+
+**Paul Tarau: Coordination and concurrency in multi-engine Prolog.**
+
+   - 2011
+   - https://link.springer.com/chapter/10.1007%2F978-3-642-21464-6_11
+   - https://www.researchgate.net/publication/220994006_Coordination_and_Concurrency_in_Multi-engine_Prolog
+   - Appears in: "International Conference on Coordination Languages and Models", COORDINATION 2011, Springer LNCS 6721
+
+**Paul Tarau: Logic Engines as Interactors**
+
+   - 2008-08-05
+   - http://arxiv.org/abs/0808.0556 
+
+**Paul Tarau: Fluents: A Refactoring of Prolog for Uniform Reflection and Interoperation with External Objects**
+ 
+   - 2000-12-15
+   - http://link.springer.com/chapter/10.1007/3-540-44957-4_82 (paywalled)
+   - https://www.researchgate.net/publication/221655012_Fluents_A_Refactoring_of_Prolog_for_Uniform_Reflection_an_Interoperation_with_External_Objects
+   - Appears in: "Computational Logic - CL 2000, First International Conference, London, UK, 24-28 July, 2000, Proceedings"
+
+**Paul Tarau: Fluents: A Uniform Extension of Kernel Prolog for Reflection and Interoperation with External Objects**
+
+   - http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.47.574
+   - An earlier iteration of the paper above (?)
+
+In the earlier papers, Paul Tarau uses "Fluents" -- but that name is not well chosen. In fact, this is already uses to denote a ["changing value"](https://en.wikipedia.org/wiki/Fluent_%28artificial_intelligence%29) when discussion the [frame problem](https://plato.stanford.edu/entries/frame-problem/), in particular in the [event calculus](https://en.wikipedia.org/wiki/Event_calculus). Do not use.
+
+## See also
+
+**Kernel Prolog**: Kernel Prolog is an update of a simple open source Prolog interpreter written by Paul Tarau. It distributes various algorithms like unification and LD-resolution used in evaluation Prolog goals over a hierarchy of lightweight term classes. - http://code.google.com/p/kernel-prolog/
+
+**Styla**: Styla is lightweight Scala-based Prolog interpreter based on a pure object oriented term hierarchy ... using Paul Tarau's Java-based Kernel Prolog as starting point. - https://code.google.com/archive/p/styla/
+http://link.springer.com/chapter/10.1007/3-540-44957-4_82

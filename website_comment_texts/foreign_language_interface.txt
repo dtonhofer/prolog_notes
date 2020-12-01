@@ -1,0 +1,46 @@
+https://eu.swi-prolog.org/pldoc/man?section=foreign
+
+## Pretty important and not standardized
+
+In [this discussion](https://groups.google.com/g/comp.lang.prolog/c/JToeE7Read8/m/jY7PSBRfBwAJ) Jan Burse writes:
+
+~~~
+
+... this is one more issue that is very much neglected by the ISO core standard:
+- Foreign Function Interface (call-in and call-out)
+
+For example Java, Fortran, Pascal, etc.. isn't agnostic to this. And real Prolog systems aren't aswell agnostic to this, lets look at SICStus, what concerns call-out
+and even call-in, you have (sorry old release 3 docs): 
+
+Mixing C and Prolog
+https://sicstus.sics.se/sicstus/docs/3.7.1/html/sicstus_11.html
+
+Mixing Java and Prolog
+https://sicstus.sics.se/sicstus/docs/3.7.1/html/sicstus_12.html
+
+So we have two neglected issues by the ISO core standard, multi-threading and foreign function interface, and of course all questions about the combination of both.
+
+Nevertheless we hear "industry strength" here and then. A standard is not industry strength if it doesn't cover multi-threading and foreign function interface.
+
+~~~
+
+## Update the reference?
+
+I guess referencing Kernighan & Ritchie, 1978, in 2020 (sigh!) is a bit quaint (well, the continuing very existence of C is quaint, but be that as it may be...)
+
+Maybe this book should be used instead:
+
+https://modernc.gforge.inria.fr/
+
+*Modern C* by Jens Gustedt
+
+It is definitely larger than K&R at 408 pages. But, it looks like a book I would have liked to have at uni. 
+
+It contains this warning on page 23:
+
+_Experienced C programmers: If you already have some experience with C programming, what follows may take some getting used to or even provoke allergic reactions._
+_If you happen to break out in spots when you read some of the code here, take a deep breath and try to relax, but please do not skip these pages._
+
+## Does the manual need auto-update?
+
+It also seems that the headings for the C functions should be updated. A little script to automatically pull then from `${SWIPL_INSTALL}/lib/swipl/include/SWI-Prolog.h` and insert them into the documentation file is recommended.
