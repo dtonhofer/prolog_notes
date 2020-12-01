@@ -35,7 +35,7 @@ Example from that paper:
 
 **is-a hierarchy**
 
-![isa-hierarchy](pics/parts of the isa hierarchy.png)
+![isa-hierarchy](pics/parts_of_the_isa_hierarchy.png)
 
 **Facts**
 
