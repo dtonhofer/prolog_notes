@@ -1,6 +1,6 @@
 # F-Logic
 
-This is implemented in Flora-2 / Ergo-Lite running on top of XSB
+This is implemented in [Flora-2](http:⁄⁄flora.sourceforge.net⁄) / Ergo-Lite running on top of XSB Prolog. Currently at Version 2.0 ("Pyrus nivalis"), Ocotber 13, 2018.
 
 ## Reading
 
