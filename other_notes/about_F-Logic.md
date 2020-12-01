@@ -1,6 +1,6 @@
 # F-Logic
 
-This is implemented in Flora-2 / Ergolite running on top of XSB
+This is implemented in Flora-2 / Ergo-Lite running on top of XSB
 
 ## Reading
 
@@ -30,7 +30,7 @@ This is implemented in Flora-2 / Ergolite running on top of XSB
 > frame-based languages in AI, which are essentially scaled down versions of complex objects with identity, inheritance, and deduction. 
 > It is this connection that the name “F-logic” was derived from.
 
-Example:
+Example from that paper:
 
 **Facts**
 
