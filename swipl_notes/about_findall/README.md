@@ -26,14 +26,14 @@ There are:
 
 **The Art of Prolog: Advanced Programming Techniques**, Leon Sterling and Ehud Shapiro, 1st edition **1984**, MIT Press
 
-[Art of Prolog](pics/cover_art_of_prolog_1st_edition.jpg) 
+![Art of Prolog](pics/cover_art_of_prolog_1st_edition.jpg) 
 
 The predicates `bag_of/3`, `set_of/3` and `find_all_dl/3` (corresponding to `findall/4`) are discussed in
 Chapter 17: "Second-Order Programming", pages 266 ff.
 
 **The Craft of Prolog**, Richard A. O'Keefe, **1990**, MIT Press
 
-[Craft of Prolog](pics/cover_craft_of_prolog.jpg)
+![Craft of Prolog](pics/cover_craft_of_prolog.jpg)
 
 `findall/3` is discussed in-depth in Chapter 11: "All Solutions" , pages 355-373.
 The chapter starts with: 
@@ -56,7 +56,7 @@ That's excessively obscure, although it _is_ followed by a pseudocode descriptio
 
 **Programming in Prolog**, William Clocksin and Christopher Mellish, **2003**, Springer Verlag
 
-[Programming in Prolog](pics/cover_programming_in_prolog.jpg)
+![Programming in Prolog](pics/cover_programming_in_prolog.jpg)
 
 `findall/3` is explained in Chapter 7.8.3., pages 167 ff., and an implementation in Prolog that uses
 `asserta/1` and `retract/1` to store solutions prior to unifying a list of the same with the `Instances` argument is provided.
