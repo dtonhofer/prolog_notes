@@ -64,7 +64,7 @@ inline the _Goal_:
 
 ```none
 ?-
-foldl([Element,FromLeft,ToRight]>>atom_concat(FromLeft,Element,ToRight),
+foldl([E,FL,TR]>>atom_concat(FL,E,TR),
       [a,b,c,d],
       'Begin:',
       Out).
@@ -75,10 +75,7 @@ In particular with the empty input list as input:
 
 ```none
 ?- 
-foldl([Element,FromLeft,ToRight]>>atom_concat(FromLeft,Element,ToRight),
-      [],
-      'Begin:',
-      Out).
+foldl([E,FL,TR]>>atom_concat(FL,E,TR),[],'Begin:',Out).
 Out = 'Begin:'.
 ```
 
@@ -88,15 +85,11 @@ Creating a list of integers 0..5:
 
 ```none
 ?- 
-length(List,6),  % create a list of 6 fresh variables
-foldl(
-   [Element,FromLeft,ToRight]>>(succ(FromLeft,ToRight),Element=FromLeft),
-   List,
-   0,
-   _Out).
+length(L,5), % create a list of 6 fresh variables
+foldl([E,FL,TR]>>(succ(FL,TR),E=FL), L, 0, Final).
 
-List = [0, 1, 2, 3, 4, 5],
-_Out = 6.
+L = [0, 1, 2, 3, 4],
+Final = 5.
 ```
 
 In this case it's still easier to just do
@@ -144,22 +137,28 @@ all_false(List) :-
 And so:
 
 ```none
-?- all_false([true,true,false,false]).
+?- 
+all_false([true,true,false,false]).
 false.
 
-?- all_false([false,false,false,false]).
+?- 
+all_false([false,false,false,false]).
 true.
 
-?- all_true([false,false,false,false]).
+?- 
+all_true([false,false,false,false]).
 false.
 
-?- all_true([true,true,true,true]).
+?- 
+all_true([true,true,true,true]).
 true.
 
-?- all_true([]).  % a "vacuous truth": https://en.wikipedia.org/wiki/Vacuous_truth
+?- 
+all_true([]).  % a "vacuous truth": https://en.wikipedia.org/wiki/Vacuous_truth
 true.
 
-?- all_false([]). % another "vacuous truth"
+?- 
+all_false([]). % another "vacuous truth"
 true.
 ```
 
