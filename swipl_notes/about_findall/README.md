@@ -24,21 +24,42 @@ There are:
 
 ## Where to find explainers
 
-- In **The Art of Prolog: Advanced Programming Techniques**, (Leon Sterling and Ehud Shapiro, 1st edition 1984, MIT Press),
-  the predicates `bag_of/3`, `set_of/3` and `find_all_dl/3` (corresponding to `findall/4`) are discussed in
-  Chapter 17: "Second-Order Programming", pages 266 ff.
-- In **Programming in Prolog**, (William Clocksin and Christopher Mellish, 2003, Springer), `findall/3` is explained 
-  in chapter 7.8.3. (p. 167 ff), and an implementation in Prolog that uses `asserta/1` and `retract/1` to 
-  store solutions prior to unifying a list of the same with the `Instances` argument is provided.
+**The Art of Prolog: Advanced Programming Techniques**, Leon Sterling and Ehud Shapiro, 1st edition **1984**, MIT Press
 
-`findall/3` is described in the ISO/IEC 13211-1 (1995 version) Prolog standard on page 82 as follows:
+[Art of Prolog](pics/cover_art_of_prolog_1st_edition.jpg) 
+
+The predicates `bag_of/3`, `set_of/3` and `find_all_dl/3` (corresponding to `findall/4`) are discussed in
+Chapter 17: "Second-Order Programming", pages 266 ff.
+
+**The Craft of Prolog**, Richard A. O'Keefe, **1990**, MIT Press
+
+[Craft of Prolog](pics/cover_craft_of_prolog.jpg)
+
+`findall/3` is discussed in-depth in Chapter 11: "All Solutions" , pages 355-373.
+The chapter starts with: 
+
+> It is often useful in Prolog to collect all the solutions to a goal in a single datastructure. Doing so lets
+> you convert backtracking to iteration, and gets around the most serious problem with backtracking as a control
+> structure: namely that it is very difficult (and should be) to pass information from one "iteration" of a 
+> backtracking control structure to the next.
+
+**ISO/IEC 13211-1 (1995 version)** 
+
+`findall/3` is described in the Prolog ISO standard in a short section on page 82 as follows:
 
 > _findall (Template, Goal, Instances)_ is true iff _Instances_ unifies with the list of values to
 > which a variable _X_ not occurring in _Template_ or _Goal_ \[i.e. a fresh variable\] would be 
 > instantiated by successive re-executions of _call(Goal), X=Template_ after systematic
 > replacement of all variables in _X_ by new variables.
 
-That's pretty obscure, although it _is_ followed by a pseudocode description. It's all "operational semantics" though.
+That's excessively obscure, although it _is_ followed by a pseudocode description. It's all "operational semantics" though.
+
+**Programming in Prolog**, William Clocksin and Christopher Mellish, **2003**, Springer Verlag
+
+[Programming in Prolog](pics/cover_programming_in_prolog.jpg)
+
+`findall/3` is explained in Chapter 7.8.3., pages 167 ff., and an implementation in Prolog that uses
+`asserta/1` and `retract/1` to store solutions prior to unifying a list of the same with the `Instances` argument is provided.
 
 ## Notes on history
 
@@ -139,6 +160,14 @@ Jan Wielemaker writes:
 > totally different purposes instead of introducing a new variable and assume that the compiler
 > reuses the same location if the scopes do not overlap (and even if not, the damage is really small).
 > So yes, a linter issue.
+
+In "The Craft of Prolog", Richard O'Keefe writes on page 363 in the chapter _11.6 findall/3 reconsidered_:
+
+> The Template may be a single variable, or it may be any term at all containing any number of variables,
+> even none. Variables in the Template should be viewed as quantified variables. It is very bad style
+> to use those variables anywhere else in the clause. Just as negation as failure leaves any variables
+> in the goal unbound at the end of the day, so does findall/3 leave every variable in the Template
+> or Enumerator unbound after it has finished.
 
 ### What if there is no solution for the subgoal?
 
