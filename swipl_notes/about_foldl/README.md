@@ -373,6 +373,24 @@ L = [4, 3, 1, 5, 4, 5]
 
 It will never stop!
 
+One can evidently handle more than one list, too:
+
+```
+?- foldl([E1,E2,E3,_,_]>>(random_between(1,6,E1),random_between(1,6,E2),random_between(1,6,E3)),L1,L2,L3,_,_).
+L1 = L2, L2 = L3, L3 = [] ;
+L1 = [1],
+L2 = L3, L3 = [5] ;
+L1 = [1, 3],
+L2 = [5, 6],
+L3 = [5, 1] ;
+L1 = [1, 3, 4],
+L2 = [5, 6, 4],
+L3 = [5, 1, 3] ;
+L1 = [1, 3, 4, 2],
+L2 = [5, 6, 4, 4],
+L3 = [5, 1, 3, 5] ;
+```
+
 ## Long-ish _foldl_ and _foldr_ explainers
 
 I had some fun explaining and writing a `foldl/4` and `foldr/4`, complete with test cases.
