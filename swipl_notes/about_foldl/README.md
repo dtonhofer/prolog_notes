@@ -354,6 +354,25 @@ Lout = [].
 Lout = [0, 1, 4, 9, 16, 25].
 ```
 
+## Example 7: An infinite list of random numbers
+
+`foldl/4` can work with an open list. 
+
+So we can for example just ignore `FromLeft` and `ToRight` and instantiate the unbound `Element` we are given to a random integer:
+
+```
+?- foldl([Element,FromLeft,ToRight]>>random_between(1,6,Element),L,_,_).
+L = [] ;
+L = [4] ;
+L = [4, 3] ;
+L = [4, 3, 1] ;
+L = [4, 3, 1, 5] ;
+L = [4, 3, 1, 5, 4] ;
+L = [4, 3, 1, 5, 4, 5] 
+```
+
+It will never stop!
+
 ## Long-ish _foldl_ and _foldr_ explainers
 
 I had some fun explaining and writing a `foldl/4` and `foldr/4`, complete with test cases.
