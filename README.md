@@ -52,6 +52,7 @@ Lest I forget:
    - [Various code snippets](swipl_notes/various_code/) (testing predicates found in the SWI-Prolog manual)
 - Having to do with programming constructs, some of which are specific to Prolog or to SWI-Prolog
    - [`foldl` and `foldr` in Prolog](other_notes/about_foldl_and_foldr/)   
+   - [`findall/3`](swipl_notes/about_findall/)
    - [Attributed Variables](swipl_notes/about_attributed_variables/) (an addendum to the SWI-Prolog manual page with new code)
    - [Delimited continuations](swipl_notes/about_continuations/) (to be continued!)
    - [CHR: Constraint Handling Rules](swipl_notes/about_chr/) (there is nothing here yet)
