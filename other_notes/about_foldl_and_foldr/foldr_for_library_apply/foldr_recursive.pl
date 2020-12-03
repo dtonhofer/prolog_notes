@@ -1,10 +1,22 @@
-% This works, even with open lists, but is slow and resource hungry
+% This implementation works, even with open lists, but is slow and resource hungry
 % The alternative is reversing the list, then using foldl. 
-% I haven't managed to code that yet: "reversing the list"
-% must be done simultaneously on all lists with length the
-% value to backtrack over. Additionally, a failing foldl after
-% reverse must not lead to an infinite failure-driven loop.
-% If foldl fails, you have to cut & fail, not redo.
+% I haven't managed to code that (yet?): "reversing the list" must be done 
+% simultaneously on all lists with common-length-of-list the value to backtrack over
+% and possibly to fail on.
+% Additionally, a failing foldl after reverse must not lead to an infinite 
+% failure-driven loop. If foldl fails, you have to cut & fail, not redo!
+
+% This code is inspired by the "foldl" code found in library/apply.pl of SWI Prolog 8.3.13,
+% but more by form than by function.
+% That code for "foldl" in library/apply.pl is under this license:
+% https://opensource.org/licenses/BSD-3-Clause
+% But it probably goes back to some file of DEC-10 Prolog from the 80s.
+% Is this code derivative work of SWI-Prolog's library/apply.pl? Diffcult to say! Opinions
+% may differ! In fact there is no other way to code this function than the one given, except
+% for changes in variable and predicate names.
+% So what license to use here? 
+% ronerycoder@gluino.name (me) says this is licensed under 
+% https://creativecommons.org/publicdomain/zero/1.0/
 
 /*
 Run the tests:
