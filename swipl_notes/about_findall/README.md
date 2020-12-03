@@ -33,7 +33,7 @@ Chapter 17: "Second-Order Programming", pages 266 ff.
 
 **Negation and Control in Prolog**, Lee Naish, Lecture Notes in Computer Science, N° 238, **1985**, Springer-Verlag
  
-![LNCS 238](cover_LNCS238.jpg) [Book page](https://www.springer.com/gp/book/9783540168157)
+![LNCS 238](pics/cover_LNCS238.jpg) [Book page](https://www.springer.com/gp/book/9783540168157)
 
 On page 12 of this book, Lee Naish lists implementations of "collection predicates" that existed
 in 1985. Problems of `findall/3` are discussed on page 13.
