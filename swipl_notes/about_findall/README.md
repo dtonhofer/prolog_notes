@@ -31,6 +31,13 @@ There are:
 The predicates `bag_of/3`, `set_of/3` and `find_all_dl/3` (corresponding to `findall/4`) are discussed in
 Chapter 17: "Second-Order Programming", pages 266 ff.
 
+**Negation and Control in Prolog**, Lee Naish, [Lecture Notes in Computer Science, N° 238](https://www.springer.com/gp/book/9783540168157), **1985**, Springer-Verlag
+
+![LNCS 238](cover_LNCS238.jpg)
+
+On page 12 of this book, Lee Naish lists implementations of "collection predicates" that existed
+in 1985. Problems of `findall/3` are discussed on page 13.
+
 **The Craft of Prolog**, Richard A. O'Keefe, **1990**, MIT Press
 
 ![Craft of Prolog](pics/cover_craft_of_prolog.jpg)
@@ -844,7 +851,7 @@ Rather disconcertingly, this is still the case 35 years later.
   ([PDF](http://www.softwarepreservation.org/projects/prolog/edinburgh/doc/CPrologUMV1.2.pdf)) 
   lists `bagof/3` and `setof/3` but not `findall/3`.
   
-In _Higher-order extensions to PROLOG: are they needed?_ David Warren writes:
+In "Higher-order extensions to PROLOG: are they needed?" David Warren writes:
 
 > I believe it is possible to replace these ad hoc solutions with a single more
 > principled extension to PROLOG, which preserves the "declarative" aspect of
@@ -926,11 +933,4 @@ In "Negation and Control in Prolog", on page 12, Lee Naish lists implementations
 > Rather than return a list, this proposed predicatet returns a set of solutions. Sets must be
 > implemented as a primitive data type of PROLOG.
 
-## References
-
-- **Negation and Control in Prolog**
-   - Lee Naish
-   - Springer Lecture Notes in Computer Science, N° 238
-   - Springer-Verlag 1985 
-   - [Book Page](https://www.springer.com/gp/book/9783540168157)
    
