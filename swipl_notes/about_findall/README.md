@@ -31,9 +31,9 @@ There are:
 The predicates `bag_of/3`, `set_of/3` and `find_all_dl/3` (corresponding to `findall/4`) are discussed in
 Chapter 17: "Second-Order Programming", pages 266 ff.
 
-**Negation and Control in Prolog**, Lee Naish, [Lecture Notes in Computer Science, N° 238](https://www.springer.com/gp/book/9783540168157), **1985**, Springer-Verlag
-
-![LNCS 238](cover_LNCS238.jpg)
+**Negation and Control in Prolog**, Lee Naish, Lecture Notes in Computer Science, N° 238, **1985**, Springer-Verlag
+ 
+![LNCS 238](cover_LNCS238.jpg) [Book page](https://www.springer.com/gp/book/9783540168157)
 
 On page 12 of this book, Lee Naish lists implementations of "collection predicates" that existed
 in 1985. Problems of `findall/3` are discussed on page 13.
