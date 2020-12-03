@@ -24,6 +24,13 @@ There are:
 
 ## Where to find explainers
 
+**Programming in Prolog**, William Clocksin and Christopher Mellish, **2003**, 1st edition **1981**, Springer Verlag;
+
+![Programming in Prolog](pics/cover_programming_in_prolog.jpg)
+
+`findall/3` is explained in Chapter 7.8.3., pages 167 ff., and an implementation in Prolog that uses
+`asserta/1` and `retract/1` to store solutions prior to unifying a list of the same with the `Instances` argument is provided.
+
 **The Art of Prolog: Advanced Programming Techniques**, Leon Sterling and Ehud Shapiro, 1st edition **1984**, MIT Press
 
 ![Art of Prolog](pics/cover_art_of_prolog_1st_edition.jpg) 
@@ -33,7 +40,8 @@ Chapter 17: "Second-Order Programming", pages 266 ff.
 
 **Negation and Control in Prolog**, Lee Naish, Lecture Notes in Computer Science, N° 238, **1985**, Springer-Verlag
  
-![LNCS 238](cover_LNCS238.jpg) [Book page](https://www.springer.com/gp/book/9783540168157)
+![LNCS 238](pics/cover_LNCS238.jpg) 
+[Book page](https://www.springer.com/gp/book/9783540168157)
 
 On page 12 of this book, Lee Naish lists implementations of "collection predicates" that existed
 in 1985. Problems of `findall/3` are discussed on page 13.
@@ -60,13 +68,6 @@ The chapter starts with:
 > replacement of all variables in _X_ by new variables.
 
 That's excessively obscure, although it _is_ followed by a pseudocode description. It's all "operational semantics" though.
-
-**Programming in Prolog**, William Clocksin and Christopher Mellish, **2003**, Springer Verlag
-
-![Programming in Prolog](pics/cover_programming_in_prolog.jpg)
-
-`findall/3` is explained in Chapter 7.8.3., pages 167 ff., and an implementation in Prolog that uses
-`asserta/1` and `retract/1` to store solutions prior to unifying a list of the same with the `Instances` argument is provided.
 
 ## Notes on history
 
