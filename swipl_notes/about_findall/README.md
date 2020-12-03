@@ -169,7 +169,7 @@ Jan Wielemaker writes:
 > reuses the same location if the scopes do not overlap (and even if not, the damage is really small).
 > So yes, a linter issue.
 
-In "The Craft of Prolog", Richard O'Keefe writes on page 363 in the chapter _11.6 findall/3 reconsidered_:
+In "The Craft of Prolog", Richard O'Keefe writes on page 363 (Chapter 11.6: "findall/3 reconsidered"):
 
 > The Template may be a single variable, or it may be any term at all containing any number of variables,
 > even none. Variables in the Template should be viewed as quantified variables. It is very bad style
@@ -179,7 +179,7 @@ In "The Craft of Prolog", Richard O'Keefe writes on page 363 in the chapter _11.
 
 ### What if there is no solution for the subgoal?
 
-`bagof/3` and also `setof/3` fail if there are no solutions for the subgoal:
+`bagof/3` and also `setof/3` **fail** if there are no solutions for the subgoal:
 
 ```
 ?- bagof(X,member(X,[]),Bag).
@@ -189,7 +189,7 @@ false.
 false.
 ```
 
-Unlike the above `findall/3` _succeeds with an empty `Bag`_ if there are no solutions:
+Unlike the above `findall/3` **succeeds with an empty Bag** if there is no solutions:
 
 ```
 ?- findall(X,member(X,[]),Bag).
@@ -199,18 +199,24 @@ Bag = [].
 Bag = [].
 ```
 
-At first sight, this looks user friendly - it's an approach that reminds one of an imperative language. 
-On second sight, there is a problem with the logical interpretation. 
-Leaving out the ancillary condition of whether an instantiated `Bag` unifies with the `Bag` of 
-results actually collected (the subgoal's proof witnesses), `findall/3` succeeds in all cases.
-If there is no proof of the subgoal, `bagof/3` properly fails whereas `findall/3` is
-[vacuously true](https://en.wikipedia.org/wiki/Vacuous_truth): all elements of `[]` are a solution of the subgoal.
-But we _do_ want failure: a predicate is _supposed_ to fail if there is no proofs of any subgoal, that's the idea. 
+At first sight, this looks user friendly and indeed is what one is used to from imperative programming. 
+A non-null but empty list? Nothing special.
 
-In fact, one can implement negation-as-failure (mis-)using `findall/3`'s "succeed even on failure" approach
-simply through checking whether the resulting `Bag` is `[]` (see the end of this page).
+And indeed, when we are in the Prolog program parts that are all about deterministic computation
+where we want to press on and avoid failure (e.g. getting input from somewhere) this behaviour is acceptable, even desired.
 
-One may recover logically-acceptable behaviour by following up with a comparison against `[]` (we don't even
+However, when we are in the Prolog program parts that are about search, logic and modeling, things are not so rosy.
+`findall/3` succeeds in **all cases**, independently of any success or failure  of the subgoal. One can only induce failure
+by giving it an instantiated Bag that doesn't unify with the Bag of actually collected Template instances.
+So if there is no proof of the subgoal at all `findall/3` is
+[vacuously true](https://en.wikipedia.org/wiki/Vacuous_truth): all elements of `[]` are indeed a solution of the subgoal.
+This is not "logical behaviour" supporting search: we _do_ want failure: a predicate is _supposed_ to fail if there 
+is no proof of any subgoal so that new sectors of the domain can be explored by backtracking to previous predicate activations.
+
+One can actually implement the nonlogical negation-as-failure construct by using `findall/3`'s "succeed 
+even on failure" approach: check whether the resulting `Bag` is `[]` (see the end of this page). 
+
+However, one may recover logically-acceptable behaviour by following up with a comparison against `[]` (we don't even
 need to use [if-then-else](https://eu.swi-prolog.org/pldoc/doc_for?object=(-%3E)/2)
 
 For example (how do I generalize this to arbitrary (`Template`,`Subgoal`) pairs?):
@@ -243,8 +249,10 @@ false.
 ### findall/3 always generates all solutions of subgoal, irrespective of the size of Bag
 
 Generally one passes a `Bag` that is an unbound variable. `findall/3` will then
-unify `Bag` with the list of solutions collected once the collection is done (this behaviour is according to ISO standard specification,
-and also is indicated by the mode indicator `-` of the third parameter).
+unify `Bag` with the list of solutions collected once the collection is done. 
+This behaviour is according to ISO standard specification.
+
+(and is also indicated by the mode indicator `-` of the third parameter, maybe? not sure here).
 
 ```
 ?- findall(X,(between(0,4,X),format("Found ~q\n",[X])),Bag).
@@ -257,7 +265,8 @@ Bag = [0, 1, 2, 3, 4].
 ```
 
 `findall/3`, similar to `bagof/3` and `setof/3` **is not** limited by any initially set 
-length of `Bag`.  If the final unification fails, the `findall/3` call fails.
+length of `Bag`.  The `findall/3` call fails only if the final unification fails. All the
+calls to subgoals are performed.
 
 Here we give it a `Bag` of 5 fresh variables to fill with solutions from a `Goal` that "redoes" forever.
 `findall/3` does not care and goes on ... forever! Even thought it _does_ have the information that it _could_ stop at the 6th solution.
@@ -325,9 +334,10 @@ more solutions if the `Bag` turns out to be too small after all. To your editors
  with the full information that can be obtained from the arguments they have been given. 
  If one absolutely wants steadfastness, one can always pass an 
  unbound variable (which gives nothing away) at the parameter position marked `-` and unify 
- that with a not-full-unbound/possibly ground term afterwards.)
+ that with a not-full-unbound/possibly ground term afterwards. Update: 'steadfastness' apparently has a slightly
+ different meaning than what I thought .. to be reviewed!)
 
-### Edge case; bad bag
+### Edge case: bad bag
 
 Edge case: `findall/3` accepts a non-list `Bag` instead of throwing a type error.
 Might be useful to fix that. In the first case below, the unification fails trivially, in the second, it loops forever:
@@ -497,11 +507,11 @@ Bag = [_15438, _15432, _15426].
 
 You cannot transparently "look for variables" that way.
 
-### Will constraints be retained?
+### Will constraints be retained? 
 
-Will constraints on unbound variables be retained if they are copied to a bag via `findall/3`?
+_The following has been tested in SWI-Prolog 8.3. Other Prologs may differ. In particular, SICStus seems to drop the constraints on copied variables._
 
-TL;DR: Yes (at least in SWI-Prolog).
+Will constraints on unbound variables be retained if they are copied to a bag via `findall/3`? Yes (at least in SWI-Prolog).
 
 Consider:
 
@@ -549,7 +559,7 @@ constraints that have not been resolved yet, indicating that you should make dou
 the program's success is due to actual success or rank optimism). The residual constraints
 are relative to the original `X`, `Y`, `Z`, which remain "unprocessed".
 
-Pleasingly, the above **also** works if the variables are first copied via `findall/3` (at least in SWI-Prolog. Apparently not in SICStus?)
+Pleasingly, the above **also** works if the variables are first copied via `findall/3`
 
 First, a SWI-Prolog specific item: we want to see the result term printed in full.
 
