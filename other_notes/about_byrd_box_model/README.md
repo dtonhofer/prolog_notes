@@ -293,7 +293,8 @@ would thus be this (the `excpetion` port is not shown)
 A variation in text, using some unicode characters from the [math bloc](https://en.wikipedia.org/wiki/Mathematical_operators_and_symbols_in_Unicode)
 
 ```none
-    DET
+DETERMINISTIC PREDICATE 
+(well-behaved: closing off the REDO port, i.e. "leaving no choicepoint")
        
              +---------------------+
      -------⊳|Call------⊳-----⊳Succ|------⊳
@@ -305,7 +306,8 @@ A variation in text, using some unicode characters from the [math bloc](https://
          |                             |
          +---⊲----no choicepoint----⊲--+
 
-   SEMIDET
+SEMI-DETERMINISTIC PREDICATE
+(well-behaved: closing off the REDO port, i.e. "leaving no choicepoint")
               
              +---------------------+
      -------⊳|Call---+--⊳-----⊳Succ|------⊳
@@ -317,7 +319,9 @@ A variation in text, using some unicode characters from the [math bloc](https://
          |                             |
          +---⊲----no choicepoint----⊲--+
 
-   NONDET/MULTI
+NONDETERMINISTIC PREDICATE (succeeds maybe 0 times)
+MULTI PREDICATE (succeeds at least once)
+(well-behaved if it closes off the REDO port at the last solution, i.e. "leaves no choicepoint")
               
              +---------------------+
      -------⊳|Call---+--⊳--+--⊳Succ|------⊳
@@ -330,7 +334,7 @@ A variation in text, using some unicode characters from the [math bloc](https://
          +---⊲----no choicepoint----⊲--+
 ```
 
-## Predicate behaviour and well-behavedness
+## Predicate behaviour and well-behavedness <a name="well-behaved"></a>
 
 See [SWI-Prolog: Deterministic/Semi-deterministic/Non-deterministic predicates](https://www.swi-prolog.org/pldoc/man?section=testbody)
 
