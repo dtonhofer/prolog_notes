@@ -288,6 +288,46 @@ would thus be this (the `excpetion` port is not shown)
 
 ![Byrd Box Model](pics/byrd_box_model.svg)
 
+A variation in text, using some unicode characters from the [math bloc](https://en.wikipedia.org/wiki/Mathematical_operators_and_symbols_in_Unicode)
+
+```none
+    DET
+       
+             +---------------------+
+     -------⊳|Call------⊳-----⊳Succ|------⊳
+   from      |                     |      to
+   prev      |                     |      next
+   pred      |                     |      pred
+     ⊲---+---|Fail             Redo|   +--- 
+         |   +---------------------+   |   
+         |                             |
+         +---⊲----no choicepoint----⊲--+
+
+   SEMIDET
+              
+             +---------------------+
+     -------⊳|Call---+--⊳-----⊳Succ|------⊳
+   from      |       |             |      to
+   prev      |       ∇             |      next
+   pred      |       |             |      pred
+     ⊲---+---|Fail⊲--+             |   +--- 
+         |   +---------------------+   |   
+         |                             |
+         +---⊲----no choicepoint----⊲--+
+
+   NONDET/MULTI
+              
+             +---------------------+
+     -------⊳|Call---+--⊳--+--⊳Succ|------⊳
+   from      |       |     |       |      to
+   prev      |       ∇     ∆       |      next
+   pred      |       |     |       |      pred
+     ⊲---+---|Fail⊲--+--⊲--+---Redo|⊲--+--- 
+         |   +---------------------+   |   
+         |                             |
+         +---⊲----no choicepoint----⊲--+
+```
+
 ## Predicate behaviour and well-behavedness
 
 See [SWI-Prolog: Deterministic/Semi-deterministic/Non-deterministic predicates](https://www.swi-prolog.org/pldoc/man?section=testbody)
