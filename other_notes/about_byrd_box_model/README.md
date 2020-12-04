@@ -1,5 +1,7 @@
 # About the "Byrd Box Model"
 
+This is some companion info to [SWI-Prolog's page on the Byrd Box model](https://eu.swi-prolog.org/pldoc/man?section=byrd-box-model).
+
 ## Generalities
 
 The "Byrd Box Model", also called "Tracing Model" or "Procedure Box Model" or 
