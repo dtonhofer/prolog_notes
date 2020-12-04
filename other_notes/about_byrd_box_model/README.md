@@ -300,7 +300,7 @@ A variation in text, using some unicode characters from the [math bloc](https://
    from      |                     |      to
    prev      |                     |      next
    pred      |                     |      pred
-     ⊲---+---|Fail             Redo|   +--- 
+     ⊲---+   |Fail             Redo|   +--- 
          |   +---------------------+   |   
          |                             |
          +---⊲----no choicepoint----⊲--+
