@@ -3,6 +3,7 @@
 This is companion info to 
 
 - [SWI-Prolog's page on the Byrd Box model](https://eu.swi-prolog.org/pldoc/man?section=byrd-box-model).
+- One level up: [SWI-Prolog's page on the debugger](https://www.swi-prolog.org/pldoc/man?section=debugoverview)
 
 See also 
 
@@ -30,6 +31,10 @@ The Byrd Box model has been described first in:
   - Lawrence Byrd, 1980
   - Appears in: _Proceedings of the Logic Programming Workshop in Debrecen, Hungary_ (Sten Åke Tärnlund, editor)
   - ... this document does not seem to exist online.
+
+An image of the original "box" appears in [Une sémantique observationnelle du modèle des boîtes pour la résolution de programmes logiques (version étendue)](https://arxiv.org/abs/0706.3159):
+
+![Original Byrd Box](pics/original_byrd_box.png)
 
 And later:
 
@@ -439,18 +444,15 @@ We can now easily show where operations on the term story happen:
 
 ## More Reading
 
-- **[Specifying Trace Models With a Continuation Semantics](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.39.8325)**
-   - Erwam Jahier, Mireille Ducassé, Olivier Ridoux, 1999
-   - appears in [Springer LNCS 2042](https://link.springer.com/chapter/10.1007/3-540-45142-0_10): "LOPSTR 2000: Logic Based Program Synthesis and Transformation" pp. 165-181.
-   - The preprint is named differently: [Specifying Byrd's Box Model with a Continuation Semantics](https://www.researchgate.net/publication/220153715_Specifying_Byrd's_Box_Model_with_a_Continuation_Semantics)
+**Understanding the control flow of Prolog programs**
 
-> We give a formal specification of Byrd's box model and show how this specification can be extended to specify richer
-> trace models. We also show how these specifications can be executed by a direct translation into λProlog, leading
-> to a Prolog interpreter that performs execution traces. This interpreter can be used both to experiment various
-> trace models and to validate the different event specifications. We have hence a formal framework to specify and
-> prototype trace models.
+  - Lawrence Byrd, 1980
+  - Appears in: _Proceedings of the Logic Programming Workshop in Debrecen, Hungary_ (Sten Åke Tärnlund, editor)
+  - ... this document does not seem to exist online.
+  
+**What's in a Trace: The Box Model Revisited** (1993)
 
-- **[What's in a Trace: The Box Model Revisited](https://www.researchgate.net/publication/225203235_What's_in_a_trace_The_box_model_revisited)**
+   - https://www.researchgate.net/publication/225203235_What's_in_a_trace_The_box_model_revisited
    - Gerhard Tobermann, Clemens Beckstein
    - appears in "Automated and Algorithmic Debugging, First International Workshop, AADEBUG '93, Linköping, Sweden, May 3-5, 1993, Proceedings" (Springer), pp. 171-187.
 
@@ -470,7 +472,9 @@ We can now easily show where operations on the term story happen:
 > of PROLOG trace protocols that can be used as a guide line for a formal description and classification
 > of debugging components of logic programming systems.
 
-- **[Prolog without tears: An evaluation of the effectiveness of a non Byrd Box model for students](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.57.2456)**
+**Prolog without tears: An evaluation of the effectiveness of a non Byrd Box model for students** (1995)
+
+   - http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.57.2456
    - Paul Mulholland, Human Cognition Research Laboratory, Open University, Milton Keynes
    - Psychology of Programming Interest Group, 1995, University of Edinburgh, Edinburgh.
 
@@ -485,7 +489,46 @@ We can now easily show where operations on the term story happen:
 > (Plater) and the Prolog Non-linear Tracer (Pinter). These also shared a new textual representation of
 > binding, loosely based on the lozenge notation used in TPM (Eisenstadt & Brayshaw, 1990).
 
-- **A choice-point model of Prolog execution.**
+**A choice-point model of Prolog execution** (1993)
+   
    - presented at ALP-UK Workshop on Logic Programming Support Environments, Edinburgh.
    - Tony Dodd, 1993
    - (this document does not seem to exist online)
+
+This should about the complementary way of looking at Prolog program execution: as a search tree.
+
+**Specifying Trace Models With a Continuation Semantics** (1999)
+
+   - http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.39.8325
+   - Erwam Jahier, Mireille Ducassé, Olivier Ridoux, 1999
+   - appears in [Springer LNCS 2042](https://link.springer.com/chapter/10.1007/3-540-45142-0_10): "LOPSTR 2000: Logic Based Program Synthesis and Transformation" pp. 165-181.
+   - The preprint is named differently: [Specifying Byrd's Box Model with a Continuation Semantics](https://www.researchgate.net/publication/220153715_Specifying_Byrd's_Box_Model_with_a_Continuation_Semantics)
+
+> We give a formal specification of Byrd's box model and show how this specification can be extended to specify richer
+> trace models. We also show how these specifications can be executed by a direct translation into λProlog, leading
+> to a Prolog interpreter that performs execution traces. This interpreter can be used both to experiment various
+> trace models and to validate the different event specifications. We have hence a formal framework to specify and
+> prototype trace models.
+   
+**Observational semantics of the Prolog Resolution Box Model** (2007)
+
+   - http://arxiv.org/abs/0711.4071
+   - Pierre Deransart and Mireille Ducassé and Gérard Ferrand
+               
+> This paper specifies an observational semantics and gives an original presentation of the Byrd box model.
+> The approach accounts for the semantics of Prolog tracers independently of a particular Prolog implementation. 
+> Prolog traces are, in general, considered as rather obscure and difficult to use. The proposed formal presentation 
+> of its trace constitutes a simple and pedagogical approach for teaching Prolog or for implementing Prolog tracers. 
+> It is a form of declarative specification for the tracers. The trace model introduced here is only one example to 
+> illustrate general problems relating to tracers and observing processes. Observing processes know, from observed processes, 
+> only their traces. The issue is then to be able to reconstitute, by the sole analysis of the trace, part of the behaviour
+> of the observed process, and if possible, without any loss of information. As a matter of fact, our approach highlights 
+> qualities of the Prolog resolution box model which made its success, but also its insufficiencies. 
+
+**Une sémantique observationnelle du modèle des boîtes pour la résolution de programmes logiques (version étendue)** (2007)
+
+   - This is an extended version of "Observational semantics of the Prolog Resolution Box Model"
+   - https://arxiv.org/abs/0706.3159
+   - Pierre Deransart and Mireille Ducassé and Gérard Ferrand 
+   
+   
