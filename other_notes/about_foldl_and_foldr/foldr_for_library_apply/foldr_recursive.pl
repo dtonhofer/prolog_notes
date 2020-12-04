@@ -16,7 +16,7 @@
 % for changes in variable and predicate names.
 % So what license to use here? 
 % ronerycoder@gluino.name (me) says this is licensed under 
-% https://creativecommons.org/publicdomain/zero/1.0/
+% https://opensource.org/licenses/0BSD
 
 /*
 Run the tests:
