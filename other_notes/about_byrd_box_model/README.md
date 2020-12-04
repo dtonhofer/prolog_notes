@@ -3,7 +3,7 @@
 This is companion info to 
 
 - [SWI-Prolog's page on the Byrd Box model](https://eu.swi-prolog.org/pldoc/man?section=byrd-box-model).
-- One level up: [SWI-Prolog's page on the debugger](https://www.swi-prolog.org/pldoc/man?section=debugoverview)
+- One level up: [SWI-Prolog's page on the debugger](https://eu.swi-prolog.org/pldoc/man?section=debugoverview)
 
 See also 
 
