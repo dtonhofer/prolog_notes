@@ -84,24 +84,24 @@ system_install_dir=/usr/local/logic                      # This looks like a goo
 toplevel_dir_fq="$HOME/Development/2020_11/swiplmaking"  # Where to put stuff locally
 
 giturl_and_subdir() {
-   local finality=${1:-}                  # "jpl" or "docu" or "system"
+   local finality=${1:-}                  # "jpl" or "docs" or "system"
    local element=${2:-}                   # "forked" (my personal fork) or "infra" (the original repo)
    local code="$finality,$element"
    case "$code" in
    jpl,forked)
-      echo "$perso_github_account/packages-jpl.git | packages-jpl_forked | modules_no | _ |"
+      echo "$perso_github_account/packages-jpl.git | forked_jplmodule | modules_no | _ |"
       ;;
    jpl,infra)
-      echo "$swipl_github_account/swipl-devel.git | swipl-devel_original | modules_yes | locally |"
+      echo "$swipl_github_account/swipl-devel.git | master_swipldevel | modules_yes | locally |"
       ;;
-   docu,forked)
-      echo "$perso_github_account/swipl-devel.git | swipl-devel_forked   | modules_no | _ |"
+   docs,forked)
+      echo "$perso_github_account/swipl-devel.git | forked_swipldevel   | modules_no | _ |"
       ;;
-   docu,infra)
-      echo "$swipl_github_account/swipl-devel.git | swipl-devel_original | modules_yes | locally |"
+   docs,infra)
+      echo "$swipl_github_account/swipl-devel.git | master_swipldevel | modules_yes | locally |"
       ;;
    system,infra) # has no element
-      echo "$swipl_github_account/swipl-devel.git | swipl-devel_original | modules_yes | $system_install_dir |"
+      echo "$swipl_github_account/swipl-devel.git | master_swipldevel | modules_yes | $system_install_dir |"
       ;;
    *)
       echo "In giturl_and_subdir(): Don't know how to handle code '$code' -- exiting!" >&2
@@ -229,7 +229,7 @@ look_for_version_file() {
 clone() {
 
    local toplevel_dir_fq=${1:-}   # the directory we will be working in
-   local finality=${2:-}          # "jpl" or "docu" or "system"
+   local finality=${2:-}          # "jpl" or "docs" or "system"
    local element=${3:-}           # "forked" or "infra" repo, possibly unset if not needed
    local here="clone"             # the name of this routine
 
@@ -311,7 +311,7 @@ clone() {
 
    # In case this is about documentation, create a symlink to the file describing builtins
 
-   if [[ "${finality},${element}" == docu,forked ]]; then
+   if [[ "${finality},${element}" == docs,forked ]]; then
       if [[ ! -e builtin.doc ]]; then
          ln -s "${element_dir}/man/builtin.doc" "builtin.doc"
          # Add more here
@@ -329,7 +329,7 @@ clone() {
 copy() {
 
    local toplevel_dir_fq=${1:-}        # the directory we will be working in
-   local finality=${2:-}               # "jpl" or "docu" or "system"
+   local finality=${2:-}               # "jpl" or "docs" or "system"
    local here="copy"
 
    # Exits in case of problems otherwise cds to the directory above the repodirs
@@ -398,9 +398,9 @@ copy() {
          from_files=( "jpl.pl"              "test_jpl.pl" )
          to_files=(   "packages/jpl/jpl.pl" "packages/jpl/test_jpl.pl" )
       ;;
-      docu)
-         from_files=( "man/builtin.doc" "man/extensions.doc" )
-         to_files=(   "man/builtin.doc" "man/extensions.doc" )
+      docs)
+         from_files=( "man/builtin.doc" "man/extensions.doc" "man/pl.bib" "man/runtex" "man/gen/swipl.bbl" "library/apply.pl" "src/Tests/library/test_apply.pl" )
+         to_files=(   "man/builtin.doc" "man/extensions.doc" "man/pl.bib" "man/runtex" "man/gen/swipl.bbl" "library/apply.pl" "src/Tests/library/test_apply.pl" )
       ;;
       *)
          echo "Unknown finality '$finality'" >&2
@@ -444,7 +444,7 @@ copy() {
 look() {
 
    local toplevel_dir_fq=${1:-}  # the directory we will be working in
-   local finality=${2:-}         # "jpl" or "docu" or "system"
+   local finality=${2:-}         # "jpl" or "docs" or "system"
    local element=${3:-}          # "infra" or "forked" or unset
    local here="look"             # The name of this routine     
 
@@ -503,9 +503,32 @@ look() {
 build() {
 
    local toplevel_dir_fq=${1:-}  # the directory we will be working in
-   local finality=${2:-}         # "jpl" or "docu" or "system"
-   local rebuild=${3:-}          # if set to "rebuild", then just "rebuild" if possible
+   local finality=${2:-}         # "jpl" or "docs" or "system"
+   local rebuild=${3:-}          # if set to "rebuild", then just rebuild (if possible), otherwise build
+   local arg1=${4:-}             # may be "withpdf" or "notest" or "mono"
+   local arg2=${5:-}             # idem
+   local arg3=${6:-}             # idem
    local here="build"            # the name of this routine
+
+   local withpdf=
+   if [[ $arg1 == withpdf || $arg2 == withpdf || $arg3 == withpdf ]]; then
+      withpdf=yes
+   fi
+
+   local notest=
+   if [[ $arg1 == notest || $arg2 == notest || $arg3 == notest ]]; then
+      notest=yes
+   fi
+
+   local mono=
+   if [[ $arg1 == mono || $arg2 == mono || $arg3 == mono ]]; then
+      mono=yes
+   fi
+
+   if [[ $rebuild == rebuild && $withpdf == yes ]]; then
+      echo "Just a 'rebuild' demanded but 'withpdf' needs 'build' -- exiting!" >&2
+      exit 1
+   fi
 
    # The following exits in case of problems, otherwise cd-s to the directory
    # immediately above the repodir with an initial "pushd" (so we can "popd" later).
@@ -526,7 +549,7 @@ build() {
       install_dir_fq="$global_work_dir_fq/swiplexe_${version}"
    else
       if [[ ! -d $global_install_location ]]; then
-         echo "The installation location '$global_install_location' does not exist" >&2
+         echo "The installation location '$global_install_location' does not exist -- exiting!" >&2
          exit 1
       fi
       install_dir_fq="$global_install_location/swiplexe_${version}"
@@ -547,7 +570,7 @@ build() {
    else
       if [[ $rebuild == rebuild ]]; then
          echo "Rebuild ordered but build directory does not exist -- performing a full build" >&2
-         rebuild=
+         rebuild=build
       fi
    fi
 
@@ -556,7 +579,7 @@ build() {
    fi
 
    cd "$build_dir" || {
-      echo "Could not cd to '$build_dir' in '$(pwd)' -- exiting" >&2
+      echo "Could not cd to '$build_dir' in '$(pwd)' -- exiting!" >&2
       exit 1
    }
 
@@ -564,7 +587,6 @@ build() {
    # the Java bridge "jpl" can be tested
 
    local jar_dir_fq="${toplevel_dir_fq}/jars"
-
    local hamcrest_jar_fq="${jar_dir_fq}/hamcrest-2.2.jar"
    local junit_jar_fq="${jar_dir_fq}/junit-4.13.1.jar"
 
@@ -576,19 +598,22 @@ build() {
    echo "Not performing a full build, just a rebuild" >&2
    else
    echo "Performing a full build" >&2
+   if [[ $withpdf == yes ]]; then
+   echo "Also building PDF documentation" >&2
+   fi
    fi
    if [[ -d "$jar_dir_fq" ]]; then
    echo "The following jar directory exists     : $jar_dir_fq"      >&2
    if [[ -f "$hamcrest_jar_fq" ]]; then
    echo "   and the hamcrest jar exists         : $hamcrest_jar_fq" >&2
    else
-   echo "   but there is no hamcrest jar        : $hamcrest_jar_fq" >&2
+   echo "   But hamcrest jar IS MISSING         : $hamcrest_jar_fq" >&2
    echo "   get it from: https://mvnrepository.com/artifact/org.hamcrest/hamcrest/" >&2
    fi
    if [[ -f "$junit_jar_fq" ]]; then
    echo "   and the junit4 jar exists           : $junit_jar_fq"    >&2
    else
-   echo "   but there is no junit4 jar          : $junit_jar_fq"    >&2
+   echo "   But junit4 jar IS MISSING           : $junit_jar_fq"    >&2
    echo "   get it from: https://mvnrepository.com/artifact/junit/junit/" >&2
    fi
    else
@@ -599,77 +624,45 @@ build() {
       exit 0
    fi
 
-   # maybe configure
+   # configure by calling cmake if this is NOT a "rebuild"
 
    if [[ $rebuild != rebuild ]]; then
+      local hamcrest_line=
+      local junit_jar_line=
+      local pdf_line=
       if [[ -d "$jar_dir_fq" ]]; then
-         echo "Building with jars in '$jar_dir_fq'" >&2
-         cmake \
-            -DCMAKE_INSTALL_PREFIX="$install_dir_fq" \
-            -DHAMCREST="$hamcrest_jar_fq" \
-            -DJUNIT_JAR="$junit_jar_fq" \
-            -DLIBEDIT_LIBRARIES=/usr/lib64/libedit.so \
-            -DLIBEDIT_INCLUDE_DIR=/usr/include/editline \
-            -G Ninja ..
+         echo "Building with jars in '$jar_dir_fq'" >&2   
+         hamcrest_line="-DHAMCREST=$hamcrest_jar_fq"
+         junit_jar_line="-DJUNIT_JAR=$junit_jar_fq"
       else
          echo "Building without jars as '$jar_dir_fq' does not exist" >&2
-         cmake \
-            -DCMAKE_INSTALL_PREFIX="$install_dir_fq" \
-            -DLIBEDIT_LIBRARIES=/usr/lib64/libedit.so \
-            -DLIBEDIT_INCLUDE_DIR=/usr/include/editline \
-            -G Ninja ..
       fi
+      if [[ $withpdf == yes ]]; then
+         pdf_line="-DBUILD_PDF_DOCUMENTATION=ON"
+      fi
+      # cmake can handle "empty arguments" so no special handling of "" - excellent!
+      cmake \
+         "-DCMAKE_INSTALL_PREFIX=$install_dir_fq" \
+         "$hamcrest_line" \
+         "$junit_jar_line" \
+         "$pdf_line" \
+         "" \
+         "-DLIBEDIT_LIBRARIES=/usr/lib64/libedit.so" \
+         "-DLIBEDIT_INCLUDE_DIR=/usr/include/editline" \
+         -G Ninja ..
    fi
 
    # compile
 
-   ninja
-
-   # Test
-
-   # Delete the logfile prior to tests.
-
-   local logfile="Testing/Temporary/LastTest.log"
-
-   if [[ -f "$logfile" ]]; then
-      echo "-------" >&2
-      echo "There already is a logfile '$logfile' -- deleting it" >&2
-      echo "-------" >&2
-      /bin/rm "$logfile"
-   fi
-
-   # Run tests concurrently 4-fold. See "man ctest" or "ctest --help"
-
-   ctest -j 4 || {
-      echo "The test failed!" >&2
-      echo "More info in directory $(pwd)/Testing/Temporary/" >&2
-      tree "Testing/Temporary" >&2
-      echo "Check file '$(pwd)/${logfile}'" >&2
+   ninja || {
+      echo "'ninja' command failed -- exiting" >&2
       exit 1
    }
 
-   # Always grep for ERROR even in case of success. There may also be warnings, but
-   # they are probably of low interest.
+   # Test
 
-   if [[ -f "$logfile" ]]; then
-      local errfile
-      errfile=$(mktemp) || {
-         echo "Could not create a temporary file to capture error messages -- exiting" >&2
-         exit 1
-      }
-      grep ERROR "$logfile" >> "$errfile"
-      grep WARN "$logfile"  >> "$errfile"
-      local size
-      size=$(stat --format=%s "$errfile")
-      if [[ $size -gt 0 ]]; then
-         echo "Some errors were found in the logfile '$(pwd)/${logfile}' (probably not a problem)" >&2
-         echo >&2
-         echo "--------------" >&2
-         cat "$errfile" >&2
-         echo "--------------" >&2
-         echo >&2
-      fi
-      /bin/rm "$errfile"
+   if [[ $notest != yes ]]; then
+      run_post_build_tests $mono
    fi
 
    # Run some standard checks from SWIPL (even though it has not been installed yet)
@@ -695,6 +688,70 @@ build() {
 
 }
 
+# ===========================================================================
+# Run post-build tests. This is called when in the correct directory!
+# ===========================================================================
+
+run_post_build_tests() {
+
+   local mono=${1:-}
+
+   # Delete the logfile prior to tests.
+
+   local logfile="Testing/Temporary/LastTest.log"
+
+   if [[ -f "$logfile" ]]; then
+      echo "-------" >&2
+      echo "There already is a logfile '$logfile' -- deleting it" >&2
+      echo "-------" >&2
+      /bin/rm "$logfile"
+   fi
+
+   # Run tests concurrently 4-fold. See "man ctest" or "ctest --help"
+
+   local jobs
+   
+   if [[ $mono == yes ]]; then
+      jobs=1
+   else
+      jobs=4
+   fi
+
+   ctest -j $jobs || {
+      echo "The test failed!" >&2
+      echo "More info in directory $(pwd)/Testing/Temporary/" >&2
+      tree "Testing/Temporary" >&2
+      echo "Check file '$(pwd)/$logfile'" >&2
+      exit 1
+   }
+
+   # Always grep for ERROR even in case of success. There may also be warnings, but
+   # they are probably of low interest.
+
+   if [[ -f "$logfile" ]]; then
+      local errfile
+      errfile=$(mktemp) || {
+         echo "Could not create a temporary file to capture error messages -- exiting" >&2
+         exit 1
+      }
+      grep ERROR "$logfile" >> "$errfile"
+      grep WARN "$logfile"  >> "$errfile"
+      local size
+      size=$(stat --format=%s "$errfile")
+      if [[ $size -gt 0 ]]; then
+         echo "Some errors were found in the logfile '$(pwd)/$logfile' (probably not a problem)" >&2
+         echo >&2
+         echo "--------------" >&2
+         cat "$errfile" >&2
+         echo "--------------" >&2
+         echo >&2
+      fi
+      /bin/rm "$errfile"
+   fi
+
+}
+
+
 # ===
 # Move to the correct directory, possibly creating it.
 # ===
@@ -704,7 +761,7 @@ dirchange_prepare() {
    local caller=${1:-}            # Name of the caller, for messages
    local toplevel_dir_fq=${2:-}   # The directory containing the finality-named subdirectories containing the repo directories
    local action_full=${3:-}       # What do you want to do? "clone", "copy", "build"/"rebuild", "look"
-   local finality=${4:-}          # What's it for? "docu", "jpl", "system"
+   local finality=${4:-}          # What's it for? "docs", "jpl", "system"
    local element=${5:-}           # What repository to deal with? "forked", "infra". May also be unset
 
    if [[ -z "$toplevel_dir_fq" || ! -d "$toplevel_dir_fq" ]]; then
@@ -745,10 +802,10 @@ dirchange_prepare() {
       clone,jpl,infra)
          can_create=true
          ;;
-      clone,docu,forked)
+      clone,docs,forked)
          can_create=true
          ;;
-      clone,docu,infra)
+      clone,docs,infra)
          can_create=true
          ;;
       look,system,)
@@ -757,19 +814,19 @@ dirchange_prepare() {
          ;;
       look,jpl,infra)
          ;;
-      look,docu,forked)
+      look,docs,forked)
          ;;
-      look,docu,infra)
+      look,docs,infra)
          ;;
       build,system,)
          ;;
       build,jpl,)
          ;;
-      build,docu,)
+      build,docs,)
          ;;
       copy,jpl,)
          ;;
-      copy,docu,)
+      copy,docs,)
          ;;
       *)
          echo "Unknown action,finality,element code '$action_full,$finality,$element' in '$caller' -- exiting!" >&2
@@ -850,14 +907,45 @@ dirchange_prepare() {
 # Command dispatch
 # ===========================================================================
 
+cmd_match() {
+   local arg=${1:-}
+   if [[ -z $cmd ]]; then
+      if [[ $arg == clone   ||
+            $arg == copy    ||
+            $arg == build   ||
+            $arg == rebuild ||
+            $arg == look ]]; then
+         cmd=$arg  # set global variable
+      fi
+   fi
+}
 
-cmd=${1:-}        # Command is first argument to script (clone, copy, install)
-finality=${2:-}   # Finality is second argument to script (system, jpl, docu)
-xarg=${3:-}       # There may be an extra argument
-                  # For "clone" command: "forked" or "infra"
+finality_match() {
+   local arg=${1:-}
+   if [[ -z $finality ]]; then
+      if [[ $arg == system ||
+            $arg == jpl    ||
+            $arg == docs ]]; then
+         finality=$arg  # set global variable
+      fi
+   fi
+}
+
+cmd=
+finality=
+arg3=${3:-}
+arg4=${4:-}
+arg5=${5:-}
+
+# this is done in order to make the argument order irrelevant:
+
+cmd_match      ${1:-}   # maybe sets variable cmd, which must be still unset
+finality_match ${1:-}   # maybe sets variable finality, which must still be unset
+cmd_match      ${2:-}   # maybe sets variable cmd, which must still be unset
+finality_match ${2:-}   # maybe sets variable finality, which must still be unset
 
 if [[ $cmd == clone ]]; then
-   clone "$toplevel_dir_fq" "$finality" "$xarg"
+   clone "$toplevel_dir_fq" "$finality" "$arg3"
    exit 0
 fi
 
@@ -867,20 +955,13 @@ if [[ $cmd == copy ]]; then
 fi
 
 if [[ $cmd == look ]]; then
-   look "$toplevel_dir_fq" "$finality" "$xarg"
+   look "$toplevel_dir_fq" "$finality" "$arg3"
    exit 0
 fi
 
-if [[ $cmd == build ]]; then
-   build "$toplevel_dir_fq" "$finality" xxxxxxx
-   if [[ $finality == system ]]; then
-      echo "You have to run 'ninja install' as root in '$global_build_dir_fq' to install the compilate into '$global_install_dir_fq'" >&2
-   fi
-   exit 0
-fi
-
-if [[ $cmd == rebuild ]]; then
-   build "$toplevel_dir_fq" "$finality" rebuild
+if [[ $cmd == build || 
+      $cmd == rebuild ]]; then
+   build "$toplevel_dir_fq" "$finality" "$cmd" "$arg3" "$arg4" "$arg5"
    if [[ $finality == system ]]; then
       echo "You have to run 'ninja install' as root in '$global_build_dir_fq' to install the compilate into '$global_install_dir_fq'" >&2
    fi
@@ -888,42 +969,48 @@ if [[ $cmd == rebuild ]]; then
 fi
 
 if [[ -n "$cmd" ]]; then
-   echo "No command '$cmd'" >&2
+   echo "Command '$cmd' was not recognized" >&2
 fi
 
 cat <<TEXT
-Expecting:
+Expecting the following. The first two arguments can be provided in any order.
 
 For cloning remote repo
 
-    clone system      : Clone original SWI Prolog repo, including submodules, to build for a systemwide distribution
-    clone jpl forked  : Clone modified JPL package from the personal github account, for editing JPL code
-    clone jpl infra   : Clone original SWI Prolog repo, including submodules, to build for JPL testing
-    clone docu forked : Clone modified SWI Prolog repo from the personal github account, for editing documentation
-    clone docu infra  : Clone original SWI Prolog repo, including submodules, to build documentation
+    clone system         : Clone original SWI Prolog repo, including submodules, to build for a systemwide distribution
+    clone jpl     forked : Clone modified JPL package from the personal github account, for editing JPL code
+    clone jpl     infra  : Clone original SWI Prolog repo, including submodules, to build for JPL testing
+    clone docs    forked : Clone modified SWI Prolog repo from the personal github account, for editing documentation
+    clone docs    infra  : Clone original SWI Prolog repo, including submodules, to build documentation
 
 For preparing to build
 
-    copy jpl          : Copy specific files from the JPL forked & modified repodir into the JPL build dir
-    copy docu         : Copy specific files from the documentation forked & modified repodir into the docu build dir
+    copy jpl             : Copy specific files from the JPL forked & modified repodir into the JPL build dir
+    copy docs            : Copy specific files from the documentation forked & modified repodir into the docs build dir
 
 For building/rebuilding
 
-    build system      : Build a systemwide installation (will go to $system_install_dir)
-    build docu        : Build local installation to check modified SWI-Prolog documentation
-    build jpl         : Build local installation to check modified JPL code
+    build system         : Build a systemwide installation (will go to $system_install_dir)
+    build docs           : Build local installation to check modified SWI-Prolog documentation
+    build jpl            : Build local installation to check modified JPL code
+
+   with additional optional flags on positions 3 or 4:
+
+    withpdf              : Additionally build the PDF documentation
+    notest               : Skip post-build tests
+    mono                 : No parallel tests
 
 For getting information about the status of the currently checked-out files.
 
-    look system       : What's check out for the systemwide installation?
-    look jpl forked   : What's checked out in the JPL forked repo?
-    look jpl infra    : What's checked out in the JPL build repo?
-    look docu forked  : What's checked out in the docu forked repo?
-    look docu infra   : What's checked out in the docu build repo?
+    look system          : What's check out for the systemwide installation?
+    look jpl      forked : What's checked out in the JPL forked repo?
+    look jpl      infra  : What's checked out in the JPL build repo?
+    look docs     forked : What's checked out in the docs forked repo?
+    look docs     infra  : What's checked out in the docs build repo?
 
 Hints about manual commands:
 
-    To branch : Run something like "git checkout -b docu_202007"
+    To branch : Run something like "git checkout -b docs_202012"
 
 TEXT
 
