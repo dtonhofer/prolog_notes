@@ -2,7 +2,7 @@
 
 This is some companion info to [SWI-Prolog's page on the Byrd Box model](https://eu.swi-prolog.org/pldoc/man?section=byrd-box-model).
 
-See also [SWI-Prolog's page on predicate descriptors](https://eu.swi-prolog.org/pldoc/man?section=preddesc)
+See also [SWI-Prolog's page on predicate descriptors](https://eu.swi-prolog.org/pldoc/man?section=preddesc) and a [related page for `pldoc` document generator](https://www.swi-prolog.org/pldoc/man?section=modes)
 
 ## Generalities
 
