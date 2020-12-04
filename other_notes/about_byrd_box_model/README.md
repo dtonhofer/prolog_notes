@@ -1,22 +1,23 @@
 # About the "Byrd Box Model"
 
-This is some companion info to [SWI-Prolog's page on the Byrd Box model](https://eu.swi-prolog.org/pldoc/man?section=byrd-box-model).
+This is companion info to [SWI-Prolog's page on the Byrd Box model](https://eu.swi-prolog.org/pldoc/man?section=byrd-box-model).
 
-See also [SWI-Prolog's page on predicate descriptors](https://eu.swi-prolog.org/pldoc/man?section=preddesc) and a [related page for `pldoc` document generator](https://www.swi-prolog.org/pldoc/man?section=modes)
+See also [SWI-Prolog's page on predicate descriptors](https://eu.swi-prolog.org/pldoc/man?section=preddesc) and
+a [related page for `pldoc` document generator](https://eu.swi-prolog.org/pldoc/man?section=modes)
 
 ## Generalities
 
-The "Byrd Box Model", also called "Tracing Model" or "Procedure Box Model" or 
+The "Byrd Box Model", also called "Tracing Model" or "Procedure Box Model" or
 "4-port Model" conceptualizes the calls to a predicate as a "box with 4 ports".
 
 The model's idea is that the Prolog Processor traverses these ports during
 program execution.
 
 Debuggers use this model as conceptual basis when they generate trace output and
-allow monitoring of "ports traversal events" either in general 
-([`leash/1`](https://www.swi-prolog.org/pldoc/doc_for?object=leash/1))
+allow monitoring of "ports traversal events" either in general
+([`leash/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=leash/1))
 or on a per-predicate basis
-([`trace/1`](https://www.swi-prolog.org/pldoc/doc_for?object=trace/1), [`trace/2`](https://www.swi-prolog.org/pldoc/doc_for?object=trace/2)).
+([`trace/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=trace/1), [`trace/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=trace/2)).
 See also: [SWI-Prolog: Overview of the Debugger](https://eu.swi-prolog.org/pldoc/man?section=debugoverview).
 
 The Byrd Box model has been described first in:
@@ -43,8 +44,8 @@ And is described for example here:
 
 The Byrd Box Model is quite informal and leaves out a lot of detail. It says nothing about what
 happens "around the box": cuts, selection of a clause, constraints. It doesn't mention the
-special case of the clause head (that's a miss). In particular it says nothing about the 
-operations on the _term store_, which is, however, a crucial aspect. We will try to fill in some details then.  
+special case of the clause head (that's a miss). In particular it says nothing about the
+operations on the _term store_, which is, however, a crucial aspect. We will try to fill in some details then.
 
 This text from **Specifying trace models with a continuation semantics** (see further below) is quite informative:
 
@@ -52,7 +53,7 @@ This text from **Specifying trace models with a continuation semantics** (see fu
 > \[_Lawrence Byrd's original paper_\]. As detailed in \[_G. Tobermann and C. Beckstein. What's in a trace: The box model revisited_\],
 > Prolog debugging systems have quite different interpretations of what Byrd's box model is. It is not always clear
 > whether theses differences come from a misinterpretation of the original model or from a will to improve it.
-> 
+>
 > In this article we propose a formal specification of Byrd's box model. One can conjecture that a formal specification
 > would avoid misinterpretations. Indeed, people would have the formal framework to prove that their model conforms to the
 > specification. Furthermore, people enhancing the model would then be able to state precisely what the enhancements are.
@@ -60,14 +61,14 @@ This text from **Specifying trace models with a continuation semantics** (see fu
 > Wether Byrd's trace is a proper output format for an end-user may indeed be discussed. A trace, however, can
 > be the basis of automated tools, as we have shown for debugging or monitoring. In general, automated dynamic
 > analysis needs an execution model to be based upon and Byrd's box model is a good candidate for Prolog.
-> 
+>
 > ...
 >
 > There is a large number of slightly different execution models for Prolog; see for example .... This means that there
 > is no best model. It is therefore important to be able to easily specify variants of Byrd's box model. The validation
-> of the formal specification becomes then an essential feature if one wants to reason about the generated trace. 
+> of the formal specification becomes then an essential feature if one wants to reason about the generated trace.
 > We show how this can be done in this article. We add the treatment of cut, unification and clause numbers to
-> the basic specification of the trace. 
+> the basic specification of the trace.
 
 ## A Note on Vocabulary
 
@@ -83,7 +84,7 @@ When in doubt about having to choose between _procedure_ and _predicate_ I will 
 
 ## From the DECsystem-10 User Manual
 
-Here is the image from the 
+Here is the image from the
 [DECsystem-10 Prolog User's Manual](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.300.8430), November 1982, page 13 ("Chapter 2: Debugging")
 
 ```text
@@ -130,7 +131,7 @@ The text says (some remarks in [] added):
 > Since this might get confusing each invocation box is given a unique integer
 > identifier.
 
-## Adding Details 
+## Adding Details
 
 Let's call that box at the center of the model a _B-Box_ for short.
 
@@ -142,29 +143,29 @@ the Prolog Processor's execution stack, or a node in Prolog's search tree. Every
 must first be instantiated by the PP before it can be called.
 
 As a predicate can call other predicates, the B-Box model is
-a recursive "boxes-in-boxes" model. The PP instantiates a B-Box in the context of a 
+a recursive "boxes-in-boxes" model. The PP instantiates a B-Box in the context of a
 surrounding B-Box, and deletes it when it backtracks out of the B-Box and calls it. Inside a B-Box
 the same happens: it's B-Box instantiations, calls and deletions all the way down. Or
 at least until you reach the B-Boxes that cannot be decomposed into smaller B-Boxes.
 When you think about it, these must be either unifications or operations
 not involving unification, like branching decisions, function evaluations or I/O.
-More on that below. 
+More on that below.
 
 The root B-Box, i.e. the one without any enclosing B-Box, would be the one enclosing the
 B-Boxes of the original goal entered at the Prolog toplevel (that goal is a clause body).
 
 A B-Box has _internal state_. Evidently there are the currently active sub-B-Boxes, but
 there is also the index of the predicate clause that is currently being processed. This
-index which will be incremented when the B-Box is asked for a "redo". 
+index which will be incremented when the B-Box is asked for a "redo".
 
-(In some papers on parallel implementations of Prolog, the predicate activation is seen 
+(In some papers on parallel implementations of Prolog, the predicate activation is seen
 as an "agent" in and of itself, communicating over channels (the variables) with other agents,
 an interesting view).
 
 Execution flow can be considered as a token passing into one port of an instantiated
 B-Box and out of another. In a picture chaining several B-Boxes, the token is transported
 over "wires" linking the ports. Whenever the token goes through one of the ports, the
-corresponding port traversal event is fired and may cause the tracer to print out messages 
+corresponding port traversal event is fired and may cause the tracer to print out messages
 or query the user for interaction.
 
 ## The ports
@@ -185,30 +186,30 @@ The traditional set of ports is the following:
   been a previous box that concluded successfully: the special B-Box performing the head unifications.
   Entering via `call` is equivalent to asking the predicate to constructively find
   solutions given the current values for its arguments (which can be found in the term store).
-  
+
 - **`exit`** (or better, **`succ`**) Outgoing, left-to-right: The predicate call
   succeeds, and the next B-Box can be instantiated and called. Which B-Box that is
   depends on the current state of the surrounding B-Box, which manages branching,
   B-Box instantiations and wiring. If this was the end of a clause body, the execution token
-  is transferred to the surrounding B-Box instead. Exiting via `succ` is equivalent to 
+  is transferred to the surrounding B-Box instead. Exiting via `succ` is equivalent to
   the predicate stating that it constructively found a solution and that the witness (the constructed
   solution) is given by the current contents of the term store (which are named by
   the shared variables of the clause)
 
-- **`redo`**: Incoming, right-to-left. The B-Box to the right has encountered 
+- **`redo`**: Incoming, right-to-left. The B-Box to the right has encountered
   failure or a collection of results via a meta-predicate like `bagof/3` is ongoing, or
   the user has asked for more solutions on the toplevel after a successful conclusion.
   Passing the execution token back into the B-Box via `redo` may:
   leads to the execution token being passed to `redo` ports of lower-level boxes or
   lead to advancing the B-Box counters to the next clause. If a new
   solution can be found, the term store is updated and the token is passed out via
-  `exit`. If no new solution can be found, the token is passed out via `fail`. 
+  `exit`. If no new solution can be found, the token is passed out via `fail`.
   Entering via `redo` is equivalent to asking the predicate to constructively find
   more solutions than the one already found given the current contents of term store.
 
 - **`fail`** Outgoing, right-to-left. The B-Box cannot provide any more solutions
   given current conditions. Setting up different terms in the term store for a
-  reattempt is left to the predicate instantiation to the left. Exiting via `fail` is 
+  reattempt is left to the predicate instantiation to the left. Exiting via `fail` is
   equivalent to the predicate stating that there are no
   more solution than the one given (which may be none at all) given the current contents
   of the term store.
@@ -258,24 +259,24 @@ match. This may make the trace harder to follow than is necessary.
 
 ISO Standard Prolog specifies exceptions, so one would expect port like `throw` or
 `exception` to be present on the B-Box, too. An execution token exiting via `exception`
-will be passed to first enclosing B-Box that can _catch_ it (i.e. unify the thrown term in a 
-[`catch/3`](https://eu.swi-prolog.org/pldoc/man?section=exception)). 
+will be passed to first enclosing B-Box that can _catch_ it (i.e. unify the thrown term in a
+[`catch/3`](https://eu.swi-prolog.org/pldoc/man?section=exception)).
 
 ### Head unifications
 
 Although left unmentioned in the original B-Box model, a rule head can be considered as
 a special B-Box that performs a series of unifications. Its execution token comes from the
-surrounding box through `call`, its `fail` passes the token back to the surrounding box, 
-and its `redo` is just short-circuited to `fail`. 
+surrounding box through `call`, its `fail` passes the token back to the surrounding box,
+and its `redo` is just short-circuited to `fail`.
 
 ### Non-traditional ports
 
-**SWI-Prolog** provides `exception` port as well as the additional `unify` port 
-(see [Overview of the Debugger](https://www.swi-prolog.org/pldoc/man?section=debugoverview)).
-`unify` can be seen as an event or as the `exit` port of the special head B-Box: 
+**SWI-Prolog** provides `exception` port as well as the additional `unify` port
+(see [Overview of the Debugger](https://eu.swi-prolog.org/pldoc/man?section=debugoverview)).
+`unify` can be seen as an event or as the `exit` port of the special head B-Box:
 
 > - `unify`: allows the user to inspect the result after unification of the head.
-> - `exception`: shows exceptions raised by `throw/1` or one of the built-in predicates. 
+> - `exception`: shows exceptions raised by `throw/1` or one of the built-in predicates.
 
 **Logtalk** additionally distinguishes the `unify` depending on whether the PP is currently
 evaluating a rule or a fact
@@ -287,7 +288,7 @@ evaluating a rule or a fact
 
 ## Time for graphics
 
-An appoximate rendering of a clause for which the PP generate the head B-Box, and two additional B-Boxes 
+An appoximate rendering of a clause for which the PP generate the head B-Box, and two additional B-Boxes
 would thus be this (the `excpetion` port is not shown)
 
 ![Byrd Box Model](pics/byrd_box_model.svg)
@@ -295,55 +296,55 @@ would thus be this (the `excpetion` port is not shown)
 A variation in text, using some unicode characters from the [math bloc](https://en.wikipedia.org/wiki/Mathematical_operators_and_symbols_in_Unicode)
 
 ```none
-DETERMINISTIC PREDICATE 
+DETERMINISTIC PREDICATE
 (well-behaved: closing off the REDO port, i.e. "leaving no choicepoint")
-       
+
              +---------------------+
      -------⊳|Call------⊳-----⊳Succ|------⊳
    from      |                     |      to
    prev      |                     |      next
    pred      |                     |      pred
-     ⊲---+   |Fail             Redo|   +--- 
-         |   +---------------------+   |   
+     ⊲---+   |Fail             Redo|   +---
+         |   +---------------------+   |
          |                             |
          +---⊲----no choicepoint----⊲--+
 
 SEMI-DETERMINISTIC PREDICATE
 (well-behaved: closing off the REDO port, i.e. "leaving no choicepoint")
-              
+
              +---------------------+
      -------⊳|Call---+--⊳-----⊳Succ|------⊳
    from      |       |             |      to
    prev      |       ∇             |      next
    pred      |       |             |      pred
-     ⊲---+---|Fail⊲--+             |   +--- 
-         |   +---------------------+   |   
+     ⊲---+---|Fail⊲--+             |   +---
+         |   +---------------------+   |
          |                             |
          +---⊲----no choicepoint----⊲--+
 
 NONDETERMINISTIC PREDICATE (succeeds maybe 0 times)
 MULTI PREDICATE (succeeds at least once)
 (well-behaved if it closes off the REDO port at the last solution, i.e. "leaves no choicepoint")
-              
+
              +---------------------+
      -------⊳|Call---+--⊳--+--⊳Succ|------⊳
    from      |       |     |       |      to
    prev      |       ∇     ∆       |      next
    pred      |       |     |       |      pred
-     ⊲---+---|Fail⊲--+--⊲--+---Redo|⊲--+--- 
-         |   +---------------------+   |   
+     ⊲---+---|Fail⊲--+--⊲--+---Redo|⊲--+---
+         |   +---------------------+   |
          |                             |
          +---⊲----no choicepoint----⊲--+
 ```
 
 ## Predicate behaviour and well-behavedness <a name="well-behaved"></a>
 
-See [SWI-Prolog: Deterministic/Semi-deterministic/Non-deterministic predicates](https://www.swi-prolog.org/pldoc/man?section=testbody)
+See [SWI-Prolog: Deterministic/Semi-deterministic/Non-deterministic predicates](https://eu.swi-prolog.org/pldoc/man?section=testbody)
 
 Note these case of predicate behaviour:
 
 - A **deterministic** predicate always succeeds **exactly once**, a `redo` means pass-through to the preceding
-  predicate activation or the clause head. If the predicate is _well-behaved_ it tells the Prolog Processor that there are 
+  predicate activation or the clause head. If the predicate is _well-behaved_ it tells the Prolog Processor that there are
   no alternative solutions ("it leaves no choicepoints"). Programmatically, this is implemented by a cut at very the end
   of a clause. When backtracking, the Prolog Processor can then dispense with a `redo` call to this predicate and
   backtrack to the preceding predicate call (or hit the head of the clause). On the Prolog Toplevel, a well-behaved
@@ -351,8 +352,8 @@ Note these case of predicate behaviour:
   of this kind perform side-effects, I/O and control. The outcome "true" really means "success in computation", with failure
   indicated by a thrown exception instead of the outcome "false". Simplest example: [`true/0`](https://eu.swi-prolog.org/pldoc/doc_for?object=true/0).
 - A **semi-deterministic** predicate **may succeed once or fail**. In case of success, behaviour and well-behaved behaviour
-  are as described for the deterministic predicate. On the Prolog Toplevel, a well-behaved 
-  semi-deterministic predicate will either says `true.` or `false.` and not accept a `;` for more solutions. 
+  are as described for the deterministic predicate. On the Prolog Toplevel, a well-behaved
+  semi-deterministic predicate will either says `true.` or `false.` and not accept a `;` for more solutions.
   Example: [`memberchk/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=memberchk/2).
 - A **non-deterministic** predicate **may fail or succeed on first call, and succeed N>=0 times on `redo`**.
   This is the most general situation. The predicate may additionally provide **determinism on the last solution**,
@@ -361,16 +362,16 @@ Note these case of predicate behaviour:
   determinism on the last solution or not, for example for `member(1,[1,2,3,1])` it will, but it won't for
   `member(1,[1,2,3,4])` because there is no way that the predicate can know there are no further `1` in the
   list after the first one (which is objectively also the last one) without actually searching through the list.
-    
+
 In the B-Box model, a "well-behaved" predicate can be understood thus: when the token exits at `exit` and this
 is know (by the predicate) to be the last solution, the `redo` port is "closed". When going leftwards during
-backtracking, the token won't enter via `redo` but bypasses the B-Box entirely. This bypass operation may 
+backtracking, the token won't enter via `redo` but bypasses the B-Box entirely. This bypass operation may
 certainly be chained, bypassing more B-Boxes towards the left. The bypass doesn't add functionality, but is
 a representation of an optimization that the Prolog Process may choose to implement. In fact, the implementation
 will probably just remove the predicate activation record from its stack, any `redo` will not
 even be able to know that it has ever been there.
 
-With the above, we can create a few illustrations. 
+With the above, we can create a few illustrations.
 
 ![Byrd Box examples](pics/byrd_box_examples.svg)
 
@@ -391,8 +392,8 @@ of elementary B-Boxes:
 - _U-Boxes_: These are B-Boxes which perform a sequence of unifications on the global term store. Such B-Boxes modify the term
   store. Unification operations instantiate freshterms (uninstantiated terms) at leaf positions of term trees, or merge pairs
   of freshterms into single freshterms ("variable sharing"). This extends the term trees in the term store downwards (term
-  trees newer shrink going leftward). The clause-local variables that appear to the LHS and RHS of any `=` 
-  name the positions of interest in those trees. In particular, clause head B-Boxes are U-Boxes.  
+  trees newer shrink going leftward). The clause-local variables that appear to the LHS and RHS of any `=`
+  name the positions of interest in those trees. In particular, clause head B-Boxes are U-Boxes.
 - _V-Boxes_: These are B-Boxes which do **not** modify the term store, though they may consult it. They perform
   processing other than unification. What processing is this? Branching decisions, I/O and function evaluation,
   including comparison operation on term store elements fall under this.
@@ -422,7 +423,7 @@ entering, and inside of any sub-B-Box. However the paths of the execution token 
   it had when entering via `call`.
 
 The above is a direct consequence of what sub B-Boxes and the U-Boxes do, no special handling is
-required. 
+required.
 
 On the other hand, a "bypass" of the B-Box to implement "well-behavedness" demands a rollback of the term store
 without intervention of the B-Box being bypassed. But this is easily done: the rollback must be to the version
@@ -434,10 +435,10 @@ We can now easily show where operations on the term story happen:
 
 ## More Reading
 
-- **[Specifying Trace Models With a Continuation Semantics](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.39.8325)** 
+- **[Specifying Trace Models With a Continuation Semantics](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.39.8325)**
    - Erwam Jahier, Mireille Ducassé, Olivier Ridoux, 1999
-   - appears in [Springer LNCS 2042](https://link.springer.com/chapter/10.1007/3-540-45142-0_10): "LOPSTR 2000: Logic Based Program Synthesis and Transformation" pp. 165-181. 
-   - The preprint is named differently: [Specifying Byrd's Box Model with a Continuation Semantics](https://www.researchgate.net/publication/220153715_Specifying_Byrd's_Box_Model_with_a_Continuation_Semantics) 
+   - appears in [Springer LNCS 2042](https://link.springer.com/chapter/10.1007/3-540-45142-0_10): "LOPSTR 2000: Logic Based Program Synthesis and Transformation" pp. 165-181.
+   - The preprint is named differently: [Specifying Byrd's Box Model with a Continuation Semantics](https://www.researchgate.net/publication/220153715_Specifying_Byrd's_Box_Model_with_a_Continuation_Semantics)
 
 > We give a formal specification of Byrd's box model and show how this specification can be extended to specify richer
 > trace models. We also show how these specifications can be executed by a direct translation into λProlog, leading
@@ -445,16 +446,16 @@ We can now easily show where operations on the term story happen:
 > trace models and to validate the different event specifications. We have hence a formal framework to specify and
 > prototype trace models.
 
-- **[What's in a Trace: The Box Model Revisited](https://www.researchgate.net/publication/225203235_What's_in_a_trace_The_box_model_revisited)** 
+- **[What's in a Trace: The Box Model Revisited](https://www.researchgate.net/publication/225203235_What's_in_a_trace_The_box_model_revisited)**
    - Gerhard Tobermann, Clemens Beckstein
    - appears in "Automated and Algorithmic Debugging, First International Workshop, AADEBUG '93, Linköping, Sweden, May 3-5, 1993, Proceedings" (Springer), pp. 171-187.
 
 > The box model as introduced by Byrd describes the process of finding an answer to a query wrt a logic
-> program by means of a chronological trace protocol. This protocol contains entries for primitive 
-> events associated with the execution of PROLOG procedures. Basic events are `call` (a procedure is 
+> program by means of a chronological trace protocol. This protocol contains entries for primitive
+> events associated with the execution of PROLOG procedures. Basic events are `call` (a procedure is
 > being entered), `exit` (a procedure was left signaling a success), `redo` (another solution to
 > the `call` associated with the procedure is sought for), and `fail` (there is no (other) solution).
-> 
+>
 > Byrd only gives an informal account of how to visualize procedural aspects of the execution of
 > PROLOG programs. He e.g. does not explicitly consider goals with variables and does not show
 > how to keep track of the evolution of bindings during the proof. The major reason for this - as we
@@ -469,18 +470,18 @@ We can now easily show where operations on the term story happen:
    - Paul Mulholland, Human Cognition Research Laboratory, Open University, Milton Keynes
    - Psychology of Programming Interest Group, 1995, University of Edinburgh, Edinburgh.
 
-> All existing tracers adopt the Byrd Box style model of execution which underpins the Spy tracer (Byrd, 1980). 
+> All existing tracers adopt the Byrd Box style model of execution which underpins the Spy tracer (Byrd, 1980).
 > The results gained from the previous study suggest that certain principles of Prolog execution are difficult
 > to represent within the Byrd box model, in particular backtracking. In order to combat these problems a
 > choice-point model of execution was adopted (Dodd, 1993). The key feature of the choice-point model is
 > that as each clause is entered, the interpreter "looks ahead" to see if any later clauses could match
 > should the present route fail. If so, this is marked as a choice-point. Backtracking can then be shown
 > as jumping back to the nearest choice-point. This model was combined with promising notational
-> techniques found in existing tracers to develop two Prolog choice-point tracers: the Prolog Linear Tracer 
+> techniques found in existing tracers to develop two Prolog choice-point tracers: the Prolog Linear Tracer
 > (Plater) and the Prolog Non-linear Tracer (Pinter). These also shared a new textual representation of
 > binding, loosely based on the lozenge notation used in TPM (Eisenstadt & Brayshaw, 1990).
 
-- **A choice-point model of Prolog execution.** 
+- **A choice-point model of Prolog execution.**
    - presented at ALP-UK Workshop on Logic Programming Support Environments, Edinburgh.
    - Tony Dodd, 1993
    - (this document does not seem to exist online)
