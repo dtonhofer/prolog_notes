@@ -1,9 +1,13 @@
 # About the "Byrd Box Model"
 
-This is companion info to [SWI-Prolog's page on the Byrd Box model](https://eu.swi-prolog.org/pldoc/man?section=byrd-box-model).
+This is companion info to 
 
-See also [SWI-Prolog's page on predicate descriptors](https://eu.swi-prolog.org/pldoc/man?section=preddesc) and
-a [related page for `pldoc` document generator](https://eu.swi-prolog.org/pldoc/man?section=modes)
+- [SWI-Prolog's page on the Byrd Box model](https://eu.swi-prolog.org/pldoc/man?section=byrd-box-model).
+
+See also 
+
+- [SWI-Prolog's page on predicate descriptors](https://eu.swi-prolog.org/pldoc/man?section=preddesc) and
+- a [related page for `pldoc` document generator](https://eu.swi-prolog.org/pldoc/man?section=modes)
 
 ## Generalities
 
