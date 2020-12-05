@@ -288,7 +288,7 @@ For logics able to deal with proofs that yield both `true` and `false` see:
      [Introduction to Annotated Logics: Foundations for Paracomplete and Paraconsistent Reasoning](https://www.springer.com/gp/book/9783319179117),
      (Jair M Abe, Seiki Akama,  Kazumi Nakamatsu), Springer Intelligent Systems Reference Library 88, 2015.
    
-## "Floundering"
+## "Floundering"<a name="floundering"></a>
 
 "Flounding" suggest that the Prolog Processor trashes around or performs something repeatedly without progress:
 
