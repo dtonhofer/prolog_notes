@@ -2,9 +2,22 @@
 
 These are comments relative to the [page for the `\+` operator](https://eu.swi-prolog.org/pldoc/doc_for?object=(%5C%2B)/1) in the SWI-Prolog manual.
 
-For links to literature, see the end of this page.
+## TOC
 
-## Citations
+- [Citations](#citations)
+- [Interpretation](#interpretation)
+- [The set "NAF"](#the_set_NAF)
+- [Non-monotonicity](#non_monotonicity)
+- [What's the meaning of this?](#meaning)
+   - [Logic programming with extended logics](#extended_logics)
+- ["Floundering"](#floundering)
+- [Using "double negation"](#double_negation)
+   - [Double negation hides information](#double_negation_hides_information)
+   - [Double negation in _forall/2_](#double_negation_in_foralltwo)
+   - [A note on "double negation" from the Mercury manual](#double_negation_in_mercury)
+- [Literature references](#literature_references)
+
+## Citations<a name="citations"></a>
 
 From [_The Art of Prolog_](https://mitpress.mit.edu/books/art-prolog-second-edition) (first edition, Leon Sterling and Ehud Shapiro, 1988)
 p. 165-166 (Chapter 11.3, "Negation"):
@@ -90,7 +103,7 @@ This is what Prolog does with `\+`.
 > Flora-2 takes a different approach. For body-only variables that appear under `\naf` the
 > semantics is Exists-Not. 
 
-## Interpretation
+## Interpretation<a name="interpretation"></a>
 
 Read `\+ p(X)` as 
 
@@ -128,7 +141,7 @@ like [Vampire](http://www.vprover.org/) or
 Answer-Set-Programming systems ("stable model semantics") like
 [smodels](http://www.tcs.hut.fi/Software/smodels/) or [Potassco](https://potassco.org/doc/).
 
-## The set "NAF"
+## The set "NAF"<a name="the_set_NAF"></a>
 
 - A _positive logic program_ is a set of rules that has no negative subgoals (is this terminology in common use?)
 - A _general logic program_ is a set of rules that have both positive and negative subgoals (this terminology _is_ in common use)
@@ -158,7 +171,7 @@ Pointers to pursue from "The Well-Founded Semantics for General Logic Programs"
   on Automated Deduction, pages 292-308, New York, 1982. Springer-Verlag.) without producing the
   inconsistency typical of the closed world assumption. 
 
-## Non-monotonicity
+## Non-monotonicity<a name="non_monotonicity"></a>
 
 Negation-as-failure is a "nonomontonic" computation of truth values in that, if the logic program
 is expanded by adding positive facts (we can't add negative facts facts to a Prolog program)
@@ -221,7 +234,7 @@ This can be an effect that is desired or not. See also:
 - [Non-monotonic Logic](https://plato.stanford.edu/entries/logic-nonmonotonic/)
 - [Logical Approaches to Defeasible Reasoning](https://plato.stanford.edu/entries/reasoning-defeasible/#LogiAppr)
 
-## What's the meaning of this?
+## What's the meaning of this?<a name="meaning"></a>
 
 I haven't found a discussion in literature concerning the "shift in meaning" that occurs due to `\+` but it must have been discussed somewhere.
 
@@ -258,7 +271,7 @@ make the above clearer, or even consistent. It wouldn't be Prolog though.
 
 ![some extended logical values](pics/some_extended_logical_values.svg)
 
-### Logic programming with extended logics
+### Logic programming with extended logics<a name="extended_logics"></a>
 
 Belnap has a four-valued logic that abandons the pretense of classical logic at global consistency and determinate
 truth values `true` or `false` for every statement (so the idea of having "proofs by contradiction" is no longer applicable,
@@ -441,7 +454,7 @@ From _"The Art of Prolog"_ 1st ed. p. 166:
 > that negated goals are grounded before they are solved. This can be done either by a static analysis of the
 > program, or by a runtime heck, using the predicate _ground_ (...)
 
-## Using "double negation"
+## Using "double negation"<a name="double_negation"></a>
 
 If you want to run some goal in an "isolated context":
 
@@ -512,14 +525,15 @@ true.
 
 See also: [Salvaging a term out of a dropped search branch](/swipl_notes/about_salvaging_a_term_out_of_a_dropped_search_branch/README.md)
 
-**Here's a weird one**
+### Double negation hides information<a name="double_negation_hides_information"></a>
 
 ```
 p(X) :- \+ \+ q(X).
 q(1).
 ```
 
-`p/1` and `q/1` are true for exactly the same values, but if you have only `p/1` (outside of a module for example), you cannot ask for those values:
+`p/1` and `q/1` are true for exactly the same values, but if you have only `p/1` (outside of a module for example), you cannot _ask_ for those values
+to be delivered to you:
 
 ```
 ?- p(2).   % 2 is not a solution
@@ -532,7 +546,21 @@ true.
 true.
 ```
 
-### A note on "double negation" from the Mercury manual
+### Double negation in _forall/2_<a name="double_negation_in_foralltwo"></a>
+
+Double negation is used for the predicate [`forall/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=forall/2):
+
+```
+forall(Cond, Action) :- \+ (Cond, \+ Action).
+```
+
+The SWI-Prolog manual states:
+
+> The predicate `forall/2` is implemented as `\+ ( Cond, \+ Action)`, i.e., _There is no instantiation of `Cond` for which `Action` is false_.
+> The use of double negation implies that `forall/2` does not change any variable bindings. 
+> It proves a relation. The `forall/2` control structure can be used for its side-effects.
+
+### A note on "double negation" from the Mercury manual<a name="double_negation_in_mercury"></a>
 
 In the Mercury language ("Prolog with types"), the compiler apparently gets rid of double negation:
 
@@ -547,28 +575,29 @@ In the Mercury language ("Prolog with types"), the compiler apparently gets rid 
 > meaning and type-correctness of the code, and they preserve or improve mode-correctness:
 > they never transform code fragments that would be well-moded into ones that would be ill-moded.)
 
-## Reading
+## Literature references<a name="literature_references"></a>
 
 Wikipedia has a (short) page on ["Negation as Failure"](https://en.wikipedia.org/wiki/Negation_as_failure).
 
-### On "Negation" in general
+### On "Negation" in general<a name="on_negation_in_general"></a>
 
 - [Negation](https://plato.stanford.edu/entries/negation/) at the Stanford Encyclopedia of Philosophy
 - "A Natural History of Negation" by Laurence R. Horn, University of Chicago Press. Reissued, Stanford, CA: CSLI Publications, 2001. ([Book Presentation Page](http://web.stanford.edu/group/cslipublications/cslipublications/site/1575863367.shtml))
 
-### "Negation as Failure" (1978)
+### "Negation as Failure" (1978)<a name="negation_as_failure_1978"></a>
 
    - Keith Clark
    - 1978
    - http://www.doc.ic.ac.uk/~klc/neg.html
 
-### “Negation and Control in Prolog” (1986)
-
+### “Negation and Control in Prolog” (1986)<a name="negation_and_control_in_prolog"></a>
+ 
    - Lee Naish
-   - 1986
-   - [Springer Lecture Notes in Computer Science (LNCS) No. 238, Springer-Verlag Berlin Heidelberg 1986, 129 pages](https://link.springer.com/book/10.1007/BFb0021681)
+   - Lecture Notes in Computer Science, N° 238, 1985, Springer-Verlag
+   - [Book page](https://www.springer.com/gp/book/9783540168157)
+   - [SpringerLink page](https://link.springer.com/book/10.1007/BFb0021681)
 
-### "Negation as Failure I & II" (Surveys by Sheperdson) (1984, 1985)
+### "Negation as Failure I & II" (Surveys by Sheperdson) (1984, 1985)<a name="negation_as_failure_sheperdson_surveys"></a>
 
 **Negation as Failure: A Comparison of Clark's Completed Data Dase and Reiter's Closed World Assumption**
 
