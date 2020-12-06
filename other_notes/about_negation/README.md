@@ -156,6 +156,10 @@ constructs can be used. Interaction computing is definitely proscribed.
 
 ![Where is the set of NAF](pics/where_is_the_set_naf.svg)
 
+An alternative image. I will have to decide which one to use...
+
+![Where is the set of NAF, alternative image](pics/another_graph_for_naf.svg)
+
 This gives another reading of `\+ Goal`, namely: _"does 'Goal' belong to the set NAF?"_. 
 
 A Prolog program that uses the above principle is said to perform SLDNF proof search (SLD resolution
@@ -374,9 +378,9 @@ and that binding of `X` to 1 will be erased due to backtracking.)
 
 **An inconsistency arises!**
 
-This seems to happen whenever the goal wrapped by `\+` contains unbound "free variables" that also occur outside the wrapped goal.
+This seems to happen whenever the goal wrapped by `\+` contains unbound "free variables" that also occur outside the wrapped goal. Do not do this!
 
-Maybe the Prolog processor should throw an exception when it finds a body subject to floundering.
+Maybe the Prolog processor should throw an exception when it finds a body subject to floundering, but in general this would only be detectable at runtime.
 
 The problem stems from the fact that Prolog basically relies on explicit enumerations over domains 
 followed by tests (but for some reason, explicit domains have never been given explicit treatment in
