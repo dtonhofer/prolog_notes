@@ -26,6 +26,9 @@ There are:
 
 ![Programming in Prolog](pics/cover_programming_in_prolog.jpg)
 
+- [Book page](https://www.springer.com/gp/book/9783540006787#otherversion=9783642554810) for the 5th edition of 2003
+- [SpringerLink page](https://link.springer.com/book/10.1007%2F978-3-642-55481-0)
+
 `findall/3` is explained in Chapter 7.8.3., pages 167 ff., and an implementation in Prolog that uses
 `asserta/1` and `retract/1` to store solutions prior to unifying a list of the same with the `Instances` argument is provided.
 
@@ -33,13 +36,17 @@ There are:
 
 ![Art of Prolog](pics/cover_art_of_prolog_1st_edition.jpg) 
 
+- [Book page](https://mitpress.mit.edu/books/art-prolog-second-edition) for the 2nd edition of 1994
+
 The predicates `bag_of/3`, `set_of/3` and `find_all_dl/3` (corresponding to `findall/4`) are discussed in
 Chapter 17: "Second-Order Programming", pages 266 ff.
 
 **Negation and Control in Prolog**, Lee Naish, Lecture Notes in Computer Science, N° 238, **1985**, Springer-Verlag
  
 ![LNCS 238](pics/cover_LNCS238.jpg) 
-[Book page](https://www.springer.com/gp/book/9783540168157)
+
+- [Book page](https://www.springer.com/gp/book/9783540168157)
+- [SpringerLink page](https://link.springer.com/book/10.1007/BFb0021681)
 
 On page 12 of this book, Lee Naish lists implementations of "collection predicates" that existed
 in 1985. Problems of `findall/3` are discussed on page 13.
@@ -47,6 +54,8 @@ in 1985. Problems of `findall/3` are discussed on page 13.
 **The Craft of Prolog**, Richard A. O'Keefe, **1990**, MIT Press
 
 ![Craft of Prolog](pics/cover_craft_of_prolog.jpg)
+
+- [Book page](https://mitpress.mit.edu/books/craft-prolog)
 
 `findall/3` is discussed in-depth in Chapter 11: "All Solutions" , pages 355-373.
 The chapter starts with: 
@@ -57,6 +66,8 @@ The chapter starts with:
 > backtracking control structure to the next.
 
 **ISO/IEC 13211-1 (1995 version)** 
+
+- [The page for the standard at ISO](https://www.iso.org/standard/21413.html) (pricing itself out of the market at CHF 200 instead of more like CHF 10 which would probably bring in more coin overall 🤔)
 
 `findall/3` is described in the Prolog ISO standard in a short section on page 82 as follows:
 
