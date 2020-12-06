@@ -512,6 +512,26 @@ true.
 
 See also: [Salvaging a term out of a dropped search branch](/swipl_notes/about_salvaging_a_term_out_of_a_dropped_search_branch/README.md)
 
+**Here's a weird one**
+
+```
+p(X) :- \+ \+ q(X).
+q(1).
+```
+
+`p/1` and `q/1` are true for exactly the same values, but if you have only `p/1` (outside of a module for example), you cannot ask for those values:
+
+```
+?- p(2).   % 2 is not a solution
+false.
+
+?- p(X).   % yes there is a solution but Prolog won't tell you which
+true.
+
+?- p(1).   % you guessed correctly!
+true.
+```
+
 ### A note on "double negation" from the Mercury manual
 
 In the Mercury language ("Prolog with types"), the compiler apparently gets rid of double negation:
