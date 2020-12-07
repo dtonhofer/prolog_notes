@@ -105,6 +105,7 @@ Some predicates which may be of general use can be found in the [Code grabbag](c
 - [Richard O'Keefe: An Elementary Prolog Library](http://www.cs.otago.ac.nz/staffpriv/ok/pllib.htm): Discussion about extending the ISO standard with a usable library.
 - [The Prolog dictionary](http://www.cse.unsw.edu.au/~billw/prologdict.html) by Bill Wilson
 - [The SWI-Prolog glossary](https://eu.swi-prolog.org/pldoc/man?section=glossary) aka. "Appendix D"
+- [Glossary of Logic Terms](https://faculty.washington.edu/smcohen/120/Glossary.pdf) (PDF) by Marc Cohen
 
 ### On YouTube: "The Power of Prolog" by Markus Triska
 
