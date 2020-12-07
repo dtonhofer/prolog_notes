@@ -103,6 +103,8 @@ Some predicates which may be of general use can be found in the [Code grabbag](c
 - [Bug Hunting Toolbox Wiki Page at SWI-Prolog Discourse Site](https://swi-prolog.discourse.group/t/bug-hunting-toolbox/710)
 - [Frank Pfenning's Course on Logic Programming](http://www.cs.cmu.edu/~fp/courses/lp/) ([Lecture Notes as one PDF](http://www.cs.cmu.edu/~fp/courses/lp/lectures/lp-all.pdf) ... 324 pages). Hardcore!   
 - [Richard O'Keefe: An Elementary Prolog Library](http://www.cs.otago.ac.nz/staffpriv/ok/pllib.htm): Discussion about extending the ISO standard with a usable library.
+- [The Prolog dictionary](http://www.cse.unsw.edu.au/~billw/prologdict.html) by Bill Wilson
+- [The SWI-Prolog glossary](https://eu.swi-prolog.org/pldoc/man?section=glossary) aka. "Appendix D"
 
 ### On YouTube: "The Power of Prolog" by Markus Triska
 
