@@ -160,6 +160,9 @@ An alternative image. I will have to decide which one to use...
 
 ![Where is the set of NAF, alternative image](pics/another_graph_for_naf.svg)
 
+The next in step would be a image that also includes proof that have `\+` itself in the proof tree, once, twice, etc ... 
+(that's related to what is called "stratified" and "locally stratified" programs I suppose, to be continued!)
+
 This gives another reading of `\+ Goal`, namely: _"does 'Goal' belong to the set NAF?"_. 
 
 A Prolog program that uses the above principle is said to perform SLDNF proof search (SLD resolution
