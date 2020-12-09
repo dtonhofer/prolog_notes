@@ -3,6 +3,8 @@
 % https://opensource.org/licenses/0BSD
 % ===
 
+% DOESN'T WORK FOR CYCLIC LISTS 
+
 /*
 % Non-integer length causes exceptions (even if conversion would make sense):
 
