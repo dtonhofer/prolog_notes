@@ -1,0 +1,237 @@
+https://eu.swi-prolog.org/pldoc/man?section=glossary
+
+Some possible additions:
+
+Some adapted from
+
+- "Deduction Systems", Rolf Socher-Ambrosius, Patricia Johann, Springer 1997
+- "Memoing for Logic Programs", David S. Warrne, CACM Marc 1992 (Vol.35 No.3)
+
+## Computation
+
+   - **Unbound variable** vs. **Unbound value**: An **unbound variable** is a variable name that denotes an "empty cell" in memory. It is a variable name for which var/1 exactly succeeds at call time (but maybe not later, after a unification occurs. On the other hand, definitely earlier because you cannot "unbind" a variable except through backtracking; this is waht i means for Prolog to be "assign-once"). An **unbound value** is a position in a complex term that denotes an "empty cell" in memory but that does not have a name. For example: `length(L,2)`. `L` is an unbound variable at first that is then unified with a complex term (a list of length 2) with 2 unbound values, which, when printed, appear as 2 unbound variables (i.e. their arbitrarilly chosen names are printed rather than their nonexistent content): `L = [_5038, _5044]`.)
+
+   - [Predicate **well-behavedness**](https://github.com/dtonhofer/prolog_notes/blob/master/other_notes/about_byrd_box_model/README.md#well-behaved)
+
+   - [Predicate **steadfastness**](https://eu.swi-prolog.org/pldoc/man?section=preddesc)
+
+   - **Partial term / Partially ground term**: That term that is an unbound variable or may contain unbound variables not 100%% sure whether an unbound variable actually counts as such; the mode indicator descriptions seem to imply no).
+
+   - [**Floundering**](https://github.com/dtonhofer/prolog_notes/blob/master/other_notes/about_negation/README.md#floundering): When negation-as-failure pretzels itself and leads to wrong answers because the negated goal contains unbound variables.
+
+   - **Closure** (in the Prolog sense) (from the page for [`library(yall)`](https://eu.swi-prolog.org/pldoc/man?section=yall): The closure concept used here is somewhat different from the closure concept from functional programming. The latter is a function that is always evaluated in the context that existed at function creation time. Here, a closure is a term of arity 0 =< L =< K. The term's name is the name of a predicate of arity K and the term's L arguments (where L could be 0) correspond to L leftmost arguments of said predicate. The remaining K-L arguments are left open and will be filled in by at metacall time. For example, a closure involving atom_concat/3 might be the term `atom_concat(prefix)`. In order of increasing L, one would have increasingly more complete closures that could be passed to call/3, all giving the same result: 
+      - call(atom_concat,prefix,suffix,R).
+      - call(atom_concat(prefix),suffix,R).
+      - call(atom_concat(prefix,suffix),R).
+      - call(atom_concat(prefix,suffix,R)).
+
+   - **Fresh variable** - a Prolog variable name that has not been used "to the left" and denotes a newly allocated "empty cell" in memory. For example, `_` is always fresh where it appears.
+
+   - **Iterative Deepening** - a heuristic to expand search trees which can be used in particular to transform Prolog's depth-first search strategy into a depth-limited breadth-first search strategy. This expands shallow nodes first and avoids accidental infinite descent on depth-first search. See "Depth-First Iterative Deepening: An Optimal Admissible Tree Search" by Richard Korf, Artificial Intelligence 27 (1985), Elsevier. Also [Wikipedia](https://en.wikipedia.org/wiki/Iterative_deepening_depth-first_search). See also call_with_depth_limit/3 and call_with_inference_limit/3
+
+   - **Guard** - a test made at the beginning of a clause body for conditions that cannot be captured by simple head unification. Often followed by a cut to "commit" to the clause. Generally done using `,/2` but sometimes using `->/2`. Example:
+
+```
+choo(X) :- var(X)    -> (!,debug(choo,"It's a var",[])).
+choo(X) :- nonvar(X) -> debug(choo,"It's not a var",[]).
+```
+
+  - **Guarded Horn Clauses**, **Guarded Definite Clauses** particular logic programming languages derived from Prolog meant to be run on (highly) parallel machines (in particular so-called "5th generation" hardware). This research branch seems to have been abandoned (for now). Languages like **PARLOG** and **Parallel Prolog** are ancestors. See also: [The deevolution of concurrent logic programming languages](https://www.sciencedirect.com/science/article/pii/0743106694000388). 
+
+  - **CHR** - Abbreviation for **Constraint Handling Rules**, an approach promoting forward-chaining rules working on a blackboard store. SWI-Prolog has an implementation running in the context of a single clause: [CHR](https://eu.swi-prolog.org/pldoc/man?section=chr). See also: [Wikipedia: Constraint Handling Rules](https://en.wikipedia.org/wiki/Constraint_Handling_Rules)
+
+  - **Clause indexing** - how a Prolog implementation looks up a matching clause head. Indexing may or may not be done on several arguments. SWI-Prolog indexes on first argument only, so if you want high discrimination by cases, move the most discriminatory parameter to the first place.
+
+  - **Clean/Defaulty representation** - a question of coding style. Clean representations can be efficiently distinguished by head unification alone. Defaulty (a pun on "faulty") representations force a coding style where a clause head matches, and the body distinguishes. This may be inefficient at runtime. See Triska's Triska's discussion at [Clean vs. defaulty representations](https://www.metalevel.at/prolog/data).
+
+## Logic
+
+   - [**Herbrand Universe**](https://mathworld.wolfram.com/HerbrandUniverse.html): The set of all ground terms constructed from constants and function symbols that appear in the program.
+
+   - [**Herbrand Base**](https://mathworld.wolfram.com/HerbrandBase.html): The set of all ground atoms ("atoms" in the logical sense, i.e. predicate calls, not in the Prolog sense of "distinguishable identifiers/strings") that can be constructed from predicate symbols that appear in the program and terms from the Herbrand Universe.
+
+   - **Proof witness** or **proof solution**: a set of ground or partially ground terms that form a solution to a query with unbound variables: `length([1,2],L)`, gives `L=2`; the `2` is the proof witness (the proof is "constructive" and doesn't just say true or false). Sometimes Prolog emits a "template proof witness" instead: `length(List,2)` gives `List=[_,_]`, which is really a (most general) template for lists of length 2.
+
+   - **Free variable** - this is sometimes used in the sense of a variable that is unbound (in the Prolog sense: it has no value). That's confusing though. In logic, the "free variable" in a formula is one which is not bound (in the logic sense) by a quantifier (or a lambda if those are allowed). A bound variable is said to be "in the scope of a quantifier". The same variable (variable name) can occur in a formula in places where it is bound and free, so we have to really talk about free and bound _occurrences_ of variables rather than free and bound variables.
+
+   - **Theory** - A set of true sentences (expressed in and part of some specified logic). Concretely, a Prolog program _is_ a theory with facts and sentences pre-labeled as "true".
+
+   - [**Model Theory**](https://en.wikipedia.org/wiki/Model_theory): In mathematics, model theory is the study of the relationship between formal theories (a collection of sentences in a formal language expressing statements about a mathematical structure), and their models, taken as interpretations that satisfy the sentences of that theory.
+
+   - [**Proof Theory**](https://en.wikipedia.org/wiki/Proof_theory): Proof theory is a major branch of mathematical logic that represents proofs as formal mathematical objects, facilitating their analysis by mathematical techniques. Proofs are typically presented as inductively-defined data structures such as plain lists, boxed lists, or trees, which are constructed according to the axioms and rules of inference of the logical system. As such, proof theory is syntactic in nature, in contrast to model theory, which is semantic in nature.
+   
+   - **Model** - A truth value assignment to atoms (i.e. facts) that makes all of the sentences of a theory true (and doesn't imply inconsistencies).
+
+   - **Sentence** - A formula in which no variable occurs free, also a **closed formula**. A formula containing at least one free occurrence of a variable is **open** (Socher-Ambrosius). See also: [Wikipedia: Sentence](https://en.wikipedia.org/wiki/Sentence_(mathematical_logic)): "a Boolean-valued well-formed formula with no free variables." Given a logic, a sentence is:
+      - **Valid**: : If the sentence is true in all models.
+      - **Satisfiable**: If there is at least one model in which the sentence is true.
+      - **Unsatisfiable**: If there is no model in which the sentence is true.
+
+   - **Statement** - ["A sentence put to work"](https://www.jstor.org/stable/3326478?seq=1). From [Wikipedia: Statement](https://en.wikipedia.org/wiki/Statement_%28logic%29): (a) a meaningful declarative sentence that is true or false, or (b) the assertion that is made by a true or false declarative sentence. In some treatments "statement" is introduced in order to distinguish a sentence from its informational content. A statement is regarded as the information content of an information-bearing sentence. Thus, a sentence is related to the statement it bears like a numeral to the number it refers to. Statements are abstract logical entities, while sentences are grammatical entities.
+
+   - **Expression** - From [Wikipedia: Expression](https://en.wikipedia.org/wiki/Expression_%28mathematics%29): In mathematics, an expression or mathematical expression is a finite combination of symbols that is well-formed according to rules that depend on the context. 
+
+   - **Proposition** - More or less the same as a Statement or a Sentence. See [Wikipedia: Proposition](https://en.wikipedia.org/wiki/Proposition)
+
+   - **Theorem** - A sentence (of some logic adjoined to some theory) that can be labeled true ("proven") by a proof procedure. Goals for which the Prolog prover succeeds (which the Prolog prover accepts) are theorems for the pair (Prolog logic,Prolog program). A theorem is of course accompanied by at least one proof. Note that most Theorems are of low interest: for example, in the theory of Peano Numbers, `1+2<4`. See also: [Wikipedia: Theorem](https://en.wikipedia.org/wiki/Theorem), which has a glossary of related terms (Corollary etc.). That page also cites Paul Hoffman as _"It has been estimated that over a quarter of a million theorems are proved every year."_ Well, with Prolog you can prove a million theorems in a minute!
+
+   - **Tautology** - A sentence (of some logic adjoined to some theory) that is true in all models. For example, in classical propositional logic: `(A ⇒ B) ⇔ (¬A ∨ B)` See also: [Wikipedia: Tautology](https://en.wikipedia.org/wiki/Tautology_%28logic%29). 
+
+   - **Signature** of a logic, Sigma = `<F,P>`, is a set of function symbols name/arity adjoined to a set of predicate symbols name/arity 
+
+   - **Atom (logic)** (not to be confused with the "atom" of Prolog), or "atomic formula" is a word `p(t1,...,tn)`, n>=1 where `p` is a predicate symbol from a set `P` and the `ti` are terms from `T(F,V)`, build from a set of function symbols `F` and variable symbols from set of variable symbols `V`. The atom can also be a word of the form `s = t` where `s`,`t`  `T(F,V)`. The set of atoms may be written `A(F,P)` (note that 0-arity predicate symbols are in principle not allowed)
+
+   - **Literal** either an atom (a "positive literal") or its negation (a "negative literal") appearing in a formula. In Prolog, there is some subtlety involved with the fact that the negation is "weak" in the sense that it expresses negation-as-failure (absence of positive knowledge) instead of "strong" (presence of negative knowledge, as expressed by the negation of negation in classical (or other) logic). Although many approaches have been proposed to extend Prolog with strong negation, none of those has seen general acceptance so far. Instead, strong negation can be found in a different approach to logic programming: **Answer Set Programming**. The symbols for negation can be `~` or `¬` or `naf` or `\+`. It depends on the author but generally `¬` is the strong negation. 
+
+   - **Formula** of a logic is the set of words inductively built from "atomic formula" using logical connectives (not, and, or, implies, iff, maybe less, maybe more) and the two quantifiers (adjoined to a variable) "there is" and "for all" (and maybe others). The set of formula `L(F,P)` over signature Sigma = `<F,P>` is said to be a first-order language over the signature Sigma. (See also [Wikipedia: Well-Formed Formula](https://en.wikipedia.org/wiki/Well-formed_formula))
+
+   - **Clause** - a general normal form for expressing predicate calculus formulas. It is a disjunction of literals (P1 ∨ P2 ∨ ....) whose arguments are terms. The terms are usually introduced by eliminating existential quantifiers. (from CACM March 1992)
+
+   - **Horn Clause** - a clause containing (at most) one positive literal: H ∨ ~B1 ∨ ... (if Prolog is interpreted in the context of classical logic, the `~` is the strong negation). The term **Definite Clause** is used to denote a clause with exactly one positive literal. Prolog programs can be viewed as a set of definite clauses in which the positive literal is the head of the rule and the negative literals constitute the body or tail of the rule.  (from CACM March 1992). A Horn Clause without negative literals is called a **fact** `H`, otherwise a **rule**. Note that a clause without the positive literal can be interpreted as a **logical constraint** (not to be confused with constraint logic programming). These are not supported by Prolog (but are supported by ASP systems). 
+
+   - **Horn Clause (alternative)** (alternative, from a text by David Warren): A Horn clause in a first-order logic is a universally quantified implication in which conjunction of atomic formulas implies an atomic formula. The Horn clause in `∀X∀Y∀Z (arc(X,Y) ∧ path(Y,Z) ⇒ path(X,Z))` could be a part of a description of paths through a graph. (This definition has the advantage that it justifies calling `A :- B,C,D` a Horn clause in a logic that does not allow the equivalence A⇒B = ¬A∨B, which is intuitionistic (positive) logic, which is the logic that really applies to Prolog even though it is often said that we are dealing in classical logic).
+
+   - **Intuitionistic Logic** An ensemble of logics (and more widely, a philosophical stance) which does not accept the premise of classical logic that every sentences be necessarily labeled exactly one of "true" or "false", but accepts that some statements may remain "not labeled" until a (human) decision has been taken about how  to proceed. In effect, what Prolog does is label sentences true if it can -- and otherwise fail, leaving the question open. It thus actually works in a fragment of positive intuitionistic logic rather than classical logic. Which makes complete sense from a programming perspective. Note that in particular, the implication A⇒B is NOT equal to ¬A∨B in Intuitionistic Logic. Instead it is taken to be statement like "Given a proof of A, you are then allowed to state that you also have a proof of B". See also: [Uniform Proofs as a Foundation of Logic Programming](http://www.lix.polytechnique.fr/~dale/papers/apal91.pdf) (Dale Miller et al. 1991) and the Introduction of [Logic programming with strong negation and inexact predicates (Gerd Wagner, 1991)](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.975.3445&rank=1). More on the philosophy at the Stanford Encyclopedia of Philosophy: [Intuitionsitic Logic](https://plato.stanford.edu/entries/logic-intuitionistic/) and [Constructive Mathematics](https://plato.stanford.edu/entries/mathematics-constructive/). Also, the problem of the [Continuum Hypotheses](https://en.wikipedia.org/wiki/Continuum_hypothesis). 
+
+## Proof machinery
+
+   - *Resolution* (see Robinson 1965: "A Machine Oriented Logic Based on the Resolution Principle", which can be found on the Interwebs for free): A single inference step used to prove the validity of predicate calculus formulas expressed as clauses. In its simplest version: (P∨Q) ∧ (P∨R) ⊢ (Q∨R) which is called the resolvant. (from CACM March 1992). See also: [Wikipedia entry](https://en.wikipedia.org/wiki/Resolution_%28logic%29)
+
+   - *Linear Resolution* 
+
+   - *SL-Resolution* (sometimes *SL Refutation*) described in [Linear resolution with selection function](https://www.doc.ic.ac.uk/~rak/papers/sl.pdf) PDF) (Kowalski and Kuehner, 1971) stands for "Linear Resolution with Selection function" (probably backronymed) is an original automated theorem proving proof idea whereby Robinson resolution is applied to a single literal in each step: _Linear resolution with selection function is a restricted form of linear resolution. The main restriction is effected by a selection function which chooses from each clause a single literal to be resolved upon in that clause. This and other restrictions are adapted to linear resolution from Loveland's model elimination._  (adapted from Shanahan)
+
+   - **SLD-Resolution** (sometimes *SLD Refutation*) described in [Predicate Logic as Programming Language](https://www.doc.ic.ac.uk/~rak/papers/IFIP%2074.pdf) (Kowalski 1974) it stands for "SL-Resolution for Definite clauses" and is SL-Resolution applied to Horn clauses. SLD-Resolution is still non-deterministic and needs to be further restricted to be implementable. **Prolog** is the result of applying a restricted form of SLD-Resolution to the definite clause subset of predicate calculus, as described by Colmerauer, Kanoui, Roussel, Pasero in "Un Système de Communication Homme-Machine", 1973 (Research Report, Université Aix-Marseille Luminy): The leftmost atom in a goal clause is always chosen to resolve against, definite clauses are tried top-to-bottom order and a depth-first search is employed, for efficiency reasosn, the unification algorithm omits the occurs check. In fact, SLD-resolution is not strictly speaking a form of SL resolution, since it is more liberal in the selection functions it allows. (text adapted from "Solving the Frame Problem" by Murray Shanahan, MIT Press, 1997).
+"SLD resolution can be understood procedurally as executing a nondeterministic program with procedure calls" (David Warren),
+
+   - **SLDNF-Resolution** (sometimes *SLDNF Refutation*): SLD Resolution with "Negation as Failure" to implement a "weak negation" operator.
+
+   - **SLG-Resolution** A proof strategy whereby intermediate results are cached (**tabled**, this is called **tabling** and sometimes **memoing**). This makes it possible to write programs without having to pay special attention to infinite descent during depth-first search if the clauses are badly ordered. Prolog behaves more like a bottom-up theorem prover. (This may have been called OLD Resolution and OLDT Resolution in the 90s, not sure). See: [tabling](https://eu.swi-prolog.org/pldoc/man?section=tabling). Certainly a feature that all modern Prolog systems should have and that should be taught. 
+
+   **Refutation completeness** A property of the SLD proof method in that SLD is "refutation complete" for Horn clauses. This means that if a ground answer is a logical consequence of a program then there is an SLD refutation that generates/accepts that answer (or a more general one). There may, however be some proofs paths that are infinite in length. Since Prolog must search this tree for the answers, its depth-first search may get caught on an infinite path, before it gets to the answer. 
+
+## The evolution of the Prolog proof approach
+
+From the above, we have: 
+
+   - Resolution (Robinson 1965) (basic principle used in systems like "Markgraf Karl Refutation Procedure" of mid-70s .. mid 80s, with additional control heuristic to direct the search). Also in Hewitt's PLANNER language (not sure whether implemented, there are obviously efforts at retconning precedence & history here; in the end it doesn't matter ... next problem!).
+   - ⇒ Linear Resolution (?)
+   - ⇒ SL Resolution (Kowalski & Kuehner 1971). Kowalski is cited as: "I can recall trying to convince Hewitt that Planner was similar to SL-resolution."
+   - ⇒ SLD Resolution (Kowalski 1974)
+   - ⇒ PROLOG using (a modification of) SLD-Resolution (Colmerauer et al. 1973)
+   - ⇒ PROLOG using SLDNF (many other branches exist)
+   - ⇒ PROLOG using SLDNF and SLG
+
+Completely different approaches at building proof systems exist: Those based on Sequent Calculus, bottom-up provers, Tableaux-based, Answer Set Programming (Stable Models) and probably others.
+
+## Furthermore
+
+   - [Stack Overflow: Fact, Rule, Procedure, Predicate](https://stackoverflow.com/questions/49898738/is-this-prolog-terminology-correct-fact-rule-procedure-predicate)
+
+   - [Glossary of Logic terms](https://faculty.washington.edu/smcohen/120/Glossary.pdf) (PDF) by Marc Cohen
+
+## The parts of a list
+
+   - A **proper list** or a **closed list* is a list that has the **empty list** `[]` as the terminating element of the **list backbone** ("list backbone" is not commonly used except by myself, but it's are pretty evocative, so I will use it here)
+
+Example of a proper list: an empty list `Empty` and a list of length 3 `List1` and of length 2 `List2`.
+
+==
+
+                ↙"tip"
+List1 ------>[|]
+            /   \
+           1    [|]<-------List2
+               /   \
+              2    [|]
+                  /   \  ↙"fin"
+                 3     []<----- Empty
+==
+
+The list `Empty` could also appear simply like this. There is no way to find out which of the above and the below is "really" the case from Prolog:
+
+==
+Empty ------>[]
+==
+
+   - The **backbone** is formed by a series of **list cells** which are compound terms with name `[|]` and arity 2. In Prologs other than SWI-Prolog, the compound name is traditionally `.` -- but `.` is used for SWI-Prolog dicts now. A backbone can only be traversed from the "tip" to "fin". There is no way to fin a "prior list cell".
+   - A variable `List1` holding a list can be though of a referencing a "the first list cell" of the backbone. The predicate is_list/1 can be used to verify that the term reachable from `List1` is indeed a proper list.
+   - A variable `List2` referencing a list cell further along the backbone sees a shorter list. Nevertheless, the data structure is **shared** between `List1` and `List2` and this fact is often exploited for (example, if an element reachable from both `List1` and `List2` is further instantiated, from `X` to `2` for example, then predicates holding either of `List1` or `List2` will see this change). See also: duplicate_term/2 and copy_term/2.
+   - An **element** of a list is any term (atomic or compound) that can be found at argument position 1 of a list cell.
+   - The **empty list** is a distinguished list of length 0. In SWI-Prolog it is represented by a dedicated atomic term which is not an atom (other Prologs may have subtly differing representations)
+   - **Head** and **Tail**: A list can be "destructured" into a **Head** and a **Tail** by unifying it with an expression like `[H|T]`. 
+      - The **Head** is a sequence of n>= 1 elements, most often just 1 element. 
+      - The **Tail** is a variable denoting the rest of the list (of length >=0) after the Head. The Tail can unifiy with `[]`. 
+      - Examples:
+         - `[H|T]=[1,2,3]` 
+         - `[H1,H2|T]=[1,2,3]`
+         - `[H1,H2,H3|T]=[1,2,3]` (`T` will not be `[]` - the list without the first three positions is the empty list)
+         - `[H1,H2,H3,H4|T]=[1,2,3]` will fail. 
+   - **Tip** and **Fin** (this is my terminology, but it's pretty useful, especially when using open list; more precise than "front" and "end"). 
+      - The **Tip** of a list is the first list cell of the backbone (if it exists) or the empty list in case of an empty list (a bit synonymous with start of a list, beginning of a list, front of a list)
+      - The **Fin** of a list is whatever is found on argument position 2 of the last list cell (if it exists). In a proper list, this is always the empty list. 
+      - Now we can talk about directions "tipwards" and "finwards"
+   - **Prefix** and **Suffix**
+      - A **Prefix** of a list is a sublist appearing at the start of a list, encompassing 0 <= n <= length list cells. It may be the empty prefix, which is `[]`. The empty list has an empty prefix. 
+      - A **Suffix** of a list is a sublist appearing at the end of a list any term (atomic or compound) that can be found at argument position 2 of a list cell (alternatively, or can appear as a Tail in destructuring). The last list cell (alternatively, a list of length 1) has an empty suffix. The empty list has no suffix (it _is_ the suffix).
+      - We can consider append/3 to _define_ the meaning of Suffix and Prefix. These all pass:
+         - `Prefix=[], Suffix=[], append(Prefix,Suffix,[]).`
+         - `Prefix=[], Suffix=[1,2,3], append(Prefix,Suffix,[1,2,3]).`
+         - `[H|T]=[1,2,3], Prefix=[H],Suffix=T, append(Prefix,Suffix,[1,2,3]).`
+         - `[H1,H2|T]=[1,2,3], Prefix=[H1,H2],Suffix=T, append(Prefix,Suffix,[1,2,3]).`
+         - `[H1,H2,H3|T]=[1,2,3], Prefix=[H1,H2,H3],Suffix=T, append(Prefix,Suffix,[1,2,3]).`
+   - List operations , obtaining a new list by destructuring an existing list or constructing a new list from other lists: 
+      - **prepend/add prefix/head**: `Newlist = [X|OldList]`. If the list is seen as a stack, this is **push**. This is efficient. 
+      - **append/add suffix/tail**: `append(OldList,Tail,NewList)`. This is extremely expensive as it involves copying `OldList`. Practically never done. To borrow Perl terminology, this is `shift` (although Perl "shifts" at fin).
+      - **remove a head/prefix, remove at tip**. `OldList = [X|NewList]` If the list is seen as a stack, this is **pop**. This is efficient. 
+      - **remove a tail/suffix, removing at fin**: `append(NewList,Tail,OldList)`. This is extremely expensive as it involves copying `OldList` into `NewList`. Practically never done. To borrow Perl terminology, this is `unshift` (although Perl "unshifts" at tip).
+
+*Special case: The open list**
+
+An open list can still grow its backbone (it can be "further instantiated") because its Fin is not set: it is "empty cell". If the there is a variable naming the Fin, say `Fin`, then `Fin` is an unbound variable, `var(Fin)` returns true.
+
+An open list is transformed into a closed list by unifying that `Fin` with `[]`.
+
+A special case is the "empty open list", which is really just any unbound variable. (The future history of an unbound variable is always open, it could become anything, even the tip of a proper list).
+
+Example of a nonempty open list:
+
+==
+
+                ↙"tip"
+List1 ------>[|]
+            /   \
+           1    [|]
+               /   \
+              2    [|]
+                  /   \  ↙"fin"
+                 3   <empty> <---------- Fin
+==
+
+An open list is simply created by: `OpenList = [1,2,3|Fin].`. After `Fin=[]` it is then a proper list.
+
+## Difference Lists
+
+TO BE DONE
+
+## What do we call what a predicate call does?
+
+It can **fail** or **succeed** of course (or throw an exception, rudely moving us back from logic-land back into programming-land), but if it succeeds:
+
+   - It can **accept** the argument tuple passed: `length([a,b,c],3)`, When interpreted as function `length(List) -> Length`, `length(L)` is evidently [surjective](https://en.wikipedia.org/wiki/Surjective_function) (in its domain), so one could say:
+      - `length([a,b,c],3)` **verifies/checks** the length of list `[a,b,c]`
+      - `length([a,b,c],3)` **verifies/checks** whether list `[a,b,c]` is a member of the preimage of 3 (technically of the set {3}).
+   - Going in the direction of (potential) information loss implied by a function, from "list" to "length", if `L` is unbound at first:
+      - This is often called "going forward"
+      - `length([a,b,c],L)` **computes/deduces** `L` from `[a,b,c]` or **maps** `[a,b,c]` to `L`
+      - This information loss idea should be made more precise (there must be a paper somewhere on this!).  Note that some predicates can be "fixed" so that they do not lose information "going forward". This is ["reversible computing"](https://en.wikipedia.org/wiki/Reversible_computing) in Prolog:
+         - `append([a,b],[c,d],X)`.  `X` contains no information about the "input"
+         - `append_reversible([a,b],[c,d],[X,PrefixLen])`. `[X,PrefixLen]` contains enough information to "get back" to the input!
+   - Going in the direction of information gain implied by a reverse function, Prolog can:
+      - **Hallucinate** information (this is a bad idea): `length(L,3)` yielding `[a,b,c]`? NOPE!
+      - **Propose** a most generic template containing unbound values that unifies with any member of the preimage: `length(L,3)` yielding `[_,_,_]`. Yes!
+      - **Generate** the members of the pre-image if they can be enumerated: `member(X,[a,b,c])` yields `a`, `b`, `c` in turn.
+      - If the pre-image is higher-dimensional, this can become complex: `append(L1,L2,[a,b,c]).` yields `L1 = [],L2 = [a, b, c] ; L1 = [a],L2 = [b, c] ; L1 = [a, b],L2 = [c] ; L1 = [a, b, c],L2 = []`
+
+ 
+

@@ -29,41 +29,22 @@
 %   | [a,b|x] | false     |        ,   ,    ,  x  ,      ,       ,       |
 %   | foo     | false     |        ,   ,    ,  x  ,      ,       ,       |
 %   +---------+-----------+----------------------------------------------+
+%
+% memberchk/2 is used to unify the first entry in the memberchk-list with What
+% when What is unbound; and to accept any entry in the memberchk-list otherwise.
 
+is_list(Term,What) :-
+   (nonvar(What) -> must_be(oneof([true,false,var,open,oclist,voclist,canlist,closed,proper]),What) ; true),
+   var(Term)  -> memberchk(What,[var,voclist,canlist]) ;
+   Term=[_|_] -> is_listlike(Term,What) ;
+   Term==[]   -> memberchk(What,[true,oclist,voclist,closed,proper]) ;
+   What=false.
 
-% memberchk/2 is used to unify the first entry in the memberchk-list with W
-% when W is unbound; and to accept any entry in the memberchk-list otherwise
-
-is_list(T,W) :-
-   (nonvar(W) -> must_be(oneof([true,false,var,open,oclist,voclist,canlist,closed,proper]),W) ; true),
-   var(T) 
-   ->
-   memberchk(W,[var,voclist,canlist]) 
-   ;
-   T=[_|_]
-   ->
-   is_listlike(T,W)
-   ;
-   T==[]
-   ->
-   memberchk(W,[true,oclist,voclist,closed,proper])
-   ;
-   W=false.
-
-is_listlike([_|Xs],W) :-
-   var(Xs) 
-   ->
-   memberchk(W,[open,oclist,voclist,canlist])
-   ;
-   Xs=[_|_]
-   -> 
-   is_listlike(Xs,W)
-   ;
-   Xs==[]
-   ->
-   memberchk(W,[true,oclist,voclist,closed,proper])
-   ;
-   W=false.
+is_listlike([_|Xs],What) :-
+   var(Xs)    -> memberchk(What,[open,oclist,voclist,canlist]) ;
+   Xs=[_|_]   -> is_listlike(Xs,What) ;
+   Xs==[]     -> memberchk(What,[true,oclist,voclist,closed,proper]) ;
+   What=false.
 
 % ---
 % Time for testing
@@ -72,7 +53,7 @@ is_listlike([_|Xs],W) :-
 :- begin_tests(is_list_two).
 
 % A direct translation of the truth table
-
+%
 %             | generated |true|closed|proper|var |open |false|oclist|voclist|canlist|
 
 cases(
@@ -83,29 +64,37 @@ cases(
    [ [a,b|x]  , false    ,  n  ,  n   ,  n  ,  n  ,  n  , yes ,  n   ,  n    ,  n   ],
    [ foo      , false    ,  n  ,  n   ,  n  ,  n  ,  n  , yes ,  n   ,  n    ,  n   ]]).
  
-test("list/2 truth table") :-
-   cases(Cases),
-   maplist(checkcase,Cases).
+test("is_list/2 truth table") :-
+   cases(Cases),               % get the "cases" list of cases (where each case is a list)
+   maplist(test_a_case,Cases). % test each case in Cases
 
-checkcase([Example,W,OnTrue,OnClosed,OnProper,OnVar,OnOpen,OnFalse,OnOclist,OnVoclist,OnCanlist]) :-
-   generates(Example,W),
-   maplist({Example}/[OnW,W]>>accepts(OnW,Example,W),
-           [OnTrue,OnClosed,OnProper,OnVar,OnOpen,OnFalse,OnOclist,OnVoclist,OnCanlist],
-           [true  ,closed  ,proper  ,var  ,open  ,false  ,oclist  ,voclist  ,canlist]).
+test_a_case([Example,ShouldGenerate,OnTrue,OnClosed,OnProper,OnVar,OnOpen,OnFalse,OnOclist,OnVoclist,OnCanlist]) :-
+   test_generation(Example,ShouldGenerate),
+   test_acceptance(Example,[OnTrue,OnClosed,OnProper,OnVar,OnOpen,OnFalse,OnOclist,OnVoclist,OnCanlist]).
 
-generates(Example,W) :-
-   must_be(atom,W),
-   is_list(Example,WW),
-   assertion(WW == W).
+% does is_list/2 properly generate "ShouldGenerate" when presented with "Example"?
+
+test_generation(Example,ShouldGenerate) :-
+   is_list(Example,What),
+   assertion(What == ShouldGenerate).
+
+% does is_list/2 properly accept/reject (according to the OnX values) a keyword when presented with "Example"?
+% This could be written in one line with maplist/3, but let's be clear!
+
+test_acceptance(Example,[OnTrue,OnClosed,OnProper,OnVar,OnOpen,OnFalse,OnOclist,OnVoclist,OnCanlist]) :-
+   accepts(Example, true   , OnTrue),
+   accepts(Example, closed , OnClosed),
+   accepts(Example, proper , OnProper),
+   accepts(Example, var    , OnVar),
+   accepts(Example, open   , OnOpen),
+   accepts(Example, false  , OnFalse),
+   accepts(Example, oclist , OnOclist),
+   accepts(Example, voclist, OnVoclist),
+   accepts(Example, canlist, OnCanlist).
+
+accepts(Example,What,YesOrNo) :-
+   debug(test_is_list_two,"Received ~q, ~q, ~q",[Example,What,YesOrNo]),
+   must_be(oneof([yes,n]),YesOrNo),   
+   (YesOrNo == yes) -> assertion(is_list(Example,What)) ; assertion(\+is_list(Example,What)).
  
-accepts('yes', Example,W) :-
-   debug(test_is_list_two,"Received ~q, ~q, ~q",['yes',Example,W]),
-   must_be(atom,W),
-   assertion(is_list(Example,W)).   % accepts W for Example
-
-accepts('n'  , Example,W) :-
-   debug(test_is_list_two,"Received ~q, ~q, ~q",['n',Example,W]),
-   must_be(atom,W),
-   assertion(\+is_list(Example,W)). % does not accept W for Example
-
 :- end_tests(is_list_two).

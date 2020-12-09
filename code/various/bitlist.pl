@@ -1,9 +1,16 @@
 % ===
-% Some simple code to transform non-negative integers into lists of bits and the converse.
+% Some simple code to transform non-negative integers 
+% into lists of bits and the converse.
 %
-% TODO: Extend for negative integers for a known number of bits to be able to do 2-complementation.
-% TODO: 
+% See https://eu.swi-prolog.org/pldoc/doc_for?object=f((%3E%3E)/2)
+%
+% TODO: Extend for negative integers for a known number of bits to
+% be able to do 2-complement
 % ===
+% ronerycoder@gluino.name (me) says this is licensed under 
+% https://opensource.org/licenses/0BSD
+% ===
+
 
 % ---
 % "bits to atom"
