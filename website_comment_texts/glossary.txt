@@ -9,6 +9,8 @@ Some adapted from
 
 ## Computation
 
+   - **Predicate Activation** or just **Activation**: Basically, the stack frame of the predicate call. The runtime context of a clause in which variables denote concrete values (terms or empty cells). Corresponds to a "Byrd Box".
+
    - **Unbound variable** vs. **Unbound value**: An **unbound variable** is a variable name that denotes an "empty cell" in memory. It is a variable name for which var/1 exactly succeeds at call time (but maybe not later, after a unification occurs. On the other hand, definitely earlier because you cannot "unbind" a variable except through backtracking; this is waht i means for Prolog to be "assign-once"). An **unbound value** is a position in a complex term that denotes an "empty cell" in memory but that does not have a name. For example: `length(L,2)`. `L` is an unbound variable at first that is then unified with a complex term (a list of length 2) with 2 unbound values, which, when printed, appear as 2 unbound variables (i.e. their arbitrarilly chosen names are printed rather than their nonexistent content): `L = [_5038, _5044]`.)
 
    - [Predicate **well-behavedness**](https://github.com/dtonhofer/prolog_notes/blob/master/other_notes/about_byrd_box_model/README.md#well-behaved)
@@ -43,6 +45,18 @@ choo(X) :- nonvar(X) -> debug(choo,"It's not a var",[]).
   - **Clause indexing** - how a Prolog implementation looks up a matching clause head. Indexing may or may not be done on several arguments. SWI-Prolog indexes on first argument only, so if you want high discrimination by cases, move the most discriminatory parameter to the first place.
 
   - **Clean/Defaulty representation** - a question of coding style. Clean representations can be efficiently distinguished by head unification alone. Defaulty (a pun on "faulty") representations force a coding style where a clause head matches, and the body distinguishes. This may be inefficient at runtime. See Triska's Triska's discussion at [Clean vs. defaulty representations](https://www.metalevel.at/prolog/data).
+
+  - **Cell** A memory location. It is either _empty_ or holds an _atomic term_ or a _compound term_ which referencing other cell containing the compound term name and the compound  term arguments. A special case is the **list cell** with name `[|]` and two arguments (i.e. with arity 2). In LISP, this is called the "consbox", with the first argument the "car" and the second the "cdr". Once a cell has been filled, it becomes indistinguishable from other cells with the same content (`my_atom` == `my_atom`) or at the root of graphs of cells forming ground terms (`f(g(a,b),c)` == `f(g(a,b),c)`). This allows the underlying machinery to share parts of graphs representing terms. In a Prolog program, a cell, or rather, the root of graph of cells is denoted by a variable (`X = f(g(a,b),c)`). Thinking in terms of cells instead of terms is generally not needed unless empty cells and non-logical usage thereof enters the picture.
+
+  - **List cell** a cell holding the compound term `[|]` (in SWI-Prolog, traditionally `.` in other Prologs) and two arguments. In a well-constructed list the, there is a list element on argument position 1 and there is a next listcell of the list backbone or `[]` on element position 2.
+
+  - **Empty cell** a cell holding (as yet) nothing but which may be set to an atomic value of the root of a graph of cells as computation progresses. Setting an empty cell can be done only once (Prolog is "assign-once") but can be rolled back on backtracking. Empty cells are denoted by initially fresh variables in a Prolog clause. Non-atomic terms, which are roots of trees and sometimes graphs of cells, can have empty cells at their leaves nodes. Unlike ground terms, empty cells are distinguishable and have identity: `X \== Y.`: what these fresh variables denote, which are empty cells, are not the same, but `X=a,Y=a,X==Y.`. Empty cells are merged via unification: `X \==Y, X=Y, X == Y`: `X` and `Y` now designate the same empty cell. Thinking in terms of empty cells is not logical but computational and stateful in nature, and is done in the parts of the Prolog program which are doing state manipulation, for example those dealing with difference lists of open lists. 
+  - **Empty cell attributes**: Empty cells can have named or unnamed **attributes**. There is no common notation for those, and they are never printed out as such. In other words, "unbound variables can carry attributes". Attributes may denote goals to be called as coroutines when the empty cell participates in a unification (is made non-empty or is merged with another empty cell). Colloquially "when the variable is bound". If that goal fails, the unification fails. This allows one to increase the power of unification, even in when used in a clause head.
+     - freeze/2 and family: `freeze(X,write("Hello")),X=1.` prints `Hello`.
+     - dif/2 (ensure two variables are always different) and family: `dif(X,Y),X=1,Y=2.` succeeds but `dif(X,Y),X=1,Y=1.`fails
+     - [**Attributed variables**](https://eu.swi-prolog.org/pldoc/man?section=attvar): A generalization which allows the programmer to set/get arbitrary attributes on an empty cell and perform arbitrary decisions on unifications.
+
+  - **Linting**: The process of checking Prolog code for style errors and dubious constructions prior to compilation. This is done by [`library(check)`](https://eu.swi-prolog.org/pldoc/man?section=check). See also the Wikipedia entry on the [`lint` program](https://en.wikipedia.org/wiki/Lint_%28software%29)
 
 ## Logic
 
@@ -95,7 +109,7 @@ choo(X) :- nonvar(X) -> debug(choo,"It's not a var",[]).
 
 ## Proof machinery
 
-   - *Resolution* (see Robinson 1965: "A Machine Oriented Logic Based on the Resolution Principle", which can be found on the Interwebs for free): A single inference step used to prove the validity of predicate calculus formulas expressed as clauses. In its simplest version: (P∨Q) ∧ (P∨R) ⊢ (Q∨R) which is called the resolvant. (from CACM March 1992). See also: [Wikipedia entry](https://en.wikipedia.org/wiki/Resolution_%28logic%29)
+   - *Resolution* (see Robinson 1965: "A Machine Oriented Logic Based on the Resolution Principle", which can be found on the Interwebs for free): A single inference step used to prove the validity of predicate calculus for­mulas expressed as clauses. In its simplest version: (P∨Q) ∧ (P∨R) ⊢ (Q∨R) which is called the resolvant. (from CACM March 1992). See also: [Wikipedia entry](https://en.wikipedia.org/wiki/Resolution_%28logic%29)
 
    - *Linear Resolution* 
 
@@ -106,7 +120,7 @@ choo(X) :- nonvar(X) -> debug(choo,"It's not a var",[]).
 
    - **SLDNF-Resolution** (sometimes *SLDNF Refutation*): SLD Resolution with "Negation as Failure" to implement a "weak negation" operator.
 
-   - **SLG-Resolution** A proof strategy whereby intermediate results are cached (**tabled**, this is called **tabling** and sometimes **memoing**). This makes it possible to write programs without having to pay special attention to infinite descent during depth-first search if the clauses are badly ordered. Prolog behaves more like a bottom-up theorem prover. (This may have been called OLD Resolution and OLDT Resolution in the 90s, not sure). See: [tabling](https://eu.swi-prolog.org/pldoc/man?section=tabling). Certainly a feature that all modern Prolog systems should have and that should be taught. 
+   - **SLG-Resolution** A proof strategy whereby intermediate results are cached (**tabled**, this is called **tabling** and sometimes **memoing**). This makes it possible to write programs without having to pay special attention to infinite descent during depth-first search if the clauses are badly ordered. Prolog behaves more like a bottom-up theorem prover. (This may have been called "OLD Resolution with Tabulation" [OLD Resolution with Tabulation, Taisuke Sato, July 1986](https://www.researchgate.net/publication/220986525_OLD_Resolution_with_Tabulation) alias "OLDT Resolution" in the 80s, not sure). See: [tabling](https://eu.swi-prolog.org/pldoc/man?section=tabling). Certainly a feature that all modern Prolog systems should have and that should be taught. 
 
    **Refutation completeness** A property of the SLD proof method in that SLD is "refutation complete" for Horn clauses. This means that if a ground answer is a logical consequence of a program then there is an SLD refutation that generates/accepts that answer (or a more general one). There may, however be some proofs paths that are infinite in length. Since Prolog must search this tree for the answers, its depth-first search may get caught on an infinite path, before it gets to the answer. 
 
@@ -212,7 +226,92 @@ An open list is simply created by: `OpenList = [1,2,3|Fin].`. After `Fin=[]` it 
 
 ## Difference Lists
 
-TO BE DONE
+A *difference list" (which is actually confusing terminology) is really just a "list difference": two variables which refer to two positions in a list: `X=[a,b,c,d], X=[a,b|Y].` From there, you can infer the "list difference", which is the `X` list minus the `Y` list: `[a,b,c]` (and which in extremis can be generated with `append(LDiff,Y,X).`)
+
+```
+  <-->    LDiff = [a,b]
+  X   Y
+  |   |
+ [a,b,c,d]
+```
+
+These two references can be packed into a term to pass them to other predicates: `p(X-Y). p(X/Y).` But they should not (why waste cycles?). Just use `p(X,Y).`
+
+The above construction is useful when the underlying list is an "open list", where `Y` points to the empty cell "fin" (the write position) where new elements are appended by a producer, and `X` is trailing behind (the read position) where elements are consumed by a consumer. The "list difference" then is the current buffer, which is empty if `X==Y, var(X), var(Y)` and EOF is expressed by `Y=[]`.
+ 
+Here is another representation of the above:
+
+```
+   X ------->[|]             ^
+            /   \            | "list difference" X-Y is
+           a    [|]          | [a,b]      
+               /   \         V   
+              b    [|]<------------- Y 
+                  /   \         
+                 c     [|]
+                      /   \ 
+                     d     [] <--- list properly ends in []: proper list        
+```
+
+When based on an open list, when the empty cell at the "backbone fin" is called `Fin` and takes the role of `Y` above and the 'X' is called 'Tip':
+
+`Tip=[a,b,c,d|Fin]`
+
+```
+   Tip ----->[|]             +
+            /   \            | "list difference" Tip-Fin is
+           a    [|]          | [a,b,c]      
+               /   \         +   
+              b    [|]
+                  /   \
+                 c   ~empty cell~ <--- Fin
+```
+
+We can obtain an element `V` at the tip: `Tip=[V|NewTip]` and use `NewTip` as new `Tip` in the next activation:
+
+```
+   NewTip ----> [|]           +
+               /   \          |  "list difference" NewTip-Fin is
+              b    [|]        |  [b,c]
+                  /   \       +  
+                 c   ~empty cell~ <--- Fin
+```
+
+Analogous to imperative programming with pointers, `Fin=[d|NewFin]` grows the open list with `d`, and yields a fresh variable `NewFin` denoting the new fin, which is an empty cell.
+
+```
+   Tip ----->[|]             +
+            /   \            | "list difference" Tip-NewFin is
+           b    [|]          | [b,c,d,]
+               /   \         +   
+              c    [|]
+                  /   \
+                 d   ~empty cell~ <--- NewFin
+```
+
+This can continue for some time. Mayn algorithms do not consume at the tip but just append at the fin. In any case, when we are done: `Fin=[]`, which closes the list. Once that unification has been performed, a proper list can be found at `Tip`: 
+
+```
+   Tip ----->[|]             +
+            /   \            | "list difference" Tip-Fin is
+           x    [|]          | [x,y,z]
+               /   \         |   
+              y    [|]       |
+                  /   \      +
+                 z     [] <--- Fin after Fin=[] - there is now a proper list at Tip
+```
+
+or if `Tip` and `Fin` were equal when the unification is performed, in which case the "list difference" is the empty list:
+
+```
+   Tip------> [] <----- Fin after Fin=[] - there is now a proper list at Tip
+```
+
+The "empty open difference list" is evidently trivially an empty cell (or two unbound variables denoting the same empty cell): `Tip=Fin`. It's a bit borderline. Is this really a "list"?
+
+```
+   Tip------> ~empty cell~ <----- NewFin
+```
 
 ## What do we call what a predicate call does?
 
@@ -232,6 +331,3 @@ It can **fail** or **succeed** of course (or throw an exception, rudely moving u
       - **Propose** a most generic template containing unbound values that unifies with any member of the preimage: `length(L,3)` yielding `[_,_,_]`. Yes!
       - **Generate** the members of the pre-image if they can be enumerated: `member(X,[a,b,c])` yields `a`, `b`, `c` in turn.
       - If the pre-image is higher-dimensional, this can become complex: `append(L1,L2,[a,b,c]).` yields `L1 = [],L2 = [a, b, c] ; L1 = [a],L2 = [b, c] ; L1 = [a, b],L2 = [c] ; L1 = [a, b, c],L2 = []`
-
- 
-
