@@ -3,7 +3,6 @@
 % https://opensource.org/licenses/0BSD
 % ===
 
-<<<<<<< HEAD
 % Switch on debug printing with
 % :- debug(test_probe_length).
 % Switch on runtime printing with
@@ -78,66 +77,6 @@
  * ?- probe_length([a,b,c|_], Length, [closed,var]).
  * false.
  */
-=======
-% DOESN'T WORK FOR CYCLIC LISTS 
-
-/*
-% Non-integer length causes exceptions (even if conversion would make sense):
-
-?- probe_length([a,b,c],3.0,_).
-ERROR: Type error: `integer' expected, found `3.0' (a float)
-
-% Negative lengths causes failure:
-
-?- probe_length([],-1,_).
-false.
-
-% Unless you assert to be stricter (and less logical)
-
-?- assertz(behaviour(probe_length,throw_on_negative_length)).
-?- probe_length([],-1,_).
-ERROR: Type error: `nonneg' expected, found `-1' (an integer)
-
-% Otherwise probe_length/3 never fails. As it consider unbound
-% variables as part of the data structure, it probes the current
-% computational state (it's not always a logical predicate):
-
-probe_length( []        , Length, What). % Length = 0, What = true: A proper list of length 0
-probe_length( [a]       , Length, What). % Length = 1, What = true: A proper list of length 1
-probe_length( [a,b]     , Length, What). % Length = 2, What = true: A proper list of length 2
-probe_length( [a,b,c]   , Length, What). % Length = 3, What = true: A proper list of length 3
-probe_length( _         , Length, What). % Length = 0, What = var: An unbound variable, maybe an open list of length 0
-probe_length( [a|_]     , Length, What). % Length = 1, What = open: An open list (with a prefix) of length 1
-probe_length( [a,b|_]   , Length, What). % Length = 2, What = open: An open list (with a prefix) of length 1
-probe_length( [a,b,c|_] , Length, What). % Length = 3, What = open: An open list (with a prefix) of length 1
-probe_length( [a|x]     , Length, What). % Length = 1, What = false: An non-list with a listlike prefix of length 1
-probe_length( [a,b|x]   , Length, What). % Length = 2, What = false: An non-list with a listlike prefix of length 2
-probe_length( [a,b,c|x] , Length, What). % Length = 3, What = false: An non-list with a listlike prefix of length 3
-probe_length( foo       , Length, What). % Length = 0, What = false: An non-list with no listlike prefix
-
-% Accept info about list:
-
-?- probe_length( [1,2,3], 3, oclist).
-true.
-
-?- probe_length( [1,2,3], 6, oclist).
-false.
-
-?- probe_length( [1,2,3], 3, open).
-false.
-
-The "What" argument can be:
-
-true    - accept a proper list (you can also use closed and proper)
-false   - accept a not an unbound variable and not a list
-var     - accept an unbound variable
-open    - accept an open list, but not an unbound variable
-oclist  - accept an open or closed list, but not an unbound variable
-voclist - accept an open or closed list, or an unbound variable
-canlist - accept something which can become a list but is not yet: an open list, or an unbound variable 
-*/
-
->>>>>>> 0b8ec9c4624e7c3771997179b7f442ee57bbae55
 
 % ---
 % probe_length(@MaybeList, ?Length, ?What)
@@ -431,3 +370,4 @@ acceptance_on_what_only([Example,ShouldLength,ShouldGenerate|_]) :-
    assertion(Length == ShouldLength). 
     
 :- end_tests(probe_length).
+
