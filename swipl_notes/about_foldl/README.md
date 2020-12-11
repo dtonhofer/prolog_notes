@@ -39,19 +39,154 @@ Goal(Element,FromLeft,ToRight)
 
 it becomes rather clear what's going on.
 
+## Implementation caveats
+
+`foldl`, when applied to multiple lists, does *not* check first whether the lengths of the lists are all equal. It will fail at 
+the earliest end-of-list encountered in case list lengths differ. The caller has to take precautions accordingly if this is 
+considered costly.
+
+`foldl` can also handle open lists like `[a,b,c|_]`, and even an unbound variable as `List` argument (that is arguably borderline, as the 
+predicate indicator for `List` is `+`, so unbound variables are in principle not allowed here: `foldl(:Goal, +List, +V0, -V)`)
+
+In that case `foldl` will generate (and process through Goal) longer and longer lists of fresh variables on backtracking.
+
+## Overbearing mode indicators
+
+The [mode indicators](https://eu.swi-prolog.org/pldoc/man?section=preddesc) are (currently, 2020-12):
+
+```
+foldl(:Goal, +List, +V0, -V)
+foldl(:Goal, +List1, +List2, +V0, -V)
+foldl(:Goal, +List1, +List2, +List3, +V0, -V)
+foldl(:Goal, +List1, +List2, +List3, +List4, +V0, -V)
+```
+   
+- The `+List` on argument 2 may be too much: Open lists and the empty open list, i.e. the unbound variable, are also allowed here.
+- The `+V0` and `-V0` are definitely too much: `foldl/N` has no business specifying those as they depend on `Goal`. `foldl/N` just passes them along. Disregard!
+
+## Where is SWI-Prolog's `foldr`?
+
+No implementation for a corresponding `foldr` is given. A `foldr` implementation would consist in first calling reverse/2 
+on each of the _m_ input lists, then applying the appropriate `foldl`. This is actually more efficient than using a properly 
+programmed-out recursive algorithm that cannot be tail-call optimized. 
+
+Be aware, however, that this approach is fragile if open lists are involved: a failing `foldl` will create an infinite 
+failure-driven loop with any preceding reverse/2 working on an open list!
+
+Here is properly recursive code, which mirrors the `foldl` code:
+
+   - [`foldr_recursive.pl`](/other_notes/about_foldl_and_foldr/foldr_for_library_apply/foldr_recursive.pl)
+   - [Unit tests](/other_notes/about_foldl_and_foldr/foldr_for_library_apply/tests)
+
+### Implementing one-list foldr/4 with reverse/2 and one-list foldl/4.
+
+Naturally one would say:
+
+```
+foldr(Goal,List,Start,Final) :-
+   reverse(List,Lrev),
+   foldl(Goal,Lrev,Start,Final).
+```
+
+But suppose we have this Goal:
+
+```
+% printox(?Element,+FromLeft,+ToRight)
+
+printox(E,FL,TR) :-
+   (E == x)
+   -> fail
+   ; 
+   (
+     format(string(S),"~q",[E]),
+     atomic_list_concat([FL,'(',S,')'],TR)
+   ).
+```
+
+With no `x` in the input and a closed list, things work well:
+
+```
+?- foldr(printox,[a,b,c],'s',F).
+F = 's(c)(b)(a)'.
+```
+
+With `x` in the input and a closed list, things work well:
+
+```
+?- foldr(printox,[a,x,c],'s',F).
+false.
+```
+
+With no `x` in the input and an open list, things work well:
+
+```
+?- foldr(printox,[a,b,c|_],'s',F).
+F = 's(c)(b)(a)' ;
+F = 's(_12194)(c)(b)(a)' ;
+F = 's(_12194)(_12206)(c)(b)(a)' ;
+F = 's(_12194)(_12206)(_12218)(c)(b)(a)'  
+etc..
+```
+
+But with an `x` in the input and an open list, `foldl` fails, and you have an infinite failure-driven loop as `reverse` generates longer and longer lists to be folded, but with `foldl` never succeeding:
+
+```
+?- foldr(printox,[a,x,c|_],'s',F).
+*adios*
+```
+
+You want to:
+
+   - Succeed the `foldr` predicate with the possibility of backtracking if `foldl` succeeds.
+   - Fail the predicate with no possibility of backtracking if `foldl` fails.
+
+Thus:
+
+```
+foldr(Goal,List,Start,Final) :-
+   reverse(List,Lrev),
+   (foldl(Goal,Lrev,Start,Final)
+    ->
+    true
+    ;
+    (!,fail)).
+```
+
+Now the predicate is safe:
+
+```
+?- foldr(printox,[a,x,c|_],'s',F).
+false.
+
+?- foldr(printox,[a,b,c|_],'s',F).
+F = 's(c)(b)(a)' ;
+F = 's(_8310)(c)(b)(a)' ;
+F = 's(_8310)(_8322)(c)(b)(a)' ;
+F = 's(_8310)(_8322)(_8334)(c)(b)(a)' .
+```
+
 ## Example 1: Simple atom concatenation
 
 Suppose we want to create an atom that starts with `Begin:`, then contains
 the concatenation of atoms found in the in input list. 
 
 First define the `Goal` (note that in this case, the `Goal` performs
-a permutation of the parameters, then call [`atom_concat/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=atom_concat/3):
+a permutation of the parameters, then calls
+[`atom_concat/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=atom_concat/3):
 
 ```none
 mygoal(Element,FromLeft,ToRight) :- atom_concat(FromLeft,Element,ToRight).
 ```
 
-With the above:
+Using just `atom_concat/3`, elements are prepended
+
+```none
+?- 
+foldl(atom_concat,[a,b,c,d],'Begin:',Out).
+Out = 'dcbaBegin:'.
+```
+
+But with rearranged arguments via `mygoal/3`, elements are appended:
 
 ```none
 ?-
