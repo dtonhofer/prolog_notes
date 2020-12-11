@@ -290,7 +290,43 @@ but there should be a construct for that: `\glossaryjargon{}`)
 \end{description}
 ```
 
-## Style motes
+### A file
+
+```
+\file{SWI-Prolog.h}.
+```
+
+### Special symbols
+
+```
+\Scons{}   ---> rendered as [|]
+\Snil{}    ---> rendered as []
+```
+
+### Tables
+
+An example
+
+```
+\begin{table}
+\begin{center}
+\begin{tabular}{lcc}
+\hline
+\bf Mode & \prologflag{double_quotes} & \prologflag{back_quotes} \\
+\hline
+Version~7 default & string & codes \\
+\cmdlineoption{--traditional} & codes & symbol_char \\
+\hline
+\end{tabular}
+\end{center}
+    \caption{Mapping of double and back quoted text in the two
+             modes.}
+    \label{tab:quote-mapping}
+\end{table}
+```
+
+
+## Style notes
 
 Jan says:
 
