@@ -33,7 +33,7 @@ There needs to be an example page in the manual.
 
 The `swiprologpull.sh` installation script in [compiling](/compiling) helps doing the above.
 
-Changing the bibliography, however, is hairy. Some [notes on this](/other_notes/about_swipl_manual_bibliography)   
+Changing the bibliography, however, is hairy. Some [notes on this](bibliography)   
 
 ## LaTeX style elements
 
