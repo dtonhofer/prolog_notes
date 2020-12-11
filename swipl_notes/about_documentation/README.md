@@ -142,6 +142,15 @@ yields:
 ![Result of typesetting term](pics/result_of_typesetting_term.png)
 
 
+Note that the typesetting is a bit surprising:
+
+```
+\term{dotlists}{true}
+```
+
+![Result of term](pcis/result_of_term_dotlists_true.png)
+
+
 ### Line break or line fuse
 
 - `%`   to break at the end of the line
