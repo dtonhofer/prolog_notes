@@ -31,7 +31,7 @@ There needs to be an example page in the manual.
 - Commit and push your well-manicured changes to Fork A.
 - Create a pull request for Fork A.
 
-The installation script in [compiling](/compiling) helps doing the above.
+The `swiprologpull.sh` installation script in [compiling](/compiling) helps doing the above.
 
 Changing the bibliography, however, is hairy. Some [notes on this](/other_notes/about_swipl_manual_bibliography)   
 
