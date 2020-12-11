@@ -121,8 +121,26 @@ To write compound terms `x(y)`
  
 ```
 \term{x}{y}
-\term{x}
 ```
+
+Note that `\term{x}` will not work. A character is forcefully grabbed from the subsequent text and put into parentheses.
+
+A little test:
+
+```
+Try \term{a}{b}
+
+Try \term{a}{b,c}
+
+Try \term{a}
+
+Hello world
+```
+
+yields:
+
+![Result of typesetting term](pics/result_of_typesetting_term.png)
+
 
 ### Line break or line fuse
 
@@ -152,6 +170,26 @@ It is not 100% clear what to label as constant. For example, are these constants
 Especially for the empty list, there should be a special construct like `\emptylist`
 
 Use `\exam` for example code. Currently renders the same, but is semantically different.
+
+A little test
+
+```
+Constant with quotes inside: \const{'[]'}
+
+Constant with single quotes outside: `\const{[]}'
+
+Constant with double quotes outside: ``\const{[]}''
+
+Constant without quotes: \const{[]}
+
+Using exam: \exam{[]}
+
+Using verbatim: \verb$[]$
+```
+
+yields:
+
+![Result of typesetting empty list](pics/result_of_testing_typesetting_empty_list.png)
 
 ### Character
 
