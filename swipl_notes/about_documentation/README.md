@@ -325,6 +325,15 @@ Version~7 default & string & codes \\
 \end{table}
 ```
 
+## A list of descriptions
+
+The descriptions are written in bold
+
+```
+begin{description}
+    \item [ A DCG literal ]  Although represented as ...
+\end{description}
+```
 
 ## Style notes
 
