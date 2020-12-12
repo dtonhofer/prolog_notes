@@ -142,6 +142,15 @@ yields:
 ![Result of typesetting term](pics/result_of_typesetting_term.png)
 
 
+Note that the typesetting is a bit surprising:
+
+```
+\term{dotlists}{true}
+```
+
+![Result of term](pcis/result_of_term_dotlists_true.png)
+
+
 ### Line break or line fuse
 
 - `%`   to break at the end of the line
@@ -290,7 +299,52 @@ but there should be a construct for that: `\glossaryjargon{}`)
 \end{description}
 ```
 
-## Style motes
+### A file
+
+```
+\file{SWI-Prolog.h}.
+```
+
+### Special symbols
+
+```
+\Scons{}   ---> rendered as [|]
+\Snil{}    ---> rendered as []
+```
+
+### Tables
+
+An example
+
+```
+\begin{table}
+\begin{center}
+\begin{tabular}{lcc}
+\hline
+\bf Mode & \prologflag{double_quotes} & \prologflag{back_quotes} \\
+\hline
+Version~7 default & string & codes \\
+\cmdlineoption{--traditional} & codes & symbol_char \\
+\hline
+\end{tabular}
+\end{center}
+    \caption{Mapping of double and back quoted text in the two
+             modes.}
+    \label{tab:quote-mapping}
+\end{table}
+```
+
+## A list of descriptions
+
+The descriptions are written in bold
+
+```
+begin{description}
+    \item [ A DCG literal ]  Although represented as ...
+\end{description}
+```
+
+## Style notes
 
 Jan says:
 
