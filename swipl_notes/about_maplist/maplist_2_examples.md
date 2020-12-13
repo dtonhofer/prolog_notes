@@ -1,4 +1,4 @@
-# Examples for the Prolog predicate `maplist/2`
+# Examples for the Prolog predicate _maplist/2_
 
 - On this page: `maplist/2` (1 goal, 1 list to verify or test)
 - For examples about `maplist/3` (1 goal, 2 lists to relate) see [this page](maplist_3_examples.md)
