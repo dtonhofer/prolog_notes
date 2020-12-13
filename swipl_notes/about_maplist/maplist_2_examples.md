@@ -6,26 +6,26 @@
 
 **Table of Contents**
 
-- About<a name="about"></a>
-- Intro<a name="intro"></a>
-- See also<a name="see_also"></a>
-- How to pass parameters to _goal_<a name="how_to_pass_parameters_to_goal"></a>
-   - Sidenote: What about testing 'exists' instead of 'forall'?<a name="what_about_testing_exists_instead_of_forall"></a>
-   - λ expressions would be nice<a name="lambda_expression_would_be_nice"></a>
-   - Lambda expression in Prolog<a name="lambda_expressions_in_prolog"></a>
-   - Library `yall` can help you all<a name="library_yall_can_help_you_all"></a>
-- Backtracking in _maplist/N_<a name="backtracking_in_maplist"></a>
-- Going multilevel: Using _maplist/N_ inside of _maplist/N_<a name="maplist_inside_of_maplist"></a>
-- Some applications of _maplist/2_<a name="some_applications_of_maplist_2"></a>
-   - Writing list elements (maybe non-ground) out to a data sink<a name="writing_to_a_data_sink"></a>
-   - Reading list elements from a data source<a name="reading_list_elements_from_a_data_source"></a>
-   - Generating a list of random numbers<a name="generating_a_list_of_random_numbers"></a>
-   - Generating a list of random pairs<a name="generating_a_list_of_random_pairs"></a>
-   - Verifying the contract of predicates<a name="verifying_the_contract_of_predicates"></a>
-   - Generating binary patterns<a name="generating_binary_patterns"></a>
-   - Computing a value for each element of a list<a name="computing_a_value_for_each_list"></name>
-   - Imposing constraints among variables<a name="imposing_constraints_among_variables"></a>
-   - Addendum: Crazy idea: Using _maplist/2_ to copy a list the hard way<a name="crazy_idea"></a>
+- [About](#about)
+- [Intro](#intro)
+- [See also](#see_also)
+- [How to pass parameters to _goal_](#how_to_pass_parameters_to_goal)
+   - [Sidenote: What about testing 'exists' instead of 'forall'?](#what_about_testing_exists_instead_of_forall)
+   - [λ expressions would be nice](#lambda_expression_would_be_nice)
+   - [Lambda expression in Prolog](#lambda_expressions_in_prolog)
+   - [Library `yall` can help you all](#library_yall_can_help_you_all)
+- [Backtracking in _maplist/N_](#backtracking_in_maplist)
+- [Going multilevel: Using _maplist/N_ inside of _maplist/N_](#maplist_inside_of_maplist)
+- [Some applications of _maplist/2_](#some_applications_of_maplist_2)
+   - [Writing list elements (maybe non-ground) out to a data sink](#writing_to_a_data_sink)
+   - [Reading list elements from a data source](#reading_list_elements_from_a_data_source)
+   - [Generating a list of random numbers](#generating_a_list_of_random_numbers)
+   - [Generating a list of random pairs](#generating_a_list_of_random_pairs)
+   - [Verifying the contract of predicates](#verifying_the_contract_of_predicates)
+   - [Generating binary patterns](#generating_binary_patterns)
+   - [Computing a value for each element of a list](#computing_a_value_for_each_list)
+   - [Imposing constraints among variables](#imposing_constraints_among_variables)
+   - [Addendum: Crazy idea: Using _maplist/2_ to copy a list the hard way](#crazy_idea)
 
 ## About<a name="about"></a>
 
