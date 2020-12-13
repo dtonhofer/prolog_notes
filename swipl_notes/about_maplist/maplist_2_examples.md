@@ -4,7 +4,30 @@
 - For examples about `maplist/3` (1 goal, 2 lists to relate) see [this page](maplist_3_examples.md)
 - For examples about `maplist/4` (1 goal, 3 lists to relate) see [this page](maplist_4_examples.md)
 
-## About
+**Table of Contents**
+
+- About<a name="about"></a>
+- Intro<a name="intro"></a>
+- See also<a name="see_also"></a>
+- How to pass parameters to _goal_<a name="how_to_pass_parameters_to_goal"></a>
+   - Sidenote: What about testing 'exists' instead of 'forall'?<a name="what_about_testing_exists_instead_of_forall"></a>
+   - λ expressions would be nice<a name="lambda_expression_would_be_nice"></a>
+   - Lambda expression in Prolog<a name="lambda_expressions_in_prolog"></a>
+   - Library `yall` can help you all<a name="library_yall_can_help_you_all"></a>
+- Backtracking in _maplist/N_<a name="backtracking_in_maplist"></a>
+- Going multilevel: Using _maplist/N_ inside of _maplist/N_<a name="maplist_inside_of_maplist"></a>
+- Some applications of _maplist/2_<a name="some_applications_of_maplist_2"></a>
+   - Writing list elements (maybe non-ground) out to a data sink<a name="writing_to_a_data_sink"></a>
+   - Reading list elements from a data source<a name="reading_list_elements_from_a_data_source"></a>
+   - Generating a list of random numbers<a name="generating_a_list_of_random_numbers"></a>
+   - Generating a list of random pairs<a name="generating_a_list_of_random_pairs"></a>
+   - Verifying the contract of predicates<a name="verifying_the_contract_of_predicates"></a>
+   - Generating binary patterns<a name="generating_binary_patterns"></a>
+   - Computing a value for each element of a list<a name="computing_a_value_for_each_list"></name>
+   - Imposing constraints among variables<a name="imposing_constraints_among_variables"></a>
+   - Addendum: Crazy idea: Using _maplist/2_ to copy a list the hard way<a name="crazy_idea"></a>
+
+## About<a name="about"></a>
 
 Here we list a few examples for the predicate [`maplist/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/2) 
 from [library(apply)](https://eu.swi-prolog.org/pldoc/man?section=apply) as run with SWI-Prolog.
@@ -15,12 +38,14 @@ We use [SWI-Prolog](https://www.swi-prolog.org/) throughout. However, `maplist/N
 
 We also use the [`library(yall)`](https://www.swi-prolog.org/pldoc/man?section=yall) lambda notation imported from [Logtalk](https://logtalk.org/). This _is_ specific to SWI-Prolog.
 
-In order for lists to be printed fully instead of elided at their end with ellipses ("`|...`") you may have
-to first call:
+In SWI-Prolog, in order for structures not to be elided at with ellipses ("`|...`"), but instead printed in full, you may have to first call:
 
+````none
+?- 
+set_prolog_flag(answer_write_options,[max_depth(0)]).
 ````
-?- set_prolog_flag(answer_write_options,[max_depth(0)]).
-````
+
+## Intro<a name="intro"></a>
 
 The description for [`maplist/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/2) says:
 
@@ -29,11 +54,16 @@ The description for [`maplist/2`](https://eu.swi-prolog.org/pldoc/doc_for?object
 > _True if Goal can successfully be applied on all elements of List. Arguments are reordered to 
 > gain performance as well as to make the predicate deterministic under normal circumstances._
 
-Thus you have a single list, _List_, and `maplist/2` will call the _Goal_ (which must be a predicate) on each list item. `maplist/2` will fail at the first failed call of _Goal_.
+Thus you have a single list, _List_, and `maplist/2` will call the _Goal_ (which must be a predicate) on each
+list element. `maplist/2` will fail at the first failed call of _Goal_.
 
 Easy to understand. This will allow us to avoid writing failure-driven loops or explicit recursion, making code cleaner.
 
-If you are using a functional programming language, you know all about the "map" function, which takes another function (a closure) and applies it to a sequence of items, however defined. If you are using Java, this corresponds to [`java.util.stream.Streams.map`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#map-java.util.function.Function-) (See also this DZone article: [Java 8 Map, Filter, and Collect Examples](https://dzone.com/articles/how-to-use-map-filter-collect-of-stream-in-java-8)). 
+If you are using a functional programming language, you know all about the "map" function, which takes another
+function (a closure) and applies it to a sequence of items, however defined. If you are using Java, this
+corresponds to 
+`java.util.stream.Streams.map`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#map-java.util.function.Function-) 
+(See also this DZone article: [Java 8 Map, Filter, and Collect Examples](https://dzone.com/articles/how-to-use-map-filter-collect-of-stream-in-java-8)). 
 
 Prolog's `maplist/N` additionally bring backtracking over possible solutions of the _Goal_ predicate into the mix.
 
@@ -42,40 +72,70 @@ On Wikipedia:
 - [map: higher-order function](https://en.wikipedia.org/wiki/Map_(higher-order_function))
 - [map: parallel pattern](https://en.wikipedia.org/wiki/Map_(parallel_pattern)) - Somewhat related in the context of parallel architectures or concurrent processing.
 
-It's all about calling a predicate (or a more complex goal) for each item/element of a list. The list should be of **known length**, as there is no way to have the called predicate or goal tell `maplist/2` that it should stop going through the list: returning `false` from the called predicate will cause `maplist/2` to fail, and variable bindings built up during its run will be rolled back. For `maplist/3` and longer-argumented ` maplist/N`, the lists must all be of the same length although it suffices if the length of all lists can be constrained to be identical by `maplist/N`.
+It's all about calling a predicate (or a more complex goal) for each element of a list. The list should be
+of **known length**, as there is no way to have the called predicate or goal tell `maplist/2` that it should stop going
+through the list: returning `false` from the called predicate will cause `maplist/2` to fail, and variable
+bindings built up during its run will be rolled back. For `maplist/3`, `maplist/4`, `maplist/5`, the lists 
+must all be of the same length. If the length of a list is unspecified (i.e. if the corresponding argument is
+an unbound variable or an open list that list will grow to the required length.
 
 Here is `maplist/2` with a list of unconstrained length. It will backtrack over possible lengths, never stopping:
 
-```logtalk
-always_true(_).
+```none
+just_one(1).
 
-?- maplist(always_true,E).
+?- 
+maplist(just_one,E).
+
 E = [] ;
-E = [_1468] ;
-E = [_1468, _2312] ;
-E = [_1468, _2312, _3040] ;
-E = [_1468, _2312, _3040, _3768] ;
+E = [1] ;
+E = [1,1] ;
+E = [1,1,1] ;
+E = [1,1,1,1] ;
+....
+```
+
+For the other maplists:
+
+```none
+just_one_two_three(1,2,3).
+
+?- 
+maplist(just_one_two_three,[L1a,L1b,L1c],L2,L3).
+
+L1a = L1b, L1b = L1c, L1c = 1,
+L2 = [2,2,2],
+L3 = [3,3,3].
+
+?-
+maplist(just_one_two_three,[L1a,L2b,L3c|LMore],L2,L3).
+
+L1a = L2b, L2b = L3c, L3c = 1, LMore = [], L2 = [2,2,2], L3 = [3,3,3] ;
+L1a = L2b, L2b = L3c, L3c = 1, LMore = [1], L2 = [2,2,2,2], L3 = [3,3,3,3] ;
+L1a = L2b, L2b = L3c, L3c = 1, LMore = [1,1], L2 = [2,2,2,2,2], L3 = [3,3,3,3,3] ;
 ...
 ```
 
 (...what happens if you `maplist/2` a [lazy list](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/lazy_lists.pl)?)
 
-## See also
+## See also<a name="see_also"></a>
 
-- Markus Triska has a page on [metapredicates](https://www.metalevel.at/prolog/metapredicates), which includes `maplist/N`.
+Markus Triska has a page on [metapredicates](https://www.metalevel.at/prolog/metapredicates), which includes `maplist/N`.
 
-## How to pass parameters to _goal_
+## How to pass parameters to _goal_<a name="how_to_pass_parameters_to_goal"></a>
 
-Consider this predicate, which tests whether a list item is less than 5.
+Consider this predicate, which tests whether a list element is less than 5.
 
 In standard Prolog notation, indicate the name of the predicate as an atom (`verify`):
 
-````logtalk
-verify(I) :- format("verify(~q)\n", I), 5 > I.
+````none
+verify(Element) :- format("verify(~q)\n", [I]), 5 > Element.
 ````
 
-````logtalk
-?- maplist(verify, [1,2,3,4]).
+````none
+?- 
+maplist(verify, [1,2,3,4]).
+
 verify(1)
 verify(2)
 verify(3)
@@ -85,8 +145,10 @@ true.
 
 Alternatively, you may indicate the name of the predicate as a compound term of arity 0 (`verify()`). This is SWI-Prolog specific:
 
-````logtalk
-?- maplist(verify(), [1,2,3,4]).
+````none
+?- 
+maplist(verify(), [1,2,3,4]).
+
 verify(1)
 verify(2)
 verify(3)
@@ -95,19 +157,21 @@ true.
 ````
 
 `maplist/2` is passed the name of the predicate and will build a new term from it by appending
-the current item (giving `verify(1)` for example), then call that.
+the current list element (giving `verify(1)` for example), then call that.
 
 The `verify` predicate may depend on a second value. Above, we hardcoded the upper 
 limit to be 5. Why not pass it as a parameter:
 
-```logtalk
-verify(Lim,I) :- format("verify(~q > ~q)\n", [Lim,I]), Lim>I.
+```none
+verify(Limit,Element) :- format("verify(~q > ~q)\n", [Limit,Element]), Limit>Element.
 ```
 
-In standard Prolog notation:
+Then:
 
-```logtalk
-?- maplist(verify(5), [1,2,3,4,5]).
+```none
+?- 
+maplist(verify(5), [1,2,3,4,5]).
+
 verify(5 > 1)
 verify(5 > 2)
 verify(5 > 3)
@@ -118,17 +182,19 @@ false.
 
 The same as earlier happens. You pass a term `verify(5)` to `maplist/2`. This term may be regarded
 as a half-parameterized call to `verify/2`, with the last argument still missing.
-`maplist/2` will append the current list item as the missing argument to form a complete 2-argument
-atomic goal (giving `verify(5,1)` for example), then call that.
+`maplist/2` will append the current list element as the missing argument to form a complete 2-argument
+goal-with-one-literal (atomic goal), giving `verify(5,1)` for example, then call that.
 
 Note that the goal given to `maplist/2` cannot be complex:
 
-```logtalk
-?- maplist((verify(6),verify(2)),[1,2,3,4,5,6]).
+```none
+?- 
+maplist((verify(6),verify(2)),[1,2,3,4,5,6]).
+
 ERROR: Unknown procedure: (',')/3
 ```
 
-### Sidenote: What about testing 'exists' instead of 'forall'?
+### Sidenote: What about testing 'exists?' instead of 'forall'?<a name="what_about_testing_exists_instead_of_forall"></a>
 
 `maplist/2` performs "forall" processing over the list.
 
@@ -136,23 +202,19 @@ If you want to check whether there 'exists' an element in the list that fullfill
 
 - Using [`include/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=include/3), which is the "filter" predicate.
 - Using [`foldl/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=foldl/4), which is not as direct because one needs a helper predicate.
-- Of course, if the criterium reduces to unification, you can just use [`member/2` ](https://eu.swi-prolog.org/pldoc/doc_for?object=member/2)
+- If the criterium reduces to unification, you can just use [`member/2` ](https://eu.swi-prolog.org/pldoc/doc_for?object=member/2)
   or [`memberchk/2`](https://eu.swi-prolog.org/pldoc/man?predicate=memberchk/2).
 
 This time, let's use the SWI-Prolog [unit testing framework](https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/plunit.html%27))
 to write code. We assume that we are not looking for variables!
 
-```logtalk
-:- discontiguous rt/1.
+```none
+verify(Element) :- format("verify(~q)\n", [Element]), 5 > Element.
+```
 
-% Criterium
+Using `include/3`
 
-verify(I) :- format("verify(~q)\n", I), 5 > I.
-
-% ===
-% Using include/3
-% ===
-
+```none
 :- begin_tests(exists_with_include).
 
 test(find,         true(Founds == [2,3])) :- include(verify, [7,2,9,3,10], Founds).
@@ -160,22 +222,22 @@ test(notfind,      true(Founds == []))    :- include(verify, [7,8,9,5,10], Found
 test(notfindempty, true(Founds == []))    :- include(verify, [], Founds).
    
 :- end_tests(exists_with_include).
+```
 
-rt(exists_with_include) :- run_tests(exists_with_include).
+Using `foldl/4`
 
-% ===
-% Using foldl/4
-% ===
-
-% Pass accumulator "Acc" on if "Acc" is nonvar, which is supposed to mean "found an item and it's in Acc"
+```
+% Pass accumulator "Acc" on if "Acc" is bound, which is supposed to mean "I found an element and it's in Acc"
 
 foldy_verify(_,Acc,Acc) :-
    nonvar(Acc),!.
 
-% Otherwise verify the current Item, and pass it on if it passes the test.
+% Otherwise verify the current element, and pass it on if it passes the test.
 
-foldy_verify(Item,Acc,AccNext) :- 
-   var(Acc),!,(verify(Item) -> AccNext = Item ; AccNext = Acc).   
+foldy_verify(Element,Acc,AccNext) :- 
+   var(Acc),
+   !,
+   (verify(Element) -> AccNext = Element ; AccNext = Acc).   
 
 :- begin_tests(exists_with_foldl).
 
@@ -184,48 +246,50 @@ test(notfind,      true)             :- foldl(foldy_verify, [7,8,9,5,10], _, Fou
 test(notfindempty, true)             :- foldl(foldy_verify, [], _, Found),var(Found).
    
 :- end_tests(exists_with_foldl).
-
-rt(exists_with_foldl) :- run_tests(exists_with_foldl).
 ```
 
-Run `rt(_)` on the toplevel after loading the above.
+After loading the above, run the unit test blocks with [`run_tests/0`](https://eu.swi-prolog.org/pldoc/doc_for?object=run_tests/0).
 
-### How about a little λ?
+### λ expressions would be nice<a name="lambda_expression_would_be_nice"></a>
 
 A much smoother syntax would be given by a [_lambda expression_](https://en.wikipedia.org/wiki/Lambda_calculus#Lambda_terms)
 explicitly showing the "argument attach point", as in:
 
-```logtalk
-?- maplist(λI.verify(3,I), [1,2,3,4,5]).
+```none
+?- 
+maplist(λElement.verify(3,Element), [1,2,3,4,5]).
 ```
 
-It is immediately recognizable that the inner predicate takes one argument, `I`, and will use it on second position of `verify/2`.
+It is immediately recognizable that the inner predicate takes one argument and will use it on second position of `verify/2`.
 
 You could even do:
 
-```logtalk
-?- maplist(λL.verify(L,3), [1,2,3,4,5]).
+```none
+?- 
+maplist(λLimit.verify(Limit,3), [1,2,3,4,5]).
 ```
 
-The inner predicate takes one argument, `L`, and will use it on _first_ position of `verify/2`. 
+The inner predicate takes one argument, `Limit`, and will use it on _first_ position of `verify/2`. 
 
-This cannot be done with standard Prolog notation - you have to use a helper predicate:
+The above cannot be done with standard Prolog notation - you have to use a helper predicate:
 
-```logtalk
-my_verify(I,L) :- verify(L,I).
+```none
+my_verify(Element,Limit) :- verify(Limit,Element). % swap the arguments
 ```
 
-```logtalk
-?- maplist(my_verify(3), [5,4,3,2,1]).
+```
+?- 
+maplist(my_verify(3), [5,4,3,2,1]).
+
 verify(5 > 3)
 verify(4 > 3)
 verify(3 > 3)
 false.
 ```
 
-### Can we have that?
+### Lambda expression in Prolog<a name="lambda_expressions_in_prolog"></a>
 
-Yes! Something quite similar to λ-adorned notation can be had by using the following:
+Concretely, something quite similar to λ-adorned notation can be had by using the following:
 
 - [`library(yall)`](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/yall.pl) which comes from the `Logtalk`
   language (see the [description in the Logtalk manual](https://logtalk.org/manuals/userman/predicates.html#lambda-expressions)).
@@ -236,37 +300,42 @@ or alternatively:
 
 We will be using `library(yall)` here.
 
-### Library `yall` can help you all with λ notation!
+### Library `yall` can help you all<a name="library_yall_can_help_you_all"></a>
 
 With `library(yall)` notation we can write a one-liner, creating an anonymous predicate of one 
 variable `I`, which calls `verify/2` with the position of the argument evident and exchangeable:
 
-```logtalk
-?- maplist([I]>>verify(3,I), [1,2,3,4,5]).
+```none
+?- 
+maplist([Element]>>verify(3,Element), [1,2,3,4,5]).
+
 verify(3 > 1)
 verify(3 > 2)
 verify(3 > 3)
 false.
 
-?- maplist([I]>>verify(I,3), [5,4,3,2,1]).
+?- maplist([Element]>>verify(Element,3), [5,4,3,2,1]).
+
 verify(5 > 3)
 verify(4 > 3)
 verify(3 > 3)
 false.
 ```
 
-So we use `[X]>>` instead of `λX.`, staying in ASCIIland.
+So we use `[X]>>` instead of `λX.`, staying in ASCII-land.
 
 This notation "shims" or "wraps" the predicate `verify/2`. The documentation also says this is a "closure" (though it's not 
 _really_ a [closure](https://en.wikipedia.org/wiki/Closure_(computer_programming)) ... in fact in Prolog there are 
 no non-local variables to "lexically close over" at all. It's just a goal.)
 
-As an non-inconsiderable bonus, this notation is actually much more readable than the implied argument passing or standard Prolog notation.
+As an non-inconsiderable bonus, this notation is much more readable than the implied argument passing of standard Prolog.
 
-This lambda notation allows us to invoke complex goals:
+This lambda notation allows us to invoke complex goals inline. Don't go too far though, as code quickly becomes difficult to read:
 
-```logtalk
-?- maplist([X]>>(verify(X,6),verify(X,2)),[1,2,3,4,5,6]).
+```none
+?- 
+maplist([Element]>>(verify(Element,6),verify(Element,2)),[1,2,3,4,5,6]).
+
 verify(1 < 6)
 verify(1 < 2)
 verify(2 < 6)
@@ -275,116 +344,39 @@ false.
 ```
 
 Note that the lambda shim, doing unification, allows modification on call and on return.
-This is no use to `maplist/2` but here is an application of `maplist/4` which selects the minimum of two lists:
+This is no use in the case of `maplist/2` but here is an application of `maplist/4` which selects the minimum of two lists:
 
-```logtalk
-?- L1=[1,3,5,2,1],L2=[3,3,1,0,1],maplist([I1,I2,max(I1,I2)=O]>>(O is max(I1,I2)),L1,L2,L3).
+```none
+?- 
+L1=[1,3,5,2,1], L2=[3,3,1,0,1], maplist([E1,E2,max(E1,E2)=O]>>(O is max(E1,E2)),L1,L2,L3).
+
 L1 = [1, 3, 5, 2, 1],
 L2 = [3, 3, 1, 0, 1],
 L3 = [max(1, 3)=3, max(3, 3)=3, max(5, 1)=5, max(2, 0)=2, max(1, 1)=1].
 ```
 
-## Possible applications of `maplist/2`
+## Backtracking in _maplist/N_<a name="backtracking_in_maplist"></a>
 
-### Writing list items (partially or fully ground) out to some data sink
+Using [`atom/1`](https://www.swi-prolog.org/pldoc/doc_for?object=atom/1), we can test whether elements or a list are atoms:
 
-Evidently a non-logic side-effect.
-
-```logtalk
-% writing terms, the last of which happens to be a (fresh) variable
-
-?- maplist(write,["a->","b->","c->",X]).
-a->b->c->_5626
-true.
-```
-
-### Reading list items from some data source
-
-Evidently getting new information from a non-logical source of data.
-
-```logtalk
-?- maplist(read,[X,f(Y,Z),c]).
-|: "Hello, World".
-|: f(1000,2201).
-|: c.
-
-X = "Hello, World",
-Y = 1000,
-Z = 2201.
-```
-
-### Generating a list of random numbers
-
-Again, getting new information from a non-logical source of data.
-
-With standard notation, the helper predicate name given to `maplist/2` will be transformed into term `ur(L)` and then called:
-
-```logtalk
-ur(I) :- I is random(100).
-```
-
-```logtalk
+```none
 ?- 
-length(L,6),maplist(ur,L).
-L = [66, 19, 7, 30, 42, 75].
-```
-
-`library(yall)` lambda notation explicitly shows that the current item of a list appears as `I` in the called predicate:
-
-```logtalk
-?- 
-length(L,6),                        % create a list of 6 fresh variables
-maplist([I]>>(I is random(100)),L). % each fresh variable is unified with the result of random(100)
-   
-L = [61, 15, 82, 74, 83, 31].
-```
-
-### Generating a list of random pairs 
-
-Here we generate a list of `Character-Number` [pairs](https://eu.swi-prolog.org/pldoc/man?section=pairs). 
-This is done using [`random_between/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=random_between/3)
-
-```logtalk
-list_of_random_pairs(List,Length) :-
-   length(List,Length),
-   maplist(
-      [Char-Num]>>(                    % this predicate with single arg "Char-Num" is properly deterministic 
-         random_between(0,9,Num),      % random number between 0 and 9 inclusive
-         random_between(97,122,Code),  % random 16-bit Unicode codepoint of a character in the range a-z
-         atom_codes(Char,[Code])       % transform code into "character" aka. "char", i.e. atom of length 1
-      ),
-      List).
-
-?- 
-set_prolog_flag(answer_write_options,[max_depth(100)]).
+maplist(atom,[a,c,d]).
 true.
 
 ?- 
-list_of_random_pairs(L,10).
-L = [q-6,d-4,d-9,s-3,g-0,e-6,w-5,u-7,v-8,a-8].
-```                        
-
-### Testing individual list items
-
-As the called predicate naturally succeeds or fails, we are effectively performing an conjunctive _test_ on all list items. 
-
-For example, using [`atom`](https://www.swi-prolog.org/pldoc/doc_for?object=atom/1), test whether they are atoms:
-
-```logtalk
-?- maplist(atom,[a,c,d]).
-true.
-
-?- maplist(atom,[a,[],d]).
+maplist(atom,[a,[],d]).
 false.
 ````
 
-As seen akready, test whether all items, assumed to be numeric, are less than 5. We are also performing side-effects by printing to `stdout`:
+As seen aleady, test whether all elements, assumed to be numeric, are less than 5. 
+We are also performing side-effects by printing to `stdout`:
 
-````logtalk
-verify(X) :- format("verify(~d)\n", X), X < 5.
-````
+```none
+verify(X) :- format("verify(~d)\n", [X]), X < 5.
+```
 
-````logtalk
+```none
 ?- maplist(verify, [1,2,3,4]).
 verify(1)
 verify(2)
@@ -405,8 +397,8 @@ The above looks like a short-circuting test loop like this (Perl):
 
 ```perl
 my $allok = 1;
-for my $item (@list) {
-   $allok = verify($item);
+for my $element (@list) {
+   $allok = verify($element);
    last if (!$allok)
 }
 if ($allok) { ... }
@@ -414,58 +406,215 @@ if ($allok) { ... }
 
 But that's **not really what happens**. What actually happens is:
 
-```logtalk
-?- verify(1),verify(2),verify(3),verify(4).
+```none
+?- 
+verify(1),verify(2),verify(3),verify(4).
 ```
 
-This is a conjunction of predicates. 
+This is a conjunction of predicate calls. 
 
-**If any of the predicates has choicepoints open, we can backtrack over them.**
+**If any of the predicates leaves choicepoint, we can backtrack over them.**
 
-A short-circuiting test loop is given by Prolog's [`forall/2`](https://www.swi-prolog.org/pldoc/doc_for?object=forall/2):
+A "short-circuiting test loop" is given by Prolog's [`forall/2`](https://www.swi-prolog.org/pldoc/doc_for?object=forall/2), 
+which works differently:
 
 > `forall(:Cond, :Action)`: For all alternative bindings of `Cond`, `Action` can be proven.
 
-The syntax to use for `forall/2` is markedly different from the one for `maplist/2`. You have to use a "generator predicate" as `Cond`, and an actual 
-_call_ using the local variable (here, `I`) instead of the predicate's _name_ as for `maplist/2`:
+The syntax to use for `forall/2` is markedly different from the one for `maplist/2`. 
+You have to use a "generator predicate" as `Cond`, and an actual 
+_call_ using the local variable (here, `Element`) instead of the predicate's _name_ as for `maplist/2`:
 
-```logtalk
-?- L=[a,b,d],forall(member(I,L),atom(I)).
+```none
+?- 
+List=[a,b,d],forall(member(Element,List),atom(Element)).
 true.
 
-?- L=[a,[],d],forall(member(I,L),atom(I)).
+?- 
+List=[a,[],d],forall(member(Element,List),atom(Element)).
 false.
 ```
 
-*However*, forall just calls the predicate once for each list item:
+*However*, forall just calls the predicate once for each list element (because it just wants one solution: it is all about verification):
 
-```logtalk
-?- L=[1-a,2-b,2-c,3-d],
-forall(member(I,L),
-        ( I=N-C,
-          member(N-X,L),
-          format("~w ",[N-C-X]) )).
+```none
+?- 
+List=[1-a,2-b,2-c,3-d],
+forall(                               % Is it true that
+   member(Element,List),              % for every member Element of List
+   ( Element=N-C,
+     member(N-X,List),                % there is (at least one, and one suffices) element in List with the same N?
+     format("~w ",[N-C-X]) )).
           
 1-a-a 2-b-b 2-c-b 3-d-d 
-L = [1-a, 2-b, 2-c, 3-d].
 ```
 
-whereas `maplist/N` chains the calls into a conjunction and leaves the choicepoints open. Note the same at all:
+Whereas `maplist/N` chains the calls into a conjunction and leaves the choicepoints open. Note the same at all:
 
-```logtalk
-% with some output reformatting:
+With some output reformatting:
 
-?- L=[1-a,2-b,2-c,3-d],
-maplist( [N-C]>>(member(N-X,L),format("~w ",[N-C-X])) , L).
+```none
+?- 
+List=[1-a,2-b,2-c,3-d],
+maplist( 
+   [N-C]>>(member(N-X,List),format("~w ",[N-C-X])),
+   List).
 
-1-a-a 2-b-b 2-c-b 3-d-d  L = [1-a, 2-b, 2-c, 3-d] ;
-            2-c-c 3-d-d  L = [1-a, 2-b, 2-c, 3-d] ;
-      2-b-c 2-c-b 3-d-d  L = [1-a, 2-b, 2-c, 3-d] ;
-            2-c-c 3-d-d  L = [1-a, 2-b, 2-c, 3-d] ;
+1-a-a 2-b-b 2-c-b 3-d-d  List = [1-a, 2-b, 2-c, 3-d] ;
+            2-c-c 3-d-d  List = [1-a, 2-b, 2-c, 3-d] ;
+      2-b-c 2-c-b 3-d-d  List = [1-a, 2-b, 2-c, 3-d] ;
+            2-c-c 3-d-d  List = [1-a, 2-b, 2-c, 3-d] ;
 false.
 ```
 
-### Verifying the contract of predicates
+## Going multilevel: Using _maplist/N_ inside of _maplist/N_<a name="maplist_inside_of_maplist"></a>
+
+If you want to test a list of lists, with the condition that every sublist has the same length, you can use `maplist/N` inside of `maplist/N`:
+
+```none
+% Are the elements atoms? Test using atoms/1.
+
+?- 
+List=[[a,b],[c,d]], maplist(maplist(atom),List).
+
+List = [[a, b], [c, d]].
+
+% Print the elements using write/1.
+
+?-
+List=[[a,b],[c,d]], maplist(maplist(write),List).
+
+abcd
+List = [[a, b], [c, d]].
+```
+
+The lambda syntax of `library(yall)` shows what is happening in a more transparent way. The sublist appears as `S`
+in the inner call to `maplist/2`, in which elements appear as `Element`: 
+
+```none
+?- 
+List=[[a,b],[c,d]], maplist([S]>>maplist([Element]>>atom(Element),S),List).
+
+List = [[a, b], [c, d]].
+```
+
+## Some applications of _maplist/2_<a name="some_applications_of_maplist_2"></a>
+
+### Writing list elements (maybe non-ground) out to a data sink<a name="writing_to_a_data_sink"></a>
+
+Writing terms, the last of which happens to be an unbound variable.
+Side-effects are lacking a logical interpretation. That doesn't stop us:
+
+```none
+?- 
+maplist(write,["a->","b->","c->",X]).
+
+a->b->c->_5626
+true.
+```
+
+### Reading list elements from a data source<a name="reading_list_elements_from_a_data_source"></a>
+
+Getting new information from a data source. 
+Pulling in oracular data from a source is also lacking a logical interpretation (See [Interactive Computation](https://en.wikipedia.org/wiki/Interactive_computation). That doesn't stop us either:
+
+
+```none
+?- 
+maplist(read,[X,f(Y,Z),c]).
+|: "Hello, World".
+|: f(1000,2201).
+|: c.
+
+X = "Hello, World",
+Y = 1000,
+Z = 2201.
+```
+
+### Generating lists<a name="generating_lists"></a>
+
+For example, to unify `List` with successively larger lists of 1s:
+
+```none
+?- 
+maplist([Element]>>(Element=1),List).
+List = [] ;
+List = [1] ;
+List = [1, 1] ;
+List = [1, 1, 1] ;
+List = [1, 1, 1, 1] ;
+List = [1, 1, 1, 1, 1] ;
+...
+```
+
+Or just with a list of specific length, even without `library(yall)` lambda notation:
+
+```none
+length(List,10), maplist(=(1), List).
+```
+
+### Generating a list of random numbers<a name="generating_a_list_of_random_numbers"></a>
+
+With standard notation, the helper predicate name given to `maplist/2` will be transformed into term `ur(Element)` and then called:
+
+```none
+ur(Element) :- Element is random(100).
+```
+
+```none
+?- 
+length(List,6),maplist(ur,List).
+
+List = [66, 19, 7, 30, 42, 75].
+```
+
+`library(yall)` lambda notation explicitly shows that the current element of a list appears as `Element` in the called predicate:
+
+```none
+?- 
+length(List,6),                                    % create a list of 6 fresh (and unbound) variables
+maplist([Element]>>(Element is random(100)),List). % each unbound variable is unified with the result of random(100)
+   
+L = [61, 15, 82, 74, 83, 31].
+```
+
+To unify all the elements of a list of known length with a random float, use the following.
+The `random_float/0` is a 0-arity function (used on the RHS of `is/2`). It unsurprisingly 
+evaluates to a random float: [`random_float/0`](https://www.swi-prolog.org/pldoc/doc_for?object=f(random_float/0)).
+
+```none
+?- 
+length(List,5),
+maplist([Element]>>(Element is random_float),List).
+
+List = [0.8203682301866675, 0.86789174167603, 0.9560836782052566, 0.2545485344026232, 0.7363884829219359].
+```
+
+### Generating a list of random pairs<a name="generating_a_list_of_random_pairs"></a>
+
+Here we generate a list of `Character-Number` [pairs](https://eu.swi-prolog.org/pldoc/man?section=pairs) with
+[`random_between/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=random_between/3):
+
+```none
+list_of_random_pairs(List,Length) :-
+   length(List,Length),
+   maplist(
+      [Char-Num]>>(                    % this predicate with single arg "Char-Num" is properly deterministic 
+         random_between(0,9,Num),      % random number between 0 and 9 inclusive
+         random_between(97,122,Code),  % random 16-bit Unicode codepoint of a character in the range a-z
+         atom_codes(Char,[Code])       % transform code into "character" aka. "char", i.e. atom of length 1
+      ),
+      List).
+
+?- 
+set_prolog_flag(answer_write_options,[max_depth(100)]).
+true.
+
+?- 
+list_of_random_pairs(L,10).
+L = [q-6,d-4,d-9,s-3,g-0,e-6,w-5,u-7,v-8,a-8].
+```                        
+
+### Verifying the contract of predicates<a name="verifying_the_contract_of_predicates"></a>
 
 Suppose your predicate has as [contract](https://en.wikipedia.org/wiki/Design_by_contract) that it only accepts list of 
 integers >= 0.
@@ -473,24 +622,24 @@ integers >= 0.
 (This is fraught with annoying edge cases... there really should be a declarative minilanguage for this; something like
 [Hamcrest for Erlang](https://github.com/hyperthunk/hamcrest-erlang))
 
-```Logtalk
+```none
 % This will fail if List is not a list of integers, but succeed with `List=[]` 
-% if `List` is a fresh variable.
+% if `List` is an unbound variable.
   
 my_predicate(List) :-
-   maplist([X]>>(integer(X),X>=0),List).
+   maplist([Element]>>(integer(Element),Element>=0),List).
    do_work(List).
 
-% you also allow List to be a fresh variable itself
+% you also allow List to be an unbound variable itself
 
 my_predicate(List) :-
-   (var(List) -> true ; maplist([X]>>(integer(X),X>=0),List)).
+   (var(List) -> true ; maplist([Element]>>(integer(Element),Element>=0),List)).
    do_work(List).
    
-% you also allow List to contain fresh variables
+% you also allow List to contain unbound variables
 
 my_predicate(List) :-
-   (var(List) -> true ; maplist( [X]>> (var(X) -> true; integer(X),X>=0 ) ,List)).
+   (var(List) -> true ; maplist( [Element]>> (var(Element) -> true; integer(Element),Element>=0 ) ,List)).
    do_work(List).
 ```
 
@@ -500,16 +649,16 @@ and IMHO, it is up to the caller to demand a throw or a failure in any case usin
 but that's for another time entirely). See also
 [Exception Handling](https://www.swi-prolog.org/pldoc/man?section=exception):
 
-```Logtalk
+```none
 ayyylmao(Msg,Args) :-
    % Msg is a "format/2" format string, Args a list of arguments.
    % List of arguments must *exactly* match the placeholders or you will get an Exception!
    % In a prod system, one would shield against further errors by catching any error that happens here!
-   with_output_to(string(Buf),format(Msg,Args)),
+   format(string(Buf),Msg,Args)),
    throw(Buf).
 
 my_predicate(List) :-
-   ((var(List) -> true ; maplist( [X]>> (var(X) -> true; integer(X),X>=0 ) ,List)) 
+   ((var(List) -> true ; maplist( [Element]>> (var(Element) -> true; integer(Element),Element>=0 ) ,List)) 
    -> true
    ; ayyylmao("You dun goofed, this list has problems: ~q",[List])),
    do_work(List).
@@ -522,122 +671,98 @@ Then:
 ERROR: Unhandled exception: "You dun goofed, this list has problems: [a,b,c]"
 ```
 
-Okay, this is getting a bit off the mark.
+Okay, this is getting a bit off the mark. Also take a look at the existing 
+predicate: [`must_be/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=must_be/2).
 
-### Generating lists
-
-For example, to unify `L` with successively larger lists of 1s:
-
-```logtalk
-?- maplist([X]>>(X=1),L).
-L = [] ;
-L = [1] ;
-L = [1, 1] ;
-L = [1, 1, 1] ;
-L = [1, 1, 1, 1] ;
-L = [1, 1, 1, 1, 1] ;
-...
-```
-
-Or just with a list of specific length, even without `library(yall)` lambda notation:
-
-```logtalk
-length(L,10), maplist(=(1), L).
-```
-
-To unify all the items of a list L of known length with a random float:
-
-```logtalk
-?- length(L,5),maplist([X]>>(X is random_float),L).
-L = [0.8203682301866675, 0.86789174167603, 0.9560836782052566, 0.2545485344026232, 0.7363884829219359].
-```
-
-The `random_float/0` is a 0-arity function (used on the RHS of `is/2`). It unsurprisingly evaluates to a random float: [`random_float/0`](https://www.swi-prolog.org/pldoc/doc_for?object=f(random_float/0)). We are not in logic land anymore. 
-
-### Generating binary patterns
+### Generating binary patterns<a name="generating_binary_patterns"></a>
 
 A simple way to generate all binary patterns of length 3 for example:
 
-Using `library(yall)` notation, which explicitly shows that the current item of a list appears as `I` in the called predicate:
+Using `library(yall)` notation, which explicitly shows that the current element of a list appears as `Element` in the called predicate:
 
-```logtalk
-?- length(L,3),maplist( [I]>>(member(I,[0,1])) , L).
-L = [0, 0, 0] ;
-L = [0, 0, 1] ;
-L = [0, 1, 0] ;
-L = [0, 1, 1] ;
-L = [1, 0, 0] ;
-L = [1, 0, 1] ;
-L = [1, 1, 0] ;
-L = [1, 1, 1].
+```none
+?- 
+length(List,3),maplist( [Element]>>(member(Element,[0,1])) , List).
+List = [0,0,0] ;
+List = [0,0,1] ;
+List = [0,1,0] ;
+List = [0,1,1] ;
+List = [1,0,0] ;
+List = [1,0,1] ;
+List = [1,1,0] ;
+List = [1,1,1].
 ```
 
-Consider what happens here: The above is equivalent to the query:
+The above is equivalent to the query:
 
-```logtalk
-?- L=[I0,I1,I2], member(I0,[0,1]), member(I1,[0,1]), member(I2,[0,1]).
+```none
+?- 
+L=[I0,I1,I2], member(I0,[0,1]), member(I1,[0,1]), member(I2,[0,1]).
 ```
 
 The predicate calls inside `maplist/2` are chained into a conjunction, **not simply called in turn**. And the 
 choicepoints are left open. As long as all the calls succeed, we can **backtrack through possible solutions.**
 
-In other words, `length(L,3),maplist( [I]>>(member(I,[0,1])) , L).` is a compressed way of writing
+In other words, `length(List,3),maplist( [Element]>>(member(Element,[0,1])) , List).` is a compressed way of writing
 
-```logtalk
+```none
 L=[L0,L1,L2],Vs=[0,1],member(L0,Vs),member(L1,Vs),member(L2,Vs).
 ```
 
-Similarly, this goal will at first generate a list of only 1s:
+Similarly, this goal will at first generate a list of only 1s but backtracking will
+enumerate all 4^5 possibilites of 5-element lists with values from `[1,2,3,4]`:
 
-```logtalk
-?- length(L,5),maplist( [X]>>(member(X,[1,2,3,4])) , L).
-L = [1, 1, 1, 1, 1] ;
-```
-
-but backtracking will enumerate all 4^5 possibilites of 5-item lists with values from `[1,2,3,4]`:
-
-```logtalk
-?- length(L,5),maplist( [X]>>(member(X,[1,2,3,4])) , L).
-L = [1, 1, 1, 1, 1] ;
-L = [1, 1, 1, 1, 2] ;
-L = [1, 1, 1, 1, 3] ;
-L = [1, 1, 1, 1, 4] ;
-L = [1, 1, 1, 2, 1] ;
-L = [1, 1, 1, 2, 2] ;
+```none
+length(List,5),maplist( [Element]>>(member(Element,[1,2,3,4])) , List).
+List = [1,1,1,1,1] ;
+List = [1,1,1,1,2] ;
+List = [1,1,1,1,3] ;
+List = [1,1,1,1,4] ;
+List = [1,1,1,2,1] ;
+List = [1,1,1,2,2] ;
+List = [1,1,1,2,3] ;
+List = [1,1,1,2,4] 
 ...
 ```
 
 You could alternatively "unroll" maplist and write:
 
-```logtalk
+```none
 L=[L0,L1,L2,L3,L4],Vs=[1,2,3,4],member(L0,Vs),member(L1,Vs),member(L2,Vs),member(L3,Vs),member(L4,Vs).
 ```
 
-### Computing a value for each item of a list
+### Computing a value for each element of a list<a name="computing_a_value_for_each_list"></a>
 
 Although it is better to use [`maplist/3`](https://www.swi-prolog.org/search?for=maplist%2F3)
-for this (see also [`maplist/3` examples](maplist_3_examples.md)), `maplist/2` _can_ be used for computing values from list items.
+for this (see also [`maplist/3` examples](maplist_3_examples.md)), `maplist/2` _can_ be used 
+for computing values from list elements.
 
-You cannot do aggregation operations like `max`, `min` or summation over the list items because the goal passed to `maplist/2` does not keep internal state (unless it has hidden internal state, e.g by using `assert/2` and `retract/1` -- don't do that!) Value computation stays "individual". Use the neighboring [`foldl/N`](https://www.swi-prolog.org/pldoc/doc_for?object=foldl/4), [`scanl/N`](https://www.swi-prolog.org/pldoc/doc_for?object=scanl/4) or homegrown predicates for this. 
+You cannot do aggregation operations like `max`, `min` or summation over the list elements because
+the goal passed to `maplist/2` does not keep internal state (unless it has hidden
+internal state, e.g by using `assert/2` and `retract/1` -- don't do that!) Value computation
+stays "individual". Use [`foldl/N`](https://www.swi-prolog.org/pldoc/doc_for?object=foldl/4),
+[`scanl/N`](https://www.swi-prolog.org/pldoc/doc_for?object=scanl/4) or homegrown predicates for this. 
 
-Using standard notation. The helper predicate name `compute_sqrt` given to `maplist/2` will be transformed to a term of arity 1 with a list item as argument, then called:
+The helper predicate name `compute_sqrt` given to `maplist/2` will be 
+transformed to a term of arity 1 with a list element as argument, then called:
 
-```logtalk
-compute_sqrt([I,O]) :- O is sqrt(I).
+```none
+compute_sqrt([In,Out]) :- Out is sqrt(In).
 ```
 
-```logtalk
-?- maplist(compute_sqrt,[[1,S0],[2,S1],[3,S2],[4,S3]]).
+```none
+?- 
+maplist(compute_sqrt,[[1,S0],[2,S1],[3,S2],[4,S3]]).
 S0 = 1.0,
 S1 = 1.4142135623730951,
 S2 = 1.7320508075688772,
 S3 = 2.0.
 ```
 
-Using `library(yall)` lambda notation, we can write a one-liner, properly showing the variables in use:
+Using `library(yall)`, we can write a one-liner, properly showing the variables in use:
 
 ```logtalk
-maplist([[I,O]]>>(O is sqrt(I)),[[1,S0],[2,S1],[3,S2],[4,S3]]).
+maplist([[In,Out]]>>(Out is sqrt(In)),[[1,S0],[2,S1],[3,S2],[4,S3]]).
 S0 = 1.0,
 S1 = 1.4142135623730951,
 S2 = 1.7320508075688772,
@@ -646,11 +771,14 @@ S3 = 2.0.
 
 Again, you are better off with `maplist/3` than `maplist/2` for this kind of application.
 
-### Imposing constraints among variables
+### Imposing constraints among variables<a name="imposing_constraints_among_variables"></a>
 
 This comes from Markus Triska's video presentation on [Map Coloring using Prolog](https://www.youtube.com/watch?v=6XD7vBbywMc).
 
-Let us use Constraint Logic Programming over Finite Domains (in SWI-Prolog, provided by [`library(clpfd)`](https://eu.swi-prolog.org/pldoc/man?section=clpfd)). The map coloring problem demands that a solution obey the constraint that adjacent colors be different. The operator `#\=` connects terms or variables and imposes an inequality constraint on any solution.
+Let us use Constraint Logic Programming over Finite Domains (in SWI-Prolog, provided
+by [`library(clpfd)`](https://eu.swi-prolog.org/pldoc/man?section=clpfd)). The map coloring
+problem demands that a solution obey the constraint that adjacent colors be different. The 
+operator `#\=` connects terms or variables and imposes an inequality constraint on any solution.
 
 Here is the map to color. Colors are represented by variables `A,B,C,D,E,F`:
 
@@ -667,9 +795,9 @@ Here is the map to color. Colors are represented by variables `A,B,C,D,E,F`:
  +-------------------+
 ```
 
-The following CLPFD specification corresponds to the map:
+The following CLP(FD) specification corresponds to the map:
 
-```logtalk
+```none
 :- use_module(library(clpfd)).
 
 colouring(Cs) :-
@@ -688,7 +816,7 @@ readability, you can write the following, using `maplist/2`. Here, I add some `d
 [`library(debug)`](https://eu.swi-prolog.org/pldoc/man?section=debug) to show that no
 backtracking is going on:
 
-```logtalk
+```none
 :- use_module(library(debug)).
 :- use_module(library(clpfd)).
 
@@ -704,7 +832,8 @@ colouring(Cs) :-
 We can now ask things like:
 
 ```
-?- debug(cs),colouring(Cs),Cs ins 1..3,label(Cs).
+?- 
+debug(cs),colouring(Cs),Cs ins 1..3,label(Cs).
 % one
 % two
 % three
@@ -719,36 +848,13 @@ not on-stage. This is very different from a generate-and-test approach. "Setting
 creating some datastructure behind-the-scenes. Where do these inequalities "live" you ask? They
 are [attributes attached to variables](https://eu.swi-prolog.org/pldoc/man?section=attvar).
 
-### Going multilevel: Using `maplist/N` inside of `maplist/N`.
+### Addendum: Crazy idea: Using _maplist/2_ to copy a list the hard way<a name="crazy_idea"></a>
 
-If you want to test a list of lists, with the condition that every sublist has the same length, you can use `maplist/N` inside of `maplist/N`:
+This code regenerates the list passed to `maplist/2` by re-constructing said list in the 
+unbound variable given by the first argument to the predicate passed to `maplist/2`. 
+This variable gets updated step-by-step.
 
-```logtalk
-% Are the items atoms? Test using atoms/1.
-
-?- L=[[a,b],[c,d]], maplist(maplist(atom),L).
-L = [[a, b], [c, d]].
-
-% Print the items using write/1.
-
-?- L=[[a,b],[c,d]], maplist(maplist(write),L).
-abcd
-L = [[a, b], [c, d]].
-```
-
-The lambda syntax of `library(yall)` shows what is happening in a more transparent way. The sublist appears as `S`
-in the inner call to `maplist/2`, in which items appear as `I`: 
-
-```logtalk
-?- L=[[a,b],[c,d]], maplist([S]>>maplist([I]>>atom(I),S),L).
-L = [[a, b], [c, d]].
-```
-
-### Addendum: Crazy idea: Using `maplist/2` to copy a list the hard way
-
-This code regenerates the list passed to `maplist/2` by re-constructing said list in the variable given by the first argument of the predicate passed to `maplist/2`. This variable gets updated step-by-step.
-
-```logtalk
+```none
 % "Append" Elem to the "List with dangling tail" "Conses" by going down the chain
 % until the dangling tail is found, then setting it to another consbox containing
 % Elem in head position
@@ -758,7 +864,7 @@ consify(Conses,Elem) :-
    Conses = [Elem|_RestConses].
    
 consify(Conses,Elem) :- 
-   \+var(Conses),
+   nonvar(Conses),
    Conses = [_|RestConses],
    consify(RestConses,Elem).
 
@@ -771,15 +877,18 @@ listify(Conses) :-
    Conses = [].
    
 listify(Conses) :-
-   \+var(Conses),
+   nonvar(Conses),
    Conses = [_|BackOfList], 
    format("Conses is not var but ~w\n",Conses),
    listify(BackOfList).
 ```
- 
-```logtalk
-?- maplist(consify(Conses),[1,2,3,4,X,Y,Z]), 
-   listify(Conses).
+
+Then: 
+
+```none
+?- 
+maplist(consify(Conses),[1,2,3,4,X,Y,Z]), 
+listify(Conses).
    
 Conses is not var but [1,2,3,4,_26266,_26272,_26278|_26954]
 Conses is not var but [2,3,4,_26266,_26272,_26278|_26954]
@@ -792,6 +901,9 @@ Conses is var and will now be constrained to be []. The end!
 Conses = [1, 2, 3, 4, X, Y, Z] ;
 ```
 
-- It is somewhat similar to what one would do with a difference list. However, there is no way heree to append to the difference list pass the difference list to the next call for the next append. 
-- The above looks like the self-modifying code of logic programming, the state of the computation has direct influence on the predicate values; there should probably be some special syntax to highlight this.
-- I feel that there is some mixup in Prolog in "looking at what is the content of a variable without modifying it" (meta) and updating a variable with constraints (i.e. setting it to term, possibly containing other variables) (in-language).
+- The above looks like the "self-modifying code of logic programming", the state of the 
+  computation has direct influence on the predicate values; there should probably be
+  some special syntax to highlight this.
+- It is somewhat similar to what one would do with a "difference list on an open list", 
+  just expressed in a more complex way.
+  
