@@ -23,7 +23,7 @@ Missed in the above:
    - [part 1](https://www.sciencedirect.com/science/article/pii/0743106684900293)
    - [part 2](https://www.sciencedirect.com/science/article/pii/S0743106685800030)
 - [HYPROLOG](http://akira.ruc.dk/~henning/hyprolog/) A Logic Programming Language with Abduction and Assumptions
-- [GOAL Agent Progamming Language](https://en.wikipedia.org/wiki/GOAL_agent_programming_language)
+- [GOAL Agent Programming Language](https://en.wikipedia.org/wiki/GOAL_agent_programming_language)
 - [LogicBlox](https://developer.logicblox.com/technology/)
 - [Datalog](https://en.wikipedia.org/wiki/Datalog)
 - [Logical Frameworks](https://en.wikipedia.org/wiki/Logical_framework)
