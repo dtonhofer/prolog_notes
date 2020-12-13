@@ -7,8 +7,8 @@
 **Table of Contents**
 
 - [About](#about)
-- [Intro](#intro)
 - [See also](#see_also)
+- [Intro](#intro)
 - [How to pass parameters to _goal_](#how_to_pass_parameters_to_goal)
    - [Sidenote: What about testing 'exists' instead of 'forall'?](#what_about_testing_exists_instead_of_forall)
    - [λ expressions would be nice](#lambda_expression_would_be_nice)
@@ -44,6 +44,10 @@ In SWI-Prolog, in order for structures not to be elided at with ellipses ("`|...
 ?- 
 set_prolog_flag(answer_write_options,[max_depth(0)]).
 ````
+
+## See also<a name="see_also"></a>
+
+Markus Triska has a page on [metapredicates](https://www.metalevel.at/prolog/metapredicates), which includes `maplist/N`.
 
 ## Intro<a name="intro"></a>
 
@@ -117,10 +121,6 @@ L1a = L2b, L2b = L3c, L3c = 1, LMore = [1,1], L2 = [2,2,2,2,2], L3 = [3,3,3,3,3]
 ```
 
 (...what happens if you `maplist/2` a [lazy list](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/lazy_lists.pl)?)
-
-## See also<a name="see_also"></a>
-
-Markus Triska has a page on [metapredicates](https://www.metalevel.at/prolog/metapredicates), which includes `maplist/N`.
 
 ## How to pass parameters to _goal_<a name="how_to_pass_parameters_to_goal"></a>
 
