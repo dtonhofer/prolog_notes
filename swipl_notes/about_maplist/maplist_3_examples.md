@@ -101,7 +101,7 @@ instead of going through the lists until it runs out of arguments on either list
 
 A "steadfast" predicate is one which constructs a result to be bound to an argument that is a fresh variable,
 but which does _not behave differently_ if, at call time, that argument is actually instantiated (not taking 
-into consideration side-effects and optimizations). If the argument is instantiated, the beahviour is the
+into consideration side-effects and optimizations). If the argument is instantiated, the behaviour is the
 same as if the result had been computed, then unified with that instantiated variable.
 
 `maplist/3` is indeed steadfast.
