@@ -324,18 +324,44 @@ ur(I) :- I is random(100).
 ```
 
 ```logtalk
-?- length(L,6),maplist(ur,L).
+?- 
+length(L,6),maplist(ur,L).
 L = [66, 19, 7, 30, 42, 75].
 ```
 
 `library(yall)` lambda notation explicitly shows that the current item of a list appears as `I` in the called predicate:
 
 ```logtalk
-?- length(L,6),                        % create a list of 6 fresh variables
-   maplist([I]>>(I is random(100)),L). % each fresh variable is unified with the result of random(100)
+?- 
+length(L,6),                        % create a list of 6 fresh variables
+maplist([I]>>(I is random(100)),L). % each fresh variable is unified with the result of random(100)
    
 L = [61, 15, 82, 74, 83, 31].
 ```
+
+### Generating a list of random pairs 
+
+Here we generate a list of pairs `Character-Number`. Note that the _yall_ lambda expression 
+
+```logtalk
+list_of_random_pairs(List,Length) :-
+   length(List,Length),
+   maplist(
+      [Char-Num]>>(                    % this predicate with single arg "Char-Num" is properly deterministic 
+         random_between(0,9,Num),      % random number between 0 and 9 inclusive
+         random_between(97,122,Code),  % random 16-bit Unicode codepoint of a character in the range a-z
+         atom_codes(Char,[Code])       % transform code into "character" aka. "char", i.e. atom of length 1
+      ),
+      List).
+
+?- 
+set_prolog_flag(answer_write_options,[max_depth(100)]).
+true.
+
+?- 
+list_of_random_pairs(L,10).
+L = [q-6,d-4,d-9,s-3,g-0,e-6,w-5,u-7,v-8,a-8].
+```                        
 
 ### Testing individual list items
 
