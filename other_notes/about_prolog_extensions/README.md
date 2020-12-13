@@ -34,4 +34,13 @@ This cannot be done using attributed variables - one cannot set attributes on he
 On the other hand, from the caller's side, attributed variables can be used to make sure a variable in an argument term can only be unified with 
 another variable or a nonvariable. But that's not very useful. 
 
+## Local namespaces 
+
+Or maybe hierarchical modules?
+
+The idea is that if I write a predicate `foo` that will only be ever called as a helper predicate from a predicate
+`bar`, then I want to make it only visible in the immediate vicinity of `foo`, which is to say "attach it to `foo`.
+Local namespaces or maybe a special syntax for predicate names (`bar.foo` maybe?) could help.
+
+
 
