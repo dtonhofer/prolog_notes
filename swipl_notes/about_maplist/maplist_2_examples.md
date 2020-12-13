@@ -341,7 +341,8 @@ L = [61, 15, 82, 74, 83, 31].
 
 ### Generating a list of random pairs 
 
-Here we generate a list of pairs `Character-Number`. Note that the _yall_ lambda expression 
+Here we generate a list of `Character-Number` [pairs](https://eu.swi-prolog.org/pldoc/man?section=pairs). 
+This is done using [`random_between/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=random_between/3)
 
 ```logtalk
 list_of_random_pairs(List,Length) :-
