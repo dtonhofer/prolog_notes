@@ -41,6 +41,8 @@ Authors Info & Affiliations
 - 2002-07 [**Abduction in Logic Programming**](http://web.stanford.edu/class/cs227/Readings/Abudction%20in%20LP.pdf) 
    - Marc Denecker, Antonis Kakas
    - [Computational Logic: Logic Programming and Beyond, Springer LNCS 2407](https://link.springer.com/chapter/10.1007/3-540-45628-7_16), pp 402-436
+- 2003-10 [**An Overview of Linear Logic Programming**](https://www.researchgate.net/publication/2603027_An_Overview_of_Linear_Logic_Programming)
+   - Dale Miller
 - 2003-10 [**The Essence of Strategic Programming**](https://www.researchgate.net/publication/277289331_The_Essence_of_Strategic_Programming) 
    - Ralf Lämmel, Eelco Visser, Joost Visser
    - _generic programming with the use of strategies_
