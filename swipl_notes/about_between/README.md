@@ -207,7 +207,7 @@ L = -5 ;
 L = -8.
 ```
 
-## A symmetric "between": "between_sym"
+## A symmetric _between/3_: _between_sym/3_
 
 A naive symmetric between, which can generate increasing (step 1)
 and decreasing (step -1) sequences. The "empty sequence", whereby
