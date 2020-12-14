@@ -1,0 +1,49 @@
+To use between_with_step.pl:
+
+1) 
+
+Set up a directory hierarchy with the Prolog module and the Prolog plunit code in your directory $FOO like this, wherever $FOO is:
+
+$FOO
+└── modules/
+    └── heavycarbon/
+        └── utils/
+            ├── between_with_step.pl    <-- the source for between/4 and between/5 in module "between_with_step"
+            └── between_with_step.plt   <-- the source for the plunit test "between_with_step" (which will be put into module "plunit_between_with_step")
+
+2)             
+
+Start SWI Prolog
+
+Add the topmost directory to the library search path (replace $FOO as usual with an actual path):
+
+?- assertz(file_search_path(library,'$FOO/heavycarbon')).
+
+3) 
+
+Load the module, which (confusingly) is given by file name, not module name:
+
+?- use_module(library('heavycarbon/utils/between_with_step.pl')).
+
+4) 
+
+Load the associated .plt files automagically:
+
+?- load_test_files([]).
+true.
+
+5)
+
+Run tests
+
+?- run_tests.
+% PL-Unit: between_with_step ................................................................................ done
+% All 80 tests passed
+true.
+
+6) 
+
+Use between/4 and between/5 as usual.
+
+(Sadly, help(between/4). and help(between/5). do not work yet).
+
