@@ -93,7 +93,7 @@ Going from top to bottom, the full set of (root) terms is iteratively divided in
                                                               |                                                                        list beyond the head)
                                            +------------------+------------------+
                                            |                  |                  |
-                                      lenghth=0           length=1            atom with
+                                      length=0           length=1            atom with
                                    "the empty atom"      "character"          length>1
 ```
 
@@ -116,7 +116,7 @@ which is 0xFFFFFFFFFFFFFF
 **Note on the representation for sequences of characters:**
 
 - SWI-Prolog _string_, a dedicated data type (for example: `"Hello"`). Note that you can actually configure how the SWI-Prolog reader
-  interpretes what is in between `"` double quotes. See the flag `double_quotes` (which can be any of `codes`, `chars`, `atom`, `string`) 
+  interprets what is in between `"` double quotes. See the flag `double_quotes` (which can be any of `codes`, `chars`, `atom`, `string`) 
   in the manual page for [current_prolog_flag_2](https://www.swi-prolog.org/pldoc/doc_for?object=current_prolog_flag/2). For a lot
   of information about the SWI-Prolog _string_, see [The string type and its double quoted syntax](https://www.swi-prolog.org/pldoc/man?section=strings).
 - The _atom_, the classical Prolog data type for sequences of characters: `'XYZ'` or `hello`. (Not to be confused with the _atom_ or 
@@ -264,7 +264,7 @@ There is `plspec`, a "spec" approach inspired by the "spec" approach of Clojure 
 has no type checking; although there is "Typed Clojure" it does not seem to be liked or used. Clojure specs 
 provides the possibility to add annotations to perform runtime checks on precondition, postconditions and invariants). 
 
-- Paper: [plspec – A Specification Languagefor Prolog Data](https://www3.hhu.de/stups/downloads/pdf/plspec.pdf)
+- Paper: [plspec – A Specification Language for Prolog Data](https://www3.hhu.de/stups/downloads/pdf/plspec.pdf)
 - https://github.com/wysiib/plspec
 
 ### "Typed Prolog*

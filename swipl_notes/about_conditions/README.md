@@ -48,7 +48,7 @@ Vocabulary:
   they are basically "continuations", a reified way on what to do next - e.g. an exception handler)
 
 - It signals this fact (by calling a function or a predicate, in this pack, `signal/3` or `signal/2`)
-- The pogram asks for help (signals) by calling an appropriate signal function.
+- The program asks for help (signals) by calling an appropriate signal function.
 - The system consults previously installed handlers about what to do.
 - The handler transfers control to a continuation if it decides to handle the situation, otherwise
   it just returns.
@@ -127,7 +127,7 @@ $HOME/.local/share/swi-prolog/pack/condition/
 
 The "condition" pack needs the ["lambda" pack](https://www.swi-prolog.org/pack/list?p=lambda) to process a lambda expression. SWI-Prolog
 has a differing syntax for lambda expression in the autoloaded [`library(yall)`](https://eu.swi-prolog.org/pldoc/man?section=yall)
-so you might want to choose to modify the "condition" pack instead of installating the "lambda" pack. 
+so you might want to choose to modify the "condition" pack instead of installing the "lambda" pack. 
 
 This is easily done. Change the clause for `handle/3` to:
 
@@ -144,7 +144,7 @@ The following Prolog predicates are exported:
 - handle/2       - handle(Goal,Restarter): setup_call_cleanup/3 around Goal by adding 
                    a handler using add_handler/2, brackets a subtree with a handler (name could be chosen better)
 - handle/3       - handle(Goal, Condition, Restart): setup_call_cleanup/3 around a specific
-                   Restarter which unifies Condition with the siganlled condition (guard)
+                   Restarter which unifies Condition with the signalled condition (guard)
                    and then (->) unified Restart with the signalled Restart (so, success if
                    the signalled condition and restart unify). Useful when the restarter just
                    needs to provide a known value for a known condition.
@@ -154,7 +154,7 @@ The following Prolog predicates are exported:
                    `Restart` is advice on the action to take. It is thus bound to successive values by the registered handlers 
                    which unify with Condition, latest (innermost) registered first. The signaller can
                    use the first one, consult them all etc. It might happen that the handler throws, too.
-                   If there are none registered, or they all fail, `Condition`is thrown.
+                   If there are none registered, or they all fail, `Condition` is thrown.
 
 - signal/3       - Same as signal/2 but if Condition is thrown (i.e. if there are no handlers),
                    then a Default value (2nd argument position) is unified with Restart.
@@ -180,7 +180,7 @@ signal(Condition,Restart)
 
 ## Implementation
 
-Implementaion is done by using a thread-local Prolog clause database in the "condition"
+Implementation is done by using a thread-local Prolog clause database in the "condition"
 module. New clauses to find handlers are added "in priority position" (at the top of the list
 of clauses) with [`asserta/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=asserta/2)) when
 going "down the stack" and removed "on return", i.e. when the whole search subtree is spent (all

@@ -17,7 +17,7 @@ _Work in progress_
   but that library cannot be found directly via the manual (It think). I found it via Google. Maybe it's being retired?
 - I wrote some simple predicates to justify text left/right/centrally too (doesn't
   everybody?): [justify.pl](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/strings/justify.pl). It's 
-  mores traightforward to use the `~t` marker and friends of `format/N`.
+  mores straightforward to use the `~t` marker and friends of `format/N`.
 
 ## Input sources and output sinks
 
@@ -43,7 +43,7 @@ context for a goal to redirect temporarily output to another sink: stream, an at
 The various forms of sink are listed in the page of [`with_output_to/2`](https://eu.swi-prolog.org/pldoc/man?predicate=with_output_to/2).
 
 There is also [`with_output_to_chars/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=with_output_to_chars/2), 
-which captures the ouput in a list of codes (unicode code points, not chars). Nice! 
+which captures the output in a list of codes (unicode code points, not chars). Nice! 
 
 Note that there is a special [`format/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=format/3)
 where you can redirect the sink directly just for `format/3`.
@@ -75,7 +75,7 @@ The reserved stream name `user` refers to the terminal (not sure what that impli
 
 - There may be two version of output/input predicates:
    - One taking a (mode +) output stream as sink, or a (mode +) input stream as source
-   - One using an implict source or sink (i.e. using the globally defined stream `current_output` (see above) 
+   - One using an implicit source or sink (i.e. using the globally defined stream `current_output` (see above) 
   
 **More**
 
@@ -254,7 +254,7 @@ Here interpretation happens when you try it in code unrelated to `format/x`, as 
 |`\r` 	| 0x0D | Carriage return | 
 |`\t` 	| 0x09 | Horizontal Tab | 
 |`\v` 	| 0x09 | Vertical Tab | 
-|`\`*n* |      | where *n* is a sequence of digits between 0 and 7; the character with *octal* code *n* is output (`\0` yields the NUL character). This escape sequence reads octal digits until it encounters a non-octoal-digit. Weird. |
+|`\`*n* |      | where *n* is a sequence of digits between 0 and 7; the character with *octal* code *n* is output (`\0` yields the NUL character). This escape sequence reads octal digits until it encounters a non-octal-digit. Weird. |
 | `\x`*h* |    | where *h* is a sequence of uppercase/lowercase hexdigits; the character with hexadecimal code *h* is output. This escape sequence reads hexdigits until it encounters a non-hexdigit. Weird. |
 | `\u`*h* |    | where *h* is a sequence of exactly 4 hexdigits, a [16-bit UCS-2/UTF-16](https://en.wikipedia.org/wiki/Universal_Coded_Character_Set) code point; `\u2200` outputs the "forall sign", `∀`, for example. |
 | `\U`*h* |    | where *h* is a sequence of exactly 8 hexdigits, a [32-bit UCS-4/UTF-32](https://en.wikipedia.org/wiki/UTF-32) code point. |
@@ -782,7 +782,7 @@ which (as the name says) provides quasi-quotation syntax, as used in
 See also
 
 - This Wikipedia entry for the origin: [Quasi-quotation](https://en.wikipedia.org/wiki/Quasi-quotation).
-- This entry in the Stanfor Encyclopedia of Philosophy: [Quotation](https://plato.stanford.edu/entries/quotation/)
+- This entry in the Stanford Encyclopedia of Philosophy: [Quotation](https://plato.stanford.edu/entries/quotation/)
 
 Here is a test case:
 
