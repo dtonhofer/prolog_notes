@@ -4,7 +4,33 @@ This is an examples companion page to the [`between/3`](https://eu.swi-prolog.or
 
 ## Unit test code for _between/3_
 
-Here is unit test code for `between/3`: [`test_between.pl`](code/test_between.pl), useful as "live documentation".
+Here is unit test code for `between/3`: 
+
+**[`test_between.pl`](code/test_between.pl)**
+
+... useful as "live documentation".
+
+## Only accepts integers, even if conversion would make sense
+
+```
+?- between(1,2.0,X).
+ERROR: Type error: `integer' expected, found `2.0' (a float)
+```
+
+Integer rationals are immediately retyped to integers, so you can write:
+
+```
+?- between(1,4r2,X).
+X = 1 ;
+X = 2.
+```
+
+Because
+
+```
+?- integer(4r2).
+true.
+```
 
 ## No results in interval means (predictably) failure
 
@@ -206,6 +232,22 @@ L = -2 ;
 L = -5 ;
 L = -8.
 ```
+
+Of course one could engineer something like
+
+```
+?- between(0,3,_X),L is 10+3*_X.
+_X = 0,
+L = 10 ;
+_X = 1,
+L = 13 ;
+_X = 2,
+L = 16 ;
+_X = 3,
+L = 19.
+```
+
+But why waste a good occasion to program?
 
 ## A symmetric _between/3_: _between_sym/3_
 

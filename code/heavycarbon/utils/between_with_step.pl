@@ -8,14 +8,8 @@
 % 2020-05-XX
 % https://github.com/dtonhofer/prolog_notes
 % ----------------------------------------------------------------------------
-% This is free and unencumbered software released into the public domain.
-%
-% Anyone is free to copy, modify, publish, use, compile, sell, or
-% distribute this software, either in source code form or as a compiled
-% binary, for any purpose, commercial or non-commercial, and by any
-% means.
-%
-% For more information, please refer to <http://unlicense.org/>
+% ronerycoder@gluino.name (me) says this is licensed under 
+% https://opensource.org/licenses/0BSD
 % ============================================================================
 % between(+Start,+End,+Step,?Value)
 % between(+Start,+End,+Step,?Value,?OptionList)
@@ -36,7 +30,7 @@
 %          §§ Otherwise, "End" will not appear in the sequence and the last
 %             item will be some "Last", Last == Start + K*Step, with K>=0 and
 %             Last+Step > End if Step>0, Last+Step < End if Step<0
-%          ...in other words, sequence enumeration fails as soon the next
+%          In other words, sequence enumeration fails as soon the next
 %          sequence element would overshoot "End".
 %
 % Step:  Integer step of sequence, must denote an integer.
@@ -44,17 +38,16 @@
 %        § It is allowed for Step == 0, as long as Start == End.
 %
 % Value: Either
-%        § a fresh variable (freshvar) that will be bound to the next element
+%        § an unbound variable that will be bound to the next element
 %        § or denotes an integer which for which the predicate verifies that
 %          it belongs to the sequence.
 %
 % OptionList:
-%        § May be a freshvar or the empty list for "default".
-%          If a freshvar, it is bound to the empty list.
-%        § If atom "throw_if_empty" is a member of the list, empty sequences
-%          lead to an exception.
-%          In default mode, the empty sequence is accepted and leads to
-%          immediate predicate failure.
+%        § May be an unbound variable or the empty list for "default".
+%          If an unbound variable, it is bound to the empty list.
+%        § If atom "throw_if_empty" is a member of the list,
+%          empty sequences lead to an exception.
+%          In default mode, the empty sequence leads to failure.
 % ============================================================================
 % Notes
 %
@@ -65,15 +58,14 @@
 %   integer arguments (with int/1, pos/1, neg/1) and moving those to the
 %   left (SWI Prolog has a description of its indexing approach here:
 %   https://www.swi-prolog.org/pldoc/man?section=jitindex )
-%   Still keeping the now possibly non-situation-improving cuts in (in fact
-%   they may be useful to naive interpreters?)
+%   Still keeping the cuts though.
 % - I'm completely relying on integer arithmetic to not wrap around or go
 %   out of bounds. We have 64-bit arithmetic augmented by GNU Multiprecision
 %   library - should be generally a good assumption.
 % - Kudos to jburse for noticing that I hadn't checked the bounds in VERIFY
 %   mode. Bugged! But thanks to the unit test, fixed with confidence.
 % ============================================================================
-% Changes
+% Changes:
 % 2020-05-21: Moved from throwing ISO standard "domain error" to
 %             "my error" because the standard "domain error" is badly designed:
 %             - doesn't carry information properly
@@ -86,6 +78,9 @@
 %             !! In Unit test code, we then need to
 %                use the "throws" feature instead of the "error" feature to
 %                catch the exception.
+% 2020-12-14: License changed from UNLICENSE to 
+%             https://opensource.org/licenses/0BSD 
+%             Comment changes.
 % ============================================================================
 
 % ===
@@ -156,7 +151,7 @@ throw_or_fail_depending_on_option(ExCode,Start,End,Step,Options) :-
    ->
    (exception_code(ExCode,ExLongDesc),
     MoreInfo = info{start:Start, end:End, step:Step},
-    throw(my_error(domain_error,ExLongDesc,MoreInfo)))
+    throw(my_error(domain_error,ExLongDesc,MoreInfo)))  % NOT ISO
    ;
    fail. % actually unnecessary but it's good documentation
 
@@ -167,6 +162,7 @@ throw_unconditionally(ExCode,Start,End,Step) :-
 % Cleaning up the value for "end".
 % Default behaviour: render "end" matchable by tagging it with int/1; throw unless "end" is an integer.
 % The red cuts are there to not backtrack into to default.
+% Note that the standard between/3 only accepts 'inf' and only on 2nd position.
 % ---
 
 cleanup_and_tag_end(inf         ,inf)    :- !.

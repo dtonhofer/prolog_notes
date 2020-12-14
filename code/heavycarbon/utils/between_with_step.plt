@@ -1,3 +1,8 @@
+% ===
+% ronerycoder@gluino.name (me) says this is licensed under 
+% https://opensource.org/licenses/0BSD
+% ===
+
 :- use_module(library('heavycarbon/utils/between_with_step.pl')).
 
 :- begin_tests(between_with_step).
