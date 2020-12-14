@@ -4,7 +4,11 @@ This is an examples companion page to the [`between/3`](https://eu.swi-prolog.or
 
 ## Unit test code for _between/3_
 
-Here is unit test code for `between/3`: [`test_between.pl`](code/test_between.pl), useful as "live documentation".
+Here is unit test code for `between/3`: 
+
+**[`test_between.pl`](code/test_between.pl)**
+
+... useful as "live documentation".
 
 ## No results in interval means (predictably) failure
 
