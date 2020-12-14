@@ -47,3 +47,6 @@ Use between/4 and between/5 as usual.
 
 (Sadly, help(between/4). and help(between/5). do not work yet).
 
+X)
+
+For totally more on this: https://github.com/dtonhofer/prolog_notes/blob/master/code/load_and_test_script.pl
