@@ -1,137 +1,69 @@
 https://eu.swi-prolog.org/pldoc/doc_for?object=between/3
 
-## Unit test code for "between"
+## Some potentially useful notes
 
-[**Here is unit test code for between/3**](https://github.com/dtonhofer/prolog_notes/blob/master/code_unit_tests/builtin_demo/test_between.pl), useful as live documentation.
+[About `between∕3`](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_between/README.md)
 
-## A (correctly lazy) "between" which also takes the "step"
+## Extension of _between∕3_: _between∕4_ and _between∕5_, a (correctly lazy) "between" which also takes the "step"
 
-   - [Code](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/between_with_step.pl)
-   - [Unit tests](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/between_with_step.plt)
-
-==
-between(+Start,+End,+Step,?Value)
-between(+Start,+End,+Step,?Value,?OptionList)
-==
-
-Examples:
+   - [Code](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/between_with_step.pl) ([raw code](https://raw.githubusercontent.com/dtonhofer/prolog_notes/master/code/heavycarbon/utils/between_with_step.pl))
+   - [Unit tests](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/between_with_step.plt) ([raw code](https://raw.githubusercontent.com/dtonhofer/prolog_notes/master/code/heavycarbon/utils/between_with_step.plt))
+   - New to modules? [TL;DR for installation](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/TLDR_between_with_step.txt)
 
 ```
-?- between(10,20,3,L).
+between(+Start,+End,+Step,?Value)
+between(+Start,+End,+Step,?Value,?OptionList)
+```
+
+Example:
+
+```
+?- 
+between(10,20,3,L).
+
 L = 10 ;
 L = 13 ;
 L = 16 ;
 L = 19.
-
-?- between(10,-10,-3,L).
-L = 10 ;
-L = 7 ;
-L = 4 ;
-L = 1 ;
-L = -2 ;
-L = -5 ;
-L = -8.
 ```
 
-## Failure-driven loops using "between"
+Of course one could engineer something like
 
-between/3 can be used to implement limited "failure-driven loops" (unlike repeat/0, which would redo forever). It behaves like member/2 over a [list comprehension](https://en.wikipedia.org/wiki/List_comprehension) indicated by the two integer arguments:
+```
+?- between(0,3,_X),L is 10+3*_X.
+_X = 0,
+L = 10 ;
+_X = 1,
+L = 13 ;
+_X = 2,
+L = 16 ;
+_X = 3,
+L = 19.
+```
 
-==
-?- between(1,4,X), format("Hello ~d!\n",[X]), fail.
-Hello 1!
-Hello 2!
-Hello 3!
-Hello 4!
-false.
-==
+But why waste a good occasion to program and have all the checks in a nice predicate.
 
-Creating a list with integers from Low to High (easier than using foldl/4)
+## Extension of _between∕3_: _between_x∕3_ which also generates acceptable intervals
 
-==
-?- findall(X,between(0,5,X),L).
-L = [0, 1, 2, 3, 4, 5].
-==
+```
+between_x(?Low, ?High, ?Value)
+```
 
-==
-?- bagof(K,between(1,5,X),L).
-L = [1, 2, 3, 4, 5].
-==
+Generate intervals around 0 by backtracking over `between_x(X,Y,0)` until at most 10 solutions have been obtained:
 
-The goal can be complex:
+```
+?- use_module(library('heavycarbon/utils/between_x.pl')).
+true.
 
-==
-?- bagof(K, (between(1,3,K),format("Hello ~d\n",[K])), Bag ).
-Hello 1
-Hello 2
-Hello 3
-Bag = [1, 2, 3].
-==
+?- set_prolog_flag(answer_write_options,[max_depth(100)]).
+true.
 
-Or cartesian:
+?- bagof([X,Y],limit(10,between_x(X,Y,0)),Bag).
+Bag = [[0,0],[-1,0],[0,1],[-2,0],[-1,1],[0,2],[-3,0],[-2,1],[-1,2],[0,3]].
+```
 
-==
-?- bagof([K,X], (between(1,3,K),member(X,[a,b])), Bag ).
-Bag = [[1, a], [1, b], [2, a], [2, b], [3, a], [3, b]].
-==
+   - [Code](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/between_x.pl) ([raw code](https://raw.githubusercontent.com/dtonhofer/prolog_notes/master/code/heavycarbon/utils/between_x.pl))
+   - New to modules? [TL;DR for installation of the similarly named "between_with_step" predicate](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/TLDR_between_with_step.txt)
 
-If the predicate-of-interest accepts an integer argument (here, the length) one can then do things like this (note that the bag size and the number of between calls must match for success):
-
-==
-?- findall( [L,LL], (between(1,5,L),length(LL,L)) , [A,B,C,D,E]).
-A = [1, [_136206]],
-B = [2, [_136176, _136182]],
-C = [3, [_136140, _136146, _136152]],
-D = [4, [_136098, _136104, _136110, _136116]],
-E = [5, [_136050, _136056, _136062, _136068, _136074]].
-==
-
-Edge case, as between(1,0,L) fails:
-
-==
-?- findall( [L,LL], (between(1,0,L),length(LL,L)) , Bag).
-Bag = [].
-==
-
-If the goal on the right of between/3 backtracks infinitely, you must use [library(solution_sequences)](https://eu.swi-prolog.org/pldoc/man?section=solutionsequences) instead:
-
-==
-?- bagof([Length,List],limit(3,length(Length,List)),Bag).
-
-Bag = [[[], 0], [[_20374], 1], [[_20344, _20350], 2]].
-==
-
-## A symmetric "between": "between_sym"
-
-A naive symmetric between, which can generate increasing (step 1) and decreasing (step -1) sequences. The "empty sequence", whereby between/3 fails at once, no longer exists.
-
-In the case of a decreasing sequence, this is done by generating the whole sequence and storing it. Catastrophic on large sequences! The correct way to implement this is via lazy ("generate-on-demand") sequences - just keep a small state in an object and compute the next sequence member only when requested. In Prolog, the "object" is the stack frame and "when requested" is the backtracking "redo". See between/4 further below!
-
-==
-between_sym(A,B,X) :-
-
-   % No need to check parameters; let between/3 do that
-   % - between/3 throws if A,B not integers
-
-   (A =< B)
-   ->
-   between(A,B,X)
-   ;
-   (bagof(Q,between(B,A,Q),Seq),reverse(Seq,SeqR),member(X,SeqR)).
-
-:- begin_tests(between_sym).
-
-test(1, all(X = [1,2,3]))   :- between_sym(1,3,X).
-test(2, all(X = [3,2,1]))   :- between_sym(3,1,X).
-test(1, all(X = [-1,0,+1])) :- between_sym(-1,+1,X).
-test(2, all(X = [+1,0,-1])) :- between_sym(+1,-1,X).
-test(1, all(X = [0]))       :- between_sym(0,0,X).
-test(1, throws(_))          :- between_sym(a,0,_).
-
-:- end_tests(between_sym).
-
-rt(between_sym) :- run_tests(between_sym).
-==
-
-
+Unit tests are still missing. I really should add those.
 

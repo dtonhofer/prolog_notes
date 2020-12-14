@@ -1,3 +1,8 @@
+2020-12-14
+
+
+
+
                                                                        any T
                                                                          |
                                      +-----------------------------------+---------------------------+
@@ -32,10 +37,10 @@
                              |                 |              |              |                     |                   a compound term)    "list" is a *nonlocal*
                            T==[]             T\==[]           |   rational(X),\+integer(X)      integer(T)                                 structure based on convention
                         empty list        for now only        |      "proper rational"                                                     there may or may not be an
-                                         the unfakeable       |                                                                            actual list beyond the first listcell
-                                       dict functor name      |
+                                         the unfakeable       |                                                                            actual list beyond the first 
+                                       dict functor name      |                                                                            listcell
                                                               |
                                            +------------------+------------------+
                                            |                  |                  |
-                                      lenghth=0           length=1            atom with
-                                    the empty atom      character/char        length>1
+                                       length=0           length=1            atom with
+                                    the empty atom     character/char         length>1

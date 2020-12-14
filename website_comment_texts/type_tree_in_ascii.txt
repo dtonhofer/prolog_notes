@@ -1,6 +1,17 @@
+https://eu.swi-prolog.org/pldoc/man?section=typetest
+
 ## If you have a a Prolog term denoted by variable name `T`, what could it be?
 
-==
+This is basically a decision tree that a program could run, although in practice you just immediately use the predictate
+at the very botoom: for example, `integer(T)` will tell you whether `T` denotes an integer or not. If yes, you
+immediately know that it is also a rational, a number, an atomic, a nonvar, and evidently "any".
+
+```
+2020-12-14
+
+
+
+
                                                                        any T
                                                                          |
                                      +-----------------------------------+---------------------------+
@@ -23,7 +34,7 @@
                                   blob(T,_)                           string(T)                number(T)       compound term              compound term
                                       |                                                           |             of arity 0                 of arity > 0
                                       |                                                           |          (SWI-Prolog only)                   |
-                                      |                                                           |                                              |                                      
+                                      |                                                           |                                              |
                                       |                                                           |                                              |
               +-----------------------+-----------------------+                         +---------+---------+                 +------------------+-------------------+
               |                       |                       |                         |                   |                 |                  |                   |
@@ -31,19 +42,19 @@
       encapsulated foreign            |                    atom(T)                      |                                                  of a list backbone
            resources                  |                       |                         |                              an encapsulated       '[|]'(H,Rs)
                                       |                       |                         |                              data structure; for   alias [H|Rs]
-                             +--------+--------+              |              +----------+----------+                   now implemented as        
+                             +--------+--------+              |              +----------+----------+                   now implemented as
                              |                 |              |              |                     |                   a compound term)    "list" is a *nonlocal*
                            T==[]             T\==[]           |   rational(X),\+integer(X)      integer(T)                                 structure based on convention
                         empty list        for now only        |      "proper rational"                                                     there may or may not be an
-                                         the unfakeable       |                                                                            actual list beyond the first listcell
-                                       dict functor name      |
+                                         the unfakeable       |                                                                            actual list beyond the first 
+                                       dict functor name      |                                                                            listcell
                                                               |
                                            +------------------+------------------+
                                            |                  |                  |
-                                      lenghth=0           length=1            atom with
-                                    the empty atom      character/char        length>1
+                                       length=0           length=1            atom with
+                                    the empty atom     character/char         length>1
 
-==
+```
 
 The above as easily printable [**A4 PDF**](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_swipl_data_types/swipl_data_type_tree/swipl_data_type_tree.pdf)
 
@@ -53,18 +64,71 @@ Some [**notes I took**](https://github.com/dtonhofer/prolog_notes/tree/master/sw
 
 The SWI-Prolog Wiki has more on SWI-Prolog datatypes [here](https://eu.swi-prolog.org/datatypes.txt).
 
+## No booleans
+
+Perphas surprisingly for a logic programming language, there is no dedicated "boolean" type (there seem to be no ready-to-use logical connectives working on "boolean" either but they are easy to write). Instead the atoms `true` and `false` are (generally) used when you want to "reify" the truth values:
+
+```
+xor(true,false,true) :- !.
+xor(false,true,true) :- !.
+xor(true,true,false) :- !.
+xor(false,false,false) :- !.
+```
+
+There are 0-ary predicates of the same name true/0 and false/0 so you can call those to "un-reify" the truth value, obtaining proper success or failure. An atom at goal position is interpreted as a call to the similarly named 0-ary predicate:
+
+```
+?- true.
+true.
+
+?- false.
+false.
+```
+
+There is also an undefined/0 truth-value predicate used in well-founded semantics:
+
+```
+?- undefined.
+undefined.
+```
+
+Indeed, on can refer to must_be/2: `must_be(boolean,X)` checks whether `X` is one of the atoms `true` or `false`. (It doesn't accept a third truth value `undefined`, used tabling, either).
+
 ## Thoughts
 
+   - There should be a special "NULL" atomic value similar as for SQL to designate missing information. Currently one has to resort to contortions express NULL, choosing atoms with special meanings or using `_`, which is an unbund variable, not "NULL".
    - Actual arrays with access-by-numeric-index can be implemented with (large) compound terms.
    - The blob type gives the possibility to create unfakeable identifiers (i.e. enum types); there is absolutely use for this (think of manipulating a syntax tree where you really want to distinguish the variables that appear in the AST from the rest without awkward conventions about allowed names or using tagging) but it is not supported for now. You will have to add C code. See: [blob](https://eu.swi-prolog.org/pldoc/man?section=blob)
    - Why is Prolog still not ["sorted"](https://en.wikipedia.org/wiki/Many-sorted_logic) after all these years? It would be Prolog++ of course. Would still be worth it.  
 
 The concept of the Prolog "term" is still very primitive. In [Higher-Order Logic Programming as Constraint Logic Programming](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.40.752) (Spiro Michaylov, Frank Pfenning), 1993, we read: 
 
-Higher-order logic programming (HOLP) languages typically use a typed λ-calculus as their domain of computation. In the case of λProlog it is the simply-typed λ-calculus, while in the case of Elf it is a dependently typed λ-calculus. These languages are particularly useful for various kinds of meta-programming and theorem proving tasks because of the logical support for variable binding via λ-abstraction. They have been used for a wide range of applications including theorem proving, programming language interpretation, type inference, compilation, and natural language parsing.
+> Higher-order logic programming (HOLP) languages typically use a typed λ-calculus as
+> their domain of computation. In the case of λProlog it is the simply-typed λ-calculus,
+> while in the case of Elf it is a dependently typed λ-calculus. These languages are
+> particularly useful for various kinds of meta-programming and theorem proving tasks
+> because of the logical support for variable binding via λ-abstraction. They have been
+> used for a wide range of applications including theorem proving, programming language
+> interpretation, type inference, compilation, and natural language parsing.
 
 However:
 
-Full unification in higher-order languages is clearly impractical, due to the non-existence of minimal complete sets of most-general unifiers. Therefore, work on λProlog has used Huet’s algorithm for pre-unification, where so-called flex-flex pairs (which are always unifiable) are maintained as constraints, rather than being incorporated in an explicit parametric form. Yet, even pre-unifiability is undecidable, and sets of most general pre-unifiers may be infinite. While undecidability has not turned out to be a severe problem, the lack of unique most general unifiers makes it difficult to accurately predict the run-time behavior of λProlog programs that attempt to take advantage of full higher-order pre-unification. It can result in thrashing when certain combinations of unification problems have to be solved by extensive backtracking. Moreover, in a straightforward implementation, common cases of unification incur a high overhead compared to first-order unification. These problems have led to a search for natural, decidable subcases of higher-order unification where most general unifiers exist. Miller has suggested a syntactic restriction (Lλ) to λProlog, easily extensible to related languages, where most general unifiers are unique modulo βηα-equivalence.
+> Full unification in higher-order languages is clearly impractical, due to the non-
+> existence of minimal complete sets of most-general unifiers. Therefore, work on λProlog
+> has used Huet’s algorithm for pre-unification, where so-called flex-flex pairs (which
+> are always unifiable) are maintained as constraints, rather than being incorporated in
+> an explicit parametric form. Yet, even pre-unifiability is undecidable, and sets of
+> most general pre-unifiers may be infinite. While undecidability has not turned out to
+> be a severe problem, the lack of unique most general unifiers makes it difficult to
+> accurately predict the run-time behavior of λProlog programs that attempt to take
+> advantage of full higher-order pre-unification. It can result in thrashing when
+> certain combinations of unification problems have to be solved by extensive
+> backtracking. Moreover, in a straightforward implementation, common cases of
+> unification incur a high overhead compared to first-order unification. These problems
+> have led to a search for natural, decidable subcases of higher-order unification where
+> most general unifiers exist. Miller has suggested a syntactic restriction (Lλ) to
+> λProlog, easily extensible to related languages, where most general unifiers are
+> unique modulo βηα-equivalence
 
+Going further, one attains logic programming on top of proper object-oriented database objects: [F-Logic](https://github.com/dtonhofer/prolog_notes/tree/master/other_notes/about_f_logic)
 
