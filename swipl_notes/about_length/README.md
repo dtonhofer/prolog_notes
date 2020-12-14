@@ -53,23 +53,23 @@ Length = 5
 
 This demonstrates functionality of `length/2` in executable format:
 
-[Unit testing length/2](https://github.com/dtonhofer/prolog_notes/blob/master/code_unit_tests/builtin_demo/test_length.pl)
+[Unit testing length/2](code/test_length.pl)
+
+_Hopefully in the SWI-Prolog distribution soon, as `src/Tests/core/test_length.pl`_
 
 ## Variant behaviour
 
 Ulrich Neumerkel has a page on variant behaviour of `length/2` across various implementations:
 
-https://www.complang.tuwien.ac.at/ulrich/iso-prolog/length
+[ISO/IEC JTC1 SC22 WG17: Comparison of implementations of length/2 and atom_length/2](https://www.complang.tuwien.ac.at/ulrich/iso-prolog/length)
 
-It's a bit dated though, the latest SWI-Prolog's behaviour differs somewhat from the table.
+The latest SWI-Prolog's behaviour seem to differ somewhat from the table.
 
-Actual test code:
+The above can be nicely reformatted into unit test code!
 
-The above can be nicely reformatted into unit test code:
+[test_length_against_iso_prolog_wg17.pl](code/test_length_against_iso_prolog_wg17.pl)
 
-[test_length_against_iso_prolog_wg17.pl](https://github.com/dtonhofer/prolog_notes/blob/master/code_unit_tests/builtin_demo/test_length_against_iso_prolog_wg17.pl)
-
-Note this little inconsistency: 
+**Note this little inconsistency:**
 
 [`atom_length/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=atom_length/2)
 **fails** on negative length whereas `length/2` **throws** (at least in SWI-Prolog)
@@ -100,15 +100,19 @@ See also the description of length/2 in "A Prologue for Prolog (working draft)"
 
 http://www.complang.tuwien.ac.at/ulrich/iso-prolog/prologue#length
 
-## _probe_length/3_
+## Rolling our own extended _length_: _probe_length/3_
 
 So how do we probe the length of a open list, i.e. a list ending in an unbound variable, like `[1,2,3|_]`?
 
-Here is a predicate which can do that: 
+Here is a predicate which can do that `probe_length/3`:  
 
-Direct link to source: [`probe_length/2`](https://github.com/dtonhofer/prolog_notes/blob/master/code/various/probe_length.pl)
+### Code
 
-(comes with unit tests).
+   - [Code](/code/heavycarbon/utils/probe_length.pl) ([raw code](https://raw.githubusercontent.com/dtonhofer/prolog_notes/master/code/heavycarbon/utils/probe_length.pl))
+   - [Unit tests](/code/heavycarbon/utils/probe_length.plt) ([raw code](https://raw.githubusercontent.com/dtonhofer/prolog_notes/master/code/heavycarbon/utils/probe_length.plt))
+   - New to modules? [TL;DR for installation](/code/heavycarbon/utils/TLDR_probe_length.txt)
+   
+### Examples
 
 ```
 ?- probe_length([],Length,What). 
