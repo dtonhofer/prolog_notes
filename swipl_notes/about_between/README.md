@@ -10,6 +10,28 @@ Here is unit test code for `between/3`:
 
 ... useful as "live documentation".
 
+## Only accepts integers, even if conversion would make sense
+
+```
+?- between(1,2.0,X).
+ERROR: Type error: `integer' expected, found `2.0' (a float)
+```
+
+Integer rationals are immediately retyped to integers, so you can write:
+
+```
+?- between(1,4r2,X).
+X = 1 ;
+X = 2.
+```
+
+Because
+
+```
+?- integer(4r2).
+true.
+```
+
 ## No results in interval means (predictably) failure
 
 ```
