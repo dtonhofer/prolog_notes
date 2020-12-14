@@ -62,39 +62,47 @@ is not considered and demands predicates that look at "nonlocal structure", for 
 Going from top to bottom, the full set of (root) terms is iteratively divided into two or more distinct & complementary subsets at each branch/question/test.
 
 ```text
-                                                                          any T 
-                                                                            |
-                                                  +-------------------------+------------------------+
-                                                  |                                                  |
-                                                var(T)                                            nonvar(T)
-                                         ("is T a variable name                                      |
-                                          that is still fresh                                        |
-                                     variable at this point in time?")                               |
+                                                                       any T
+                                                                         |
+                                     +-----------------------------------+---------------------------+
+                                     |                                                               |
+                                   var(T)                                                         nonvar(T)
+                    the variable name T denotes an 'unbound                               the complement of var(T)
+                    variable' (aka. uninstantiated variable),                                        |
+                    which is an empty memory cell distinguishable                                    |
+                    by '==' at the time the call to var/1 occurs                                     |
+                    - a nonlogical predicate about the state of the                                  |
+                      computation                                                                    |
+                    - this predicate should have been called                                         |
+                      unbound(T); a historical accident!                                             |
                                                                          +---------------------------+-----------------------------+
-                                                                         |                                                         |      
-                                                                     atomic(T)                                                 compound(T)                                
+                                                                         |                                                         |
+                                                                     atomic(T)                                                 compound(T)
                                                                          |                                                         |
                                       +----------------------------------+------------------------+                 +--------------+-------------+
                                       |                                  |                        |                 |                            |
-                                  blob(T,_)                           string(T)                number(T)       "compound term            "compound term
-                                      |                                                           |             of arity 0"                of arity > 0"
+                                  blob(T,_)                           string(T)                number(T)       compound term              compound term
+                                      |                                                           |             of arity 0                 of arity > 0
+                                      |                                                           |          (SWI-Prolog only)                   |
                                       |                                                           |                                              |
-              +-----------------------+-----------------------+                         +---------+---------+                   +----------------+-------------+
-              |                       |                       |                         |                   |                   |                |             |            
-       (other blob types)    blob(T,reserved_symbol)     blob(T,text)           rational(T,Nu,De)        float(T)              dict          "head of       ...others  
-      encapsulated foreign            |                    atom(T)                      |                                       |            of a list"
-           resources                  |                       |                         |                                (this seems to     '[|]'(H,Rs)
-                                      |                       |                         |                              be an encapsulated      [H|Rs]
-                             +--------+--------+              |              +----------+----------+                     data structure)         |
-                             |                 |              |              |                     |                                       (a nonlocal
-                           T==[]             T\==[]           |   rational(X),\+integer(X)      integer(T)                               structure; there 
-                        empty list        dict functor        |      (proper rational)                                                    may or may not
-                                                              |                                                                            be an actual
-                                                              |                                                                        list beyond the head)
+                                      |                                                           |                                              |
+              +-----------------------+-----------------------+                         +---------+---------+                 +------------------+-------------------+
+              |                       |                       |                         |                   |                 |                  |                   |
+       (other blob types)    blob(T,reserved_symbol)     blob(T,text)           rational(T,Nu,De)        float(T)       SWI-Prolog dict      first listcell        others
+      encapsulated foreign            |                    atom(T)                      |                                                  of a list backbone
+           resources                  |                       |                         |                              an encapsulated       '[|]'(H,Rs)
+                                      |                       |                         |                              data structure; for   alias [H|Rs]
+                             +--------+--------+              |              +----------+----------+                   now implemented as
+                             |                 |              |              |                     |                   a compound term)    "list" is a *nonlocal*
+                           T==[]             T\==[]           |   rational(X),\+integer(X)      integer(T)                                 structure based on convention
+                        empty list        for now only        |      "proper rational"                                                     there may or may not be an
+                                         the unfakeable       |                                                                            actual list beyond the first listcell
+                                       dict functor name      |
+                                                              |
                                            +------------------+------------------+
                                            |                  |                  |
-                                      length=0           length=1            atom with
-                                   "the empty atom"      "character"          length>1
+                                      length=0            length=1            atom with
+                                    the empty atom      character/char        length>1
 ```
 
 **Note on integers:**
