@@ -211,6 +211,22 @@ L = -5 ;
 L = -8.
 ```
 
+Of course one could engineer something like
+
+```
+?- between(0,3,_X),L is 10+3*_X.
+_X = 0,
+L = 10 ;
+_X = 1,
+L = 13 ;
+_X = 2,
+L = 16 ;
+_X = 3,
+L = 19.
+```
+
+But why waste a good occasion to program?
+
 ## A symmetric _between/3_: _between_sym/3_
 
 A naive symmetric between, which can generate increasing (step 1)
