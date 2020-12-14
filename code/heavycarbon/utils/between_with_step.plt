@@ -6,16 +6,16 @@ test(bad_step_1  , error(type_error(_,_),_))      :- between(0,1, foo ,_).
 test(bad_step_2  , error(type_error(_,_),_))      :- between(0,1, 0.5 ,_).
 test(bad_step_3  , error(instantiation_error,_))  :- between(0,1, _   ,_).
 
-test(empyt_seq_1a  , throws(my_error(domain_error,_,_)))  :- between(0,+1, -1 ,_,[throw_if_empty]).
+test(empty_seq_1a  , throws(my_error(domain_error,_,_)))  :- between(0,+1, -1 ,_,[throw_if_empty]).
 test(empty_seq_1b  , fail)                        :- between(0,+1, -1 ,_).
 
-test(empyt_seq_2a  , throws(my_error(domain_error,_,_)))  :- between(0,-1, +1 ,_,[throw_if_empty]).
+test(empty_seq_2a  , throws(my_error(domain_error,_,_)))  :- between(0,-1, +1 ,_,[throw_if_empty]).
 test(empty_seq_2b  , fail)                        :- between(0,-1, +1 ,_).
 
-test(empyt_seq_3a  , throws(my_error(domain_error,_,_)))  :- between(0,-inf,+1,_,[throw_if_empty]).
+test(empty_seq_3a  , throws(my_error(domain_error,_,_)))  :- between(0,-inf,+1,_,[throw_if_empty]).
 test(empty_seq_3b  , fail)                        :- between(0,-inf,+1,_).
 
-test(empyt_seq_4a  , throws(my_error(domain_error,_,_)))  :- between(0,+inf,-1,_,[throw_if_empty]).
+test(empty_seq_4a  , throws(my_error(domain_error,_,_)))  :- between(0,+inf,-1,_,[throw_if_empty]).
 test(empty_seq_4b  , fail)                        :- between(0,+inf,-1,_).
 
 test(bad_start_1 , error(type_error(_,_),_))      :- between(foo  ,1,2,_).
