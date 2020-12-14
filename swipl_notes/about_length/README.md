@@ -104,7 +104,7 @@ http://www.complang.tuwien.ac.at/ulrich/iso-prolog/prologue#length
 
 So how do we probe the length of a open list, i.e. a list ending in an unbound variable, like `[1,2,3|_]`?
 
-Here is a predicate which can do that `probe_length/3`:  
+Here is a predicate which can do that `probe_length/3`, `probe_length/4`.
 
 ### Code
 
