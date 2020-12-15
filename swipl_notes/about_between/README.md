@@ -199,7 +199,52 @@ Hello 4!
 false.
 ```
 
-## Extension of _between/3_: _between/4_ and _between/5_, a (correctly lazy) "between" which also takes the "step"
+## Extension of _between/3_: a "between" which which is able to propose valid intervals
+
+The standard `between/3` **dataflow** allowss only from a known `(LowerLimit,UpperLimit)` to a sequence of `Value`.
+Why not allow alternative directions:
+
+- `(LowerLimit,Value)` to a sequence of `UpperLimit`
+- `(UpperLimit,Value)` to a sequence of `LowerLimit`
+- `Value` to a sequence of `(LowerLimit,UpperLimit)`
+
+These are defined:
+
+- `between_x(?Low, ?High, ?Value)`
+
+For example, define:
+
+```
+intervalsize(_,inf,inf)        :- !.
+intervalsize(Lower,Upper,Size) :- Size is Upper-Lower+1.
+```
+
+Then generate intervals around 0 (below, the printout has been rearranged by hand):
+
+```
+?- 
+between_x(Lower,Upper,0), intervalsize(Lower,Upper,Size), format("~q:[~q,~q]\n",[Size,Lower,Upper]).
+
+1:[0,0]
+2:[-1,0]  2:[0,1]
+3:[-2,0]  3:[-1,1]  3:[0,2]
+4:[-3,0]  4:[-2,1]  4:[-1,2]  4:[0,3]
+5:[-4,0]  5:[-3,1]  5:[-2,2]  5:[-1,3]  5:[0,4] 
+...
+```
+
+   - [Code](/code/heavycarbon/utils/between_x.pl) ([raw code](https://raw.githubusercontent.com/dtonhofer/prolog_notes/master/code/heavycarbon/utils/between_x.pl))
+   - [Unit tests](/code/heavycarbon/utils/between_x.plt) ([raw code](https://raw.githubusercontent.com/dtonhofer/prolog_notes/master/code/heavycarbon/utils/between_x.plt))
+   - New to modules? [TL;DR for installation](/code/heavycarbon/utils/TLDR_between_x.txt)
+
+## Extension of _between/3_: a "between" which also takes a negative or positive "step" value
+
+Values are no pre-generated with `between/3` and then linearly transformed, but properly
+generated "on need". When programming this, one really notices how the "stateful object" of
+object-oriented programming has become the "predicate activation" of logic programming (i.e.
+the state is in a stack frame that is visited and updated again and again as the proof
+tree retreats from its lowermost branches back into the activation and advances again
+towards a new success.)
 
    - [Code](/code/heavycarbon/utils/between_with_step.pl) ([raw code](https://raw.githubusercontent.com/dtonhofer/prolog_notes/master/code/heavycarbon/utils/between_with_step.pl))
    - [Unit tests](/code/heavycarbon/utils/between_with_step.plt) ([raw code](https://raw.githubusercontent.com/dtonhofer/prolog_notes/master/code/heavycarbon/utils/between_with_step.plt))
@@ -247,7 +292,7 @@ _X = 3,
 L = 19.
 ```
 
-But why waste a good occasion to program?
+But why waste a good occasion to program something appropriately solid?
 
 ## A symmetric _between/3_: _between_sym/3_
 
@@ -262,7 +307,8 @@ The correct way to implement this is via lazy ("generate-on-demand")
 sequences - just keep a small state in an object and compute the 
 next sequence member only when requested. In Prolog, the "object" 
 is the stack frame and "when requested" is the backtracking "redo".
-See `between/4` above.
+
+**See `between/4` above for that kind of code.**
 
 ```
 % No need to check parameters; let between/3 do that
