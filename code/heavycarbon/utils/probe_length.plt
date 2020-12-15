@@ -1,3 +1,10 @@
+% ===
+% ronerycoder@gluino.name (me) says this is licensed under 
+% https://opensource.org/licenses/0BSD
+% ===
+
+:- use_module(library('heavycarbon/utils/probe_length.pl')).
+
 % Switch on debug printing with
 % :- debug(test_probe_length).
 
