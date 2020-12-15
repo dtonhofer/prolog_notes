@@ -7,7 +7,7 @@ Based on the SWI-Prolog manual
    - [Website text](about_between/webmanualtxt/between.txt)
 
 - [`length/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=length/1)
-   - [Notes](about_length), includes code for `probe_length/3` 
+   - [Notes](about_length), includes code for `probe_length/3` and (lenient) `length/3`
    - [Website text](about_length/webmanualtxt/length.txt)
 
 - [Verify type of a term](https://eu.swi-prolog.org/pldoc/man?section=typetest)
