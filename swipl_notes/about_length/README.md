@@ -55,7 +55,9 @@ This demonstrates functionality of `length/2` in executable format:
 
 [Unit testing length/2](code/test_length.pl)
 
-_Hopefully in the SWI-Prolog distribution soon, as `src/Tests/core/test_length.pl`_
+_Hopefully in the SWI-Prolog distribution soon, as `src/Tests/core/test_length.pl`_ ?
+
+There already is a bunch of test cases for `length/2` in the distribution, in `src/Tests/core/test_bips.pl` in plunit `length`.
 
 ## Variant behaviour
 
