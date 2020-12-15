@@ -106,6 +106,14 @@ So how do we probe the length of a open list, i.e. a list ending in an unbound v
 
 Here is a predicate which can do that `probe_length/3`, `probe_length/4`.
 
+```
+probe_length(@MaybeList, ?Length, ?What)
+probe_length(@MaybeList, ?Length, ?What, @Options)
+```
+
+`probe_length∕3` and `probe_length∕4` probe the length of an potentially open list without modifying it and tell you what the
+actual class of this maybe-list object is!
+
 ### Code
 
    - [Code](/code/heavycarbon/utils/probe_length.pl) ([raw code](https://raw.githubusercontent.com/dtonhofer/prolog_notes/master/code/heavycarbon/utils/probe_length.pl))
@@ -117,57 +125,93 @@ Here is a predicate which can do that `probe_length/3`, `probe_length/4`.
 ```
 ?- probe_length([],Length,What). 
 Length = 0, What = closed.
+```
 
+```
 ?- probe_length([a,b,c],Length,What).
 Length = 3, What = closed. 
+```
 
+```
 ?- probe_length(_, Length, What).
 Length = 0, What = var.
+```
 
+```
 ?- probe_length([a,b,c,d|foo], Length, What).
 Length = 4, What = nonlist.
+```
 
-% Propose a length:
+Propose a length:
 
+```
 ?- probe_length([a,b,c],3,What).
 What = closed.
+```
 
+```
 ?- probe_length([a,b,c],10,What). 
 false.
+```
 
+Bad length - generally just fail on negative length:
+
+```
 ?- probe_length([a,b,c],-1,What). 
 false.
+```
 
-% Bad length:
+But you can select to throw instead:
 
+```
 ?- probe_length([a,b,c],-1,What,strict). % You can also use a list: '[strict]'
 ERROR: Type error: `nonneg' expected, found `-1' (an integer)
+```
 
+The length always must be an integer:
+
+```
 ?- probe_length([a,b,c],3.0,What). 
 ERROR: Type error: `integer' expected, found `3.0' (a float)
+```
 
-?- probe_length([a|x], Length, What). % Length = 1, What = nonlist: An non-list with a listlike prefix of length 1
+It can handle a "non-list". Here, a non-list with a "list-like" prefix of length 1
+
+```
+?- probe_length([a|x], Length, What). 
 Length = 1, What = nonlist.
+```
 
+An unbound veriable is special:
+
+```
 ?- probe_length(_, Length, What).
 Length = 0, What = var.
+```
 
-% Propose a class for MaybeList:
+Propose a class for `MaybeList`, maybe multiple classes. In the latter case, it's ok if any class matches:
 
+```
 ?- probe_length([a,b,c,d|foo], Length, nonlist).
 Length = 4.
+```
 
+```
 ?- probe_length([a,b], Length, [closed,var]).
 Length = 2.
+```
 
- probe_length(_, Length, [closed,var]).
+```
+?- probe_length(_, Length, [closed,var]).
 Length = 0.
+```
 
+```
 ?- probe_length([a,b,c|_], Length, [closed,var]).
 false.
 ```
 
-## Efficiency
+## Efficiency of _length/2_
 
 Implementation-wise, does `length/2` scan the whole "backbone" of the passed list or does it just need to 
 read an integer at the tip? Or in other words, is `length/2` _O(1)_ or _O(n)_ with _n_ the length of the list? 
