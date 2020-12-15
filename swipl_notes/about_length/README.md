@@ -2,9 +2,11 @@
 
 This is a companions page for the SWI-Prolog entry on the predicate [`length/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=length/2)
 
-## Generate a list of unbound variables
+## Standard behaviour
 
-A completely unintuitive trick for the beginner:
+### Generate a list of unbound variables
+
+**A completely unintuitive trick for the beginner, but very useful**
 
 Generate a "template list" of length 5 (say) holding only unbound variables. Directly 
 using `length/2`. This is done by stating the length of the list and leaving 
@@ -45,11 +47,11 @@ Length = 5
 ...
 ```
 
-## See also
+### See also
 
 [`same_length/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=same_length/2) - useful if you have the length of two lists to compare.
 
-## Unit test code!
+### Unit test code!
 
 This demonstrates functionality of `length/2` in executable format:
 
@@ -59,7 +61,7 @@ _Hopefully in the SWI-Prolog distribution soon, as `src/Tests/core/test_length.p
 
 There already is a bunch of test cases for `length/2` in the distribution, in `src/Tests/core/test_bips.pl` in plunit `length`.
 
-## Variant behaviour
+## Compared to the ISO Standard
 
 Ulrich Neumerkel has a page on variant behaviour of `length/2` across various implementations:
 
@@ -96,13 +98,41 @@ Pragmatically, the decision whether to fail or throw (incl. _what_ to throw) sho
 
 As such, there should be an option to control behaviour. See `probe_length/3` below.
 
-## More reading
+### More reading
 
 See also the description of length/2 in "A Prologue for Prolog (working draft)"
 
 http://www.complang.tuwien.ac.at/ulrich/iso-prolog/prologue#length
 
-## Rolling our own extended _length_: _probe_length/3_
+## Variants
+
+### A _length/3_ which can behave more leniently
+
+For more flexible behaviour, here is a `length/3` which has a third parameter to select behaviour:
+
+- Behave exactly like the SWI-Prolog length by directly calling it: `length(List,Length,swi)` or `length(List,Length,[swi])` or `length(List,Length,[])` (`swi` wins if it's first in the options list, and is otherwise the default behaviour)
+- Behave leniently and never throws, only fails: `length(List,Length,lenient)` or `length(List,Length,[lenient])` (`lenient` wins if it's first in the options list)
+- Behave more strictly than SWI-Prolog's `length/2`: `length(List,Length,strict)` or `length(List,Length,[strict])` (`strict` wins if it's first in the options list) -- Actually it behaves exactly the same as the SWI-Prolog `length/2` for now, and this will probably not change.
+
+**Code**
+
+   - [Code](/code/heavycarbon/utils/lenient_length.pl) ([raw code](https://raw.githubusercontent.com/dtonhofer/prolog_notes/master/code/heavycarbon/utils/lenient_length.pl))
+   - New to modules? [TL;DR for installation](/code/heavycarbon/utils/TLDR_lenient_length.txt)
+
+**Example**
+
+```
+?- length(L,-1,lenient).
+false.
+
+?- length(L,-1,strict).
+ERROR: Domain error: `not_less_than_zero' expected, found `-1'
+
+?- length(L,-1,swi).
+ERROR: Domain error: `not_less_than_zero' expected, found `-1'
+```
+
+### Rolling an "extended _length_": _probe_length/3_
 
 So how do we probe the length of a open list, i.e. a list ending in an unbound variable, like `[1,2,3|_]`?
 
@@ -116,13 +146,13 @@ probe_length(@MaybeList, ?Length, ?What, @Options)
 `probe_length∕3` and `probe_length∕4` probe the length of an potentially open list without modifying it and tell you what the
 actual class of this maybe-list object is!
 
-### Code
+**Code**
 
    - [Code](/code/heavycarbon/utils/probe_length.pl) ([raw code](https://raw.githubusercontent.com/dtonhofer/prolog_notes/master/code/heavycarbon/utils/probe_length.pl))
    - [Unit tests](/code/heavycarbon/utils/probe_length.plt) ([raw code](https://raw.githubusercontent.com/dtonhofer/prolog_notes/master/code/heavycarbon/utils/probe_length.plt))
    - New to modules? [TL;DR for installation](/code/heavycarbon/utils/TLDR_probe_length.txt)
    
-### Examples
+**Examples**
 
 ```
 ?- probe_length([],Length,What). 
