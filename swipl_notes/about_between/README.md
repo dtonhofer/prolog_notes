@@ -201,7 +201,7 @@ false.
 
 ## Extension of _between/3_: a "between" which which is able to propose valid intervals
 
-The standard `between/3` **dataflow** allowss only from a known `(LowerLimit,UpperLimit)` to a sequence of `Value`.
+The standard `between/3` **dataflow** allows only to flow from a known `(LowerLimit,UpperLimit)` to a sequence of `Value`.
 Why not allow alternative directions:
 
 - `(LowerLimit,Value)` to a sequence of `UpperLimit`
