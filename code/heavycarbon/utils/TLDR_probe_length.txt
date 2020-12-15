@@ -37,8 +37,8 @@ true.
 Run tests
 
 ?- run_tests.
-% PL-Unit: between_with_step ................................................................................ done
-% All 80 tests passed
+% PL-Unit: probe_length ............. done
+% All 13 tests passed
 true.
 
 6) 
