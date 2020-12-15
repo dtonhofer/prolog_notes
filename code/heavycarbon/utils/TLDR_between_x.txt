@@ -1,0 +1,52 @@
+To use between_x.pl:
+
+1) 
+
+Set up a directory hierarchy with the Prolog module and the Prolog plunit code in your directory $FOO like this, wherever $FOO is:
+
+$FOO
+└── modules/
+    └── heavycarbon/
+        └── utils/
+            ├── between_x.pl    <-- the source for betweenx/3 in module "between_x"
+            └── between_x.plt   <-- the source for the plunit test "between_x" (which will be put into module "plunit_between_x")
+
+2)             
+
+Start SWI Prolog
+
+Add the topmost directory to the library search path (replace $FOO as usual with an actual path):
+
+?- assertz(file_search_path(library,'$FOO/heavycarbon')).
+
+3) 
+
+Load the module, which (confusingly) is given by file name, not module name:
+
+?- use_module(library('heavycarbon/utils/between_x.pl')).
+
+4) 
+
+Load the associated .plt files automagically:
+
+?- load_test_files([]).
+true.
+
+5)
+
+Run tests
+
+?- run_tests.
+% PL-Unit: between_x ............ done
+% All 12 tests passed
+true.
+
+6) 
+
+Use between/4 and between/5 as usual.
+
+(Sadly, help(between/4). and help(between/5). do not work yet).
+
+X)
+
+For totally more on this: https://github.com/dtonhofer/prolog_notes/blob/master/code/load_and_test_script.pl
