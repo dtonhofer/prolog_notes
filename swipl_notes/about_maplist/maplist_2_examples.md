@@ -1,6 +1,6 @@
 # Examples for the Prolog predicate _maplist/2_
 
-- On this page: `maplist/2` (1 goal, 1 list to verify or test)
+- This is a companion page for the SWI-Prolog manual page on [`maplist/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/2).
 - For examples about `maplist/3` (1 goal, 2 lists to relate) see [this page](maplist_3_examples.md)
 - For examples about `maplist/4` (1 goal, 3 lists to relate) see [this page](maplist_4_examples.md)
 
