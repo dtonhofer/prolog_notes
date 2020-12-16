@@ -14,7 +14,7 @@ Based on the SWI-Prolog manual
    - [Website text](about_length/webmanualtxt/length.txt)
 
 - [`maplist/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/2)
-   - [Notes](about_maplist/maplist_2_examples.md) Working off a single list. *Start here!* This includes
+   - [Notes](about_maplist/maplist_2_examples.md) Working off a single list. This includes
      an explainer regarding the use of [`library(yall)`](https://eu.swi-prolog.org/pldoc/man?section=yall) 
      lambda expressions and Prolog-style closures.
 
