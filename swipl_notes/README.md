@@ -6,6 +6,9 @@ Based on the SWI-Prolog manual
    - [Notes](about_between), includes code for `between_with_step/4` and `between_x/3` 
    - [Website text](about_between/webmanualtxt/between.txt)
 
+- [`findall/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=findall/3)
+   - [Notes](about_findall), also about `bagof/3`.
+
 - [`length/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=length/2)
    - [Notes](about_length), includes code for `probe_length/3` and (lenient) `length/3`
    - [Website text](about_length/webmanualtxt/length.txt)
