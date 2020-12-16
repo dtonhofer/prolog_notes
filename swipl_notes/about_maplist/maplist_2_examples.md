@@ -16,6 +16,8 @@
    - [Library `yall` can help you all](#library_yall_can_help_you_all)
 - [Backtracking in _maplist/N_](#backtracking_in_maplist)
 - [Going multilevel: Using _maplist/N_ inside of _maplist/N_](#maplist_inside_of_maplist)
+- [What's the remark concerning 'determinism' about?](#remark_concerning_determinism)
+- [What happens if the second argument is an open list?](#what_happens_on_empty_list)
 - [Some applications of _maplist/2_](#some_applications_of_maplist_2)
    - [Writing list elements (maybe non-ground) out to a data sink](#writing_to_a_data_sink)
    - [Reading list elements from a data source](#reading_list_elements_from_a_data_source)
@@ -495,6 +497,88 @@ in the inner call to `maplist/2`, in which elements appear as `Element`:
 List=[[a,b],[c,d]], maplist([S]>>maplist([Element]>>atom(Element),S),List).
 
 List = [[a, b], [c, d]].
+```
+
+## What's the remark concerning 'determinism' about?<a name="remark_concerning_determinism"></a>
+
+The manual says:
+
+> This family of predicates is deterministic iff _Goal_ is deterministic and _List1_ is a proper list, i.e., a list that ends in [].
+
+"The predicate is deterministic" means that it always succeeds exactly once, and there is no point backtracking into it as it won't generate more than
+one solution. So if _Goal_ has exactly one solution for every element of _List1_, then (and only then) does `maplist/2` have exactly one solution.
+
+**Determinism**
+
+The called predicate `my_maybe/1` is deterministic, and the list is not an unbound variable, but of known length (it is a "proper list"):
+
+```
+my_maybe(X) :- random_between(0,100,X).
+
+?- 
+maplist(my_maybe, [A0,A1]).
+
+A0 = 86, A1 = 29.
+```
+
+**Non-determinism**
+
+The called predicate `my_maybe/1` is non-deterministic, as it always has two solutions. `maplist/2` becomes non-deterministic too:
+
+```
+my_maybe(X) :- random_between(0,100,X). 
+my_maybe(X) :- random_between(0,100,Y), X is -Y.
+
+?- 
+maplist(my_maybe, [A0,A1]).
+
+A0 = 40,  A1 = 60 ;
+A0 = 40,  A1 = -78 ;
+A0 = -81, A1 = 90 ;
+A0 = -81, A1 = -80.
+```
+
+**Get determinism back**
+
+Using [`library(yall)`](https://eu.swi-prolog.org/pldoc/man?section=yall) and `once/1`, 
+one can sample exactly one solution from the non-deterministic `my_maybe/1` predicate:
+
+```
+my_maybe(X) :- random_between(0,100,X). 
+my_maybe(X) :- random_between(0,100,Y), X is -Y.
+
+?- 
+maplist([X]>>once(my_maybe(X)), [A0,A1]).
+
+A0 = 73, A1 = 6.
+```
+
+## What happens if the second argument is an open list?<a name="what_happens_on_empty_list"></a>
+
+`maplist/2` succeeds (but leaves a choicepoint open) when given an open list, i.e. a list that ends not in `[]` but in an unbound variable.
+
+Here it says "yes, this is a list of integer, but there may be another solution ... on second thoughts, there is not".
+
+```
+?- maplist(integer,[1,2,3,4|_]).
+true ;
+false.
+```
+
+More clearly:
+
+```
+?- maplist(integer,[1,2,3,4|X]).
+X = [] ;
+false.
+```
+
+The "empty list of length 0" which is another way of looking at an unbound variable, is an edge case:
+
+```
+?- maplist(integer,X).
+X = [] ;
+false.
 ```
 
 ## Some applications of _maplist/2_<a name="some_applications_of_maplist_2"></a>
