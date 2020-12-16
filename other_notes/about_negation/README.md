@@ -308,6 +308,17 @@ For logics able to deal with proofs that yield both `true` and `false` see:
      [Introduction to Annotated Logics: Foundations for Paracomplete and Paraconsistent Reasoning](https://www.springer.com/gp/book/9783319179117),
      (Jair M Abe, Seiki Akama,  Kazumi Nakamatsu), Springer Intelligent Systems Reference Library 88, 2015.
    
+## A Byrd Box view of the `\+` operator<a name="byrd_box_view_of_not_operator"></a>
+
+One can consider `\+ p` as a recabling of the Byrd Box for `p` as depicted below:
+
+![Byrd Box view of not](pics/byrd_box_view_of_negation.png)
+
+Note that there are no "redos" of the enclosed `p`: If `p` fails, we get out via the outer box's "success" port (traditionally
+and awkwardly called the "exit" port) and the outer box is not re-entered by the "redo" path coming from the right. If `p` succeeds,
+we get out via the "fail" port towards the left and that's it. In bot cases, we pass through a "fail" port and roll back any 
+bindings that p may have performed.
+
 ## "Floundering"<a name="floundering"></a>
 
 "Flounding" suggest that the Prolog Processor trashes around or performs something repeatedly without progress:
