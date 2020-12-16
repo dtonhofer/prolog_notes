@@ -15,6 +15,7 @@
    - [Lambda expression in Prolog](#lambda_expressions_in_prolog)
    - [Library `yall` can help you all](#library_yall_can_help_you_all)
 - [Backtracking in _maplist/N_](#backtracking_in_maplist)
+- [Comparison with another metapredicate: _forall/2_](#comparison_with_forall)
 - [Going multilevel: Using _maplist/N_ inside of _maplist/N_](#maplist_inside_of_maplist)
 - [What's the remark concerning 'determinism' about?](#remark_concerning_determinism)
 - [What happens if the second argument is an open list?](#what_happens_on_empty_list)
@@ -413,9 +414,11 @@ But that's **not really what happens**. What actually happens is:
 verify(1),verify(2),verify(3),verify(4).
 ```
 
-This is a conjunction of predicate calls. 
+... a conjunction of predicate calls. 
 
 **If any of the predicates leaves choicepoint, we can backtrack over them.**
+
+## Comparison with another metapredicate: _forall/2_<a name="comparison_with_forall"></a>
 
 A "short-circuiting test loop" is given by Prolog's [`forall/2`](https://www.swi-prolog.org/pldoc/doc_for?object=forall/2), 
 which works differently:
