@@ -71,13 +71,36 @@ true.
 ```
 
 ```
-?- p(true) -> q(false) ; r(true).
+?-
+p(true) -> q(false) ; r(true).
 
 [p(true) solution 1][q(false) solution 1][q(false) solution 2]
 false.
 ```
 
-And this is exactly the same as:
+And with missing "else":
+
+```
+?- p(false) -> q(true).
+[p(false) solution 1][p(false) solution 2]
+false.
+```
+
+``` 
+?- p(true) -> q(true). 
+[p(true) solution 1][q(true) solution 1]
+true ;
+[q(true) solution 2]
+true.
+```
+
+``` 
+?- p(true) -> q(false).
+[p(true) solution 1][q(false) solution 1][q(false) solution 2]
+false.
+```
+
+And this is exactly the same as the paranthesized `->/2` subexpression with the `;` coming after:
 
 ```
 ?- (p(true) -> q(true)) ; r(true).
@@ -106,8 +129,70 @@ In case the "else" condition is missing, it is replaced by a `false` and we get:
 
 ![or as wired up in the byrd box model](pics/or_as_wired_up_in_the_byrd_box_model.png)
 
-## Soft-cut
+## Soft-cut: `*->` with `;/2`
 
-Another construct, the [soft-cut](https://eu.swi-prolog.org/pldoc/doc_for?object=(*-%3E)/2), is built form `->*` and `;/2`, same as for `->/2` + `;/2`
+Another construct, the [soft-cut](https://eu.swi-prolog.org/pldoc/doc_for?object=(*-%3E)/2), is built from `*->` and `;/2`, same as for `->/2` + `;/2`.
+However, it backtracks over the premiss, (`p` in our case).
 
+With the same `p/1`, `q/1`, `r/1` defined as above:
 
+Then:
+
+```
+?- 
+p(true) *-> q(true) ; r(true).
+
+[p(true) solution 1][q(true) solution 1]
+true ;
+[q(true) solution 2]
+true ;
+[p(true) solution 2][q(true) solution 1]
+true ;
+[q(true) solution 2]
+true.
+```
+
+```
+?- 
+p(false) *-> q(true) ; r(true).
+
+[p(false) solution 1][p(false) solution 2][r(true) solution 1]
+true ;
+[r(true) solution 2]
+true.
+```
+
+```
+?- p(true) *-> q(false) ; r(true).
+
+[p(true) solution 1][q(false) solution 1][q(false) solution 2][p(true) solution 2][q(false) solution 1][q(false) solution 2]
+false.
+```
+
+And with missing "else":
+
+```
+?- p(false) *-> q(true).
+[p(false) solution 1][p(false) solution 2]
+false.
+```
+
+``` 
+?- p(true) *-> q(true). 
+[p(true) solution 1][q(true) solution 1]
+true ;
+[q(true) solution 2]
+true ;
+[p(true) solution 2][q(true) solution 1]
+true ;
+[q(true) solution 2]
+true.
+```
+
+``` 
+?- p(true) *-> q(false).
+[p(true) solution 1][q(false) solution 1][q(false) solution 2][p(true) solution 2][q(false) solution 1][q(false) solution 2]
+false.
+```
+
+![soft cut as wired up in the byrd box model](pic/soft_cut_as_wired_up_in_the_byrd_box_model.png)
