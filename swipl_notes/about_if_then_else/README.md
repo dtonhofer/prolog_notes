@@ -16,6 +16,8 @@ A companion page for the entry [`->/2`](https://eu.swi-prolog.org/pldoc/doc_for?
 - [_->/2_ on the Prolog toplevel](#if_then_else_on_the_prolog_toplevel)
 - [Making a goal deterministic with _->/2_](#make_goal_deterministic_with_if_then_else)
 - [Use _->/2_ for guard expressions](#guard_expression)
+- [Example for the soft-cut](#example_for_the_soft_cut)
+
 
 ## Naming<a name="naming"></a>
 
@@ -187,6 +189,8 @@ box and splicing it out):
 Another construct, the [soft-cut](https://eu.swi-prolog.org/pldoc/doc_for?object=(*-%3E)/2), is 
 built from `*->` and `;/2`, same as for `->/2` + `;/2`. However, unlike _if-then-else_,
 it backtracks over the premiss, (`p` in our case).
+
+`->/2` and `*->/2` are equivalent is the premiss succeeds at most once.
 
 With the same `p/1`, `q/1`, `r/1` defined as above:
 
@@ -556,4 +560,53 @@ choo(X) :- nonvar(X) ,  format("It's not a var",[]).
 
 Is it clearer? It depends...
 
+## Example for the soft-cut<a name="example_for_the_soft_cut"></a>
 
+As used in package [condition](https://eu.swi-prolog.org/pack/list?p=condition):
+
+Given a `Condition`, ask applicable "handlers" (represented naturally by a set of
+clauses of predicate `handler/2`) for their advice, which is a `Restart`value: 
+
+```none
+signal(Condition,Restart) :-
+    ( handler(Condition,Restart) *-> true ; throw(Condition) ).
+```
+
+`signal/2` backtracks over all possible handlers (i.e. yields successive values for `Restart`), 
+but if there are no handlers for that `Condition` (i.e. the call to `handler/2` fails immediately
+or there are no `handler/2` predicates in the database at all), throws the term `Condition` instead.
+
+Declare `handler/2` as dynamic:
+
+```none
+?- dynamic handler/2.
+```none
+
+Then:
+
+```none
+?- 
+signal(foo,Restart).
+
+ERROR: Unhandled exception: foo
+```
+
+Add some handler knowledge:
+
+```
+?- 
+assertz(handler(foo,"What, me worry?")),
+assertz(handler(foo,"You don't want to mention this on the daily report.")),
+assertz(handler(foo,"All company reps must report to their nearest synthetic!")).
+
+?- 
+signal(foo,Restart).
+
+Restart = "What, me worry?" ;
+Restart = "You don't want to mention this on the daily report." ;
+Restart = "All company reps must report to their nearest synthetic!".
+
+?- signal(bar,Restart).
+
+ERROR: Unhandled exception: bar
+```
