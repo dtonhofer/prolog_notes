@@ -17,11 +17,13 @@ Based on the SWI-Prolog manual
    - [Notes about `maplist/2`](about_maplist/maplist_2_examples.md) Working off a single list. This includes   
      an explainer regarding the use of [`library(yall)`](https://eu.swi-prolog.org/pldoc/man?section=yall) 
      lambda expressions and Prolog-style closures.
-   - [Notes about `maplist/3`](about_maplist/maplist_3_examples.md) Relating the elements of two lists.
-   - [Notes about `maplist/4`](about_maplist/maplist_4_examples.md) Relating the elements of three list
+   - [Notes about `maplist/3`](about_maplist/maplist_3_examples.md) Relating the elements of two lists (to be reviewed)
+   - [Notes about `maplist/4`](about_maplist/maplist_4_examples.md) Relating the elements of three list (to be reviewed)
    
 - [Verify type of a term](https://eu.swi-prolog.org/pldoc/man?section=typetest) and [`must_be/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=must_be/2)
    - [Notes](about_swipl_data_types/), includes image of the decision tree
    - [Website text](about_swipl_data_types/webmanualtxt/type_tree_in_ascii.txt)
    - [Better type tests](about_type_tests/)
    
+- The [`->/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=(-%3E)/2) (if-then-else) and [`*->/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=(*-%3E)/2) (soft-cut)
+   - [Notes about `->/2` and `*->/2`](about_if_then_else/)
