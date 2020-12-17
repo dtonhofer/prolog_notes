@@ -35,13 +35,17 @@ So, `p->q;r` is parsed exactly the same as the "or" of `p->q` and `r`: Both expr
 As the else-less `p->q` _fails_ if `p` _fails_, this is completely correct: The if-then-else _is_ a composite of the _or_ operator `;/2` 
 operator first, and an additional `->/2` operator second.
 
-Define predicates which you can cause to succeed or fail by argument:
+Define predicates which you can cause to succeed or fail by argument and which have several solutions:
 
 ```
-p(X) :- format("p(~q)",[X]),call(X).
-q(X) :- format(" q(~q)",[X]),call(X).
-r(X) :- format(" r(~q)",[X]),call(X).
+p(X) :- format("[p(~q) solution 1]",[X]),call(X).
+p(X) :- format("[p(~q) solution 2]",[X]),call(X).
 
+q(X) :- format("[q(~q) solution 1]",[X]),call(X).
+q(X) :- format("[q(~q) solution 2]",[X]),call(X).
+
+r(X) :- format("[r(~q) solution 1]",[X]),call(X).
+r(X) :- format("[r(~q) solution 2]",[X]),call(X).
 ```
 
 Then:
@@ -50,7 +54,9 @@ Then:
 ?- 
 p(true) -> q(true) ; r(true).
 
-p(true) q(true)
+[p(true) solution 1][q(true) solution 1]
+true ;
+[q(true) solution 2]
 true.
 ```
 
@@ -58,15 +64,16 @@ true.
 ?- 
 p(false) -> q(true) ; r(true).
 
-p(false) r(true)
+[p(false) solution 1][p(false) solution 2][r(true) solution 1]
+true ;
+[r(true) solution 2]
 true.
 ```
 
 ```
-?- 
 ?- p(true) -> q(false) ; r(true).
 
-p(true) q(false)
+[p(true) solution 1][q(false) solution 1][q(false) solution 2]
 false.
 ```
 
@@ -75,26 +82,15 @@ And this is exactly the same as:
 ```
 ?- (p(true) -> q(true)) ; r(true).
 
-p(true) q(true)
+[p(true) solution 1][q(true) solution 1]
+true ;
+[q(true) solution 2]
 true.
 ```
 
-```
-?- (p(false) -> q(false)) ; r(true).
-
-p(false) r(true)
-true.
-```
-
-```
-?- (p(true) -> q(false)) ; r(true).
-
-p(true) q(false)
-false.
-```
+etc.
 
 ![if-then-else as parsed](pics/if_then_else_as_parsed.png)
-
 
 **if-then-else as wired up in the [Byrd Box model](../other_notes/about_byrd_box_model)**
 
@@ -105,6 +101,10 @@ In case the "else" condition is missing, it is replaced by a `false` and we get:
 **if-then or if-then-else-false as wired up in the Byrd Box model**
 
 ![if-then-else-false wired up in the byrd box model](pics/if_then_as_wired_up_in_the_byrd_box_model.png)
+
+**compare with a simple or**
+
+![or wired up in the byrd box model](pics/or_wired_up_in_the_byrd_box_model.png)
 
 ## Soft-cut
 
