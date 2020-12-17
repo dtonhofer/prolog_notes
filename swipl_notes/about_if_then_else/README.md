@@ -31,23 +31,24 @@ In case there is no "else"
 true.
 ```
 
-So, `p->q;r` is parsed exactly the same as the "or" of `p->q` and `r`: Both expressions are indistinguishable.
-As the else-less `p->q` _fails_ if `p` _fails_, this is completely correct: The if-then-else _is_ a composite of the _or_ operator `;/2` 
-operator first, and an additional `->/2` operator second.
+So, `p->q;r` is parsed exactly the same as the "or" of `p->q` and `r`: Both expressions are indistinguishable syntactically.
 
 ![if-then-else as parsed](pics/if_then_else_as_parsed.png)
+
+However, the `;/2` immediately preceded by a `->/2` does not behave like an _or_ of two subexpressions: if the premiss
+of `->/2` succeeds, then the right subexpression of `;/2` will **not** be executed, unlike for a normal _or_,
 
 Define predicates which you can cause to succeed or fail by argument and which have several solutions:
 
 ```
-p(X) :- format("[p(~q) solution 1]",[X]),call(X).
-p(X) :- format("[p(~q) solution 2]",[X]),call(X).
+p(X) :- format("[p(~q) clause 1]",[X]),call(X).
+p(X) :- format("[p(~q) clause 2]",[X]),call(X).
 
-q(X) :- format("[q(~q) solution 1]",[X]),call(X).
-q(X) :- format("[q(~q) solution 2]",[X]),call(X).
+q(X) :- format("[q(~q) clause 1]",[X]),call(X).
+q(X) :- format("[q(~q) clause 2]",[X]),call(X).
 
-r(X) :- format("[r(~q) solution 1]",[X]),call(X).
-r(X) :- format("[r(~q) solution 2]",[X]),call(X).
+r(X) :- format("[r(~q) clause 1]",[X]),call(X).
+r(X) :- format("[r(~q) clause 2]",[X]),call(X).
 ```
 
 Then:
@@ -56,9 +57,9 @@ Then:
 ?- 
 p(true) -> q(true) ; r(true).
 
-[p(true) solution 1][q(true) solution 1]
+[p(true) clause 1][q(true) clause 1]
 true ;
-[q(true) solution 2]
+[q(true) clause 2]
 true.
 ```
 
@@ -66,9 +67,9 @@ true.
 ?- 
 p(false) -> q(true) ; r(true).
 
-[p(false) solution 1][p(false) solution 2][r(true) solution 1]
+[p(false) clause 1][p(false) clause 2][r(true) clause 1]
 true ;
-[r(true) solution 2]
+[r(true) clause 2]
 true.
 ```
 
@@ -76,29 +77,29 @@ true.
 ?-
 p(true) -> q(false) ; r(true).
 
-[p(true) solution 1][q(false) solution 1][q(false) solution 2]
+[p(true) clause 1][q(false) clause 1][q(false) clause 2]
 false.
 ```
 
-And with missing "else":
+And with missing _else_ part:
 
 ```
 ?- p(false) -> q(true).
-[p(false) solution 1][p(false) solution 2]
+[p(false) clause 1][p(false) clause 2]
 false.
 ```
 
 ``` 
 ?- p(true) -> q(true). 
-[p(true) solution 1][q(true) solution 1]
+[p(true) clause 1][q(true) clause 1]
 true ;
-[q(true) solution 2]
+[q(true) clause 2]
 true.
 ```
 
 ``` 
 ?- p(true) -> q(false).
-[p(true) solution 1][q(false) solution 1][q(false) solution 2]
+[p(true) clause 1][q(false) clause 1][q(false) clause 2]
 false.
 ```
 
@@ -107,9 +108,9 @@ And this is exactly the same as the paranthesized `->/2` subexpression with the 
 ```
 ?- (p(true) -> q(true)) ; r(true).
 
-[p(true) solution 1][q(true) solution 1]
+[p(true) clause 1][q(true) clause 1]
 true ;
-[q(true) solution 2]
+[q(true) clause 2]
 true.
 ```
 
@@ -117,17 +118,18 @@ etc.
 
 ### _if-then-else_ as wired up in the Byrd Box Model
 
-More on the Nyrd Box Model [here](../other_notes/about_byrd_box_model)
+More on the Byrd Box Model [here](../other_notes/about_byrd_box_model)
 
 ![if-then-else as wired up in the byrd box model](pics/if_then_else_as_wired_up_in_the_byrd_box_model.png)
 
-**Compare with "or"**
+**Compare with normal _or_**
 
 ![or as wired up in the byrd box model](pics/or_as_wired_up_in_the_byrd_box_model.png)
 
 ### _if-then_ as wired up in the Byrd Box Model
 
-In case the "else" condition is missing, it is replaced by a `false` and we get:
+In case the _else_ part is missing, it is replaced by a `false` and we get (after replacing `r` by a `false`
+box and splicing it out): 
 
 **if-then or if-then-else-false as wired up in the Byrd Box model**
 
@@ -135,8 +137,9 @@ In case the "else" condition is missing, it is replaced by a `false` and we get:
 
 ## Soft-cut: `*->` with `;/2`
 
-Another construct, the [soft-cut](https://eu.swi-prolog.org/pldoc/doc_for?object=(*-%3E)/2), is built from `*->` and `;/2`, same as for `->/2` + `;/2`.
-However, it backtracks over the premiss, (`p` in our case).
+Another construct, the [soft-cut](https://eu.swi-prolog.org/pldoc/doc_for?object=(*-%3E)/2), is 
+built from `*->` and `;/2`, same as for `->/2` + `;/2`. However, unlike _if-then-else_,
+it backtracks over the premiss, (`p` in our case).
 
 With the same `p/1`, `q/1`, `r/1` defined as above:
 
@@ -146,13 +149,13 @@ Then:
 ?- 
 p(true) *-> q(true) ; r(true).
 
-[p(true) solution 1][q(true) solution 1]
+[p(true) clause 1][q(true) clause 1]
 true ;
-[q(true) solution 2]
+[q(true) clause 2]
 true ;
-[p(true) solution 2][q(true) solution 1]
+[p(true) clause 2][q(true) clause 1]
 true ;
-[q(true) solution 2]
+[q(true) clause 2]
 true.
 ```
 
@@ -160,42 +163,42 @@ true.
 ?- 
 p(false) *-> q(true) ; r(true).
 
-[p(false) solution 1][p(false) solution 2][r(true) solution 1]
+[p(false) clause 1][p(false) clause 2][r(true) clause 1]
 true ;
-[r(true) solution 2]
+[r(true) clause 2]
 true.
 ```
 
 ```
 ?- p(true) *-> q(false) ; r(true).
 
-[p(true) solution 1][q(false) solution 1][q(false) solution 2][p(true) solution 2][q(false) solution 1][q(false) solution 2]
+[p(true) clause 1][q(false) clause 1][q(false) clause 2][p(true) clause 2][q(false) clause 1][q(false) clause 2]
 false.
 ```
 
-And with missing "else":
+And with missing _else_ part:
 
 ```
 ?- p(false) *-> q(true).
-[p(false) solution 1][p(false) solution 2]
+[p(false) clause 1][p(false) clause 2]
 false.
 ```
 
 ``` 
 ?- p(true) *-> q(true). 
-[p(true) solution 1][q(true) solution 1]
+[p(true) clause 1][q(true) clause 1]
 true ;
-[q(true) solution 2]
+[q(true) clause 2]
 true ;
-[p(true) solution 2][q(true) solution 1]
+[p(true) clause 2][q(true) clause 1]
 true ;
-[q(true) solution 2]
+[q(true) clause 2]
 true.
 ```
 
 ``` 
 ?- p(true) *-> q(false).
-[p(true) solution 1][q(false) solution 1][q(false) solution 2][p(true) solution 2][q(false) solution 1][q(false) solution 2]
+[p(true) clause 1][q(false) clause 1][q(false) clause 2][p(true) clause 2][q(false) clause 1][q(false) clause 2]
 false.
 ```
 
