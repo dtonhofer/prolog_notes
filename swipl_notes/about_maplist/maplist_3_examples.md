@@ -7,7 +7,10 @@
 ## TOC
 
 - [About](#name)
+- [Some Software Archeology](#software_archeology)
 - [Form of the two passed lists](#form_of_the_two_passed_lists)
+   - [No prior check that list lengths are equal or can be made equal](#no_length_check_on_lists)
+   - [Non-list arguments lead to failure](#non_list_arguments_lead_to_failure)
    - [Both lists are of known length](#both_lists_are_of_known_length)
    - [One of the lists is of unspecified length](#one_of_the_lists_is_of_unspecified_length)
    - [Both lists are open lists](#both_lists_are_open_lists)
@@ -67,7 +70,7 @@ or (further) instantiating one or the other member of the pair, or further insta
 
 **Additionally:**
 
-- both lists must be the same length (or one of the list must be open, i.e. be terminated not with `[]` but with an unbound variable)
+- both lists must be the same length or it must be possible to instantiate them to the same length
 - `Goal` must succeed at every location.
 
 This is fine:
@@ -113,7 +116,56 @@ maplist([X,Y]>>((Y is 2*X),
 false.
 ```
 
-**`maplist/3` does not check that list lengths are equal across all list arguments*
+## Some Software Archeology<a name="software_archeology"></a>
+
+SWI Prolog's source for [apply.pl](https://github.com/SWI-Prolog/swipl-devel/blob/master/library/apply.pl) 
+gives the following implementation:
+
+````
+%!  maplist(:Goal, ?List1, ?List2)
+%
+%   As maplist/2, operating on pairs of elements from two lists.
+
+maplist(Goal, List1, List2) :-
+    maplist_(List1, List2, Goal).
+
+maplist_([], [], _).
+maplist_([Elem1|Tail1], [Elem2|Tail2], Goal) :-
+    call(Goal, Elem1, Elem2),
+    maplist_(Tail1, Tail2, Goal).
+````    
+    
+[Picat](http://picat-lang.org/) and the underlying [B-Prolog](http://www.picat-lang.org/bprolog/)
+take their `maplist/3` from [Edinburgh DEC-10 Prolog](http://www.picat-lang.org/bprolog/publib/index.html), 
+the code from mid-80s in file [applic.pl](http://www.picat-lang.org/bprolog/publib/applic.html) is:
+
+```none
+%   maplist(Pred, OldList, NewList)
+%   succeeds when Pred(Old,New) succeeds for each corresponding
+%   Old in OldList, New in NewList.  In InterLisp, this is MAPCAR. 
+%   It is also MAP2C.  Isn't bidirectionality wonderful?
+
+maplist(_, [], []).
+maplist(Pred, [Old|Olds], [New|News]) :-
+	apply(Pred, [Old,New]),
+	maplist(Pred, Olds, News).
+```
+ 
+For SICStus Prolog 4.3.0, [this page](https://sicstus.sics.se/sicstus/docs/4.3.0/html/sicstus/lib_002dlists.html)
+says `maplist/3` "could be defined as":
+
+```none 
+maplist(Pred, Xs, Ys) :-
+   (   foreach(X,Xs),
+       foreach(Y,Ys),
+       param(Pred)
+      	do  call(Pred, X, Y)
+   ).
+``` 
+
+## Form of the two passed lists<a name="form_of_the_two_passed_lists"></a>
+
+### No prior check that list lengths are equal or can be made equal<a name="no_length_check_on_lists"></a>
 
 Instead it fails it it hits the end of one of the list. This is not very nice, but avoid having
 to perform costly checks down the list backbones. Instead, `maplist/3` is optimistic and 
@@ -167,7 +219,7 @@ foldl(
 false.
 ```
 
-**`maplist/3` with a non-list argument leads to failure**
+### Non-list arguments lead to failure<a name="non_list_arguments_lead_to_failure"></a>
 
 ```none
 ?- 
@@ -203,7 +255,7 @@ An alternative view is that, if the argument for output is a (partially) instant
 a steadfast predicate behaves as if the argument had been uninstantiated, the output were computed 
 and then that output were unified with the (partially) instantiated term when all is done.
 
-## Form of the two passed lists<a name="form_of_the_two_passed_lists"></a>
+
 
 ### Both lists are of known length<a name="both_lists_are_of_known_length"></a>
 
@@ -757,47 +809,4 @@ Similarly, maplist_relax/3 should not fail in it entirety if the goal fails, but
 
 (In that case, what happens on backtracking?)
 
-## Some Software Archeology:
 
-SWI Prolog's source for [apply.pl](https://github.com/SWI-Prolog/swipl-devel/blob/master/library/apply.pl) 
-gives the following implementation:
-
-````
-%!  maplist(:Goal, ?List1, ?List2)
-%
-%   As maplist/2, operating on pairs of elements from two lists.
-
-maplist(Goal, List1, List2) :-
-    maplist_(List1, List2, Goal).
-
-maplist_([], [], _).
-maplist_([Elem1|Tail1], [Elem2|Tail2], Goal) :-
-    call(Goal, Elem1, Elem2),
-    maplist_(Tail1, Tail2, Goal).
-````    
-    
-Picat and B-Prolog take their `maplist/3` from [Edinburgh DEC-10 Prolog](http://www.picat-lang.org/bprolog/publib/index.html), the code from mid-80s in file [applic.pl](http://www.picat-lang.org/bprolog/publib/applic.html) is:
-
-````
-%   maplist(Pred, OldList, NewList)
-%   succeeds when Pred(Old,New) succeeds for each corresponding
-%   Old in OldList, New in NewList.  In InterLisp, this is MAPCAR. 
-%   It is also MAP2C.  Isn't bidirectionality wonderful?
-
-maplist(_, [], []).
-maplist(Pred, [Old|Olds], [New|News]) :-
-	apply(Pred, [Old,New]),
-	maplist(Pred, Olds, News).
-```` 
- 
-For SICStus Prolog 4.3.0, [this page](https://sicstus.sics.se/sicstus/docs/4.3.0/html/sicstus/lib_002dlists.html)
-says `maplist/3` "could be defined as":
-
-```` 
-maplist(Pred, Xs, Ys) :-
-   (   foreach(X,Xs),
-       foreach(Y,Ys),
-       param(Pred)
-      	do  call(Pred, X, Y)
-   ).
-```` 
