@@ -115,19 +115,23 @@ true.
 
 etc.
 
-**if-then-else as wired up in the [Byrd Box model](../other_notes/about_byrd_box_model)**
+### _if-then-else_ as wired up in the Byrd Box Model
+
+More on the Nyrd Box Model [here](../other_notes/about_byrd_box_model)
 
 ![if-then-else as wired up in the byrd box model](pics/if_then_else_as_wired_up_in_the_byrd_box_model.png)
+
+**Compare with "or"**
+
+![or as wired up in the byrd box model](pics/or_as_wired_up_in_the_byrd_box_model.png)
+
+### _if-then_ as wired up in the Byrd Box Model
 
 In case the "else" condition is missing, it is replaced by a `false` and we get:
 
 **if-then or if-then-else-false as wired up in the Byrd Box model**
 
 ![if-then-else-false wired up in the byrd box model](pics/if_then_as_wired_up_in_the_byrd_box_model.png)
-
-**compare with a simple or**
-
-![or as wired up in the byrd box model](pics/or_as_wired_up_in_the_byrd_box_model.png)
 
 ## Soft-cut: `*->` with `;/2`
 
@@ -194,5 +198,7 @@ true.
 [p(true) solution 1][q(false) solution 1][q(false) solution 2][p(true) solution 2][q(false) solution 1][q(false) solution 2]
 false.
 ```
+
+### _soft-cut_ as wired up in the Byrd Box Model
 
 ![soft cut as wired up in the byrd box model](pic/soft_cut_as_wired_up_in_the_byrd_box_model.png)
