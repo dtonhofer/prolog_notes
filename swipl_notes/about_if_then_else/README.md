@@ -36,7 +36,7 @@ So, `p->q;r` is parsed exactly the same as the "or" of `p->q` and `r`: Both expr
 ![if-then-else as parsed](pics/if_then_else_as_parsed.png)
 
 However, the `;/2` immediately preceded by a `->/2` does not behave like an _or_ of two subexpressions: if the premiss
-of `->/2` succeeds, then the right subexpression of `;/2` will **not** be executed, unlike for a normal _or_,
+of `->/2` succeeds, then the right subexpression of `;/2`(here, `r`)  will **not** be called, unlike for a normal _or_,
 
 Define predicates which you can cause to succeed or fail by argument and which have several solutions:
 
@@ -120,9 +120,11 @@ etc.
 
 More on the Byrd Box Model [here](../other_notes/about_byrd_box_model)
 
+**If `p` succeeds, there is no way that `r` will be called**
+
 ![if-then-else as wired up in the byrd box model](pics/if_then_else_as_wired_up_in_the_byrd_box_model.png)
 
-**Compare with normal _or_**
+**Compare with normal _or_, for which it is always possible that `r` will be called**
 
 ![or as wired up in the byrd box model](pics/or_as_wired_up_in_the_byrd_box_model.png)
 
