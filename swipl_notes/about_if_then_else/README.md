@@ -580,7 +580,7 @@ Declare `handler/2` as dynamic:
 
 ```none
 ?- dynamic handler/2.
-```none
+```
 
 Then:
 
