@@ -120,11 +120,21 @@ etc.
 
 More on the Byrd Box Model [here](../other_notes/about_byrd_box_model)
 
-**If `p` succeeds, there is no way that `r` will be called**
+#### If `p` succeeds
 
-![if-then-else as wired up in the byrd box model](pics/if_then_else_as_wired_up_in_the_byrd_box_model.png)
+There is no way that `r` will be called:
 
-**Compare with normal _or_, for which it is always possible that `r` will be called**
+![if-then-else as wired up in the byrd box model, if p succeeds](pics/if_then_else_as_wired_up_in_the_byrd_box_model_p_succeeds.png)
+
+#### If `p` fails
+
+Then `r` is called as for a normal _or_:
+
+![if-then-else as wired up in the byrd box model, if p fails](pics/if_then_else_as_wired_up_in_the_byrd_box_model_p_fails.png)
+
+#### Compare with normal _or_
+
+For a normal _or_ it is always possible that `r` can be called:
 
 ![or as wired up in the byrd box model](pics/or_as_wired_up_in_the_byrd_box_model.png)
 
