@@ -4,6 +4,8 @@
 - For examples about `maplist/2` (1 goal, 1 list to verify) see [this page](maplist_2_examples.md)
 - For examples about `maplist/4` (1 goal, 3 lists to relate) see [this page](maplist_4_examples.md)
 
+## TOC
+
 - [About](#name)
 - [Form of the two passed lists](#form_of_the_two_passed_lists)
    - [Both lists are of known length](#both_lists_are_of_known_length)
