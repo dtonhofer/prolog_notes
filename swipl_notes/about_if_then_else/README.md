@@ -1,4 +1,4 @@
-# Notes about if-then-else
+# Notes about if-then-else (and soft-cut)
 
 A companion page for the entry [`->/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=(-%3E)/2) in the SWI-Prolog manual.
 
