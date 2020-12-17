@@ -5,11 +5,11 @@
 - [_if-then-else_ explained](#if_then_else_explained)
    - [_if-then-else_ as wired up in the Byrd Box Model](#if_then_else_as_wired_up_in_the_byrd_box_model)
    - [_if-then_ as wired up in the Byrd Box Model](#if_then_as_wired_up_in_the_byrd_box_model)
-- [Soft-cut: `*->` with `;/2`](#soft_cut)
+- [Soft-cut: _*->_ with _;/2_](#soft_cut)
    - [_soft-cut_ as wired up in the Byrd Box Model](#soft_cut_as_wired_up_in_the_byrd_box_model)
 - [How to avoid hard-to-read _->/2_ code](#avoid_hard_to_read_if_then_else_code)
 - [Create a switch statement based on _->/2_](#switch_statement_based_on_if_then_else)
-- [`->/2` on the Prolog toplevel](#if_then_else_on_the_prolog_toplevel)
+- [_->/2_ on the Prolog toplevel](#if_then_else_on_the_prolog_toplevel)
 - [Making a goal deterministic with _->/2_](#make_goal_deterministic with if_then_else)
 - [Use _->/2_ for guard expressions](#guard_expression)
 
@@ -178,7 +178,7 @@ box and splicing it out):
 
 ![if-then-else-false wired up in the byrd box model](pics/if_then_as_wired_up_in_the_byrd_box_model.png)
 
-## Soft-cut: `*->` with `;/2`<a name="soft_cut"></a>
+## Soft-cut: _*->_ with _;/2_<a name="soft_cut"></a>
 
 Another construct, the [soft-cut](https://eu.swi-prolog.org/pldoc/doc_for?object=(*-%3E)/2), is 
 built from `*->` and `;/2`, same as for `->/2` + `;/2`. However, unlike _if-then-else_,
