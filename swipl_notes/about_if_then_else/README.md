@@ -35,6 +35,8 @@ So, `p->q;r` is parsed exactly the same as the "or" of `p->q` and `r`: Both expr
 As the else-less `p->q` _fails_ if `p` _fails_, this is completely correct: The if-then-else _is_ a composite of the _or_ operator `;/2` 
 operator first, and an additional `->/2` operator second.
 
+![if-then-else as parsed](pics/if_then_else_as_parsed.png)
+
 Define predicates which you can cause to succeed or fail by argument and which have several solutions:
 
 ```
@@ -113,21 +115,23 @@ true.
 
 etc.
 
-![if-then-else as parsed](pics/if_then_else_as_parsed.png)
+### _if-then-else_ as wired up in the Byrd Box Model
 
-**if-then-else as wired up in the [Byrd Box model](../other_notes/about_byrd_box_model)**
+More on the Nyrd Box Model [here](../other_notes/about_byrd_box_model)
 
 ![if-then-else as wired up in the byrd box model](pics/if_then_else_as_wired_up_in_the_byrd_box_model.png)
+
+**Compare with "or"**
+
+![or as wired up in the byrd box model](pics/or_as_wired_up_in_the_byrd_box_model.png)
+
+### _if-then_ as wired up in the Byrd Box Model
 
 In case the "else" condition is missing, it is replaced by a `false` and we get:
 
 **if-then or if-then-else-false as wired up in the Byrd Box model**
 
 ![if-then-else-false wired up in the byrd box model](pics/if_then_as_wired_up_in_the_byrd_box_model.png)
-
-**compare with a simple or**
-
-![or as wired up in the byrd box model](pics/or_as_wired_up_in_the_byrd_box_model.png)
 
 ## Soft-cut: `*->` with `;/2`
 
@@ -195,4 +199,6 @@ true.
 false.
 ```
 
-![soft cut as wired up in the byrd box model](pic/soft_cut_as_wired_up_in_the_byrd_box_model.png)
+### _soft-cut_ as wired up in the Byrd Box Model
+
+![soft cut as wired up in the byrd box model](pics/soft_cut_as_wired_up_in_the_byrd_box_model.png)
