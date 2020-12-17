@@ -1,5 +1,9 @@
 # Notes about if-then-else
 
+A companion page for the entry [`->/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=(-%3E)/2) in the SWI-Prolog manual.
+
+## TOC
+
 - [Naming](#naming)
 - [Related: The soft-cut](#related_soft_cut)
 - [_if-then-else_ explained](#if_then_else_explained)
