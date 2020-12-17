@@ -1,8 +1,7 @@
-# Examples for the Prolog predicate `maplist/3` 
+# Examples for the Prolog predicate _maplist/3_ 
 
-
+- This is a companion page for the SWI-Prolog manual page on [`maplist/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/3).
 - For examples about `maplist/2` (1 goal, 1 list to verify) see [this page](maplist_2_examples.md)
-- On this page: `maplist/3` (1 goal, 2 lists to relate) 
 - For examples about `maplist/4` (1 goal, 3 lists to relate) see [this page](maplist_4_examples.md)
 
 ## About
@@ -10,17 +9,18 @@
 Here we list a few examples for the predicate [`maplist/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/3) 
 from [library(apply)](https://eu.swi-prolog.org/pldoc/man?section=apply) as run with SWI-Prolog.
 
-`library(apply)`: _"This module defines meta-predicates that apply a predicate on all members of a list."_
+> `library(apply)`: _"This module defines meta-predicates that apply a predicate on all members of a list."_
 
-In order for lists to be printed fully instead of elided at their end with ellipses ("`|...`") you may have
-to first call:
+We use [SWI-Prolog](https://www.swi-prolog.org/) throughout. However, `maplist/N`, while not in the [ISO standard](https://en.wikipedia.org/wiki/Prolog#ISO_Prolog), at least [not yet](http://www.complang.tuwien.ac.at/ulrich/iso-prolog/prologue), is a common predicate ([GNU Prolog](http://gprolog.org/manual/gprolog.html#sec223), [SICStus Prolog](https://sicstus.sics.se/sicstus/docs/4.3.0/html/sicstus/lib_002dlists.html), [ECLiPSe](https://eclipseclp.org/doc/bips/lib/lists/index.html)). Other Prologs _should_ work identically. 
 
-````
-?- set_prolog_flag(answer_write_options,[max_depth(0)]).
-````
+We also use the [`library(yall)`](https://www.swi-prolog.org/pldoc/man?section=yall) lambda notation imported from [Logtalk](https://logtalk.org/). This _is_ specific to SWI-Prolog.
 
-The notes regarding lambda-notation provided by [`library(yall)`](https://www.swi-prolog.org/pldoc/man?section=yall)
-on the page for [`maplist/2`](maplist_2_examples.md) stay relevant.
+In SWI-Prolog, in order for structures not to be elided at with ellipses ("`|...`"), but instead printed in full, you may have to first call:
+
+```none
+?-
+set_prolog_flag(answer_write_options,[max_depth(0)]).
+```
 
 The description for [`maplist/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/3) says:
 
@@ -28,221 +28,299 @@ The description for [`maplist/3`](https://eu.swi-prolog.org/pldoc/doc_for?object
 >
 > _As maplist/2, operating on pairs of elements from two lists._
 
-Thus you have two lists, _List1_ and _List2_, and `maplist/3` will call the _Goal_ for pairwise associations of list items:
+Thus you have two lists, _List1_ and _List2_, and `maplist/3` will call the _Goal_ for pairwise associations of list elements:
 
-```
-   List1             [L1A,       L1B,       L1C,       L1D, ...  
-   List2             [L2A,       L2B,       L2C,       L2D, ...  
+```none
+List1           :  [  L1A    ,    L1B    ,    L1C    ,    L1D    , ...  
+List2           :  [  L2A    ,    L2B    ,    L2C    ,    L2D    , ...  
                         
-   Goal called for   (L1A,L2A), (L1B,L2B), (L1C,L2C), (L1D,L2D), ...
+Goal called for :  (L1A,L2A) , (L1B,L2B) , (L1C,L2C) , (L1D,L2D) , ...
 ```
 
-The standard application is the one corresponding to the
+The standard application is similar to the one corresponding to the
 [`map`](https://en.wikipedia.org/wiki/Map_(higher-order_function)) operation available in functional or imperative
-programming languages: Apply a function to the list items in _List1_, and bind them to the list items in _List2_. 
-Or the reverse. Or check the function results against already bound list items. 
+programming languages. Here, we apply a predicate `p/2` to the pair of list elements, thus verifying the pair
+or (further) instantiating one or the other member of the pair, or further instantiating both members of the pair.
 
-**`Goal` must either be:**
+**_Goal_ must either be:**
 
-- a predicate taking two arguments more than indicated on last position: `foo` to 
-  be called as `foo(L1,L2)`, `foo(x)` to be called as `foo(x,L1,L2)`, `foo(x,y)` to be called as `foo(x,y,L1,L2)` etc.
-- a lambda expression taking two arguments if one uses `library(yall)`: `[L1,L2]>>foo(L1,L2)`
+- a predicate taking two arguments more than indicated on last position (a "Prolog closure"):
+   - `foo` to be called as `foo(Element1,Element2)`
+   - `foo(bar)` to be called as `foo(bar,Element1,Element2)`,
+   - `foo(bar,baz)` to be called as `foo(bar,baz,Element1,Element2)`, etc... 
+- a lambda expression taking two arguments
+   - if one uses `library(yall)`, which comes with SWI-Prolog, this would look like the following: `[Element1,Element2]>>foo(Element1,Element2)`
+   - or one can use [pack `lambda`](https://www.swi-prolog.org/pack/file_details/lambda/prolog/lambda.pl) (but I don't know anything about it)
 
 **Additionally:**
 
-- both lists must be the same length (or one of the list must be unconstrained, i.e. be open-ended or simply a fresh variable)
+- both lists must be the same length (or one of the list must be open, i.e. be terminated not with `[]` but with an unbound variable)
 - `Goal` must succeed at every location.
 
-```logtalk
-% all is fine
+This is fine:
 
-?- maplist([X,Y]>>(true),[1,2],[1,4]).
+```none
+?-
+maplist([X,Y]>>(true),[1,2],[1,4]).
+
 true.
+```
 
-% unequal length means trouble
+Unequal length of lists means failure:
 
-?- maplist([X,Y]>>(true),[1,2],[1]).
-false.
+```
+?-
+maplist([X,Y]>>(true),[1,2],[1]).
 
-% so does a failing goal
-
-?- maplist([X,Y]>>(false),[1,2],[1,4]).
 false.
 ```
 
-Side-effects will occur before failure hits. It's not transactional!
+So does a failing goal:
 
-````
-?- maplist([X,Y]>>((Y is 2*X),
-           format("~w\n",[(X,Y)])),
-	   [0,1,2,3,4,5,6,7,8,9,10],
-	   [0,2,A]).
+```
+?- 
+maplist([X,Y]>>(false),[1,2],[1,4]).
+
+false.
+```
+
+Side-effects will occur before failure hits. It's not transactional (unless one buffers the output for 
+later emission of course, an approach that should be supported):
+
+```
+?- 
+maplist([X,Y]>>((Y is 2*X),
+        format("~q\n",[(X,Y)])),
+        [0,1,2,3,4,5,6,7,8,9,10],
+	[0,2,A]).
 	   
 0,0
 1,2
 2,4
 false.
-````
-
-**Notice this good behaviour**
-
-```
-?- maplist([X,Y]>>true,format("~w\n",[(X,Y)]),[0,1,2,3,4],[a,b,c]).
-false.
-
-?- maplist([X,Y]>>true,format("~w\n",[(X,Y)]),[a,b,c],[0,1,2,3,4]).
-false.
 ```
 
-`maplist/3` gives up immediately, noticing that both instantiated list arguments are not the same length,
-instead of going through the lists until it runs out of arguments on either list. Good!
+**`maplist/3` does not check that list lengths are equal amon all list**
+
+Instead it fails it it hits the end of one of the list. This is not very nice, but avoid having
+to perform costly checks down the list backbones. Instead, `maplist/3` is optimistic and 
+hopes the caller has ensured the lists are of equal length:
+
+Define:
+
+```
+mapfun(X,Y) :- format("~q ~q\n",[X,Y]).
+```
+
+Then on can see that three pairs are processed until failure occurs:
+
+```
+?-
+maplist(
+   mapfun,   
+   [0,1,2,3,4],
+   [a,b,c]).
+
+0 a
+1 b
+2 c
+false.
+```
+
+This is similar to the behaviour of `foldl/5`
+
+Define:
+
+```
+foldfun(E1,E2,FL,TR) :-
+   atomic_list_concat([E1,E2,FL],TR),
+   format("~q ~q ~q ~q\n",[E1,E2,FL,TR]).
+```
+
+Again, three pairs are processed until failure occurs:
+
+```
+?-
+foldl(
+   foldfun,
+   [0,1,2,3,4],
+   [a,b,c],
+   start,
+   Final).
+
+0 a start '0astart'
+1 b '0astart' '1b0astart'
+2 c '1b0astart' '2c1b0astart'
+false.
+```
+
+**`maplist/3` with a non-list argument leads to failure**
+
+```none
+?- 
+maplist(
+   ([X,Y]>>true,format("~w\n",[(X,Y)])),
+   [a,b,c],
+   1).
+
+false.
+```
+
+```none
+?- 
+maplist(
+   ([X,Y]>>true,format("~w\n",[(X,Y)])),
+   1,
+   [a,b,c]).
+
+false.
+```
+
+Instead of lists, an integer is passed as argument 2 or argument 3. `maplist/3` _could_ throw a `domain_error` 
+or `type_error` exception. Instead, it does something which is related to steadfastness (I'm not quite
+sure that this _is_ steadfastness):
 
 **Steadfastness**
 
-A "steadfast" predicate is one which constructs a result to be bound to an argument that is a fresh variable,
-but which does _not behave differently_ if, at call time, that argument is actually instantiated (not taking 
-into consideration side-effects and optimizations). If the argument is instantiated, the behaviour is the
-same as if the result had been computed, then unified with that instantiated variable.
+A "steadfast" predicate is one that behaves _the same_ whether its argument that will take up output
+is, at call time, a (partially) instantiated term or an unbound variable. A partially instantiated term
+may, however lead to failure. 
 
-`maplist/3` is indeed steadfast.
-
-The above is a borderline example of steadfastness. Here is one which is clearer:
-
-```
-?- maplist([X,Y]>>true,format("~w\n",[(X,Y)]),[a,b,c],1).
-false.
-```
-
-```
-?- maplist([X,Y]>>true,format("~w\n",[(X,Y)]),1,[a,b,c]).
-false.
-```
-
-Instead of lists, an integer is passed as argument 2 or argument 3. `maplist/3` _could_ throw a `domain_error` or `type_error` exception.
-Instead, it behaves as if the code were
-
-```
-?- maplist([X,Y]>>true,format("~w\n",[(X,Y)]),[a,b,c],X),X=1.
-false.
-```
-
-```
-?- maplist([X,Y]>>true,format("~w\n",[(X,Y)]),X,[a,b,c]),X=1.
-false.
-```
-
-Hopefully it detects the "need for failure" very early.
+An alternative view is that, if the argument for output is a (partially) instantiated term at call time,
+a steadfast predicate behaves as if the argument had been uninstantiated, the output were computed 
+and then that output were unified with the (partially) instantiated term when all is done.
 
 ## Form of the two passed lists
 
-Let's distinguish a few cases:
-
 ### Both lists are of known length
 
-The two list given to `maplist/3` can be of known length:
-
-````
-myprint(X,Y) :- format("~w\n",[[X,Y]]).
-?- maplist(myprint,[0,1,2,3],[a,b,c,d]).
-[0,a]
-[1,b]
-[2,c]
-[3,d]
+```none
+?- 
+maplist([X,Y]>>format("~q ~q\n",[X,Y]),[0,1,2,3],[a,b,c,d]).
+0 a
+1 b
+2 c
+3 d
 true.
-````
-
-The same as above, but instead of creating a helper predicate `myprint/2`, we use lambda notation to create a one-liner.
-A  call to `myprint/2` is replaced by a call to an "anonymous predicate":
-
-````
-?- maplist([X,Y]>>format("~w\n",[[X,Y]]),[0,1,2,3],[a,b,c,d]).
-[0,a]
-[1,b]
-[2,c]
-[3,d]
-true.
-````
+```
 
 Check that a relation holds between the pairwise list elements:
 
-````
-?- maplist([X,Y]>>(Y is X*X),[0,1,2,3],[0,1,4,9]).
+```none
+?- 
+maplist([X,Y]>>(Y is X*X),[0,1,2,3],[0,1,4,9]).
 true.
-````
+```
 
-The lists may contain fresh variables. We 
+The lists may contain unbound variables. We 
 use [`#=`](https://eu.swi-prolog.org/pldoc/doc_for?object=%23%3D%20/%202) constraint predicate to make things interesting:
 
-````
-?- use_module(library(clpfd)). % load constraint statisfaction over finite domains
+Load constraint statisfaction over finite domains:
 
-?- maplist([X,Y]>>(Y#=X*X),[0,1,2,3],[A,B,C,D]).
+```none
+?- use_module(library(clpfd)). 
+```
+
+Then:
+
+```none
+?- 
+maplist([X,Y]>>(Y#=X*X),[0,1,2,3],[A,B,C,D]).
+
 A = 0,
 B = 1,
 C = 4,
 D = 9.
+```
 
-?- maplist([X,Y]>>(Y#=X*X),[0,1,C,D],[A,B,4,9]).
+```none
+?- 
+maplist([X,Y]>>(Y#=X*X),[0,1,C,D],[A,B,4,9]).
+
 A = 0,
 B = 1,
 C in -2\/2,
 D in -3\/3.
+```
 
-% a simpler relation between between the pairs (I1,I2) than (I2 = I1²) is (I1 = I2-1):
+A simpler relation between between the pairs `(I1,I2)` than `(I2 = I1²)` is `(I1 = I2-1)`:
 
-?- maplist([X,Y]>>(X#=Y-1), [0,A,2], [B,1,3]).
+```none
+?- 
+maplist([X,Y]>>(X#=Y-1), [0,A,2], [B,1,3]).
+
 A = 0,
 B = 1.
+```
 
-% alternatively
+Alternatively:
 
-?- maplist([X,Y]>>succ(X,Y), [0,A,2], [B,1,3]).
+```none
+?- 
+maplist([X,Y]>>succ(X,Y), [0,A,2], [B,1,3]).
+
 A = 0,
 B = 1.
+```
 
-% or lambda-less (and hard to read)
+Or lambda-less (and harder to read?)
 
+```none
 ?- maplist(succ, [0,A,2], [B,1,3]).
+
 A = 0,
 B = 1.
-````
-
-Nothing surprising here.
+```
 
 ### One of the lists is of unknown length
 
-Create a list of 11 integers 0..10, then use `maplist/3` to apply a function to this `List1`. If the other list was a fresh variable (so not even known to be a list), it is set to a list of length equal to the length of `List1`:
+Create a list of 11 integers 0..10, then use `maplist/3` to apply a function to this
+`List1`. If the other list was an unbound variable (so not even known to be a list), it is set
+to a list of length equal to the length of `List1`:
 
-```logtalk
-?- use_module(library(clpfd)). % load constraint statisfaction over finite domains
+Load constraint statisfaction over finite domains:
 
-?- bagof(X,between(0,5,X),In), maplist([X,Y]>>(Y #= X*X*X),In,Out).
-In = [0, 1, 2, 3, 4, 5],
-Out = [0, 1, 8, 27, 64, 125].
+```none
+?- use_module(library(clpfd)). 
+```
 
-?- AntiIn=[0, 1, 8, 27, 64, 125], maplist([X,Y]>>(Y #= X*X*X),AntiOut,AntiIn).
-AntiIn = [0, 1, 8, 27, 64, 125],
-AntiOut = [0, 1, 2, 3, 4, 5].
+Compute cubes:
+
+```none
+?- 
+maplist([X,Y]>>(Y #= X*X*X),[0,1,2,3,4,5],ListOut).
+
+ListOut = [0,1,8,27,64,125].
+```
+
+Compute cubic roots:
+
+```none
+?-
+maplist([X,Y]>>(Y #= X*X*X),ListOut,[0,1,8,27,64,125]).
+
+ListOut = [0,1,2,3,4,5].
 ```
 
 ### Both of the lists are of unknown length
 
-Without CLP(FD), the predicate called by `maplist/3` errors out rapidly:
+**Without CLP(FD)**, the predicate called by `maplist/3` errors out rapidly:
 
-```logtalk
-?- maplist([X,Y]>>(Y is X*X*X),L1,L2).
+```none
+?- 
+maplist([X,Y]>>(Y is X*X*X),L1,L2).
 L1 = L2, L2 = [] ;
 ERROR: Arguments are not sufficiently instantiated
 ERROR: In:
 ERROR:   [14] _3238 is _3250*_3252*_3246
 ```
 
-With CLP(FD), `maplist/3` succeeds with longer and longer lists, where constraints exist between variables.
+**With CLP(FD)**, `maplist/3` succeeds with longer and longer lists, where constraints exist between variables.
 
-```logtalk
-?- use_module(library(clpfd)). % load constraint statisfaction over finite domains
+```
+?- 
+maplist([X,Y]>>(Y #= X*X*X),L1,L2).
 
-?- maplist([X,Y]>>(Y #= X*X*X),L1,L2).
 L1 = L2, L2 = [] ;
 L1 = [_11220],
 L2 = [_11238],
@@ -259,29 +337,35 @@ _16056^3#=_16086
 ...
 ```
 
-This is of some interest. We can tell `maplist/3` to stop by misusing `maplist/4`, giving a fixed length list as
+We can tell `maplist/3` to stop by misusing `maplist/4`, giving a fixed length list as
 "dummy argument":
 
-```logtalk
-?- use_module(library(clpfd)). % load constraint statisfaction over finite domains
+```none
+?- 
+maplist([X,Y,_]>>(Y #= X*X*X),L1,L2,[_,_,_,_]).  % give me 4
 
-?- maplist([X,Y,_]>>(Y #= X*X*X),L1,L2,[_,_,_,_]).  % give me 4
 L1 = [_22422, _22428, _22434, _22440],
 L2 = [_22458, _22464, _22470, _22476],
 _22422^3#=_22458,
 _22428^3#=_22464,
 _22434^3#=_22470,
 _22440^3#=_22476.
+```
 
-% Now use those constraints: setting item 1 of L1 to 2 immediately reflects as a 2^3 in L2:
+Now use those constraints: setting item 1 of L1 to 2 immediately reflects as a 2^3 in L2:
 
-?- maplist([X,Y,_]>>(Y #= X*X*X),L1,L2,[_,_,_,_]),nth0(1,L1,2).
+```none
+?- 
+maplist([X,Y,_]>>(Y #= X*X*X),L1,L2,[_,_,_,_]),nth0(1,L1,2).
+
 L1 = [_26834, 2, _26846, _26852],
 L2 = [_26870, 8, _26882, _26888],
 _26834^3#=_26870,
 _26846^3#=_26882,
 _26852^3#=_26888.
 ```
+ 
+**REVIEW FROM HERE** 
  
 ### One of the lists is a "difference list" prefix, and the other of known length
 
