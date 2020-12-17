@@ -201,4 +201,10 @@ false.
 
 ### _soft-cut_ as wired up in the Byrd Box Model
 
-![soft cut as wired up in the byrd box model](pics/soft_cut_as_wired_up_in_the_byrd_box_model.png)
+#### If `p` succeeds
+
+![soft cut as wired up in the byrd box model, if p succeeds](pics/soft_cut_as_wired_up_in_the_byrd_box_model_p_succeeds.png)
+
+#### If `p` fails
+
+![soft cut as wired up in the byrd box model, if p fails](pics/soft_cut_as_wired_up_in_the_byrd_box_model_p_fails.png)
