@@ -10,7 +10,7 @@
 - [How to avoid hard-to-read _->/2_ code](#avoid_hard_to_read_if_then_else_code)
 - [Create a switch statement based on _->/2_](#switch_statement_based_on_if_then_else)
 - [_->/2_ on the Prolog toplevel](#if_then_else_on_the_prolog_toplevel)
-- [Making a goal deterministic with _->/2_](#make_goal_deterministic with if_then_else)
+- [Making a goal deterministic with _->/2_](#make_goal_deterministic_with_if_then_else)
 - [Use _->/2_ for guard expressions](#guard_expression)
 
 ## Naming<a name="naming"></a>
@@ -507,7 +507,7 @@ X = 1.
 **The God of Logic would be displeased if this were a proper implication** because, as an implication, `a(X) -> b(X)` should respond
 false: `a(2)` is TRUE but `b(2)` is FALSE. But `a(X) -> b(X)` is just a control construct, so we are getting a pass.
 
-## Making a goal deterministic with _->/2_<a name="make_goal_deterministic with if_then_else"></a>
+## Making a goal deterministic with _->/2_<a name="make_goal_deterministic_with_if_then_else"></a>
 
 The "premiss" of `->/2` is not subject to backtracking. 
 This can be advantageous if you want to suppress multiple answer. 
