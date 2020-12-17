@@ -104,7 +104,7 @@ In case the "else" condition is missing, it is replaced by a `false` and we get:
 
 **compare with a simple or**
 
-![or wired up in the byrd box model](pics/or_wired_up_in_the_byrd_box_model.png)
+![or as wired up in the byrd box model](pics/or_as_wired_up_in_the_byrd_box_model.png)
 
 ## Soft-cut
 
