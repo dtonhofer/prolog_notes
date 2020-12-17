@@ -108,8 +108,6 @@ In case the "else" condition is missing, it is replaced by a `false` and we get:
 
 ## Soft-cut
 
-Another construct, the [soft-cut](https://eu.swi-prolog.org/pldoc/doc_for?object=(*-%3E)/2), is built form `->*` and `;/2`.
-Again, a trinary operator is build 
-
+Another construct, the [soft-cut](https://eu.swi-prolog.org/pldoc/doc_for?object=(*-%3E)/2), is built form `->*` and `;/2`, same as for `->/2` + `;/2`
 
 
