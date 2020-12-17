@@ -4,7 +4,18 @@
 - For examples about `maplist/2` (1 goal, 1 list to verify) see [this page](maplist_2_examples.md)
 - For examples about `maplist/4` (1 goal, 3 lists to relate) see [this page](maplist_4_examples.md)
 
-## About
+- [About](#name)
+- [Form of the two passed lists](#form_of_the_two_passed_lists)
+   - [Both lists are of known length](#both_lists_are_of_known_length)
+   - [One of the lists is of unspecified length](#one_of_the_lists_is_of_unspecified_length)
+   - [Both lists are open lists](#both_lists_are_open_lists)
+   - [How about cyclic lists?](#cyclic_lists)
+- [Applications of _maplist/3_](#application_of_maplist_3)
+   - [Computing a function of 1 variable](#compute_function_of_1_variable)
+   - [Testing" or "Accepting" a relation between the pairwise elements of two lists](#accepting_pairwise_relation)
+   - [Tagging of list elements](#tagging_of_list_elements)
+
+## About<a name="about"></a>
 
 Here we list a few examples for the predicate [`maplist/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/3) 
 from [library(apply)](https://eu.swi-prolog.org/pldoc/man?section=apply) as run with SWI-Prolog.
@@ -100,7 +111,7 @@ maplist([X,Y]>>((Y is 2*X),
 false.
 ```
 
-**`maplist/3` does not check that list lengths are equal amon all list**
+**`maplist/3` does not check that list lengths are equal across all list arguments*
 
 Instead it fails it it hits the end of one of the list. This is not very nice, but avoid having
 to perform costly checks down the list backbones. Instead, `maplist/3` is optimistic and 
@@ -190,13 +201,17 @@ An alternative view is that, if the argument for output is a (partially) instant
 a steadfast predicate behaves as if the argument had been uninstantiated, the output were computed 
 and then that output were unified with the (partially) instantiated term when all is done.
 
-## Form of the two passed lists
+## Form of the two passed lists<a name="form_of_the_two_passed_lists"></a>
 
-### Both lists are of known length
+### Both lists are of known length<a name="both_lists_are_of_known_length"></a>
 
 ```none
 ?- 
-maplist([X,Y]>>format("~q ~q\n",[X,Y]),[0,1,2,3],[a,b,c,d]).
+maplist(
+   [X,Y]>>format("~q ~q\n",[X,Y]),
+   [0,1,2,3],
+   [a,b,c,d]).
+   
 0 a
 1 b
 2 c
@@ -208,12 +223,16 @@ Check that a relation holds between the pairwise list elements:
 
 ```none
 ?- 
-maplist([X,Y]>>(Y is X*X),[0,1,2,3],[0,1,4,9]).
+maplist(
+   [X,Y]>>(Y is X*X),
+   [0,1,2,3],
+   [0,1,4,9]).
 true.
 ```
 
 The lists may contain unbound variables. We 
-use [`#=`](https://eu.swi-prolog.org/pldoc/doc_for?object=%23%3D%20/%202) constraint predicate to make things interesting:
+use [`#=`](https://eu.swi-prolog.org/pldoc/doc_for?object=%23%3D%20/%202) (must-be-equal constraint between variables) 
+to make things interesting:
 
 Load constraint statisfaction over finite domains:
 
@@ -225,7 +244,10 @@ Then:
 
 ```none
 ?- 
-maplist([X,Y]>>(Y#=X*X),[0,1,2,3],[A,B,C,D]).
+maplist(
+   [X,Y]>>(Y#=X*X),
+   [0,1,2,3],
+   [A,B,C,D]).
 
 A = 0,
 B = 1,
@@ -235,7 +257,10 @@ D = 9.
 
 ```none
 ?- 
-maplist([X,Y]>>(Y#=X*X),[0,1,C,D],[A,B,4,9]).
+maplist(
+   [X,Y]>>(Y#=X*X),
+   [0,1,C,D],
+   [A,B,4,9]).
 
 A = 0,
 B = 1,
@@ -243,11 +268,14 @@ C in -2\/2,
 D in -3\/3.
 ```
 
-A simpler relation between between the pairs `(I1,I2)` than `(I2 = I1²)` is `(I1 = I2-1)`:
+A simpler relation between between the pairs `(I1,I2)` than `(I2 = I1²)` is for example `(I1 = I2-1)`:
 
 ```none
 ?- 
-maplist([X,Y]>>(X#=Y-1), [0,A,2], [B,1,3]).
+maplist(
+   [X,Y]>>(X#=Y-1), 
+   [0,A,2], 
+   [B,1,3]).
 
 A = 0,
 B = 1.
@@ -257,7 +285,10 @@ Alternatively:
 
 ```none
 ?- 
-maplist([X,Y]>>succ(X,Y), [0,A,2], [B,1,3]).
+maplist(
+   [X,Y]>>succ(X,Y), 
+   [0,A,2], 
+   [B,1,3]).
 
 A = 0,
 B = 1.
@@ -266,168 +297,187 @@ B = 1.
 Or lambda-less (and harder to read?)
 
 ```none
-?- maplist(succ, [0,A,2], [B,1,3]).
+?- maplist(
+   succ, 
+   [0,A,2],
+   [B,1,3]).
 
 A = 0,
 B = 1.
 ```
 
-### One of the lists is of unknown length
+### One of the lists is of unspecified length<a name="one_of_the_lists_is_of_unspecified_length"></a>
 
-Create a list of 11 integers 0..10, then use `maplist/3` to apply a function to this
-`List1`. If the other list was an unbound variable (so not even known to be a list), it is set
-to a list of length equal to the length of `List1`:
+Create a list of integers, then use `maplist/3` to apply a function to this. If
+the other list was an unbound variable (so not even known to be a list), it is set
+to a list of length equal to the length of the first list:
 
-Load constraint statisfaction over finite domains:
-
-```none
-?- use_module(library(clpfd)). 
-```
-
-Compute cubes:
+Compute cubes, going from list argument one to list argument two, using CLP(FD):
 
 ```none
 ?- 
-maplist([X,Y]>>(Y #= X*X*X),[0,1,2,3,4,5],ListOut).
+maplist(
+   [X,Y]>>(Y #= X*X*X),
+   [0,1,2,3,4,5],
+   ListB).
 
-ListOut = [0,1,8,27,64,125].
+ListB = [0,1,8,27,64,125].
 ```
 
-Compute cubic roots:
+Compute cubic roots, going from list argument two to list argument one:
 
 ```none
 ?-
-maplist([X,Y]>>(Y #= X*X*X),ListOut,[0,1,8,27,64,125]).
+maplist(
+   [X,Y]>>(Y #= X*X*X),
+   ListA,
+   [0,1,8,27,64,125]).
 
-ListOut = [0,1,2,3,4,5].
+ListA = [0,1,2,3,4,5].
 ```
 
-### Both of the lists are of unknown length
+### Both of the lists are unbound variables<a name="both_of_the_lists_are_unbound_variables"></a>
 
-**Without CLP(FD)**, the predicate called by `maplist/3` errors out rapidly:
+It is possible. Here we get a pair of ever-growing lists on backtracking:
 
 ```none
 ?- 
-maplist([X,Y]>>(Y is X*X*X),L1,L2).
-L1 = L2, L2 = [] ;
-ERROR: Arguments are not sufficiently instantiated
-ERROR: In:
-ERROR:   [14] _3238 is _3250*_3252*_3246
-```
-
-**With CLP(FD)**, `maplist/3` succeeds with longer and longer lists, where constraints exist between variables.
-
-```
-?- 
-maplist([X,Y]>>(Y #= X*X*X),L1,L2).
-
-L1 = L2, L2 = [] ;
-L1 = [_11220],
-L2 = [_11238],
-_11220^3#=_11238 ;
-L1 = [_13490, _13496],
-L2 = [_13514, _13520],
-_13490^3#=_13514,
-_13496^3#=_13520 ;
-L1 = [_16044, _16050, _16056],
-L2 = [_16074, _16080, _16086],
-_16044^3#=_16074,
-_16050^3#=_16080,
-_16056^3#=_16086 
+maplist(
+   [X,Y]>>(random_between(1,5,X),Y is X*X),
+   ListA,
+   ListB).
+ListA = ListB, ListB = [] ;
+ListA = [4],  ListB = [16] ;
+ListA = [4,5], ListB = [16,25] ;
+ListA = [4,5,1], ListB = [16,25,1] ;
+ListA = [4,5,1,2], ListB = [16,25,1,4] ;
 ...
 ```
 
-We can tell `maplist/3` to stop by misusing `maplist/4`, giving a fixed length list as
+We can tell `maplist/3` to stop by using `maplist/4`, giving a fixed length list as
 "dummy argument":
 
 ```none
-?- 
-maplist([X,Y,_]>>(Y #= X*X*X),L1,L2,[_,_,_,_]).  % give me 4
-
-L1 = [_22422, _22428, _22434, _22440],
-L2 = [_22458, _22464, _22470, _22476],
-_22422^3#=_22458,
-_22428^3#=_22464,
-_22434^3#=_22470,
-_22440^3#=_22476.
+?- maplist(
+       [X,Y,_]>>(random_between(1,5,X),Y is X*X),
+       ListA,
+       ListB,
+       [_,_,_,_,_]).  % give me 5
+ListA = [5,3,2,1,5],
+ListB = [25,9,4,1,25].
 ```
 
-Now use those constraints: setting item 1 of L1 to 2 immediately reflects as a 2^3 in L2:
+If you forget the third argument to the lambda expression, which must be there because you are now 
+working with `maplist/4`, the compiler says:
+
+```
+ERROR: Unknown procedure: (',')/3
+ERROR:   However, there are definitions for:
+ERROR:         (',')/2
+```
+
+That's confusing! This need a better syntax check before the lambda expression is replaced with base Prolog.
+
+### One of the lists is an open list, and the other of known length<a name="one_of_the_lists_is_an_open_list"></a>
+
+An _open list_ is a term which starts off like a list, but then ends in an unbound variable (so it may still become 
+a "real list, aka. _proper_ or _closed_ list): `[1,2,3|_]`. An unbound variable itself can be regarded as an extreme
+open list. 
+
+`maplist/3` will adjust the prefix length and close the list with a `[]`:
+
+This is not really different from the case of having unbiund variables as list. It's just that we may have list prefixes:
+
+Exactly as before:
 
 ```none
-?- 
-maplist([X,Y,_]>>(Y #= X*X*X),L1,L2,[_,_,_,_]),nth0(1,L1,2).
+?-
+maplist(
+   [X,Y]>>(random_between(1,5,X),Y is X*X),
+   ListA,
+   ListB).
 
-L1 = [_26834, 2, _26846, _26852],
-L2 = [_26870, 8, _26882, _26888],
-_26834^3#=_26870,
-_26846^3#=_26882,
-_26852^3#=_26888.
-```
- 
-**REVIEW FROM HERE** 
- 
-### One of the lists is a "difference list" prefix, and the other of known length
-
-A difference list prefix is a structure which starts off like a list, but whose tail ends in a fresh variable.
-`maplist/3` will adjust the prefix' length and close the list with a `[]`, behaving like a [Caterpillar D7](https://en.wikipedia.org/wiki/Caterpillar_D7):
-
-```logtalk
-?- use_module(library(clpfd)). % load constraint statisfaction over finite domains
-
-% The difference list with an unconstrained tail end:
-
-?- DiffList=[1,8,27|T]-T, DiffList=Prefix-_.
-DiffList = [1, 8, 27|T]-T,
-Prefix = [1, 8, 27|T].
-
-% Using its prefix in maplist/3 constrains the prefix to be a real list, and thus constrains the
-% tail likewise
-
-?- DiffList=[1,8,27|T]-T, DiffList=Prefix-_, maplist([X,Y]>>(Y #= X*X*X),[1,2,3,4,5],Prefix).
-DiffList = [1, 8, 27, 64, 125]-[64, 125],
-T = [64, 125],
-Prefix = [1, 8, 27, 64, 125].
-
-% Compute the same as above, but with List1 taking up the x³ values, which is done by reversing
-% the argument order to the lambda expression
-
-?- DiffList=[1,8,27|T]-T, DiffList=Prefix-_, maplist([Y,X]>>(Y #= X*X*X),Prefix,[1,2,3,4,5]).
-DiffList = [1, 8, 27, 64, 125]-[64, 125],
-T = [64, 125],
-Prefix = [1, 8, 27, 64, 125].
+ListA = ListB, ListB = [] ;
+ListA = [5],
+ListB = [25] ;
+ListA = [5,4],
+ListB = [25,16] ;
+ListA = [5,4,5],
+ListB = [25,16,25] ;
+ListA = [5,4,5,4],
+ListB = [25,16,25,16] ;
 ```
 
-### Both lists are "difference list" prefixes
+Give the first list a prefix. The second list, an unbound variable, is extended to cover that:
 
-Maplist generates possible solutions with longer and longer lists on backtracking:
-
-```logtalk
-?- use_module(library(clpfd)). % load constraint statisfaction over finite domains
-
-?- DiffList1=[1,2,3|T1]-T1, DiffList1=Prefix1-_,
-   DiffList2=[1,8,27|T2]-T2, DiffList2=Prefix2-_,
-   maplist([X,Y]>>(Y #= X*X*X),Prefix1,Prefix2).
-   
-DiffList1 = [1, 2, 3]-[], 
-T1 = T2, T2 = [], 
-Prefix1 = [1, 2, 3], 
-DiffList2 = [1, 8, 27]-[], Prefix2 = [1, 8, 27] ;
-
-DiffList1 = [1, 2, 3, _3136]-[_3136], 
-T1 = [_3136], Prefix1 = [1, 2, 3, _3136], 
-DiffList2 = [1, 8, 27, _3202]-[_3202],
-T2 = [_3202], Prefix2 = [1, 8, 27, _3202], _3136^3#=_3202 ;
+```none
+?-
+maplist(
+   [X,Y]>>((var(X)->random_between(1,5,X);between(1,5,X)),Y is X*X),
+   [3,2,1,4|ListA],
+   ListB).
+ListA = [], ListB = [9,4,1,16] ;
+ListA = [3], ListB = [9,4,1,16,9] ;
+ListA = [3,5], ListB = [9,4,1,16,9,25] ;
+ListA = [3,5,3], ListB = [9,4,1,16,9,25,9] ;
+ListA = [3,5,3,2], ListB = [9,4,1,16,9,25,9,4] ;
+ListA = [3,5,3,2,5], ListB = [9,4,1,16,9,25,9,4,25] ;
 ...
 ```
 
-### How about cyclic lists?
+### Both lists are open lists<a name="both_lists_are_open_lists"></a>
 
-Maplist will go on ... forever!
+Maplist generates possible solutions with longer and longer lists on backtracking:
+
+```none
+?-
+maplist(
+   [X,Y]>>((var(X)->random_between(1,5,X);between(1,5,X)),Y is X*X),
+   [3,2|M1],
+   [9,4|M2]).
+   
+M1 = M2, M2 = [] ;
+M1 = [3], M2 = [9] ;
+M1 = [3,1], M2 = [9,1] ;
+M1 = [3,1,4], M2 = [9,1,16] ;
+M1 = [3,1,4,2], M2 = [9,1,16,4] ;   
+...
+```
+
+When developing code as above, one may get unexpected failures. In that case, passing to `maplist/4`
+and storing the reified truth values in a third list can help:
+
+Define:
+
+```none
+reify(Goal,TruthValue) :-
+   Goal -> TruthValue=true ; TruthValue=false.
+```
+
+Then one notices two problem points in the prefixes of the open lists:
+
+```none
+?-
+maplist(
+   [X,Y,TV]>> reify( ((var(X)->random_between(1,5,X);between(1,5,X)),Y is X*X) , TV ),
+   [3,2,1,3,1,5|M1],
+   [9,4,3,5,1,25|M2],
+   TVs).
+
+M1 = M2, M2 = [], TVs = [true,true,false,false,true,true] ;
+M1 = [5], M2 = [25], TVs = [true,true,false,false,true,true,true] ;
+M1 = [5,5], M2 = [25,25], TVs = [true,true,false,false,true,true,true,true] ;
+M1 = [5,5,3], M2 = [25,25,9], TVs = [true,true,false,false,true,true,true,true,true] ;
+...
+```
+
+### How about cyclic lists?<a name="cyclic_lists"></a>
+
+`maplist/N` will go on ... forever!
 
 Consider these mutually cyclic lists:
 
-```logtalk
+```none
 A=[1,2,3|B],
 B=[a,b,c|A]
 ```
@@ -436,8 +486,11 @@ B=[a,b,c|A]
 
 Then:
 
-```logtalk
-?- A=[1,2,3|B],B=[a,b,c|A],maplist([X,Y]>>format("~q\n",[(X,Y)]),A,B).
+```none
+?- A=[1,2,3|B],
+   B=[a,b,c|A],
+   maplist([X,Y]>>format("~q\n",[(X,Y)]),A,B).
+   
 a,1
 b,2
 c,3
@@ -450,97 +503,110 @@ c,3
 ...... ad infinitum
 ```
 
-Beware of cyclic term graphs!
+## Applications of _maplist/3_<a name="application_of_maplist_3"></a>
 
-### How about lazy lists?
-
-(TODO if I know more)
-
-## Applications of `maplist/3`
-
-### Computing a function of 1 variable
+### Computing a function of 1 variable<a name="compute_function_of_1_variable"></a>
 
 This is rather straightforward. Just constrain the elements of the second list to the results of a 
 function applied to items of the first list.
 
 For example, apply the successor predicate [`succ/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=succ/2)
-to relate the pairwise items of two lists. Unlike `X is Y+1`, `succ/2` can be run "forwards" (succwards?) 
-or "backwards" (antisuccwards?)
+to relate the pairwise items of two lists. Unlike `X is Y+1`, `succ/2` can be run "forwards" and "backwards".
 
-```logtalk
-% Helper: Use foldl/4 to create a list of integers
+Helper: Use `foldl/4` to create a list of integers
 
-create_list_of_integers(Length,Offset,Lout) :- 
-   length(Lout,Length),                % "make sure" that Lout is a list of length "Length"
-   foldl([Item,XCur,XNext]>>(succ(XCur,XNext),Item=XCur),Lout,Offset,_XFinal). 
+```none
+create_list_of_integers(Length,Offset,List) :- 
+   length(List,Length),                % "make sure" that Lout is a list of length "Length"
+   foldl([Element,FromLeft,ToRight]>>(Element=FromLeft,succ(FromLeft,ToRight)),List,Offset,_). 
 ```
 
-And so
+And so:
 
-```logtalk
-% Give only predicate name to maplist
+```none
+?- 
+create_list_of_integers(6,0,ListIn),
+maplist(succ,ListIn,ListOut).
 
-?- create_list_of_integers(6,0,Lin),maplist(succ,Lin,Lout).  % succwards
-Lin = [0, 1, 2, 3, 4, 5],
-Lout = [1, 2, 3, 4, 5, 6].
+ListIn = [0,1,2,3,4,5],
+ListOut = [1,2,3,4,5,6].
 
-?- create_list_of_integers(6,1,Lin),maplist(succ,Lout,Lin).  % antisuccwards by reversing list argument order
-Lin = [1, 2, 3, 4, 5, 6],
-Lout = [0, 1, 2, 3, 4, 5].
+?- 
+create_list_of_integers(6,1,ListIn),
+maplist(succ,ListOut,ListIn).
 
-% Alternatively, use lambda notation from yall; you can then rearrange arguments
+?-
+create_list_of_integers(6,1,ListIn),
+maplist(succ,ListOut,ListIn).
 
-?- create_list_of_integers(6,0,Lin),maplist([I,O]>>succ(I,O),Lin,Lout).  % succwards
-Lin = [0, 1, 2, 3, 4, 5],
-Lout = [1, 2, 3, 4, 5, 6].
-
-?- create_list_of_integers(6,1,Lin),maplist([I,O]>>succ(O,I),Lin,Lout). % antisuccwards
-Lin = [1, 2, 3, 4, 5, 6],
-Lout = [0, 1, 2, 3, 4, 5].
+ListIn = [1,2,3,4,5,6],
+ListOut = [0,1,2,3,4,5].
 ```
 
-Of course, testing of fully grounded lists can be done too:
+Alternatively, use lambda notation from `library(yall)`; you can then rearrange arguments:
 
-```logtalk
-?- create_list_of_integers(6,0,Lin),maplist([I,O]>>succ(I,O),Lin,Lout),
-   format("Now I have two fully grounded lists ~q and ~q\n",[Lin,Lout]),
-   maplist([I,O]>>succ(I,O),Lin,Lout),
-   format("Pairwise items of those lists are indeed related by the succ predicate!").
+```none
+?- 
+create_list_of_integers(6,0,ListIn),
+maplist([I,O]>>succ(I,O),ListIn,ListOut).
+
+ListIn = [0,1,2,3,4,5],
+ListOut = [1,2,3,4,5,6].
+
+?- 
+create_list_of_integers(6,1,ListIn),
+maplist([I,O]>>succ(O,I),ListIn,ListOut).
+
+ListIn = [1,2,3,4,5,6],
+ListOut = [0,1,2,3,4,5].
+```
+
+### "Testing" or "Accepting" a relation between the pairwise elements of two lists<a name="accepting_pairwise_relation"></name>
+
+```none
+?- 
+create_list_of_integers(6,0,ListIn),
+maplist([I,O]>>succ(I,O),ListIn,ListOut),
+format("Now I have two fully grounded lists ~q and ~q\n",[ListIn,ListOut]),
+maplist([I,O]>>succ(I,O),ListIn,ListOut),
+format("Pairwise items of those lists are indeed related by the succ/2 predicate!").
 
 Now I have two fully grounded lists [0,1,2,3,4,5] and [1,2,3,4,5,6]
-Pairwise items of those lists are indeed related by the succ predicate!
-Lin = [0, 1, 2, 3, 4, 5],
-Lout = [1, 2, 3, 4, 5, 6].
+Pairwise items of those lists are indeed related by the succ/2 predicate!
+ListIn = [0,1,2,3,4,5],
+ListOut = [1,2,3,4,5,6].
 ```
 
-### Tagging of list items
+### Tagging of list elements<a name="tagging_of_list_elements"></a>
 
 A special case of "applying a function to list items" is _tagging_: adorning terms with functions symbols,
 or removing the function symbols. This is done to allow better pattern matching during execution, or
 carry additional information about a given term, e.g. whether it's indeed an integer.
 
-**Here is a simple example**
+Define:
 
-```
-tag_all_elements(Es,MarkedEs) :- maplist([E,mm(E)]>>true,Es,MarkedEs).
-```
+```none
+tagger(X,int(X))   :- integer(X),!.
+tagger(X,var(X))   :- var(X),!.
+tagger(X,atom(X))  :- atom(X),!.
+tagger(X,other(X)).
 
-Then
-
-```
-?- tag_all_elements([1,2,3],X).
-X = [mm(1), mm(2), mm(3)].
-
-?- tag_all_elements(X,[mm(1), mm(2), mm(3)]).
-X = [1, 2, 3].
+list_taggger(List,TaggedList) :- 
+   maplist([Element,Tagged]>>tagger(Element,Tagged),List,TaggedList).
 ```
 
-And this predicate is exactly the same as the two-clauser:
+Then:
 
+```none
+?- 
+list_taggger([1,foo,bar,3.04,X],TaggedList).
+
+TaggedList = [int(1), atom(foo), atom(bar), other(3.04), var(X)].
 ```
-tag_all_elements_oldschool([],[]).
-tag_all_elements_oldschool([E|Es],[mm(E)|Taggeds]) :- tag_all_elements_oldschool(Es,Taggeds).
-```
+
+
+## REVIEW TILL HERE ##
+
 
 **Here is a less simply example**
 
