@@ -13,9 +13,7 @@ Based on the SWI-Prolog manual
    - [Notes about `length/2`](about_length/), includes code for `probe_length/3` and (lenient) `length/3`
    - [Website text](about_length/webmanualtxt/length.txt)
 
-- [`maplist/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/2)
-- [`maplist/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/3)
-- [`maplist/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/4)
+- [`maplist/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/2), [`maplist/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/3), [`maplist/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/4)
    - [Notes about `maplist/2`](about_maplist/maplist_2_examples.md) Working off a single list. This includes   
      an explainer regarding the use of [`library(yall)`](https://eu.swi-prolog.org/pldoc/man?section=yall) 
      lambda expressions and Prolog-style closures.
