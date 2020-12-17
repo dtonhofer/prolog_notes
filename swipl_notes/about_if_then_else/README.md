@@ -35,6 +35,8 @@ So, `p->q;r` is parsed exactly the same as the "or" of `p->q` and `r`: Both expr
 As the else-less `p->q` _fails_ if `p` _fails_, this is completely correct: The if-then-else _is_ a composite of the _or_ operator `;/2` 
 operator first, and an additional `->/2` operator second.
 
+![if-then-else as parsed](pics/if_then_else_as_parsed.png)
+
 Define predicates which you can cause to succeed or fail by argument and which have several solutions:
 
 ```
@@ -112,8 +114,6 @@ true.
 ```
 
 etc.
-
-![if-then-else as parsed](pics/if_then_else_as_parsed.png)
 
 **if-then-else as wired up in the [Byrd Box model](../other_notes/about_byrd_box_model)**
 
