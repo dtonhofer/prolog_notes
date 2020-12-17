@@ -2,6 +2,8 @@
 
 These are comments relative to the [page for the `\+` operator](https://eu.swi-prolog.org/pldoc/doc_for?object=(%5C%2B)/1) in the SWI-Prolog manual.
 
+The text needs to be cleaned up...
+
 ## TOC
 
 - [Citations](#citations)
@@ -331,6 +333,13 @@ From [The Free Dictionary](https://www.thefreedictionary.com/floundering), _to f
      
 but it's not a well-chosen vocabulary. In fact, "breakdown of `\+`" would be clearer.
 
+From _"The Art of Prolog"_ 1st ed. p. 166:
+
+> The implementation of negation as failure using the cut-fail combination does not work correctly for nonground
+> goals (...). In most standard implementations of Prolog, it is the responsibility of the programmer to ensure
+> that negated goals are grounded before they are solved. This can be done either by a static analysis of the
+> program, or by a runtime heck, using the predicate _ground_ (...)
+
 In [Logic programming and negation: A survey](https://www.sciencedirect.com/science/article/pii/0743106694900248),
 (Krzysztof R.Apt, Roland N.Bol, 1994), we read:
 
@@ -465,12 +474,62 @@ answer describing the complement of q(X) relative to the domain of p/1, somethin
 setof(X,q(X),Xs), complement(Xs,domain(p/1),Result).
 ```
 
-From _"The Art of Prolog"_ 1st ed. p. 166:
+Or maybe like this:
 
-> The implementation of negation as failure using the cut-fail combination does not work correctly for nonground
-> goals (...). In most standard implementations of Prolog, it is the responsibility of the programmer to ensure
-> that negated goals are grounded before they are solved. This can be done either by a static analysis of the
-> program, or by a runtime heck, using the predicate _ground_ (...)
+```
+q(1).                 
+
+p(X) :- 
+   ground(X),
+   !,
+   \+ q(X). 
+
+p(X) :- 
+   \+ ground(X),
+   !,
+   (not_domain(q/1,Enumerator)
+    -> 
+    (call(Enumerator,C),C=X)    % generate a candidate from the not-domain of q/1 which must unify with X
+    ; 
+    throw("not-domain for q/1 undefined")).
+
+not_domain(q/1,
+   [C]>>(
+      between(1,100,C),
+      \+ q(C))).
+```
+
+Then:
+
+```
+?- p(2).
+true.
+
+?- p(1).
+false.
+
+?- p(X).
+X = 2 ;
+X = 3 ;
+X = 4 ;
+X = 5 
+....
+```
+
+Makes sense, and may be even usable in certain settings. 
+
+We really identify certain domains over which a `q` either
+
+- throws because the argument tuple makes no sense for `q`
+- succeeds the proof / returns true because of positive knowledge about `q`:  truth-value-wise, the argument tuple is in the pre-image of `{true}` for `q`.
+- fails the proof & returns nothing because there is nothing ("default negation"); turned into success with no data by the `\+` operator
+- fails the proof & returns nothing because there is negative knowlegde about `q`:  truth-value-wise,
+  the argument tuple is in the pre-image of `{false}` for `q`; turned into success with no data by the `\+` operator; this is the case where a
+  a query for an `X` such that `\+ q(X)` makes sense.
+    
+Sadly the two last cases are indistinguishable in Prolog. Failure of establishing is a proof is just ... failure.  
+
+![domains of negation](pics/domains_of_negation.png)
 
 ## Using "double negation"<a name="double_negation"></a>
 
