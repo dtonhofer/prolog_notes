@@ -124,28 +124,36 @@ The _mode indicators_ are as follows (text from [Notation of Predicate Descripti
 `member/2` can be used as a generic example of a backtrackable predicate.
 
 ```
-?- findall(X,member(X,[1,2,3]),Bag).
+?- 
+findall(X,member(X,[1,2,3]),Bag).
+
 Bag = [1, 2, 3].
 ```
 
 The bag is not a set, and it preserves the order of the generated solutions:
 
 ```
-?- findall(X,member(X,[3,2,1,3,2,1]),Bag).
+?- 
+findall(X,member(X,[3,2,1,3,2,1]),Bag).
+
 Bag = [3, 2, 1, 3, 2, 1].
 ```
 
 The generated solution need not have to do anything with the goal:
 
 ```
-?- findall(true,member(X,[1,2,3]),Bag).
+?- 
+findall(true,member(X,[1,2,3]),Bag).
+
 Bag = [true, true, true].
 ```
 
 The generated solution need can be some complex term based on the goal:
 
 ```
-?- findall(found(X,Y),(member(X,[1,2]),member(Y,[3,4])),Bag).
+?- 
+findall(found(X,Y),(member(X,[1,2]),member(Y,[3,4])),Bag).
+
 Bag = [found(1, 3), found(1, 4), found(2, 3), found(2, 4)].
 ```
 
@@ -158,14 +166,18 @@ subgoal(found(X,Y)) :- member(X,[1,2]),member(Y,[3,4]).
 Then:
 
 ```
-?- findall(F,subgoal(F),Bag).
+?- 
+findall(F,subgoal(F),Bag).
+
 Bag = [found(1, 3), found(1, 4), found(2, 3), found(2, 4)].
 ```
 
 which gives you the great advantage that you can call the subgoal separately:
 
 ```
-?- subgoal(F).
+?- 
+subgoal(F).
+
 F = found(1, 3) ;
 F = found(1, 4) ;
 F = found(2, 3) ;
@@ -177,7 +189,9 @@ F = found(2, 4).
 Writing
 
 ```
-?- findall(X,member(X,[1,2,3]),X).
+?- 
+findall(X,member(X,[1,2,3]),X).
+
 X = [1, 2, 3].
 ```
 
@@ -215,20 +229,28 @@ In "The Craft of Prolog", Richard O'Keefe writes on page 363 (Chapter 11.6: "fin
 `bagof/3` and also `setof/3` **fail** if there are no solutions for the subgoal:
 
 ```
-?- bagof(X,member(X,[]),Bag).
+?- 
+bagof(X,member(X,[]),Bag).
+
 false.
 
-?- bagof(X,(between(1,10,X),X<0),Bag).
+?- 
+bagof(X,(between(1,10,X),X<0),Bag).
+
 false.
 ```
 
 Unlike the above `findall/3` **succeeds with an empty Bag** if there is no solutions:
 
 ```
-?- findall(X,member(X,[]),Bag).
+?- 
+findall(X,member(X,[]),Bag).
+
 Bag = [].
 
-?- findall(X,(between(1,10,X),X<0),Bag).
+?- 
+findall(X,(between(1,10,X),X<0),Bag).
+
 Bag = [].
 ```
 
@@ -263,17 +285,23 @@ findall_which_fails(Bag,M) :- findall(X,(foo(X),X>M),Bag), Bag \== [].
 Then:
 
 ```
-?- findall_which_fails(Bag,0).
+?- 
+findall_which_fails(Bag,0).
+
 Called 1
 Called 2
 Bag = [1, 2].
 
-?- findall_which_fails(Bag,1).
+?- 
+findall_which_fails(Bag,1).
+
 Called 1
 Called 2
 Bag = [2].
 
-?- findall_which_fails(Bag,3).
+?- 
+findall_which_fails(Bag,3).
+
 Called 1
 Called 2
 false.
@@ -288,7 +316,9 @@ This behaviour is according to ISO standard specification.
 (and is also indicated by the mode indicator `-` of the third parameter, maybe? not sure here).
 
 ```
-?- findall(X,(between(0,4,X),format("Found ~q\n",[X])),Bag).
+?- 
+findall(X,(between(0,4,X),format("Found ~q\n",[X])),Bag).
+
 Found 0
 Found 1
 Found 2
@@ -305,14 +335,18 @@ Here we give it a `Bag` of 5 fresh variables to fill with solutions from a `Goal
 `findall/3` does not care and goes on ... forever! Even thought it _does_ have the information that it _could_ stop at the 6th solution.
 
 ```
-?- findall(X,between(0,inf,X),[A0,A1,A2,A3,A4]).
+?- 
+findall(X,between(0,inf,X),[A0,A1,A2,A3,A4]).
+
 ERROR: Stack limit (1.0Gb) exceeded
 ```
 
 Similarly, if `Bag` is too small or too large, `findall/3` will collect all subgoal solutions, and then fail at unifying those with `Bag`:
 
 ```
-?- findall(X,(between(0,4,X),format("Found ~q\n",[X])),[A0,A1,A2]).
+?- 
+findall(X,(between(0,4,X),format("Found ~q\n",[X])),[A0,A1,A2]).
+
 Found 0
 Found 1
 Found 2
@@ -320,7 +354,9 @@ Found 3
 Found 4
 false.
 
-?- findall(X,(between(0,4,X),format("Found ~q\n",[X])),[A0,A1,A2,A3,A4,A5,A6,A7,A8,A9]).
+?- 
+findall(X,(between(0,4,X),format("Found ~q\n",[X])),[A0,A1,A2,A3,A4,A5,A6,A7,A8,A9]).
+
 Found 0
 Found 1
 Found 2
@@ -332,7 +368,9 @@ false.
 Similarly, if the `Bag` may fit but be non-unifiable in the end:
 
 ```
-?- findall(X,(between(0,4,X),format("Found ~q\n",[X])),[A0,A1,A2,A3,A4]).
+?- 
+findall(X,(between(0,4,X),format("Found ~q\n",[X])),[A0,A1,A2,A3,A4]).
+
 Found 0
 Found 1
 Found 2
@@ -344,7 +382,9 @@ A2 = 2,
 A3 = 3,
 A4 = 4.
 
-?- findall(X,(between(0,4,X),format("Found ~q\n",[X])),[A0,0,0,0,A4]).
+?- 
+findall(X,(between(0,4,X),format("Found ~q\n",[X])),[A0,0,0,0,A4]).
+
 Found 0
 Found 1
 Found 2
@@ -376,10 +416,14 @@ Edge case: `findall/3` accepts a non-list `Bag` instead of throwing a type error
 Might be useful to fix that. In the first case below, the unification fails trivially, in the second, it loops forever:
 
 ```
-?- findall(X,between(0,4,X),1).
+?- 
+findall(X,between(0,4,X),1).
+
 false.
 
-?- findall(X,between(0,inf,X),1).
+?- 
+findall(X,between(0,inf,X),1).
+
 ERROR: Stack limit (1.0Gb) exceeded
 ```
 
@@ -402,7 +446,9 @@ f(d,2).
 With `bagof/3`: 
 
 ```
-?- bagof(X,f(X,Y),Bag).
+?- 
+bagof(X,f(X,Y),Bag).
+
 Y = 1,
 Bag = [a, b] ;
 Y = 2,
@@ -429,7 +475,9 @@ f(d,2).
 f(c,2).
 f(b,1).
 
-?- bagof(X,f(X,Y),Bag).
+?- 
+bagof(X,f(X,Y),Bag).
+
 Y = 1,
 Bag = [a, b] ;
 Y = 2,
@@ -446,7 +494,9 @@ by "existentially quantifying Y" with `Y^`, thus separating it from any connecti
 With the same database:
 
 ```
-?- bagof(X,Y^f(X,Y),Bag).
+?- 
+bagof(X,Y^f(X,Y),Bag).
+
 Bag = [a, b, c, d].
 ```
 
@@ -459,7 +509,9 @@ This is the same as de-inlining the inner goal like this:
 ```
 subgoal(X) :- f(X,_).
 
-?- bagof(X,subgoal(X),Bag).
+?- 
+bagof(X,subgoal(X),Bag).
+
 Bag = [a, b, c, d].
 ```
 
@@ -469,7 +521,9 @@ However, if `Y` is bound prior to call to `bagof/3`, the existential quantificat
 This is frankly unexpected and IMHO, should not be handled like this:
 
 ```
-?- Y=2,bagof(X,Y^f(X,Y),Bag).
+?- 
+Y=2,bagof(X,Y^f(X,Y),Bag).
+
 Y = 2,
 Bag = [c, d].
 ```
@@ -481,7 +535,9 @@ The value to which `Y` is bound is visble in the subgoal.
 #### _findall/3_ always behaves like the "existentially quantified" _bagof/3_<a name="findall_always_behaves_like_an_existentially_quantified_bagof"></a>
 
 ```
-?- findall(X,f(X,Y),Bag).
+?- 
+findall(X,f(X,Y),Bag).
+
 Bag = [a, b, c, d].
 ```
 
@@ -491,7 +547,9 @@ The same phenomenon as for `bagof/3` occurs if a variable is bound before the ca
 muddies the water) 
 
 ```
-?- Y=2,findall(X,f(X,Y),Bag).
+?- 
+Y=2,findall(X,f(X,Y),Bag).
+
 Y = 2,
 Bag = [c, d].
 ```
@@ -504,7 +562,9 @@ Note that if the `findall/3` subgoal emits variables, these are not the same var
 Those in `Bag` are fresh, they denote different empty cells in memory.
 
 ```
-?- findall(X,member(X,[A,B,C]),Bag). 
+?- 
+findall(X,member(X,[A,B,C]),Bag). 
+
 Bag = [_26582, _26576, _26570].         % The solution contains fresh variables, not A,B,C
 ```
 
@@ -515,7 +575,9 @@ subgoal_p(X,L) :-
    member(X,L),
    format("X is now ~q\n",[X]).
    
-?- L=[A,B,C],format("L is now: ~q\n",[L]),findall(X,subgoal_p(X,L),Bag).
+?- 
+L=[A,B,C],format("L is now: ~q\n",[L]),findall(X,subgoal_p(X,L),Bag).
+
 L is now: [_8208,_8214,_8220]    % fresh variables in L
 X is now _8208                   % the fresh variable at L[0] is correctly seen by subgoal_p/2
 X is now _8214                   % the fresh variable at L[0] is correctly seen by subgoal_p/2
@@ -527,7 +589,9 @@ Bag = [_9222, _9216, _9210].     % none of the variables of L is in Bag
 More practical, changing `L` after `findall/3` doesn't change `Bag`:
 
 ```
-?- L=[A,B,C],findall(X,subgoal_p(X,L),Bag),L=[1,2,3].
+?- 
+L=[A,B,C],findall(X,subgoal_p(X,L),Bag),L=[1,2,3].
+
 X is now _14416
 X is now _14422
 X is now _14428
@@ -558,7 +622,9 @@ constrain(X,Y,Z) :-
 Then, without passing the unbound variables in the constraint through a `findall/3` copy&mangle operation:
 
 ```
-?- constrain(X,Y,Z),label([X,Y,Z]).
+?- 
+constrain(X,Y,Z),label([X,Y,Z]).
+
 X = 0,
 Y = 1,
 Z = 2 ;
@@ -576,7 +642,8 @@ Z = 3.
 or, collecting all solutions, actually using  `findall/3` to do that:
 
 ```
-?- constrain(X,Y,Z),findall([X,Y,Z], label([X,Y,Z]), All).
+?- 
+constrain(X,Y,Z),findall([X,Y,Z], label([X,Y,Z]), All).
 
 All = [[0, 1, 2], [0, 1, 3], [0, 2, 3], [1, 2, 3]],  <--- all collected solutions
 X in 0..1,  <--- residual constraints on unlabled X,Y,Z
@@ -597,15 +664,17 @@ Pleasingly, the above **also** works if the variables are first copied via `find
 First, a SWI-Prolog specific item: we want to see the result term printed in full.
 
 ```
-?- set_prolog_flag(answer_write_options,[max_depth(100)]).
+?- 
+set_prolog_flag(answer_write_options,[max_depth(100)]).
 ```
 
 Then:
 
 ```
-?- constrain(X,Y,Z), 
-   findall(K,member(K,[X,Y,Z]),L),  % copy variables into L, creating fresh variables
-   label(L).                        % label the fresh variables
+?- 
+constrain(X,Y,Z), 
+findall(K,member(K,[X,Y,Z]),L),  % copy variables into L, creating fresh variables
+label(L).                        % label the fresh variables
    
 L = [0, 1, 2],   <--- a solution for L
 X in 0..1,       <--- residual constraints on unlabled X,Y,Z
@@ -629,36 +698,38 @@ notation is not resolved (i.e. there is a `write_term/2` somehwere which is not 
 `numbervars(true)`).
 
 ```
-?- constrain(X,Y,Z), 
-   findall(K,member(K,[X,Y,Z]),L),  % copy variables into L, creating fresh variables
-   findall(L, label(L), All).       % label whatever is in L now repeatedly, collecting solutions
+?- 
+constrain(X,Y,Z), 
+findall(K,member(K,[X,Y,Z]),L),  % copy variables into L, creating fresh variables
+findall(L, label(L), All).       % label whatever is in L now repeatedly, collecting solutions
    
 L = [_59552,_59558,_59564],         <--- L has been left a list of unbound variables
 All = [[0,1,2],[0,1,3],             <--- The solutions have been collected in All
        [0,2,2],[0,2,3],
        [1,1,2],[1,1,3],
        [1,2,2],[1,2,3]],
-$VAR(X)in 0..1,                     <--- residual constraints on unlabled X,Y,Z (but with a printing bug)
-$VAR(X)#=< $VAR(Y)+ -1,
-$VAR(Y)in 1..2,
-$VAR(Y)#=< $VAR(Z)+ -1,
-$VAR(Z)in 2..3,
-_59564 in 2..3,                     <--- residual constraints on variables left unused due to copying
-_59930#=<_59564+ -1,
-_59930 in 1..2,
-_59978#=<_59930+ -1,
-_59978 in 0..1,
-_59558 in 1..2,                    
-_59558#=<_60056+ -1,
-_60074#=<_59558+ -1,
-_60056 in 2..3,
-_60074 in 0..1,
-_59552 in 0..1,                    
-_59552#=<_60176+ -1,
-_60176 in 1..2,
-_60176#=<_60224+ -1,
-_60224 in 2..3.
+X in 0..1,                          <--- residual constraints on unlabled X,Y,Z
+X#=<Y+ -1,
+Y in 1..2,
+Y#=<Z+ -1,
+Z in 2..3,
+_18648 in 2..3,                     <--- residual constraints on variables left unused due to copying
+_19014#=<_18648+ -1,
+_19014 in 1..2,
+_19062#=<_19014+ -1,
+_19062 in 0..1,
+_18642 in 1..2,
+_18642#=<_19140+ -1,
+_19158#=<_18642+ -1,
+_19140 in 2..3,
+_19158 in 0..1,
+_18636 in 0..1,
+_18636#=<_19260+ -1,
+_19260 in 1..2,
+_19260#=<_19308+ -1,
+_19308 in 2..3.
 ```
+
 ### Will variable attributes be retained?<a name="will_variable_attributes_be_retained"></a>
 
 As constraints are retained, it is not surprising that unbound variable attributes are retained, too (see []()) 
@@ -670,12 +741,15 @@ Consider the example code for setting an getting an attribute holding a list of 
 Let's load the above file and see:
 
 ```
-?- ['enum_domain.pl'].
+?- 
+['enum_domain.pl'].
+
 true.
 
-?- enum_domain_set(X, [foo,bar,baz], set), 
-   findall(K,member(K,[X]),[FreshX]) , 
-   enum_domain_get(FreshX, L).
+?- 
+enum_domain_set(X, [foo,bar,baz], set), 
+findall(K,member(K,[X]),[FreshX]) , 
+enum_domain_get(FreshX, L).
    
 L = [bar, baz, foo],                   <--- the attribute is there on the fresh variable
 enum_domain(X, bar, baz, foo),         <--- residual attributes are printed out
@@ -685,9 +759,11 @@ enum_domain(FreshX, bar, baz, foo).
 A direct test: set the variable to a value not in the domain.
 
 ```
-?- enum_domain_set(X, [foo,bar,baz], set), 
-   findall(K,member(K,[X]),[FreshX]) , 
-   FreshX = notallowed.
+?- 
+enum_domain_set(X, [foo,bar,baz], set), 
+findall(K,member(K,[X]),[FreshX]) , 
+FreshX = notallowed.
+
 % enum_domain:attr_unify_hook called with ATTV = [bar,baz,foo], PUV = notallowed, attributes(PUV) = none
 % enum_domain:attr_unify_hook fails
 false.
@@ -722,61 +798,91 @@ Then:
 `bagit/2` and `findit/2` have the same problem: they only work correctly if `X` is unbound.
 
 ```
-?- bagit(X,Bag).
+?- 
+bagit(X,Bag).
+
 Bag = [1, 2, 3].
 
-?- bagit(a,Bag).
+?- 
+bagit(a,Bag).
+
 false.
 
-?- bagit(1,Bag).
+?- 
+bagit(1,Bag).
+
 Bag = [1].
 ```
 
 ```
-?- findit(X,Bag).
+?- 
+findit(X,Bag).
+
 Bag = [1, 2, 3].
 
-?- findit(a,Bag).
+?- 
+findit(a,Bag).
+
 Bag = [].
 
-?- findit(1,Bag).
+?- 
+findit(1,Bag).
+
 Bag = [1].
 ```
 
 Using the caret doesn't help:
 
 ```
-?- bagit_caret(X,Bag).
+?- 
+bagit_caret(X,Bag).
+
 Bag = [1, 2, 3].
 
-?- bagit_caret(a,Bag).
+?- 
+bagit_caret(a,Bag).
+
 false.
 
-?- bagit_caret(1,Bag).
+?- 
+bagit_caret(1,Bag).
+
 Bag = [1].
 ```
 
 Only isolation works:
 
 ```
-?- bagit_solid(X,Bag).
+?- 
+bagit_solid(X,Bag).
+
 Bag = [1, 2, 3].
 
-?- bagit_solid(a,Bag).
+?- 
+bagit_solid(a,Bag).
+
 Bag = [1, 2, 3].
 
-?- bagit_solid(1,Bag).
+?- 
+bagit_solid(1,Bag).
+
 Bag = [1, 2, 3].
 ```
 
 ```
-?- findit_solid(X,Bag).
+?- 
+findit_solid(X,Bag).
+
 Bag = [1, 2, 3].
 
-?- findit_solid(a,Bag).
+?- 
+findit_solid(a,Bag).
+
 Bag = [1, 2, 3].
 
-?- findit_solid(1,Bag).
+?- 
+findit_solid(1,Bag).
+
 Bag = [1, 2, 3].
 ```
 
@@ -796,10 +902,14 @@ another_not(Goal) :- findall(., Goal, []).
 Then:
 
 ```
-?- another_not(false).
+?- 
+another_not(false).
+
 true.
 
-?- another_not(true).
+?- 
+another_not(true).
+
 false.
 ```
 
@@ -812,10 +922,14 @@ another_var(X) :- findall(_, (X=a; X=b), [_,_]).
 ```
 
 ```
-?- another_var(X).
+?- 
+another_var(X).
+
 true.
 
-?- another_var(foo).
+?- 
+another_var(foo).
+
 false.
 ```
 
@@ -834,18 +948,26 @@ another_var(X,[U,V]) :- findall(_, ((X=a,write("unif(a)\n")); (X=b,write("unif(b
 Then:
 
 ```
-?- another_var(foo,[U,V]).
+?- 
+another_var(foo,[U,V]).
+
 false.
 
-?- another_var(a,[U,V]).
+?- 
+another_var(a,[U,V]).
+
 unif(a)
 false.
 
-?- another_var(b,[U,V]).
+?- 
+another_var(b,[U,V]).
+
 unif(b)
 false.
 
-?- another_var(X,[U,V]).
+?- 
+another_var(X,[U,V]).
+
 unif(a)
 unif(b)
 U = a,
