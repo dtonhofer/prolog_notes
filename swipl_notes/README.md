@@ -1,13 +1,58 @@
 # Notes regarding various elements of Prolog / SWI-Prolog
 
+## Note on how code is shown
+
 In all cases, examples to be entered on the command line are written with a preceding `?-` on a dedicated line.
 This avoid having to deploy precise motor skills to capture the part of the text one wants to copy-paste.
 The command is separated from the following output by a single line.
 
-Sadly, there is no special markup for code that should be entered in `[user].` mode (nor is there a special
-way to tell prolog that the it should consider incoming text as a program. A surrounding `[user] .... [/user]` would be nice).
+```none
+?- 
+findall(found(X,Y),(member(X,[1,2]),member(Y,[3,4])),Bag).
 
-Based on the SWI-Prolog manual:
+Bag = [found(1, 3), found(1, 4), found(2, 3), found(2, 4)].
+```
+
+Sadly, there is no special markup for code that should be entered in `[user].` mode. Nnor is there a special
+way to tell prolog that the it should consider incoming text as a program. A surrounding `[user/] .... [/user]` would be nice. Maybe.
+
+The coloring used for code markup is consistently set to "none". It's the least distracting.
+
+Using "logtalk" coloring:
+
+```logtalk
+% Logtalk coloring X=2
+/* Logtalk coloring */
+findall(found(X,Y),(member(X,[1,2]),member(Y,[3,4])),Bag).
+```
+
+Using "prolog" coloring:
+
+```prolog
+% Prolog coloring X=2
+/* Prolog coloring */
+findall(found(X,Y),(member(X,[1,2]),member(Y,[3,4])),Bag).
+```
+
+Using "erlang" coloring:
+
+```erlang
+% Erlang coloring X=2
+/* Erlang coloring */
+findall(found(X,Y),(member(X,[1,2]),member(Y,[3,4])),Bag).
+```
+
+Using "none" coloring:
+
+```none
+% None coloring X=2
+/* None coloring */
+findall(found(X,Y),(member(X,[1,2]),member(Y,[3,4])),Bag).
+```
+
+## Pages reviewed so far
+
+Listed based on the entry in the SWI-Prolog manual:
 
 - [`between/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=between/3)
    - [Notes about `between/3`](about_between/), includes code for `between_with_step/4` and `between_x/3` 
