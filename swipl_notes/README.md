@@ -1,6 +1,13 @@
 # Notes regarding various elements of Prolog / SWI-Prolog
 
-Based on the SWI-Prolog manual
+In all cases, examples to be entered on the command line are written with a preceding `?-` on a dedicated line.
+This avoid having to deploy precise motor skills to capture the part of the text one wants to copy-paste.
+The command is separated from the following output by a single line.
+
+Sadly, there is no special markup for code that should be entered in `[user].` mode (nor is there a special
+way to tell prolog that the it should consider incoming text as a program. A surrounding `[user] .... [/user]` would be nice).
+
+Based on the SWI-Prolog manual:
 
 - [`between/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=between/3)
    - [Notes about `between/3`](about_between/), includes code for `between_with_step/4` and `between_x/3` 
