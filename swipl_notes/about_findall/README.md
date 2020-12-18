@@ -23,7 +23,7 @@ _This is companion information to the SWI-Prolog manual page of the [`findall/3`
    - [Will variable attributes be retained?](#will_variable_attributes_be_retained)
 - [Beware the reuse of variable names<a name](#beware_the_reuse_of_variable_names)
 - [Unkosher usage](#unkosher_usage)
-   - [Construct _\+_](#construct_naf_operator)
+   - [Construct _\\+_](#construct_naf_operator)
    - [Construct _var/1_](#construct_var)
 - [Some notes on history](#some_notes_on_history)
    - [Excerpt from _"Higher-order extensions to PROLOG: are they needed?"_ by David Warren](#excerpt_hoe_prolog)
@@ -784,7 +784,7 @@ Bag = [1, 2, 3].
 
 Via Peter Ludemann:
 
-### Construct _\+_<a name="construct_naf_operator"></a>
+### Construct _\\+_<a name="construct_naf_operator"></a>
 
 Using the fact that the Bag of `findall/3` is unified with the empty list if its Goal fails, we can 
 implement a `findall/3`-based version of the (non-logical) negation-as-failure:
