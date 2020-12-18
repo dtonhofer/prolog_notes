@@ -953,7 +953,7 @@ In _"Negation and Control in Prolog"_ (1985), on page 12, Lee Naish lists implem
 > This is provided in DEC-10 PROLOG \[Bowen 82: "DECSystem-10 Prolog User's Manual"\] and has the convention for declaring local
 > variables we have adopted for _solutions_. Like _all_, _bagof_ falls if there are no solutions to the goal.
 > 
-> **Setof**: 
+> **Setof** 
 > 
 > _Setof_ \[Warren 82: "Higher-Order Extensions to Prolog: Are They Needed?"\] is the same as _bagof_ except
 > that the list of solutions is sorted and duplicates are removed. Unlike _all_, the most general solutions are retained.
