@@ -2,7 +2,35 @@
 
 _This is companion information to the SWI-Prolog manual page of the [`findall/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=findall/3) predicate._
 
-## _findall/3_ is somewhat problematic!
+## TOC
+
+- [_findall/3_ is somewhat problematic!](#findall_is_somewhat_problematic)
+   - [Intro](#intro)
+   - [Where to find explainers](#where_to_find_explainers)
+- [Some examples for _findall/3_](#some_examples_for_findall)
+   - [Standard behaviour](#standard_behaviour)
+   - [Bad style warning](#bad_style_warning)
+   - [What if there is no solution for the subgoal?](#what_if_there_is_no_solution_for_a_subgoal)
+   - [_findall/3_ always generates all solutions of subgoal, irrespective of the size of _Bag_](#findall_doesnt_care_about_bagsize)
+   - [Edge case: bad _Bag_](#edge_case_bad_bag)
+   - [_findall/3_ has no "caret syntax" to existentially quantify variables](#findall_has_no_caret_syntax)
+      - [_bagof/3_ without caret](#bagof_without_caret)
+      - [_bagof/3_ with caret](#bagof_with_caret)
+      - [_bagof/3_ with ineffective caret](#bagof_with_ineffective_caret)
+      - [_findall/3_ always behaves like the "existentially quantified" _bagof/3_](#findall_always_behaves_like_an_existentially_quantified_bagof)
+- [Beware the copying of unbound variables](#beware_the_copying_of_unbound_variables)
+   - [Will constraints be retained?](#will_constraints_be_retained)
+   - [Will variable attributes be retained?](#will_variable_attributes_be_retained)
+- [Beware the reuse of variable names<a name](#beware_the_reuse_of_variable_names)
+- [Unkosher usage](#unkosher_usage)
+   - [Construct _\+_](#construct_naf_operator)
+   - [Construct _var/1_](#construct_var)
+- [Some notes on history](#some_notes_on_history)
+   - [Excerpt from _"Higher-order extensions to PROLOG: are they needed?"_ by David Warren](#excerpt_hoe_prolog)
+   - [Excerpt from _"Negation and Control in Prolog"_ by Lee Naish](#excerpt_negationa_and_control_in_prolog)
+
+
+## _findall/3_ is somewhat problematic!<a name="findall_is_somewhat_problematic"></a>
 
 This predicate has been behaving non-declaratively for at least 35 years (i.e. at least since Lee Naish wrote
 "Negation and Control in Prolog" in 1985 - reference at the end of this page). It still made it into the
@@ -10,7 +38,7 @@ ISO Standard of 1995. Shouldn't it be deprecated?
 
 Note that it _does_ work with unbound variables that have constraints or attributes, at least in SWI Prolog. See "Will constraints be retained?" below.
 
-## Intro
+## Intro<a name="intro"></a>
 
 `findall/3` is one of the traditional "all-solution predicates" (which are "higher-order predicates" aka "metapredicates"),
 There are:
@@ -20,7 +48,7 @@ There are:
 - [`bagof/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=bagof/3) (via Edinburgh Prolog)
 - [`findall/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=findall/4) (which is `findall/3` using a difference list, so you can perform "stream processing" on an _open list_ from which one continuously reads at the front and appends at the end)
 
-## Where to find explainers
+## Where to find explainers<a name="where_to_find_explainers"></a>
 
 **Programming in Prolog**, William Clocksin and Christopher Mellish, **2003**, 1st edition **1981**, Springer Verlag;
 
@@ -78,11 +106,7 @@ The chapter starts with:
 
 That's excessively obscure, although it _is_ followed by a pseudocode description. It's all "operational semantics" though.
 
-## Notes on history
-
-See at the end of this page.
-
-## Some examples for findall/3
+## Some examples for _findall/3_<a name="some_examples_for_findall"></a>
 
 In the following text, parameter names shall be given by `findall(+Template, :Goal, -Bag)` 
 
@@ -95,7 +119,7 @@ The _mode indicators_ are as follows (text from [Notation of Predicate Descripti
 - `-`	"Argument is an output argument. It may or may not be bound at call-time. If the argument is bound at call time,
       the goal behaves as if the argument were unbound, and then unified with that term after the goal succeeds. This is what is called being _steadfast_".
 
-### Standard behaviour
+### Standard behaviour<a name="standard_behaviour"></a>
 
 `member/2` can be used as a generic example of a backtrackable predicate.
 
@@ -148,7 +172,7 @@ F = found(2, 3) ;
 F = found(2, 4).
 ```
 
-### Bad style warning
+### Bad style warning<a name="bad_style_warning"></a>
 
 Writing
 
@@ -186,7 +210,7 @@ In "The Craft of Prolog", Richard O'Keefe writes on page 363 (Chapter 11.6: "fin
 > in the goal unbound at the end of the day, so does findall/3 leave every variable in the Template
 > or Enumerator unbound after it has finished.
 
-### What if there is no solution for the subgoal?
+### What if there is no solution for the subgoal?<a name="what_if_there_is_no_solution_for_a_subgoal"></a>
 
 `bagof/3` and also `setof/3` **fail** if there are no solutions for the subgoal:
 
@@ -255,7 +279,7 @@ Called 2
 false.
 ```
 
-### findall/3 always generates all solutions of subgoal, irrespective of the size of Bag
+### _findall/3_ always generates all solutions of subgoal, irrespective of the size of _Bag_<a name="findall_doesnt_care_about_bagsize"></a>
 
 Generally one passes a `Bag` that is an unbound variable. `findall/3` will then
 unify `Bag` with the list of solutions collected once the collection is done. 
@@ -346,7 +370,7 @@ more solutions if the `Bag` turns out to be too small after all. To your editors
  that with a not-full-unbound/possibly ground term afterwards. Update: 'steadfastness' apparently has a slightly
  different meaning than what I thought .. to be reviewed!)
 
-### Edge case: bad bag
+### Edge case: bad _Bag_<a name="edge_case_bad_bag"></a>
 
 Edge case: `findall/3` accepts a non-list `Bag` instead of throwing a type error.
 Might be useful to fix that. In the first case below, the unification fails trivially, in the second, it loops forever:
@@ -359,7 +383,7 @@ false.
 ERROR: Stack limit (1.0Gb) exceeded
 ```
 
-### findall/3 has no "caret syntax" to existentially quantify variables
+### _findall/3_ has no "caret syntax" to existentially quantify variables<a name="findall_has_no_caret_syntax"></a>
 
 `findall/3` does not have a special syntax to indicate which variables in `Goal`
 should be "shielded off" (existentially quantified) from the namespace of variables existing outside of `Goal`. 
@@ -373,7 +397,7 @@ f(c,2).
 f(d,2).
 ```
 
-**`bagof/3` without caret**
+#### _bagof/3_ without caret<a name="bagof_without_caret"></a>
 
 With `bagof/3`: 
 
@@ -414,7 +438,7 @@ Bag = [d, c].
 
 (Not sure how this is done though).
 
-**`bagof/3` with caret**
+#### _bagof/3_ with caret<a name="bagof_with_caret"></a>
 
 **Conversely**, you can tell bagof/3 to _internally_ backtrack over `Y`,
 by "existentially quantifying Y" with `Y^`, thus separating it from any connection to a namespace outside of the inner goal:
@@ -439,7 +463,7 @@ subgoal(X) :- f(X,_).
 Bag = [a, b, c, d].
 ```
 
-**`bagof/3` with ineffective caret**
+#### _bagof/3_ with ineffective caret<a name="bagof_with_ineffective_caret"></a>
 
 However, if `Y` is bound prior to call to `bagof/3`, the existential quantification of `Y` by a `Y^` might as well not exist.
 This is frankly unexpected and IMHO, should not be handled like this:
@@ -454,7 +478,7 @@ Bag = [c, d].
 
 The value to which `Y` is bound is visble in the subgoal.
 
-**`findall/3` always behaves like the "existentially quantified" `bagof/3`**
+#### _findall/3_ always behaves like the "existentially quantified" _bagof/3_<a name="findall_always_behaves_like_an_existentially_quantified_bagof"></a>
 
 ```
 ?- findall(X,f(X,Y),Bag).
@@ -474,7 +498,7 @@ Bag = [c, d].
 
 > the sequence of `(Y,Bag)` such that : `Y` == 2 and `Bag` is the sequence of `X` such that : `f(X,Y)` is true
 
-## Beware the copying of unbound variables
+## Beware the copying of unbound variables<a name="beware_the_copying_of_unbound_variables"></a>
 
 Note that if the `findall/3` subgoal emits variables, these are not the same variables as those that can be found in `Bag`.
 Those in `Bag` are fresh, they denote different empty cells in memory.
@@ -516,7 +540,7 @@ Bag = [_15438, _15432, _15426].
 
 You cannot transparently "look for variables" that way.
 
-### Will constraints be retained? 
+### Will constraints be retained?<a name="will_constraints_be_retained"></a> 
 
 _The following has been tested in SWI-Prolog 8.3. Other Prologs may differ. In particular, SICStus seems to drop the constraints on copied variables._
 
@@ -635,7 +659,7 @@ _60176 in 1..2,
 _60176#=<_60224+ -1,
 _60224 in 2..3.
 ```
-## Will variable attributes be retained?
+### Will variable attributes be retained?<a name="will_variable_attributes_be_retained"></a>
 
 As constraints are retained, it is not surprising that unbound variable attributes are retained, too (see []()) 
 
@@ -671,7 +695,7 @@ false.
 
 Excellent.
 
-## Beware the reuse of variable names
+## Beware the reuse of variable names<a name="beware_the_reuse_of_variable_names"></a>
 
 This has been discussed above, but to reiterate:
 
@@ -756,11 +780,11 @@ Bag = [1, 2, 3].
 Bag = [1, 2, 3].
 ```
 
-## Uncommon usage
+## Unkosher usage<a name="unkosher_usage"></a>
 
 Via Peter Ludemann:
 
-### Construct `\+`
+### Construct _\+_<a name="construct_naf_operator"></a>
 
 Using the fact that the Bag of `findall/3` is unified with the empty list if its Goal fails, we can 
 implement a `findall/3`-based version of the (non-logical) negation-as-failure:
@@ -779,7 +803,7 @@ true.
 false.
 ```
 
-### Construct `var/1`
+### Construct _var/1_<a name="construct_var"></a>
 
 Remember that `var/1` asks whether the argument is an unbound variable at call time (it's not logic, it's a question about the state of the computation, and it should have been called `unbound/1`):
 
@@ -856,7 +880,7 @@ This phenomenon is discussed in "Negation and Control in Prolog" by Lee Naish, 1
 
 Rather disconcertingly, this is still the case 35 years later.
 
-## Some notes on history
+## Some notes on history<a name="some_notes_on_history"></a>
 
 - 1978: The "User's Guide to DECSystem-10 Prolog" (Luis Moniz Pereira, Fernando Pereira, David Warren - October 1978)
   ([PDF](https://userweb.fct.unl.pt/~lmp/publications/online-papers/USER%20GUIDE%20TO%20DECSYSTEM-10%20PROLOG.pdf))
@@ -871,7 +895,9 @@ Rather disconcertingly, this is still the case 35 years later.
   ([PDF](http://www.softwarepreservation.org/projects/prolog/edinburgh/doc/CPrologUMV1.2.pdf)) 
   lists `bagof/3` and `setof/3` but not `findall/3`.
   
-In "Higher-order extensions to PROLOG: are they needed?" David Warren writes:
+### Excerpt from _"Higher-order extensions to PROLOG: are they needed?"_ by David Warren<a name="excerpt_hoe_prolog"></a>
+
+In _"Higher-order extensions to PROLOG: are they needed?"_ (1982) David Warren writes:
 
 > I believe it is possible to replace these ad hoc solutions with a single more
 > principled extension to PROLOG, which preserves the "declarative" aspect of
@@ -892,7 +918,9 @@ In "Higher-order extensions to PROLOG: are they needed?" David Warren writes:
 > containing such variables. The set `S` is represented as a list whose elements are
 > sorted into a standard order, without any duplicates.
 
-In "Negation and Control in Prolog", on page 12, Lee Naish lists implementations of "collection predicates" that existed in 1985:
+### Excerpt from _"Negation and Control in Prolog"_ by Lee Naish<a name="excerpt_negationa_and_control_in_prolog"></a>
+
+In _"Negation and Control in Prolog"_ (1985), on page 12, Lee Naish lists implementations of "collection predicates" that existed at that time:
 
 > **1.7.2.3. Implementations**
 > 
