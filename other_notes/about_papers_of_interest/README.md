@@ -71,6 +71,8 @@ If the paper is directly downloadable, a link is given.
    - Lee Naish, Harold Sondergaard
 - 2015-01 [**The sad state concerning the relationships between Logic, Rules and Logic Programming**](http://via.aayo.ws/nrGeX) 
    - Robert Kowalski
+- 2015-02 [**An Elementary Prolog Library - DRAFT 19, February 2015**](http://www.cs.otago.ac.nz/staffpriv/ok/pllib.htm)
+   - Richard O'Keefe
 - 2015-10 [**The Inductive Constraint Programming Loop**](https://arxiv.org/abs/1510.03317)
    - Christian Bessiere, Luc De Raedt, Tias Guns, Lars Kotthoff, Mirco Nanni, Siegfried Nijssen, Barry O'Sullivan, Anastasia Paparrizou, Dino Pedreschi, Helmut Simonis
    - Appears in modified form in _IEEE Intelligent Systems_, September/October 2017.
