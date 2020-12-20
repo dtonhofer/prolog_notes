@@ -19,7 +19,8 @@
    - [Computing a function of 1 variable](#compute_function_of_1_variable)
    - [Testing" or "Accepting" a relation between the pairwise elements of two lists](#accepting_pairwise_relation)
    - [Tagging of list elements](#tagging_of_list_elements)
-
+   - [An exercise from Stack Overflow](#exercise_from_stackoverflow)
+   
 ## About<a name="about"></a>
 
 Here we list a few examples for the predicate [`maplist/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/3) 
@@ -635,7 +636,7 @@ ListOut = [1,2,3,4,5,6].
 
 A special case of "applying a function to list items" is _tagging_: adorning terms with functions symbols,
 or removing the function symbols. This is done to allow better pattern matching during execution, or
-carry additional information about a given term, e.g. whether it's indeed an integer.
+carry additional information about a given term, e.g. whether it's indeed an integer (See also: [Prolog Data Structures: Clean vs. defaulty representations](https://www.metalevel.at/prolog/data) at metalevel.at)
 
 Define:
 
@@ -658,74 +659,56 @@ list_taggger([1,foo,bar,3.04,X],TaggedList).
 TaggedList = [int(1), atom(foo), atom(bar), other(3.04), var(X)].
 ```
 
+Consider a predicate which has no unifiable/matchable information about what it is given.
+All the clauses need to be tried in order until one with an accepting guard is found.
+This is slow. All the clauses need to be cut lest they match again against the default, the last clause.
+This is pretty ugly:
 
-## REVIEW TILL HERE ##
-
-
-**Here is a less simply example**
-
-```logtalk
-% This is a "defaulty" representation. There is no way to distinguish the cases by
-% looking at the head if the second argument is fresh. A test must be made in the body.
-% That's slow! Note the `!` to commit to the selected branch. 
-
-tag_it(X,int(X))    :- integer(X),!.
-tag_it(X,string(X)) :- string(X),!.
-tag_it(X,fresh(X))  :- var(X),!.
-tag_it(X,atom(X))   :- atom(X),!.
-tag_it(X,alien(X)).
-
-% Once a term has been tagged, the correct clause for `process/1` can be chosen at once.
-% That's fast!
-
-process(int(X),Y)    :- format("[integer ~q]",[X]), Y is 2*X.
-process(string(X),Y) :- format("[string ~q]",[X]), string_concat(X,X,Y).
-process(fresh(X),Y)  :- format("[fresh variable ~q]",[X]), Y = [X,X].
-process(atom(X),Y)   :- format("[atom ~q]",[X]), atom_concat(X,X,Y).
-process(alien(X),Y)  :- format("[alien ~q]",[X]), with_output_to(string(Y),format("~q~q",[X,X])).
+```none
+process(X) :- integer(X),!,format("integer ~q",[X]).
+process(X) :- var(X),    !,format("unbound variable ~q",[X]).
+process(X) :- atom(X),   !,format("atom ~q",[X]).
+process(X) :- format("something else ~q",[X]).
 ```
 
-And so:
+With tagged representations, this can be transformed into something much clearer. In fact, the term 
+of interest has been wrapped into typing or semantic information against which one can match. 
+The cut can be dropped!
 
-```logtalk
-% Use maplist to tag them and untag them again
-
-?- maplist(tag_it,[1,2,a,V,f(b,g)],Tagged),maplist(process,Tagged,Untagged).
-[integer 1][integer 2][atom a][fresh variable _6590][alien f(b,g)]
-Tagged = [int(1), int(2), atom(a), fresh(V), alien(f(b, g))],
-Untagged = [2, 4, aa, [V, V], "f(b,g)f(b,g)"].
+```none
+process(int(X))   :- format("integer ~q",[X]).
+process(var(X))   :- format("unbound variable ~q",[X]).
+process(atom(X))  :- format("atom ~q",[X]).
+process(other(X)) :- format("something else ~q",[X]).
 ```
 
-### Verifying the contract of predicates
+Sidenote: This becomes even better if one uses the position-independent unification provided by
+SWI-Prolog dicts, to pass several pieces of information: 
 
-As for `maplist/2`, `maplist/3` can be used to check that the caller respects the predicate's
-[contract](https://en.wikipedia.org/wiki/Design_by_contract) . Here is a simple check to make sure
-two lists have the same length. If one of the lists is a fresh variable, it 
-is constrained to a new list with as many fresh variables as are in the other:
-
-```logtalk
-some_predicate(L1, L2) :-
-   ((var(L1),var(L2)) -> fail; true),
-   maplist([_,_]>>true,L1,L2),
-   format("Contract fulfilled on entry!").
+```none
+process(_{type:int,status:verified,val:X})   :- format("verified integer ~q",[X]).
+process(_{type:atom,status:untrusted,val:X}) :- format("untrusted atom ~q",[X]).
 ```
 
-And so:
+Then:
 
-```logtalk
-?- some_predicate(L1,L2).
-false.
+```
+?- 
+process(_{type:int,status:verified,val:6677}).
 
-?- some_predicate(L1,[1,2,3]).
-Contract fulfilled on entry!
-L1 = [_17306, _20144, _20222].
+verified integer 6677
+true.
 
-?- some_predicate([a,b,c],[1,2,3]).
-Contract fulfilled on entry!
+?-
+process(_{type:atom,status:untrusted,val:hacked}).
+
+untrusted atom hacked
 true.
 ```
 
-### An exercise from Stack Overflow
+Sadly, such matching must always fully match the keys of the in-head dict and the argument dict. At least for now.
+
+### An exercise from Stack Overflow<a name="exercise_from_stackoverflow"></a>
 
 From [How to sum up multiple lists in Prolog](https://stackoverflow.com/questions/64575128/how-to-sum-up-multiple-lists-in-prolog)
 
@@ -734,7 +717,7 @@ Suppose you have a list of (sub)lists of numbers. You want to sum over each (sub
 As done in [TDD](https://en.wikipedia.org/wiki/Test-driven_development), we can write 
 the [`plunit`](https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/plunit.html%27)) test cases first:
 
-```logtalk
+```none
 :- begin_tests(sum_over_sublists).
 
 test("empty list of lists",true(R == [])) :-
@@ -758,7 +741,8 @@ test("standard case #2",true(R == [10,14,18])) :-
 Here, one can apply `maplist/3` to iterate over the the list of (sub)lists. Addition for each sublist is
 performed by [`foldl/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=foldl/4). 
 [`library(yall)`](https://eu.swi-prolog.org/pldoc/man?section=yall)
-notation is used to define new predicates inline.
+notation is used to define new predicates inline. Or you can use [sum_list/2](https://eu.swi-prolog.org/pldoc/man?predicate=sum_list/2),
+if you know that it exists!
 
 For good measure, we also check the passed arguments using [`must_be/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=must_be/2)
 
@@ -801,12 +785,5 @@ p3(AccumIn,X,AccOut) :-
    AccOut is AccumIn + X.
 ```
 
-## TODO: maplist_relax/3
-
-TODO: Write a maplist that can deal with lists of differing length, and stops with success after as many list pairs as possible have been processed. 
-
-Similarly, maplist_relax/3 should not fail in it entirety if the goal fails, but just stop processing. 
-
-(In that case, what happens on backtracking?)
 
 
