@@ -42,5 +42,17 @@ The idea is that if I write a predicate `foo` that will only be ever called as a
 `bar`, then I want to make it only visible in the immediate vicinity of `foo`, which is to say "attach it to `foo`.
 Local namespaces or maybe a special syntax for predicate names (`bar.foo` maybe?) could help.
 
+Another idea is that one might define a predicate directly inside some other predicate, overriding any predicate with the same
+name defined "outside".
 
+like define a predicate directly inside another and it's only visible there (and even overrides any outside)
+
+```
+foo(X,Y) :-
+   bar(X,Z),
+   {
+      something(X,Y,Z) :- Z is X*Y.
+   }
+   something(X,Z,Y).
+```
 
