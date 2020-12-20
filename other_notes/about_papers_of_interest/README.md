@@ -2,6 +2,8 @@
 
 If the paper is directly downloadable, a link is given.
 
+## 1980s
+
 - 1984 [**Making Prolog more expressive**](https://core.ac.uk/download/pdf/82550631.pdf)
    - J.W. Lloyd, R.W. Topor
    - Journal of Logic Programming, 1984:3 pp 225-240
@@ -17,7 +19,9 @@ If the paper is directly downloadable, a link is given.
    - With: [Some comments on “a denotational semantics for Prolog”](https://dl.acm.org/doi/abs/10.1145/177492.177605)
       - Bijan Arbab, Daniel M. Berry
       - ACM Transactions on Programming Languages and Systems, May 1994 
-Authors Info & Affiliations 
+
+## 1990s
+
 - 1991-01 [**Applying Techniques to Skeletons**](https://www.researchgate.net/publication/220986744_Applying_Techniques_to_Skeletons)
    - Leon Sterling, Marc Kirschenbaum
 - 1991-02 [**A type system for logic programs**](https://www.sciencedirect.com/science/article/pii/074310669180002U)
@@ -31,8 +35,14 @@ Authors Info & Affiliations
 - 1995 [**leanTAP: Lean Tableau-based Deduction**](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.28.5925)
    - Bernhard Beckert, Joachim Posegga
    - Journal of Automated Reasoning, volume 15, pages 339–358 (1995)
+
+# 2001s
+
 - 2001-04 [**Logic Programming, Functional Programming, and Inductive Definitions**](https://www.researchgate.net/publication/1880293_Logic_Programming_Functional_Programming_and_Inductive_Definitions) 
    - Lawrence Paulson, Andrew W. Smith
+- 2001-06 [**Odd Prolog benchmarking**](http://www.cs.kuleuven.be/publicaties/rapporten/cw/CW312.abs.html)
+   - KU Leuven Technical Report CW 312
+   - B. Demoen, P.-L. Nguyen
 - 2001-10 [**Nominal Logic: A First Order Theory of Names and Binding**](https://www.sciencedirect.com/science/article/pii/S089054010300138X)
    - Andrew M. Pitts
    - Theoretical Aspects of Computer Science, 4th International Symposium, TACS 2001, Sendai, Japan, October 29-31, 2001
@@ -48,6 +58,9 @@ Authors Info & Affiliations
    - _generic programming with the use of strategies_
 - 2009-11 [**Coding Guidelines for Prolog**](https://arxiv.org/abs/0911.2899)
    - Michael A. Covington, Roberto Bagnara, Richard A. O'Keefe, Jan Wielemaker, Simon Price
+
+## 2010s
+
 - 2011 [**Answer Set Programming’s Contributions to Classical Logic**](https://people.cs.kuleuven.be/~marc.denecker/ctc.pdf)
    - Marc Denecker, Joost Vennekens, Hanne Vlaeminck, Johan Wittocx, Maurice Bruynooghe
    - Springer LNAI 6565
@@ -69,6 +82,9 @@ Authors Info & Affiliations
 - 2019-09 [**Prolog Coding Guidelines: Status and Tool Support**](https://arxiv.org/abs/1909.08230v1) 
    - Falco Nogatz, Philipp Körner, Seastuan Krings
    - ICLP 2019
+   
+## 2020s
+
 - 2020-01 [**Drawing Prolog Search Trees. A Manual for Teachers and Students of Logic Programming**](https://arxiv.org/abs/2001.08133v1)
    - Johan Bos
 - 2020-08 [**Effectiveness of Annotation-Based Static Type Inference**](https://arxiv.org/abs/2008.12545)
