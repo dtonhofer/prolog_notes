@@ -25,7 +25,7 @@ The description for [`maplist/4`](https://www.swi-prolog.org/pldoc/doc_for?objec
 
 > `maplist(:Goal, ?List1, ?List2, ?List3)`
 >
->     As maplist/2, operating on triples of elements from three lists.
+> As maplist/2, operating on triples of elements from three lists.
 
 ## Examples
 
