@@ -10,7 +10,7 @@ The pages in the SWI Prolog manual are a bit brief:
 
 At eu.swi-prolog.org:
 
-- `maplist/2` [eu site](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/2), [www site](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/2)
-- `maplist/3` [eu site](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/3), [www site](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/3)
-- `maplist/4` [eu site](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/4), [www site](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/4)
-- `maplist/5` [eu site](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/5), [www site](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/5)
+- `maplist/2` ([eu site](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/2)) ([www site](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/2))
+- `maplist/3` ([eu site](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/3)) ([www site](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/3))
+- `maplist/4` ([eu site](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/4)) ([www site](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/4))
+- `maplist/5` ([eu site](https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/5)) ([www site](https://www.swi-prolog.org/pldoc/doc_for?object=maplist/5))
