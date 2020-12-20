@@ -2,6 +2,7 @@
 
 - This page is linked from SWI-Prolog comment section of ["Verify Type of a Term"](https://eu.swi-prolog.org/pldoc/man?section=typetest).
 - The SWI-Prolog wiki has more on data types here: [SWI-Prolog data types](https://eu.swi-prolog.org/datatypes.txt).
+- Markus Triska has a page on [Prolog Data Structures](https://www.metalevel.at/prolog/data) at metalevel.at.
 
 The Wikipedia page for [data type](https://en.wikipedia.org/wiki/Data_type) says: 
 
