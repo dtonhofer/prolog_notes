@@ -56,3 +56,14 @@ foo(X,Y) :-
    something(X,Z,Y).
 ```
 
+## More syntax
+
+Maybe a bit of syntactic sugar in the head to support reeadability:
+
+- Accumulator In/Out variables `...,[AccIn \/ AccOut],...`
+- This would also cover the movable end of an "open list" difference list `....[FinIn \/ FinOut]....`
+
+## Editor support for comments
+
+Comments uglify the code quickly. What do. Speech bubbles that open on hover?
+
