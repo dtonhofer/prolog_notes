@@ -36,7 +36,7 @@ If the paper is directly downloadable, a link is given.
    - Bernhard Beckert, Joachim Posegga
    - Journal of Automated Reasoning, volume 15, pages 339–358 (1995)
 
-# 2001s
+## 2000s
 
 - 2001-04 [**Logic Programming, Functional Programming, and Inductive Definitions**](https://www.researchgate.net/publication/1880293_Logic_Programming_Functional_Programming_and_Inductive_Definitions) 
    - Lawrence Paulson, Andrew W. Smith
