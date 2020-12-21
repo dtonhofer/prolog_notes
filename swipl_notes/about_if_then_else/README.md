@@ -185,7 +185,7 @@ box and splicing it out):
 
 ![if-then-else-false wired up in the byrd box model](pics/if_then_as_wired_up_in_the_byrd_box_model.png)
 
-### Implementing _\+_ with _->_ (and vice-versa)<a name="implementing_not_with_arrow_and_vice_versa"></a>
+### Implementing _\+/2_ with _->/2_ (and vice-versa)<a name="implementing_not_with_arrow_and_vice_versa"></a>
 
 `\+` and `->` are interchangeable:
 
