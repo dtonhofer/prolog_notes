@@ -184,6 +184,27 @@ box and splicing it out):
 
 ![if-then-else-false wired up in the byrd box model](pics/if_then_as_wired_up_in_the_byrd_box_model.png)
 
+### Implementing _\+_ with _->_ (and vice-versa)<a name="implementing_not_with_arrow_and_vice_versa"></a>
+
+`\+` and `->` are interchangeable:
+
+On the one hand, as long as you can deal with calling the `If` part twice (otherwise you will need the cut, too):
+
+```
+my_if_then_else(_If,_Then,Else) :- call(If),call(Else).
+my_if_then_else(If,Then,_Else)  :- \+ call(If),call(Then). 
+```
+
+On the other hand:
+
+```
+my_not(Goal) :- call(Goal) -> fail ; true.
+``` 
+
+The `->/2` is subject to _floundering_ in the same way as `\+` if there are
+unbound variables shared between the _if_ goal and the _then_ goal. That circumstance
+will make the program unsound (see: [/prolog_notes/edit/master/other_notes/about_negation/floundering.md]).
+
 ## Soft-cut: _*->_ with _;/2_<a name="soft_cut"></a>
 
 Another construct, the [soft-cut](https://eu.swi-prolog.org/pldoc/doc_for?object=(*-%3E)/2), is 
