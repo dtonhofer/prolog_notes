@@ -204,7 +204,7 @@ my_not(Goal) :- call(Goal) -> fail ; true.
 
 The `->/2` is subject to _floundering_ in the same way as `\+` if there are
 unbound variables shared between the _if_ goal and the _then_ goal. That circumstance
-will make the program unsound (see: [/prolog_notes/edit/master/other_notes/about_negation/floundering.md]).
+will make the program unsound (see: [/prolog_notes/edit/master/other_notes/about_negation/floundering.md](floundering)).
 
 ## Soft-cut: _*->_ with _;/2_<a name="soft_cut"></a>
 
