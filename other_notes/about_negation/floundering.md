@@ -79,13 +79,14 @@ and that binding of `X` to 1 will be erased due to backtracking.)
 
 **An inconsistency arises!**
 
-This seems to happen whenever the goal wrapped by `\+` contains unbound "free variables" that also occur outside the wrapped goal. Do not do this!
+This seems to happen whenever the goal wrapped by `\+` contains unbound "free variables" that also occur outside the wrapped goal. Do not do that!
+
+
 
 Maybe the Prolog processor should throw an exception when it finds a body subject to floundering, but in general this would only be detectable at runtime.
 
 The problem stems from the fact that Prolog basically relies on explicit enumerations over domains 
-followed by tests (but for some reason, explicit domains have never been given explicit treatment in
-Prolog syntax and unification) 
+followed by tests (but for some reason, explicit domains have never been given explicit treatment in Prolog) 
 
 Explicitly specifying the domain makes the problem go away because X is successively bound to an actual 
 value, so the goal affected by the `\+` is ground:
@@ -120,8 +121,9 @@ ERROR: Type error: `integer' expected, found `a' (an atom)
 ERROR: Arguments are not sufficiently instantiated
 ```
 
-Or one could "freeze" the negative goal using freeze/2, so that it is only run once the variable `X` is bound. 
-In this example, although the call to freeze/2 succeeds, the query ultimately fails:
+Or one could "freeze" the negative goal using [`freeze/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=freeze/2),
+so that it is only run once the variable `X` is bound. 
+In this example, although the call to `freeze/2` succeeds, the query ultimately fails:
 
 ```
 q(1).
