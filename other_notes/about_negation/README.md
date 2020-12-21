@@ -343,13 +343,17 @@ The `->/2` is subject to floundering, similarly to `\+` and may make the program
 
 ## Bibliography<a name="bibliography"></a>
 
-- Wikipedia has a (short) page on [**Negation as Failure**](https://en.wikipedia.org/wiki/Negation_as_failure).
+**Wikipedia**
+
+There is a (short) page on [**Negation as Failure**](https://en.wikipedia.org/wiki/Negation_as_failure).
 
 **Course by Marek Sergot** 
 
-In the notes for a [Course by Marek Sergot: "491 Knowledge Representation"](https://www.doc.ic.ac.uk/~mjs/teaching/491.html), we find:
+In the notes for a [Course by Marek Sergot: "491 Knowledge Representation"](https://www.doc.ic.ac.uk/~mjs/teaching/491.html), 
+we find (among others): 
 
-[Negation as failure (Normal logic programs)](https://www.doc.ic.ac.uk/~mjs/teaching/KnowledgeRep491/NBF_491-2x1.pdf) (PDF)
+   - [Negation as failure (Normal logic programs)](https://www.doc.ic.ac.uk/~mjs/teaching/KnowledgeRep491/NBF_491-2x1.pdf) (PDF)
+   - [Stratified logic programs](https://www.doc.ic.ac.uk/~mjs/teaching/KnowledgeRep491/Stratified_491-2x1.pdf) (PDF)
 
 **On "Negation" in general**<a name="on_negation_in_general"></a>
 
