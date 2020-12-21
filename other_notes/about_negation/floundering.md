@@ -87,7 +87,9 @@ p(d).
 true.
 ```
 
-The answer is: _Yes, because there is no evidence anywhere that `q(d)` is true_ (trying to prove `q(d)` failed)
+The answer is: 
+
+_Yes, because there is no evidence anywhere that `q(d)` is true_ (trying to prove `q(d)` failed)
 
 However, if you use a query with an unbound variable:
 
@@ -98,19 +100,23 @@ p(X).
 false.
 ```
 
-The question is: _Is there any `X` such that `p(X)`_ i.e. such that `\+ q(X)`, i.e. such that there is no proof for `q(X)`? 
+The question is: 
+
+_Is there any `X` such that `p(X)`_ i.e. such that `\+ q(X)`, i.e. such that there is no proof for `q(X)`? 
 
 Note that this is a very weak question - it is highly likely that there is such an `X` (even in the actual domain of
 `q/1`) unless `q/1` is true everywhere. 
 
-The correct answer would be: _Yes, any `X` of the domain of `q/1` different from `1` is an answer_. 
+The correct answer would be: 
+
+_Yes, any `X` of the domain of `q/1` different from `1` is an answer_. 
 
 This is not expressible in Prolog but _would_ be expressed by an enumeration if the domain for `p/1` were finite.
 Prolog would generate all elements of the domain except `1`. 
 
-However, the goal `\+ q(X)` with unbound `X` has a **different meaning than the intended one**. 
+However, the goal `\+ q(X)` with unbound `X` has a **different meaning than the intended one**. It asks: 
 
-It asks: _Is there no `X` such that `q(X)`_?
+_Is there no `X` such that `q(X)`_?
 
 This is `false` because there is `q(1)`. 
 
