@@ -343,9 +343,14 @@ The `->/2` is subject to floundering, similarly to `\+` and may make the program
 
 ## Bibliography<a name="bibliography"></a>
 
+**On "Negation" in general**<a name="on_negation_in_general"></a>
+
+- Stanford Encyclopedia of Philosophy: [Negation](https://plato.stanford.edu/entries/negation/)
+- Book: _A Natural History of Negation_ by [Laurence R. Horn](https://en.wikipedia.org/wiki/Laurence_R._Horn), University of Chicago Press. Reissued, Stanford, CA: CSLI Publications, 2001. ([Book Presentation Page](http://web.stanford.edu/group/cslipublications/cslipublications/site/1575863367.shtml)) ([Book Review](https://muse.jhu.edu/article/174200))
+
 **Wikipedia**
 
-There is a (short) page on [**Negation as Failure**](https://en.wikipedia.org/wiki/Negation_as_failure).
+There is a (short) page on [Negation as Failure](https://en.wikipedia.org/wiki/Negation_as_failure).
 
 **Course by Marek Sergot** 
 
@@ -354,11 +359,6 @@ we find (among others):
 
    - [Negation as failure (Normal logic programs)](https://www.doc.ic.ac.uk/~mjs/teaching/KnowledgeRep491/NBF_491-2x1.pdf) (PDF)
    - [Stratified logic programs](https://www.doc.ic.ac.uk/~mjs/teaching/KnowledgeRep491/Stratified_491-2x1.pdf) (PDF)
-
-**On "Negation" in general**<a name="on_negation_in_general"></a>
-
-- [**Negation**](https://plato.stanford.edu/entries/negation/) at the Stanford Encyclopedia of Philosophy
-- _**A Natural History of Negation**_ by [Laurence R. Horn](https://en.wikipedia.org/wiki/Laurence_R._Horn), University of Chicago Press. Reissued, Stanford, CA: CSLI Publications, 2001. ([Book Presentation Page](http://web.stanford.edu/group/cslipublications/cslipublications/site/1575863367.shtml))
 
 **Negation as Failure** (1978)<a name="negation_as_failure_1978"></a>
 
