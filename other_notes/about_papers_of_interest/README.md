@@ -10,6 +10,12 @@ If the paper is directly downloadable, a link is given.
 - 1986 [**Seventy-Five Problems for Testing Automatic Theorem Provers**](https://www.researchgate.net/publication/220531947_Seventy-Five_Problems_for_Testing_Automatic_Theorem_Provers)
    - Francis Jeffry Pelletier
    - Journal of Automated Reasoning 2(2):191-216 (June 1986)
+- 1988 [**Towards a Theory of Declarative Knowledge**](https://core.ac.uk/reader/301635097) (PDF): Stratified Logic Programs
+   - Kristof Apt, H.A. Blair, A. Walker
+   - In _Foundations of Deductive Databases and Logic Programming_, J. Minker ed., Morgan Kaufmann Publishers Inc. 1988, pp 89-148
+   - In [Stratified Logic Program](https://www.doc.ic.ac.uk/~mjs/teaching/KnowledgeRep491/Stratified_491-2x1.pdf) (PDF) Marke Sergot, writes:
+     > Several groups of people — Apt, Blair, and Walker, Przymusinski, van Gelder, Naqui, Topor (and others) — came up with the same
+     > idea at about the same time. Some of them were working in logic programming, some of them were working in databases.
 - 1989 [**What you always wanted to know about Datalog (and never dared to ask)**](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.210.1118) 
    - Stefan Ceri, Georg Gottlob, Letizia Tanca
    - [IEEE Transactions on Knowledge and Data Engineering](https://ieeexplore.ieee.org/document/43410), March 1989
