@@ -17,7 +17,8 @@ See also:
 - [Non-monotonicity](#non_monotonicity)
 - [What's the meaning of this?](#meaning)
    - [Logic programming with extended logics](#extended_logics)
-- [Bibliography](#bibliography)
+- [Implementing _\+_ with _->_ (and vice-versa)](#implementing_not_with_arrow)
+- [Bibliography and further reading](#bibliography) 
 
 ## Citations<a name="citations"></a>
 
@@ -321,7 +322,7 @@ and awkwardly called the "exit" port) and the outer box is not re-entered by the
 we get out via the "fail" port towards the left and that's it. In bot cases, we pass through a "fail" port and roll back any 
 bindings that p may have performed.
 
-## Implementing _\+_ with _->_ (and vice-versa)<a name="
+## Implementing _\+_ with _->_ (and vice-versa)<a name="implementing_not_with_arrow"></a>
 
  `\+` and `->` are interchangeable:
 
@@ -343,6 +344,8 @@ The `->/2` is subject to floundering, similarly to `\+` and may make the program
 ## Bibliography<a name="bibliography"></a>
 
 - Wikipedia has a (short) page on [**Negation as Failure**](https://en.wikipedia.org/wiki/Negation_as_failure).
+- In the notes for a [Courses by Marek Sergot: "491 Knowledge Representation"](https://www.doc.ic.ac.uk/~mjs/teaching/491.html), we find:
+   - [Negation as failure (Normal logic programs)](https://www.doc.ic.ac.uk/~mjs/teaching/KnowledgeRep491/NBF_491-2x1.pdf) (PDF)
 
 **On "Negation" in general**<a name="on_negation_in_general"></a>
 
@@ -376,7 +379,7 @@ The `->/2` is subject to floundering, similarly to `\+` and may make the program
    - https://www.sciencedirect.com/science/article/pii/0743106685900184
    - Appears in: _The Journal of Logic Programming, vol 3, 1985, pages 185-202._
 
-**"A Kripke-like Model for Negation as Failure"** (1989)
+**A Kripke-like Model for Negation as Failure** (1989)
 
    - James Harland, Department of Computer Science, University of Edinburgh
    - https://www.researchgate.net/publication/2818956_A_Kripke-like_Model_for_Negation_as_Failure
@@ -395,12 +398,12 @@ The `->/2` is subject to floundering, similarly to `\+` and may make the program
 > The resulting T operator is not monotonic, which necessitates a slight departure from the standard
 > procedure, but the important properties of the construction still hold.
 
-**"Logic Programming with Strong Negation"** (1989)
+**Logic Programming with Strong Negation** (1989)
 
    - David Pearce, Gerd Wagner, FU Berlin
    - Appears in: _[Springer Lecture Notes in Computer Science (LNCS) No. 475](https://link.springer.com/book/10.1007/BFb0038689): Extensions of Logic Programming (ELP 1989), International Workshop Tübingen, FRG, December 8–10, 1989 Proceedings_
 
-**"A Transformational Approach to Negation in Logic Programming"** (1990)
+**A Transformational Approach to Negation in Logic Programming** (1990)
 
    - Roberto Barbuti, Paolo Mancarella, Dino Pedreschi, Franoc Turini
    - Appears in: _The Journal of Logic Programming, Volume 8, Issue 3, May 1990, Pages 201-228_
@@ -429,7 +432,7 @@ Abstract:
 > simple preprocessor. Extended programs are identical to a special case of default theories in the
 > sense of Reiter.
 
-**"Logic Programming with Strong Negation and Inexact Predicates"** (1991)
+**Logic Programming with Strong Negation and Inexact Predicates** (1991)
 
    - Gerd Wagner
    - https://academic.oup.com/logcom/article-abstract/1/6/835/943774 (Paywalled)
@@ -439,7 +442,7 @@ A book chapter with the same name appears in the book ["Vidid Logic: Knowledge-B
 
    - https://link.springer.com/chapter/10.1007/3-540-57604-5_14 (Paywalled)   
 
-**"The Well-Founded Semantics for General Logic Programs"** (1991)
+**The Well-Founded Semantics for General Logic Programs** (1991)
 
    - Allen Van Gelder, Kenneth A. Ross, John S. Schlipf
    - https://www.researchgate.net/publication/2742259_The_Well-Founded_Semantics_for_General_Logic_Programs
