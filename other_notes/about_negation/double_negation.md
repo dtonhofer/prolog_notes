@@ -1,5 +1,14 @@
 # Using "double negation"
 
+## TOC
+
+   - [Intro](#intro)
+   - [Double negation hides information](#double_negation_hides_information)
+   - [Double negation in _forall/2_](#double_negation_in_foralltwo)
+   - [A note on "double negation" from the Mercury manual](#double_negation_in_mercury)
+
+## Intro<a name="intro"></a>
+
 If you want to run some goal in an "isolated context":
 
 ```
