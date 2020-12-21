@@ -33,33 +33,6 @@ In [Efficiently Iplementing SLG Resolution](http://citeseerx.ist.psu.edu/viewdoc
 > A program _flounders_ if there is an atom \[an "atom" in the logical sense, i.e. a positive literal, i.e. a non-negated atomic Prolog goal\] 
 > whose truth cannot be proven without making a call to a non-gound negative literal.
 
-In [The execution algorithm of mercury, an efficient purely declarative logic programming language](https://www.sciencedirect.com/science/article/pii/S0743106696000684) (Zoltan Somogyi, Fergus Henderson, and Thomas Conway, The Journal of Logic Programming, Volume 29, Issues 1–3, October–December 1996, Pages 17-64), we read:
-
-> _3.6. If-Then-Else and Negation_
->
-> The if-then-else and negation constructs in most variants of Prolog and nonlogical 
-> and unsound: they can cause the system to compute answers which are inconsistent with the
-> program viewed as a logical theory. Some existing logic programming
-> systems such as [NU-Prolog](https://www.researchgate.net/publication/220282520_The_NU-Prolog_Deductive_Database_System) \[link added\]
-> and [Gödel](https://en.wikipedia.org/wiki/G%C3%B6del_(programming_language)) \[link added\] provide logical and sound replacements for
-> these Prolog constructs. Unfortunately, these systems enforce safety via run-time
-> groundness checks. This effect can increase the run-time of a program by an arbitrarily large factor;
-> if the goals checked for groundness include large terms, the checks can be prohibitively expensive.
->
-> The real requirements for the safety of a negated goal is that the negated goal
-> not export any bindings to the rest of the computation. The Mercury mode system
-> can ensure this at compile time, removing the need for any run-time checks. The
-> mode system also allows increased flexibility by allowing the negated goal to contain
-> unbound variables that are instantiated by the goal, as long as these variables are
-> not visible outside the negation. For example, if one wants to test whether two
-> lists are disjoint, one may use the goal `not (member (E, Xs), member (E, Ys))`,
-> where the variable `E` occurs only inside the negation.
->
-> The rules for if-then-elses are somewhat different. Since `(Cond -> Then; Else)`
-> is logically equivalent to `(Cond, Then; not Cond, Else)`, the condition may export
-> its bindings to the then part of the iNthen-else, but not to the else part or to the
-> rest of the computation.
-
 This all seems to be about the following problem:
 
 Consider the program:
@@ -319,4 +292,45 @@ Sadly the two last cases are indistinguishable in Prolog. Failure of establishin
 
 ![domains of negation](pics/domains_of_negation.png)
 
+## Mitigatons
 
+In [The execution algorithm of Mercury, an efficient purely declarative logic programming language](https://www.sciencedirect.com/science/article/pii/S0743106696000684) (Zoltan Somogyi, Fergus Henderson, and Thomas Conway, The Journal of Logic Programming, Volume 29, Issues 1–3, October–December 1996, Pages 17-64), we read:
+
+> _3.6. If-Then-Else and Negation_
+>
+> The if-then-else and negation constructs in most variants of Prolog and nonlogical 
+> and unsound: they can cause the system to compute answers which are inconsistent with the
+> program viewed as a logical theory. Some existing logic programming
+> systems such as [NU-Prolog](https://www.researchgate.net/publication/220282520_The_NU-Prolog_Deductive_Database_System) \[link added\]
+> and [Gödel](https://en.wikipedia.org/wiki/G%C3%B6del_(programming_language)) \[link added\] provide logical and sound replacements for
+> these Prolog constructs. Unfortunately, these systems enforce safety via run-time
+> groundness checks. This effect can increase the run-time of a program by an arbitrarily large factor;
+> if the goals checked for groundness include large terms, the checks can be prohibitively expensive.
+>
+> The real requirements for the safety of a negated goal is that the negated goal
+> not export any bindings to the rest of the computation. The Mercury mode system
+> can ensure this at compile time, removing the need for any run-time checks. The
+> mode system also allows increased flexibility by allowing the negated goal to contain
+> unbound variables that are instantiated by the goal, as long as these variables are
+> not visible outside the negation. For example, if one wants to test whether two
+> lists are disjoint, one may use the goal `not (member (E, Xs), member (E, Ys))`,
+> where the variable `E` occurs only inside the negation.
+>
+> The rules for if-then-elses are somewhat different. Since `(Cond -> Then; Else)`
+> is logically equivalent to `(Cond, Then; not Cond, Else)`, the condition may export
+> its bindings to the then part of the if-then-else, but not to the else part or to the
+> rest of the computation.
+
+In [What is failure? An approach to constructive negation](https://link.springer.com/article/10.1007/BF01185404) (paywalled),
+(Wlodzimierz Drabent, Acta Informatica 32, 27–59, January 1995)
+
+> _Abstract._ A standard approach to negation in logic programming is negation as failure.
+> Its major drawback is that it cannot produce answer substitutions to negated
+> queries. Approaches to overcoming this limitation are termed _constructive negation_.
+> This work proposes an approach based on construction of failed trees for some instances of a negated 
+> query. For this purpose a generalization of the standard notion of a failed tree is needed.
+> We show that a straightforward generalization leads to unsoundness and present a correct one.
+> The method is applicable to arbitrary normal programs. If finitely failed trees are concerned then
+> its semantics is given by Clark completion in 3-valued logic (and our approach is a proper extension
+> of SLDNF-resolution). If infinite failed trees are allowed then we obtain a method for the
+> well-founded semantics. In both cases soundness and completeness are proved.
