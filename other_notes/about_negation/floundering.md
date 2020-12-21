@@ -1,6 +1,7 @@
-## "Floundering"<a name="floundering"></a>
+# Floundering
 
-"Flounding" suggest that the Prolog Processor trashes around or performs something repeatedly without progress:
+This is weirdly chosen vocabulary. "Floundering" might suggest that the Prolog Processor trashes around or
+performs something repeatedly without progress:
 
 From [The Free Dictionary](https://www.thefreedictionary.com/floundering), _to flounder_:
 
@@ -8,7 +9,7 @@ From [The Free Dictionary](https://www.thefreedictionary.com/floundering), _to f
    2. To act or function in a confused or directionless manner; struggle:
       _"Some ... floundered professionally, never quite deciding what they wanted to do"_ (Steve Olson).
      
-but it's not a well-chosen vocabulary. In fact, "breakdown of `\+`" would be clearer.
+In fact, "floundering" is all about the breakdown of the `\+` operator.   
 
 From _"The Art of Prolog"_ 1st ed. p. 166:
 
