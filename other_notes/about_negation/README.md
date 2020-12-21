@@ -361,7 +361,8 @@ The `->/2` is subject to floundering, similarly to `\+` and may make the program
    - Lecture Notes in Computer Science, N° 238, 1985, Springer-Verlag
    - [Book page](https://www.springer.com/gp/book/9783540168157)
    - [SpringerLink page](https://link.springer.com/book/10.1007/BFb0021681)
-   - ![LNCS 238 Cover](pics/cover_LNCS238.jpg)
+
+![LNCS 238 Cover](pics/cover_LNCS238.jpg)
 
 **Negation as Failure (I): A Comparison of Clark's Completed Data Dase and Reiter's Closed World Assumption** (1984)<a name="negation_as_failure_sheperdson_surveys"></a>
 
@@ -472,7 +473,8 @@ Abstract:
    - Lecture Notes in Computer Science, N° 764, 1994, Springer-Verlag
    - [Book page](https://www.springer.com/gp/book/9783540576044)
    - [SpringerLink page](https://link.springer.com/book/10.1007/3-540-57604-5)
-   - ![LNCS 764 Cover](pics/cover_LNC764.jpg)
+   
+![LNCS 764 Cover](pics/cover_LNCS764.png)
 
 **Logic programming and negation: A survey** (1994)
 
