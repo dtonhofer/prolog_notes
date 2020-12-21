@@ -11,7 +11,7 @@ From [The Free Dictionary](https://www.thefreedictionary.com/floundering), _to f
      
 In fact, "floundering" is all about the breakdown of the `\+` operator.   
 
-From _"The Art of Prolog"_ 1st ed. p. 166:
+From _The Art of Prolog_ 1st ed. p. 166:
 
 > The implementation of negation as failure using the cut-fail combination does not work correctly for nonground
 > goals (...). In most standard implementations of Prolog, it is the responsibility of the programmer to ensure
@@ -33,57 +33,155 @@ In [Efficiently Iplementing SLG Resolution](http://citeseerx.ist.psu.edu/viewdoc
 > A program _flounders_ if there is an atom \[an "atom" in the logical sense, i.e. a positive literal, i.e. a non-negated atomic Prolog goal\] 
 > whose truth cannot be proven without making a call to a non-gound negative literal.
 
-This seems to be about the following problem:
+In [The execution algorithm of mercury, an efficient purely declarative logic programming language](https://www.sciencedirect.com/science/article/pii/S0743106696000684) (Zoltan Somogyi, Fergus Henderson, and Thomas Conway, The Journal of Logic Programming, Volume 29, Issues 1–3, October–December 1996, Pages 17-64), we read:
+
+> _3.6. If-Then-Else and Negation_
+>
+> The if-then-else and negation constructs in most variants of Prolog and nonlogical 
+> and unsound: they can cause the system to compute answers which are inconsistent with the
+> program viewed as a logical theory. Some existing logic programming
+> systems such as [NU-Prolog](https://www.researchgate.net/publication/220282520_The_NU-Prolog_Deductive_Database_System) \[link added\]
+> and [Gödel](https://en.wikipedia.org/wiki/G%C3%B6del_(programming_language)) \[link added\] provide logical and sound replacements for
+> these Prolog constructs. Unfortunately, these systems enforce safety via run-time
+> groundness checks. This effect can increase the run-time of a program by an arbitrarily large factor;
+> if the goals checked for groundness include large terms, the checks can be prohibitively expensive.
+>
+> The real requirements for the safety of a negated goal is that the negated goal
+> not export any bindings to the rest of the computation. The Mercury mode system
+> can ensure this at compile time, removing the need for any run-time checks. The
+> mode system also allows increased flexibility by allowing the negated goal to contain
+> unbound variables that are instantiated by the goal, as long as these variables are
+> not visible outside the negation. For example, if one wants to test whether two
+> lists are disjoint, one may use the goal `not (member (E, Xs), member (E, Ys))`,
+> where the variable `E` occurs only inside the negation.
+>
+> The rules for if-then-elses are somewhat different. Since `(Cond -> Then; Else)`
+> is logically equivalent to `(Cond, Then; not Cond, Else)`, the condition may export
+> its bindings to the then part of the iNthen-else, but not to the else part or to the
+> rest of the computation.
+
+This all seems to be about the following problem:
 
 Consider the program:
 
-```
+```none
 q(1).
 p(X) :- \+ q(X).
 ```
 
-Now ask: _Is it true that `p(d)`?_ 
+Evidently if we ask _Is it true that `p(1)`?_ 
 
+```none
+?- 
+p(1).
+
+false.
 ```
-?- p(d).
+
+And if we ask: _Is it true that `p(d)`?_ (even though `d` is not mentioned anywhere):  
+
+```none
+?- 
+p(d).
+
 true.
 ```
 
-The answer is: _Yes, because `q(d)` fails ("there is no evidence that `q(d)` is true") and thus `\+ q(d)` succeeds_.
+The answer is: _Yes, because there is no evidence anywhere that `q(d)` is true_ (trying to prove `q(d)` failed)
 
 However, if you use a query with an unbound variable:
 
 ```
+?- 
+p(X).
+
+false.
+```
+
+The question is: _Is there any `X` such that `p(X)`_ i.e. such that `\+ q(X)`, i.e. such that there is no proof for `q(X)`? 
+
+Note that this is a very weak question - it is highly likely that there is such an `X` (even in the actual domain of
+`q/1`) unless `q/1` is true everywhere. 
+
+The correct answer would be: _Yes, any `X` of the domain of `q/1` different from `1` is an answer_. 
+
+This is not expressible in Prolog but _would_ be expressed by an enumeration if the domain for `p/1` were finite.
+Prolog would generate all elements of the domain except `1`. 
+
+However, the goal `\+ q(X)` with unbound `X` has a **different meaning than the intended one**. 
+
+It asks: _Is there no `X` such that `q(X)`_?
+
+This is `false` because there is `q(1)`. 
+
+Note that `1` is never returned as answer, because the query is made to fail if the proof succeeds with `1`.
+And failure means no bindings will be retained.
+
+**An inconsistency arises!**
+
+This seems to happen whenever the goal wrapped by `\+` contains unbound "free variables" 
+that also occur outside the wrapped goal. So make sure that's not happening!
+
+As `\+` can be implemented using `->/2`, `->/2` is also subject to floundering.
+
+Trivially:
+
+```none
+q(1).
+p(X) :- q(X) -> fail ; true.
+```
+
+```
+?- p(1).
+false.
+
+?- p(d).
+true.
+
 ?- p(X).
 false.
 ```
 
-The question is 
+### A less abstract example
 
-_Is there any `X` such that `p(X)`_ i.e. such that `\+ q(X)`, i.e. such that there is no proof for `q(X)`? 
+Still looking for a good one. A try:
 
-Note that this is a very weak question - it is highly likely that there is such an `X` (even in the actual domain of
-`q/1`) unless `q/1` is true everywhere. The correct answer would be
+```none
+allergic_to(bart,penicillin).
+allergic_to(lisa,penicillin).
+allergic_to(homer,vancomycin).
+can_take(Who,What) :- \+ allergic_to(Who,What).
+```
 
-_Yes, any `X` of the domain of `q/1` different from 1 fits_. 
+Then:
 
-This is not expressible in Prolog but _would_ be expressed by an enumeration if the domain for `p/1` were finite.
-Prolog would generate all elements of the domain except 1. 
+```
+?- can_take(bart,What).        % "Computer says no": bart can' take anything (wrong)
+false.
 
-However, the goal `\+ q(X)` with unbound `X` has a different meaning than the intended one. It asks 
+?- can_take(bart,vancomycin).  % But not really (correct, although to be honest, we just don't have any data about this)
+true.
 
-_is there no `X` such that `q(X)`?_
+?- can_take(bart,penicillin).  % Better don't give him that (correct)
+false.
 
-This is `false` because there is `q(1)`. (Note that that 1 is never returned as answer, because the query fails at precisely that point,
-and that binding of `X` to 1 will be erased due to backtracking.)
+?- can_take(Who,penicillin).   % Nobody can take penicllin (wrong, as far as we know)
+false.
 
-**An inconsistency arises!**
+?- can_take(homer,What).       % homer can take nothing either?
+false.
 
-This seems to happen whenever the goal wrapped by `\+` contains unbound "free variables" that also occur outside the wrapped goal. Do not do that!
+?- can_take(homer,penicillin). % At this point the pharmacy gives up...
+true.
 
+?- can_take(Who,levofloxacin). % A "true" but no value for "Who". That's the sign of a bad `\+` in the proof tree. 
+true.
+```
 
+## Mitigations
 
-Maybe the Prolog processor should throw an exception when it finds a body subject to floundering, but in general this would only be detectable at runtime.
+Maybe the Prolog processor should throw an exception when it finds a body subject to floundering, but in general this would 
+only be doable at runtime.
 
 The problem stems from the fact that Prolog basically relies on explicit enumerations over domains 
 followed by tests (but for some reason, explicit domains have never been given explicit treatment in Prolog) 
@@ -210,3 +308,5 @@ We really identify certain domains over which a `q` either
 Sadly the two last cases are indistinguishable in Prolog. Failure of establishing is a proof is just ... failure.  
 
 ![domains of negation](pics/domains_of_negation.png)
+
+
