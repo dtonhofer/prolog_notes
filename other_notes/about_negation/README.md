@@ -17,7 +17,7 @@ See also:
 - [Non-monotonicity](#non_monotonicity)
 - [What's the meaning of this?](#meaning)
    - [Logic programming with extended logics](#extended_logics)
-- [Literature references](#literature_references)
+- [Bibliography](#bibliography)
 
 ## Citations<a name="citations"></a>
 
@@ -349,32 +349,33 @@ The `->/2` is subject to floundering, similarly to `\+` and may make the program
 - [**Negation**](https://plato.stanford.edu/entries/negation/) at the Stanford Encyclopedia of Philosophy
 - _**A Natural History of Negation**_ by Laurence R. Horn, University of Chicago Press. Reissued, Stanford, CA: CSLI Publications, 2001. ([Book Presentation Page](http://web.stanford.edu/group/cslipublications/cslipublications/site/1575863367.shtml))
 
-_**Negation as Failure**_" (1978)<a name="negation_as_failure_1978"></a>
+**Negation as Failure** (1978)<a name="negation_as_failure_1978"></a>
 
    - Keith Clark
    - 1978
    - http://www.doc.ic.ac.uk/~klc/neg.html
 
-_**Negation and Control in Prolog**_ (1986)<a name="negation_and_control_in_prolog"></a>
+**Negation and Control in Prolog** (1986)<a name="negation_and_control_in_prolog"></a>
  
    - Lee Naish
    - Lecture Notes in Computer Science, N° 238, 1985, Springer-Verlag
    - [Book page](https://www.springer.com/gp/book/9783540168157)
    - [SpringerLink page](https://link.springer.com/book/10.1007/BFb0021681)
+   - ![LNCS 238 Cover](pics/cover_LNCS238.jpg)
 
-_**Negation as Failure (I): A Comparison of Clark's Completed Data Dase and Reiter's Closed World Assumption**_ (1984)<a name="negation_as_failure_sheperdson_surveys"></a>
+**Negation as Failure (I): A Comparison of Clark's Completed Data Dase and Reiter's Closed World Assumption** (1984)<a name="negation_as_failure_sheperdson_surveys"></a>
 
    - J.C. Sheperdson   
    - https://www.sciencedirect.com/science/article/pii/0743106684900232
    - Appears in: _The Journal of Logic Programming, vol 1, 1984, pages 51–81._
    
-_**Negation as Failure II**_ (1985)
+**Negation as Failure II** (1985)
 
    - J.C. Sheperdson
    - https://www.sciencedirect.com/science/article/pii/0743106685900184
    - Appears in: _The Journal of Logic Programming, vol 3, 1985, pages 185-202._
 
-_**"A Kripke-like Model for Negation as Failure"**_ (1989)
+**"A Kripke-like Model for Negation as Failure"** (1989)
 
    - James Harland, Department of Computer Science, University of Edinburgh
    - https://www.researchgate.net/publication/2818956_A_Kripke-like_Model_for_Negation_as_Failure
@@ -393,25 +394,26 @@ _**"A Kripke-like Model for Negation as Failure"**_ (1989)
 > The resulting T operator is not monotonic, which necessitates a slight departure from the standard
 > procedure, but the important properties of the construction still hold.
 
-_**"Logic Programming with Strong Negation"**_ (1989)
+**"Logic Programming with Strong Negation"** (1989)
 
    - David Pearce, Gerd Wagner, FU Berlin
    - Appears in: _[Springer Lecture Notes in Computer Science (LNCS) No. 475](https://link.springer.com/book/10.1007/BFb0038689): Extensions of Logic Programming (ELP 1989), International Workshop Tübingen, FRG, December 8–10, 1989 Proceedings_
 
-_**"A Transformational Approach to Negation in Logic Programming"**_ (1990)
+**"A Transformational Approach to Negation in Logic Programming"** (1990)
 
    - Roberto Barbuti, Paolo Mancarella, Dino Pedreschi, Franoc Turini
    - Appears in: _The Journal of Logic Programming, Volume 8, Issue 3, May 1990, Pages 201-228_
    - https://www.sciencedirect.com/science/article/pii/074310669090023X
    
-_**"Classical negation in logic programs and disjunctive databases"**_ (1991)
+**Classical negation in logic programs and disjunctive databases** (1991)
 
    - Michael Gelfond, Vladimir Lifschitz
    - Appears in: _New Generation Computing volume 9, pages 365–385 (1991)_
    - https://link.springer.com/article/10.1007%2FBF03037169 
    - http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.56.7150 
 
-This is about "stable models" and "Answer Set Programming".
+This is about "stable models" and "Answer Set Programming". "Disjunctive Databases" are logic programming
+languages which allow no function symbols but do allow clauses with heads in which an "or" logical connective appears.
 
 Abstract:
 
@@ -426,7 +428,7 @@ Abstract:
 > simple preprocessor. Extended programs are identical to a special case of default theories in the
 > sense of Reiter.
 
-_**"Logic Programming with Strong Negation and Inexact Predicates"**_ (1991)
+**"Logic Programming with Strong Negation and Inexact Predicates"** (1991)
 
    - Gerd Wagner
    - https://academic.oup.com/logcom/article-abstract/1/6/835/943774 (Paywalled)
@@ -436,7 +438,7 @@ A book chapter with the same name appears in the book ["Vidid Logic: Knowledge-B
 
    - https://link.springer.com/chapter/10.1007/3-540-57604-5_14 (Paywalled)   
 
-_**"The Well-Founded Semantics for General Logic Programs"**_ (1991)
+**"The Well-Founded Semantics for General Logic Programs"** (1991)
 
    - Allen Van Gelder, Kenneth A. Ross, John S. Schlipf
    - https://www.researchgate.net/publication/2742259_The_Well-Founded_Semantics_for_General_Logic_Programs
@@ -464,26 +466,34 @@ Abstract:
 > literature, including Clark's "program completion," Fitting's and Kunen's 3-valued interpretations of it,
 > and the "stable models" of Gelfond and Lifschitz.
 
-_**"Logic programming and negation: A survey"**_ (1994)
+**Vivid Logic: Knowledge-Based Reasoning with Two Kinds of Negation** (1994)
+ 
+   - Gerd Wagner
+   - Lecture Notes in Computer Science, N° 764, 1994, Springer-Verlag
+   - [Book page](https://www.springer.com/gp/book/9783540576044)
+   - [SpringerLink page](https://link.springer.com/book/10.1007/3-540-57604-5)
+   - ![LNCS 764 Cover](pics/cover_LNC764.jpg)
+
+**Logic programming and negation: A survey** (1994)
 
    - Krzysztof R. Apt, Roland N. Bol
    - https://www.sciencedirect.com/science/article/pii/0743106694900248
    - Appears in: _The Journal of Logic Programming, Volumes 19–20, Supplement 1, May–July 1994, Pages 9-71_
 
-_**"Classical" Negation in Non-Monotonic Reasoning and Logic Programming**_ (1996) 
+**"Classical" Negation in Non-Monotonic Reasoning and Logic Programming** (1996) 
 
    - José Alferes, Luís Moniz Pereira, Teodor C. Przymusinski
    - http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.53.4127
    - Appears in: _Proceedings of the European Workshop on Logic in Artificial Intelligence (JELIA'96), Springer LNAI 1126, pp 143-163_
 
-_**A logical semantics for depth-first Prolog with ground negation**_ (1997)
+**A logical semantics for depth-first Prolog with ground negation** (1997)
 
    - James Andrews
    - https://www.sciencedirect.com/science/article/pii/S0304397596001387
    - Appears in: Theoretical Computer Science, Volume 184, Issues 1–2, 30 September 1997, Pages 105-143
    - _"This material was published earlier as a technical report and is the expanded version, including proofs, of a paper presented at the 1993 International Logic Programming Symposium (ILPS)."_
    
-_**How to Handle Negation in Prolog: Several Logical Approaches**_ (2008)
+**How to Handle Negation in Prolog: Several Logical Approaches** (2008)
 
    - https://canbaskent.net/logic/early/prolog.pdf
    - Can Başkent
