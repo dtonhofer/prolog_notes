@@ -9,7 +9,7 @@ A companion page for the entry [`->/2`](https://eu.swi-prolog.org/pldoc/doc_for?
 - [_if-then-else_ explained](#if_then_else_explained)
    - [_if-then-else_ as wired up in the Byrd Box Model](#if_then_else_as_wired_up_in_the_byrd_box_model)
    - [_if-then_ as wired up in the Byrd Box Model](#if_then_as_wired_up_in_the_byrd_box_model)
-   - [Implementing _\+_ with _->_ (and vice-versa)](#implementing_not_with_arrow_and_vice_versa)
+   - [Implementing _\+/2_ with _->/2_ (and vice-versa)](#implementing_not_with_arrow_and_vice_versa)
 - [Soft-cut: _*->_ with _;/2_](#soft_cut)
    - [_soft-cut_ as wired up in the Byrd Box Model](#soft_cut_as_wired_up_in_the_byrd_box_model)
 - [How to avoid hard-to-read _->/2_ code](#avoid_hard_to_read_if_then_else_code)
