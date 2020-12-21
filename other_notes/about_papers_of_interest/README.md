@@ -11,7 +11,7 @@ If the paper is directly downloadable, a link is given.
    - Francis Jeffry Pelletier
    - Journal of Automated Reasoning 2(2):191-216 (June 1986)
 - 1988 [**Towards a Theory of Declarative Knowledge**](https://core.ac.uk/reader/301635097) (PDF): Stratified Logic Programs
-   - Kristof Apt, H.A. Blair, A. Walker
+   - Krzystof R. Apt, Howard .A. Blair, Adrian Walker
    - In _Foundations of Deductive Databases and Logic Programming_, J. Minker ed., Morgan Kaufmann Publishers Inc. 1988, pp 89-148
    - In [Stratified Logic Program](https://www.doc.ic.ac.uk/~mjs/teaching/KnowledgeRep491/Stratified_491-2x1.pdf) (PDF) Marke Sergot, writes:
      > Several groups of people — Apt, Blair, and Walker, Przymusinski, van Gelder, Naqui, Topor (and others) — came up with the same
