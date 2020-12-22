@@ -4,6 +4,9 @@ If the paper is directly downloadable, a link is given.
 
 ## 1980s
 
+- 1982 [**On indefinite databases and the closed world assumption**](https://link.springer.com/chapter/10.1007/BFb0000066) (paywalled)
+   - Jack Minker
+   - In: CADE 1982: 6th Conference on Automated Deduction, [Springer LNCS 138](https://link.springer.com/book/10.1007/BFb0000048), pp 292-308 
 - 1984 [**Making Prolog more expressive**](https://core.ac.uk/download/pdf/82550631.pdf)
    - J.W. Lloyd, R.W. Topor
    - Journal of Logic Programming, 1984:3 pp 225-240
@@ -41,6 +44,16 @@ If the paper is directly downloadable, a link is given.
 - 1995 [**leanTAP: Lean Tableau-based Deduction**](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.28.5925)
    - Bernhard Beckert, Joachim Posegga
    - Journal of Automated Reasoning, volume 15, pages 339–358 (1995)
+- 1996 [**Querying disjunctive databases through nonmonotonic logics**](https://www.sciencedirect.com/science/article/pii/0304397595001921)
+   - Piero A. Bonatti, Thomas Eiter
+   - Theoretical Computer Science 160 18996) 321-363
+   - "Received August 1994; revised August 1995, Communicated by H. Katsuno"
+- 1998 [**Disjunctive Logic Program = Horn Program + Control Program**](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.34.5170)
+   - Also: https://core.ac.uk/display/40700435
+   - Wenjin Lu, Ulrich Furbach
+- 1999 [**CH-Prolog: A Proof Procedure for Positive Disjunctive Logic Programming**](https://www.aaai.org/Papers/FLAIRS/1999/FLAIRS99-048.pdf)
+   - Wenjin Lu
+   - Proceedings of the Twelfth International FLAIRS Conference, AAAI
 
 ## 2000s
 
