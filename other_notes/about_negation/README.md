@@ -250,7 +250,7 @@ This can be an effect that is desired or not. See also:
 - [Non-monotonic Logic](https://plato.stanford.edu/entries/logic-nonmonotonic/)
 - [Logical Approaches to Defeasible Reasoning](https://plato.stanford.edu/entries/reasoning-defeasible/#LogiAppr)
 
-## The meaning of _\+_ via fixpoint semantics for "stratified programs"<a name=stratified_programs"></a>
+## The meaning of _\+_ via fixpoint semantics for "stratified programs"<a name="stratified_programs"></a>
 
 References (see below for links):
 
