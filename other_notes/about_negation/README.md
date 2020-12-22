@@ -15,8 +15,9 @@ See also:
 - [Interpretation](#interpretation)
 - [The set "NAF"](#the_set_NAF)
 - [Non-monotonicity](#non_monotonicity)
-- [What's the meaning of this?](#meaning)
-   - [Logic programming with extended logics](#extended_logics)
+- [The meaning of _\+_ via fixpoint semantics for "stratified programs](stratified_programs)
+- [A fine point on the shift in meaning of the goal inside an imbricated  _\+_](imbricated_not)
+- [Logic programming with extended logics](#extended_logics)
 - [Implementing _\+_ with _->_ (and vice-versa)](#implementing_not_with_arrow)
 - [Bibliography and further reading](#bibliography) 
 
@@ -105,6 +106,11 @@ This is what Prolog does with `\+`.
 >
 > Flora-2 takes a different approach. For body-only variables that appear under `\naf` the
 > semantics is Exists-Not. 
+
+## Vocabulary
+
+- **Definite logic program** or **Positive logic program**: A logic program consisting of clauses of the form `a_0 :- a_1, .... , a_m` (i.e. Prolog programs without negation)
+- **Normal logic program** or **General logic program**: A logic program consisting of clauses of the form `a_0 :- a_1, .... , a_m, \+ a_{m+1}, ... \+ a_n.`, where \+ stands for negation-as-failure. (i.e. Prolog program with negation)
 
 ## Interpretation<a name="interpretation"></a>
 
@@ -244,7 +250,89 @@ This can be an effect that is desired or not. See also:
 - [Non-monotonic Logic](https://plato.stanford.edu/entries/logic-nonmonotonic/)
 - [Logical Approaches to Defeasible Reasoning](https://plato.stanford.edu/entries/reasoning-defeasible/#LogiAppr)
 
-## What's the meaning of this?<a name="meaning"></a>
+## The meaning of _\+_ via fixpoint semantics for "stratified programs"<a name=stratified_programs"></a>
+
+References (see below for links):
+
+- Refer to the course material form Marek Sergot's course for details:
+  [Stratified logic programs](https://www.doc.ic.ac.uk/~mjs/teaching/KnowledgeRep491/Stratified_491-2x1.pdf) (PDF)  
+- "Towards a Theory of Declarative Knowledge" (Apr, Blair, Walker).
+
+Logic programs with `\+` can be relatively wild if the usage of `\+` is unconstrained. They may run, but if
+they succeed or fail, do they really do what one expects?
+
+In order to specify what an (intuitvely compelling) declarative meaning of a normal logic program is, one wants to give a 
+model of that logic program, or at least do so for a set of logic programs that have "good" (but not exceedingly restrictive) qualities. 
+Then one can meaningfully decide whether the program "works correctly" by comparing its behaviour to the model,
+ands decide whether the implementation it is complete and sound relative to that model.
+
+It turns out that there exists a construction of a set of normal logic programs for which there exists a **unique** _minimal supported model_, 
+which is built using an iterated fixpoint construction.
+
+Vocabulary:
+
+- **declarative**: one does not want to refer to the actual execution of SLDNF resolution
+- **model**: a set of facts (ground atoms) with predicate symbols, function symbols and constants from the program's Herbrand Base such that,
+  if all of those ground atoms are labeled _true_ then all the clauses (facts and rules) of the logic program can be labeled _true_ too
+  (according to classical logic deduction). This is a **Herbrand model**.
+- the model is **minimal**: you cannot remove a fact without making it a non-model
+- the model is **supported**: all the facts in the model have predicate symbols that appear in facts or rule heads. Predicate symbols
+  that appear in bodies only are not considered for inclusion in the model (one cannot say whether there are any true facts about them).
+- the implementation is **complete**: querying the actually implemented program yields all the ground atoms in the model (subject to compromises)
+- the implementation is **sound**: querying the actually implemented program never yields a ground atom not in the model (important)
+
+The program must certainly have other conditions: no no-logical predicates and operations, no `->/2`, no `!`.
+
+The program must be such that one can _stratify_ it, i.e. partition the set of predicates into strata such that:
+
+_stratum 0_ is the set of positive predicates, i.e. those which have do not have the _\+_ operator in the body. 
+ Inside that set, the predicates can refer to each other. (This stratum may well be empty).
+
+And above that _stratum 1_ to _stratum N_, as required, with:
+
+_stratum k_: The set of predicates that depend positively on predicates in stratum _k_ to _0_, and depend negatively only on
+ predicates in stratum _k-1_ to _0_.
+
+A stratification is not unique. The same program can be stratified in multiple ways. The "depends positively on"
+and "depends negatively on" relationships among predicates induces a partial ordering relation and a stratification
+is a labeling that makes the ordering total.
+
+Pictorially ("dependency graph"), if a predicate is represented by a node in a graph, and the relation
+ _"p depends (-) on q"_ is represented by a "fat arrow directed edge" and the relation
+ _"p depends (+) on q"_ is represented by a "dashed arrow directed edge", then a stratified program allows the
+ graph has to be laid out such that all the dashed arrows point _"not upwards"_ and the fat arrows point _"downwards"_.
+
+![Predicate Graph](pics/predicate_graph.png)
+
+If that is not possible, the logic program (or a subprogram thereof) is not stratified. 
+
+In particular `p :- \+ p` is not stratified.
+
+Note that if there is a cycle of dashed edges, then all the nodes on that cycle must appear in the same stratum. In
+fact, the more everything depends positively on everything else, the less strata there are.
+
+If there is a cycle with at least one fat edge in it, stratification will fail. Conversely, in any successful stratification,
+a fet edge will not participate in a cycle (as it can only point "downwards", that cycle must have another edge pointing
+"upwards", which is forbidden). Thus:
+
+*Lemma* The logic program _P_ is stratified iff the dependency graph for _P_ contains no cycles containing a negative edge.
+
+(Some notes on the fixpoint construction to be added)
+
+### Locally stratified programs
+
+"Local stratification" considers the propositional program derived from a FOL program, whereby clauses
+are replaced by all ground instances. The stratify according to the ground atoms of clause heads instead of
+predicates. It turns out that in some cases, even if an original program cannot be stratified,
+its "locally stratified program" can be. 
+
+Marek Sergot writes: 
+
+> The generalisation to locally stratified is not particularly useful in practice, but
+> there are references to it in the literature, and it can be a very useful device when trying
+> to prove, e.g., the existence of a supported minimal model of a logic program/database.
+
+## A fine point on the shift in meaning of the goal inside an imbricated  _\+_<a name="imbricated_not"></a>
 
 I haven't found a discussion in literature concerning the "shift in meaning" that occurs due to `\+` but it must have been discussed somewhere.
 
@@ -281,7 +369,7 @@ make the above clearer, or even consistent. It wouldn't be Prolog though.
 
 ![some extended logical values](pics/some_extended_logical_values.svg)
 
-### Logic programming with extended logics<a name="extended_logics"></a>
+## Logic programming with extended logics<a name="extended_logics"></a>
 
 Belnap has a four-valued logic that abandons the pretense of classical logic at global consistency and determinate
 truth values `true` or `false` for every statement (so the idea of having "proofs by contradiction" is no longer applicable,
@@ -352,9 +440,9 @@ The `->/2` is subject to floundering, similarly to `\+` and may make the program
 
 There is a (short) page on [Negation as Failure](https://en.wikipedia.org/wiki/Negation_as_failure).
 
-**Course by Marek Sergot** 
+**Course material by Marek Sergot** 
 
-In the notes for a [Course by Marek Sergot: "491 Knowledge Representation"](https://www.doc.ic.ac.uk/~mjs/teaching/491.html), 
+In the material for a [Course by Marek Sergot: "491 Knowledge Representation"](https://www.doc.ic.ac.uk/~mjs/teaching/491.html), 
 we find (among others): 
 
    - [Negation as failure (Normal logic programs)](https://www.doc.ic.ac.uk/~mjs/teaching/KnowledgeRep491/NBF_491-2x1.pdf) (PDF)
