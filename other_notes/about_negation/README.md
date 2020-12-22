@@ -312,10 +312,12 @@ Note that if there is a cycle of dashed edges, then all the nodes on that cycle 
 fact, the more everything depends positively on everything else, the less strata there are.
 
 If there is a cycle with at least one fat edge in it, stratification will fail. Conversely, in any successful stratification,
-a fet edge will not participate in a cycle (as it can only point "downwards", that cycle must have another edge pointing
+a fat edge will not participate in a cycle (as it can only point "downwards", that cycle must have another edge pointing
 "upwards", which is forbidden). Thus:
 
-*Lemma* The logic program _P_ is stratified iff the dependency graph for _P_ contains no cycles containing a negative edge.
+**Lemma** 
+
+> The logic program _P_ is stratified iff the dependency graph for _P_ contains no cycles containing a negative edge.
 
 (Some notes on the fixpoint construction to be added)
 
