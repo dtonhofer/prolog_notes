@@ -15,10 +15,10 @@ See also:
 - [Interpretation](#interpretation)
 - [The set "NAF"](#the_set_NAF)
 - [Non-monotonicity](#non_monotonicity)
-- [The meaning of _\+_ via fixpoint semantics for "stratified programs"](stratified_programs)
-- [A fine point on the shift in meaning of the goal inside an imbricated  _\+_](imbricated_not)
+- [The meaning of `\+` via fixpoint semantics for "stratified programs"](#stratified_programs)
+- [A fine point on the shift in meaning of the goal inside an imbricated  _\+_](#imbricated_not)
 - [Logic programming with extended logics](#extended_logics)
-- [Implementing _\+_ with _->_ (and vice-versa)](#implementing_not_with_arrow)
+- [Implementing `\+` with `->/2` (and vice-versa)](#implementing_not_with_arrow)
 - [Bibliography and further reading](#bibliography) 
 
 ## Citations<a name="citations"></a>
@@ -250,7 +250,7 @@ This can be an effect that is desired or not. See also:
 - [Non-monotonic Logic](https://plato.stanford.edu/entries/logic-nonmonotonic/)
 - [Logical Approaches to Defeasible Reasoning](https://plato.stanford.edu/entries/reasoning-defeasible/#LogiAppr)
 
-## The meaning of _\+_ via fixpoint semantics for "stratified programs"<a name="stratified_programs"></a>
+## The meaning of `\+` via fixpoint semantics for "stratified programs"<a name="stratified_programs"></a>
 
 References (see below for links):
 
@@ -410,7 +410,7 @@ and awkwardly called the "exit" port) and the outer box is not re-entered by the
 we get out via the "fail" port towards the left and that's it. In bot cases, we pass through a "fail" port and roll back any 
 bindings that p may have performed.
 
-## Implementing _\+_ with _->_ (and vice-versa)<a name="implementing_not_with_arrow"></a>
+## Implementing `\+` with `->/2` (and vice-versa)<a name="implementing_not_with_arrow"></a>
 
  `\+` and `->` are interchangeable:
 
