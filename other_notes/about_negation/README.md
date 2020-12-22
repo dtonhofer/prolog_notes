@@ -15,7 +15,7 @@ See also:
 - [Interpretation](#interpretation)
 - [The set "NAF"](#the_set_NAF)
 - [Non-monotonicity](#non_monotonicity)
-- [The meaning of _\+_ via fixpoint semantics for "stratified programs](stratified_programs)
+- [The meaning of _\+_ via fixpoint semantics for "stratified programs"](stratified_programs)
 - [A fine point on the shift in meaning of the goal inside an imbricated  _\+_](imbricated_not)
 - [Logic programming with extended logics](#extended_logics)
 - [Implementing _\+_ with _->_ (and vice-versa)](#implementing_not_with_arrow)
