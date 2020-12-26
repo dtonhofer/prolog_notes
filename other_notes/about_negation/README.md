@@ -109,26 +109,54 @@ This is what Prolog does with `\+`.
 
 ## Vocabulary
 
-- **Definite logic program** or **Positive logic program**: A logic program consisting of clauses of the form `a_0 :- a_1, .... , a_m` (i.e. Prolog programs without negation)
-- **Normal logic program** or **General logic program**: A logic program consisting of clauses of the form `a_0 :- a_1, .... , a_m, \+ a_{m+1}, ... \+ a_n.`, where \+ stands for negation-as-failure. (i.e. Prolog program with negation)
+**Definite logic program** or **Positive logic program**: A logic program consisting of clauses of the form 
+
+> `a_0 :- a_1, .... , a_m.` 
+
+i.e. Prolog programs without negation-as-failure or otherwise.
+
+**Normal logic program** or **General logic program**: A logic program consisting of clauses of the form
+
+> `a_0 :- a_1, .... , a_m, \+ a_{m+1}, ... \+ a_n.`
+
+where `\+` stands for negation-as-failure (aka. weak negation, default negation).
+
+These are the "Prolog program with negation-as-failure". In the literature, `\+` may also be written as `naf` (clear) or `-` (unclear).
+
+There are also
+
+**Extended logic programs**: Logic programs with two kind of negation, one of which is the "strong" or "explicit" negation. Clauses are of the form
+
+> `l_0 :- l_1, ... , l_m, \+ l_{m+1} , ... , \+ l_n`
+
+This means the clause is formed by literals, some of which may be annotated with the "negation as failure" operator.
+The literals `l_0, ... , l_n` may be formed by means of strong negation (often denoted by `~` operator): `l` = `a` or `l` = `~a` (presumably, the
+head is neither strongly nor weakly negated). Prolog can't handle those.
 
 ## Interpretation<a name="interpretation"></a>
 
-Read `\+ p(X)` as 
+Read `\+ G` as 
 
-- _there is no evidence for `p(X)`_ or 
-- _there is no proof for `p(X)`_.
+- _there is no evidence for `G`_ or 
+- _there is no proof for `G`_.
 
-This is not the same as the "classical negation" (alias "strong negation") normally seen in logic. 
+In fact it can also be read as "we really don't know anything about G" since Prolog has only the concept of
+"successful positive constructive proof (i.e. with witness (result))" and otherwise "proof failure (and no result)".
+One can also read `\+ G` as "continue on this branch only if there is proof failure for G". 
+
+This is not the same as "strong negation" expressing knowledge that "G does not hold".
 Instead it is a kind of default reasoning whereby everything that cannot be proven by the program
 is assumed to have a special truth value "false by default" or "false unless proven differenty".
 One then conflates this truth value with the classical truth value `false` (maybe an error?).
 In literatue, the `\+` operator is sometimes written as `naf` (for negation-as-failure) or `~`.
 
 Using this "negation as failure" or "default negation" is often sufficient. Modeling 
-some problems, however, demands classical negation.
+some problems, however, demands strong negation (which is not necessarily the negation of classical logic,
+as classical logic has undesirable properties, one being the "law of the excluded middle", the other
+[the principle of explosion](https://en.wikipedia.org/wiki/Principle_of_explosion). A logic
+program that can handle real-world data must be careful to not succumb to those.
 
-An example of when classical negation is useful,
+An example of when strong negation is useful,
 from the _smodels_ manual ([Lparse 1.0 User's Manual](http://www.tcs.hut.fi/Software/smodels/lparse.ps.gz)), p.33:
 
 Suppose that we want to check whether it is safe to cross railroad tracks This could be expressed by the rule:
