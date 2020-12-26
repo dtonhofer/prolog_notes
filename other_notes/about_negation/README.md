@@ -328,11 +328,18 @@ are replaced by all ground instances. The stratify according to the ground atoms
 predicates. It turns out that in some cases, even if an original program cannot be stratified,
 its "locally stratified program" can be. 
 
-Marek Sergot writes: 
+Marek Sergot writes in his course material: 
 
 > The generalisation to locally stratified is not particularly useful in practice, but
 > there are references to it in the literature, and it can be a very useful device when trying
 > to prove, e.g., the existence of a supported minimal model of a logic program/database.
+
+In "Vivid Logic: Knowledge-Based Reasoning with Two Kinds of Negation", Gerd Wagner writes on page 5:
+
+> The principal case of logic programming is the one where programs do not contain negative loops
+> (in fact, since standard Prolog systems implement a depth-first proof strategy, they cannot even
+> handle positive loops), and thus can be handled efficiently by an interpreter (i.e. an implemented
+> inference procedure). These programs are called _weakly wellfounded_ or _locally stratified_.
 
 ## A fine point on the shift in meaning of the goal inside an imbricated  _\+_<a name="imbricated_not"></a>
 
