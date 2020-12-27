@@ -65,5 +65,20 @@ Maybe a bit of syntactic sugar in the head to support reeadability:
 
 ## Editor support for comments
 
-Comments uglify the code quickly. What do. Speech bubbles that open on hover?
+Comments uglify the code quickly. What do. Speech bubbles that open on hover? Folding?
+
+## Module headers are annoying and hard to maintain!
+
+The practice of having a separate declaration for exported functionality was already extremely annoying in Modula-2 and
+has not become more appetizing since, rather the contrary. Do classes have separate lists of public methods? No
+they dont. Then why do Modules have those? 
+
+There should be local annotations on the predicates to say that "this predicate is exported from the module". 
+A simple "public" might suffice.
+
+If one wants to have the list of exports, there should be a tool to extract a relevant definition.
+
+
+
+
 
