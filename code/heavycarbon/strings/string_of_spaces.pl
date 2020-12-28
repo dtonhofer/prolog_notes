@@ -8,7 +8,8 @@
 
 % TODO: There should be something similar for atoms (or rather, the predicates need to take an option "text(W)" 
 %       with W being "string" or "atom" (by default, string) (should it then be called "text_of_spaces"?
-
+% TODO: Make it more self-contained, no need to pull in two other files!
+% TODO: Review throwing.
 % ==============================================================================
 % Generating/Recognizing/Verifying "strings made of spaces"
 %
@@ -16,6 +17,23 @@
 %   N      : integer >= 0
 %   Spaces : a string on output (accepts the same stuff atom_string/2 accepts on input)
 %
+% Example:
+%
+% ?- 
+% use_module(library('heavycarbon/strings/string_of_spaces.pl')).
+% true.
+%
+% ?- 
+% string_of_spaces(10,Spaces).
+% Spaces = "          ".
+%
+% ?- 
+% string_of_spaces(N,"    ").
+% N = 4.
+%
+%
+% ?- string_of_spaces(N," hey  ").
+% false.
 % ------------------------------------------------------------------------------
 %
 % Another way of "generating a string" is: 
@@ -63,7 +81,7 @@ string_of_spaces(N,Spaces) :-
    var(Spaces),var(N),                 % case: "generate pairs"
    !,
    between(0,inf,N),
-   if_then_else(gen_string_of_spaces(N,Spaces),true,throw("Problem in gen_string_of_spaces/2")). 
+   if_then_else(gen_string_of_spaces(N,Spaces),true,throw("Problem in gen_string_of_spaces/2")). % no ISO-compatible throw
 
 % ---
 % Actually generate (possibly large) strings rapidly using string_concat/3.
