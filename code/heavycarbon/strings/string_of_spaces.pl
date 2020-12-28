@@ -32,8 +32,10 @@
 % N = 4.
 %
 %
-% ?- string_of_spaces(N," hey  ").
+% ?- s
+% string_of_spaces(N," hey  ").
 % false.
+%
 % ------------------------------------------------------------------------------
 %
 % Another way of "generating a string" is: 
@@ -57,11 +59,15 @@
 %
 % See also:
 % 
-% https://swi-prolog.discourse.group/t/once-this-predicate-is-tabled-it-loops-forever/2848
+%    https://swi-prolog.discourse.group/t/once-this-predicate-is-tabled-it-loops-forever/2848
 % 
 % And this code concerning "exponentiation" of an associative operation:
 %
-% https://swi-prolog.discourse.group/t/power-implementation/1937
+%    https://swi-prolog.discourse.group/t/power-implementation/1937
+%
+% But why spend brainpower on producing cute & Prolog-y ways of generating/accepting
+% strings-of-spaces where one doesn't even see later that that's what the code does?
+% Let's not indulge too much our penchant for puzzle solving!
 % ==============================================================================
 
 string_of_spaces(N,Spaces) :-
