@@ -6,7 +6,8 @@
 :- use_module(library('heavycarbon/strings/stringy.pl')).
 :- include(library('heavycarbon/support/meta_helpers_nonmodular.pl')). % Not a module, just (meta) predicates
 
-% TODO: There should be something similar for atoms
+% TODO: There should be something similar for atoms (or rather, the predicates need to take an option "text(W)" 
+%       with W being "string" or "atom" (by default, string) (should it then be called "text_of_spaces"?
 
 % ==============================================================================
 % Generating/Recognizing/Verifying "strings made of spaces"
