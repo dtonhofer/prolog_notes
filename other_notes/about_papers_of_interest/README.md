@@ -35,10 +35,13 @@ If the paper is directly downloadable, a link is given.
    - Leon Sterling, Marc Kirschenbaum
 - 1991-02 [**A type system for logic programs**](https://www.sciencedirect.com/science/article/pii/074310669180002U)
    - Eyal Yardeni, Ehud Shapiro
-   - Journal of Logic Programming_ Volume 10, Issue 2
+   - Journal of Logic Programming, Volume 10, Issue 2
 - 1991 [**Uniform Proofs as a Foundation for Logic Programming**](http://www.lix.polytechnique.fr/~dale/papers/apal91.pdf) 
    - Dale Miller, Gopalan Nadathur, Frank Pfenning, Andre Scedrov
    - _the Lambda-Prolog way_
+- 1994 [**Correctness of unification without occur check in prolog**](https://www.sciencedirect.com/science/article/pii/0743106694900485)
+   - Ritu Chadha, David A.Plaisted
+   - Journal of Logic Programming, Volume 18, Issue 2, February 1994, Pages 99-122
 - 1995 [**Higher-order logic programming in Prolog**](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.34.9690) 
    - Lee Naish
 - 1995 [**leanTAP: Lean Tableau-based Deduction**](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.28.5925)
