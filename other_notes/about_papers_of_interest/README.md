@@ -2,14 +2,25 @@
 
 If the paper is directly downloadable, a link is given.
 
-## History of Prolog
+## History of Prolog (and other things)
 
   - [*Prolog Héritage*: The Prologs from Marseille](http://prolog-heritage.org/)
-  - Robert Kowalski's 2014 paper [History of Logic Programming](https://www.researchgate.net/publication/277670164_History_of_Logic_Programming). I would say it's actually the "Prehistory" because modern approaches have not yet made it into the paper. 
-  - Alain Colmerauer and Philippe Roussel: [The birth of Prolog](http://alain.colmerauer.free.fr/alcol/ArchivesPublications/PrologHistory/19november92.pdf) (November 1992).
-  - Peter Van Roy's 1993 overview [1983--1993: The Wonder Years of Sequential Prolog Implementation](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.29.9583) ...  _This report surveys the major developments in sequential Prolog implementation during the period 1983--1993. In this decade, implementation technology has matured to such a degree that Prolog has left the university and become useful in industry._ 
-  - Robert Kowalski's 1988 paper [The Early Years of Logic Programming](https://www.doc.ic.ac.uk/~rak/papers/the%20early%20years.pdf), which appeared in a "Communications of the ACM" special issue (January '88: https://cacm.acm.org/magazines/1988/1 ) 
-  - If you are writing a paper for, say, the _IEEE Annals of the History of Computing_, there is a lot of further pointers here: http://www.softwarepreservation.org/projects/prolog/
+  - There is a lot of further pointers at [softwarepreservation.org](http://www.softwarepreservation.org/projects/prolog/)  
+  - 1988: [**The Early Years of Logic Programming**](https://www.doc.ic.ac.uk/~rak/papers/the%20early%20years.pdf)
+     - Robert Kowalski's
+     - Appears in "Communications of the ACM", 1988-01: https://cacm.acm.org/magazines/1988/1 
+  - 1992-11: [**The birth of Prolog**](http://alain.colmerauer.free.fr/alcol/ArchivesPublications/PrologHistory/19november92.pdf) 
+     - Alain Colmerauer and Philippe Roussel
+  - 1993: [**1983--1993: The Wonder Years of Sequential Prolog Implementation**](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.29.9583)
+     - Peter Van Roy
+     - _This report surveys the major developments in sequential Prolog implementation during the period 1983--1993._
+       _In this decade, implementation technology has matured to such a degree that Prolog has left the university and become useful in industry._ 
+     - Related: [**The Early Days of Prolog in Hungary - a personal account**](https://dtai-static.cs.kuleuven.be/projects/ALP/newsletter/nov04/nav/articles/szeredi/szeredi.html) by Peter Szeredi 
+  - 1996: [**Logic and Databases: a 20 Year Retrospective**](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.55.2337)
+     - Jack Minker
+     - Contains a table of the query complexity of various types of logic programs
+  - 2014: [**History of Logic Programming**](https://www.researchgate.net/publication/277670164_History_of_Logic_Programming). 
+     - Robert Kowalski
 
 ## 1970s.
 
@@ -124,6 +135,9 @@ If the paper is directly downloadable, a link is given.
    - _generic programming with the use of strategies_
 - 2009-11 [**Coding Guidelines for Prolog**](https://arxiv.org/abs/0911.2899)
    - Michael A. Covington, Roberto Bagnara, Richard A. O'Keefe, Jan Wielemaker, Simon Price
+- 2009 [**As Time Goes By: A Survey of CHR Research from 1998 to 2007**](https://people.cs.kuleuven.be/~tom.schrijvers/Research/papers/chr_survey.pdf)
+     - Jon Sneyers, Peter van Weert, Tom Schrijvers, Leslie de Koninck 
+     - This preprint carries the date "2003", which is impossible and must be some default. 
 
 ## 2010s
 
