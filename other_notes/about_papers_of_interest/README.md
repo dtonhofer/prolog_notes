@@ -2,6 +2,50 @@
 
 If the paper is directly downloadable, a link is given.
 
+## History of Prolog
+
+  - [*Prolog Héritage*: The Prologs from Marseille](http://prolog-heritage.org/)
+  - Robert Kowalski's 2014 paper [History of Logic Programming](https://www.researchgate.net/publication/277670164_History_of_Logic_Programming). I would say it's actually the "Prehistory" because modern approaches have not yet made it into the paper. 
+  - Alain Colmerauer and Philippe Roussel: [The birth of Prolog](http://alain.colmerauer.free.fr/alcol/ArchivesPublications/PrologHistory/19november92.pdf) (November 1992).
+  - Peter Van Roy's 1993 overview [1983--1993: The Wonder Years of Sequential Prolog Implementation](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.29.9583) ...  _This report surveys the major developments in sequential Prolog implementation during the period 1983--1993. In this decade, implementation technology has matured to such a degree that Prolog has left the university and become useful in industry._ 
+  - Robert Kowalski's 1988 paper [The Early Years of Logic Programming](https://www.doc.ic.ac.uk/~rak/papers/the%20early%20years.pdf), which appeared in a "Communications of the ACM" special issue (January '88: https://cacm.acm.org/magazines/1988/1 ) 
+  - If you are writing a paper for, say, the _IEEE Annals of the History of Computing_, there is a lot of further pointers here: http://www.softwarepreservation.org/projects/prolog/
+
+## 1970s.
+
+- 1970 [**A Relational Model for Large Shared Data Banks**](https://dl.acm.org/doi/10.1145/362384.362685) (paywalled)
+   - Edgar Frank "Ted" Codd
+   - Communications of the ACM 13, 6 (June 1970), 377-387   
+- 1972 [**Description and Theoretical Analysis (Using Schemata) of PLANNER: A Language for Proving Theorems and Manipulating Models in a Robot**](http://dspace.mit.edu/handle/1721.1/6916)
+   - Carl Hewitt
+   - AI Memo No. 251, MIT Project MAC, Cambridge, Mass., April 1972.
+- 1978 **Logic and Databases** (Proceedings)
+   - Hervé Gallaire, Jack Minker (eds.)
+   - Plenum Press New York, a Division of Plenum Publishing Corporation
+   - Proceedings of the Symposium on Logic and Data Bases held at the Centre d'Études et de Recherches de 
+     L'École Nationale Supérieure de L'Aéronautique et de L'Espace de Toulouse (C.E.R.T.), Toulouse, France, November 16-18, 1977
+   - Contains among others:
+      - **On Closed World Data Bases** by Raymond Reiter
+      - **Logic for Data Description** by Robert Kowlaski
+      - **Negation as Failure** by Keith L. Clark
+   - A follow-up paper is [Logic and Databases: a 20 Year Retrospective](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.55.2337) by Jack Minker, 1996.
+- 1978 [**Negation as Failure**](http://www.doc.ic.ac.uk/~klc/neg.html)
+   - Keith Clark   
+- 1978 [**On Closed World Data Bases**](https://www.sciencedirect.com/science/article/pii/B9780934613033500143) (paywalled)   
+   - Raymond Reiter
+   - Description of the "Closed World Assumption", which applies to deductive databases (i.e. logic programs w/o function symbols).
+- 1978 [**Logic for Data Description**](https://www.sciencedirect.com/science/article/pii/B9780934613538500224) (paywalled)
+   - Robert Kowalski
+- 1979 [**Logic for Problem Solving**](https://www.researchgate.net/publication/277669992_Logic_for_Problem_Solving)
+   - Robert Kowalski
+   - North Holland / Elsevier Publishing Co. Inc.
+   - An introduction to 70's Prolog, 299 pages
+   - At [this page](https://www.doc.ic.ac.uk/~rak/), Robert Kowlaski writes: _"The book was originally published in 1979 and based on_
+     _lecture notes written in 1974. The preface describes the goals of the book in the following terms: 'This book investigates the_
+     _application of logic to problem-solving and computer programming. It assumes no previous knowledge of these fields, and may_
+     _be appropriate therefore as an introduction to logic. the theory of problem-solving, and computer programming"._
+   - There is a 2014 update by Robert Kowalski and Thom Frühwirth with the title: **Logic for Problem Solving, Revisited**.
+   
 ## 1980s
 
 - 1982 [**On indefinite databases and the closed world assumption**](https://link.springer.com/chapter/10.1007/BFb0000066) (paywalled)
@@ -116,7 +160,7 @@ If the paper is directly downloadable, a link is given.
 
 ## Negation-as-Failure
 
-See the page on [Negation as Failure](/other_notes/about_negation/README.md)
+See the [Bibliography on "Negation"](/other_notes/about_negation#bibliography)
 
 ## The Event Calculus
 
