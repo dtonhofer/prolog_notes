@@ -162,12 +162,19 @@ If the paper is directly downloadable, a link is given.
 
 See the [Bibliography on "Negation"](/other_notes/about_negation#bibliography)
 
-## The Event Calculus
+## What if the thing you want to model is actually changing?
 
-### The Event Calculus Explained
+### The Event Calculus
 
+- [**The Event Calculus Explained**](https://www.doc.ic.ac.uk/~mpsha/ECExplained.pdf)
    - Murray Shanahan
-   - https://www.doc.ic.ac.uk/~mpsha/ECExplained.pdf
-   - Appears in: _[Artificial Intelligence Today: Recent Trends and Developments](https://link.springer.com/book/10.1007/3-540-48317-9), Springer LNAI 1600, 1999, pp 409-430_ ([Paper's page](https://link.springer.com/chapter/10.1007/3-540-48317-9_17))
-   
-   
+   - 1999
+   - [Springer Link page](https://link.springer.com/chapter/10.1007/3-540-48317-9_17)
+   - Appears in: _[Artificial Intelligence Today: Recent Trends and Developments](https://link.springer.com/book/10.1007/3-540-48317-9), Springer LNAI 1600, 1999, pp 409-430_ 
+      
+### The Situation Calculus
+
+- [**Knowledge In Action: Logical Foundations for Specifying and Implementing Dynamical Systems **](https://mitpress.mit.edu/books/knowledge-action) 
+   - Raymond Reiter
+   - July 2001
+   - MIT Press
