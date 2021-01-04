@@ -1,12 +1,25 @@
 # Operators
 
-The goal of operators are to support syntax: They tune the parser so that you can write your expresssion (and read you expressions) more fluently.
+Some notes on [operators](https://eu.swi-prolog.org/pldoc/man?section=operators)
 
-This brings an interesting bag of complexity to any Prolog parser: The parser must be aware of what 
-operators are in effect at the current line to be able to properly parse it. This is why a "simple grammar" won't do.
+## Intro
+
+The goal of operators are to **support syntax**: They tune the parser so that you can write your expresssion (and read your expressions) more fluently
+than would otherwise be possible:
+
+Instead of
+
+`+(*(4,5),6)` 
+
+you can write
+
+`4*5 + 6`
+
+This brings an interesting bag of complexity to a Prolog parser: The parser must be aware of what 
+operators are in effect at any current line to be able to properly parse it. This is why a "grammar for Prolog" won't do.
 
 Operators say nothing about what they mean. What they mean depends on some processing predicate that is fed
-the term that has been built out of an expression written using operators.
+the term that has been built from an expression featuring operators.
 
 For example:
 
@@ -22,15 +35,15 @@ printed using [`write_canonical/1`](https://eu.swi-prolog.org/pldoc/man?predicat
 ```
 ?- 
 read_term_from_atom('1*3+4**5-66', X, []),    % parse the text into a term, and bind the variable X to that term 
-write_canonical(X).                           % write the term structure
+write_canonical(X).                           % write the term structure in canonical format
 ```
 
-which is just a roundabout way of doing the following, where parsing of `1*3+4**5-66` is done implicitly by the program text parser:
+The above is just a roundabout way of doing the following, where parsing of `1*3+4**5-66` is done implicitly by the program text parser:
 
 ```
 ?- 
 X = 1*3+4**5-66,                              % parse the text into a term, and bind the variable X to that term
-write_canonical(X).                           % write the term structure
+write_canonical(X).                           % write the term structure in canonical format
 ```
 
 In both cases, we get:
@@ -41,6 +54,8 @@ X = 1*3+4**5-66.
 ```
 
 Which is the following parse tree written in prefix notation:
+
+![
 
 Note that the Prolog reader has to make a decision on how to cut up the string `1*3+4**5-66` into distinct tokens: 
 
