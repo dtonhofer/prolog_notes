@@ -1,0 +1,60 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=call_with_depth_limit/3
+
+## Examples
+
+true/0 needs depth 1:
+
+```
+?- call_with_depth_limit(true,0,R).
+R = depth_limit_exceeded.
+
+?- 
+call_with_depth_limit(true,1,R).
+R = 1.
+```
+
+So does false/0:
+
+```
+?- call_with_depth_limit(false,0,R).
+R = depth_limit_exceeded.
+
+?- call_with_depth_limit(false,1,R).
+false.
+```
+
+So does is_list/1
+
+```
+?- call_with_depth_limit(is_list([a,b,c]),1,R).
+R = 1.
+```
+
+random_between/3 needs depth 2:
+
+```
+?- call_with_depth_limit(=random_between=(0,100,X1),1,R).
+R = depth_limit_exceeded.
+
+?- call_with_depth_limit(random_between(0,100,X1),2,R).
+X1 = 72,
+R = 2.
+```
+
+## It's stacked!
+
+A call_with_depth_limit/3 within a call_with_depth_limit/3 does **not** work in a "limited by both" fashion.
+
+Instead, while the inner call_with_depth_limit/3 is active, it's the one which counts, and the outer limit is disregarded. Once the Prolog processor backs out of the inner call_with_depth_limit/3 due to excessive depth, failure or success, the outer call_with_depth_limit/3 is in effect again.
+
+## How about tail call optimization?
+
+Apparently the mechanism behind call_with_depth_limit continues to count up on calls that are subject to tail-call optimization. 
+
+This is what one wants.
+
+See the test code below which can be nicely optimized but which is still properly limited.
+
+## Some code for experiments
+
+[deeper.pl](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_call_with_depth_limit/code/deeper.pl)

@@ -1,6 +1,50 @@
 https://eu.swi-prolog.org/Download.html
 
-TL;DR for "Install development version on Linux" (also described [here](https://eu.swi-prolog.org/build/unix.html) where there actually is now _less_ text 😬)
+TL;DR for "Install development version on Linux" (**official description** is [here](https://eu.swi-prolog.org/build/unix.html) where there actually is now _less_ text 😬)
+
+## Build script
+
+Here is a little bash script I use to set up a some SWIPL versions I used for development. It's too complex for general use, but it's all-in-one and rather foolproof; moving this from the back of the comment to the front of the comment. It's probably easier to pull off than doing it manually.
+
+[swiprologpull.sh](https://github.com/dtonhofer/prolog_notes/blob/master/compiling/swiprologpull.sh)
+
+   - Grab it 
+   - Modify the values at the top to your liking:
+      - `system_install_dir`
+      - `toplevel_dir_fq`
+   - The command to execute is: 
+      - `swiprologpull.sh clone system`  to download the SWI-Prolog distro/modules
+      - `swiprologpull.sh build system`  to build the SWI-Prolog distro
+
+It will ask you before letting loose:
+
+==
+$ ./swiprologpull.sh build system
+The version string obtained from the version file is '8.3.7'
+Full build ordered but directory 'build' already exists in '/home/paquette/Development/swiplmaking/swiplmaking7/system/swipl-devel_original' -- removing it
+Going to build the SWI-Prolog distro in: swipl-devel_original
+The build directory is                 : swipl-devel_original/build
+The installation directory is          : /usr/local/logic/swiplexe_8.3.7
+Performing a full build
+The following jar directory exists     : /home/paquette/Development/swiplmaking/swiplmaking7/jars
+   and the hamcrest jar exists         : /home/paquette/Development/swiplmaking/swiplmaking7/jars/hamcrest-2.2.jar
+   and the junit4 jar exists           : /home/paquette/Development/swiplmaking/swiplmaking7/jars/junit-4.13.jar
+Proceed? [Y/N]
+==
+
+To compile and test "JPL", the Java-Prolog bridge, you need to have a valid Java SDK on your system (Java 8 is recommended but Adopt JDK 14 seems to work too). The script needs to find the jars for **hamcrest** and **junit** in a directory called `jars` at the same level as the directory into which the SWI-Prolog distribution is cloned:
+
+```
+jars/hamcrest-2.2.jar
+jars/junit-4.13.jar
+```
+
+You get those jars from
+
+   - https://mvnrepository.com/artifact/org.hamcrest/hamcrest/
+   - https://mvnrepository.com/artifact/junit/junit/
+
+## Compiling manually
 
 With `bash`.
 
@@ -41,6 +85,9 @@ Now may also be the time to install additional packages that SWI-Prolog depends 
 **As non-root, in your home directory**
 
 ==
+# Sometimes environment variable SWI_HOME_DIR is left from a previous installation
+unset SWI_HOME_DIR
+
 # Define a shell variable with the location value
 install_under=/usr/local/logic
 
@@ -177,44 +224,3 @@ The above messages will point you to "problem solving pages" in this directory:
 
    - https://eu.swi-prolog.org/build/issues/
 
-## Build script
-
-Here is a little bash script I use to set up a some SWIPL versions I used for development. It's too complex for general use, but it's all-in-one and rather foolproof:
-
-[swiprologpull.sh](https://github.com/dtonhofer/prolog_notes/blob/master/compiling/swiprologpull.sh)
-
-   - Grab it 
-   - Modify the values at the top to your liking:
-      - `system_install_dir`
-      - `toplevel_dir_fq`
-   - The command to execute is: 
-      - `swiprologpull.sh clone system`  to download the SWI-Prolog distro
-      - `swiprologpull.sh build system`  to build the SWI-Prolog distro
-
-It will ask you before letting loose:
-
-==
-$ ./swiprologpull.sh build system
-The version string obtained from the version file is '8.3.7'
-Full build ordered but directory 'build' already exists in '/home/paquette/Development/swiplmaking/swiplmaking7/system/swipl-devel_original' -- removing it
-Going to build the SWI-Prolog distro in: swipl-devel_original
-The build directory is                 : swipl-devel_original/build
-The installation directory is          : /usr/local/logic/swiplexe_8.3.7
-Performing a full build
-The following jar directory exists     : /home/paquette/Development/swiplmaking/swiplmaking7/jars
-   and the hamcrest jar exists         : /home/paquette/Development/swiplmaking/swiplmaking7/jars/hamcrest-2.2.jar
-   and the junit4 jar exists           : /home/paquette/Development/swiplmaking/swiplmaking7/jars/junit-4.13.jar
-Proceed? [Y/N]
-==
-
-Not that to compile & test JPL; the Java-Prolog bridge, you need to have a valid Java JDK on your system and the above script needs to find the jars for hamcrest and junit in a directory called `jars` at the same level as the directory into which the SWI-Prolog distribution is cloned:
-
-```
-jars/hamcrest-2.2.jar
-jars/junit-4.13.jar
-```
-
-You get those jars from
-
-   - https://mvnrepository.com/artifact/org.hamcrest/hamcrest/
-   - https://mvnrepository.com/artifact/junit/junit/

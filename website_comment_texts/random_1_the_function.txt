@@ -1,0 +1,183 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=random/1           refer to f(random/1)
+https://eu.swi-prolog.org/pldoc/doc_for?object=random_between/3   **Sample applications for random_between**
+https://eu.swi-prolog.org/pldoc/doc_for?object=random/3           refer to f(random/1)
+https://eu.swi-prolog.org/pldoc/doc_for?object=f(random_float/0)  refer to f(random/1)
+https://eu.swi-prolog.org/pldoc/doc_for?object=f(random/1)        **General overview of randomizer predicates**, Comment etc.
+
+===
+https://eu.swi-prolog.org/pldoc/doc_for?object=f(random/1)
+===
+
+
+Let's make the distinction between the offer of built-in functions and library predicates clear:
+
+## 1) Built-in functions
+
+**random_float∕0** (function)
+
+Obtaining a pseudo-random **float** using the (built-in) **function** [`random_float∕0`](https://eu.swi-prolog.org/pldoc/doc_for?object=f%28random_float/0%29), which generates IEEE 64-bit floats _x_ from 0.0 < _x_ < 1.0 (both boundaries exclusive)
+
+```
+?- 
+X is random_float().
+X = 0.9494465703010132.
+```
+
+or without the 0-argument parentheses:
+
+```
+?- 
+X is random_float.
+X = 0.8947004522094781.
+```
+
+**random∕1** (function)
+
+Obtaining a pseudo-random **integer** using the (built-in) **function** [`random∕1`](https://eu.swi-prolog.org/pldoc/doc_for?object=f%28random/1%29) (i.e. the one on this page):
+
+```
+?- 
+X is random(0xFFFF).
+X = 48881.
+```
+
+## 2) Library predicates 
+
+**random∕1** (predicate)
+
+Obtaining a pseudo-random **float** using the (library) **predicate** random/1 from [*library(random)*](https://eu.swi-prolog.org/pldoc/man?section=random).
+
+This actually just calls random_float∕0 under the hood (inspect the source code from the page of random/1)
+
+```
+?- 
+random(X).
+X = 0.03479878770414104.
+```
+
+**random_between/3** (predicate)
+
+```
+?- 
+random_between(5,100,X).  
+X = 46.
+```
+
+Both boundaries are integer and inclusive.
+
+**maybe/0 etc.** (predicates)
+
+There is maybe/0, maybe/1, maybe/2, useful for random execution path selection ([Randomized Algorithms](https://en.wikipedia.org/wiki/Randomized_algorithm))
+
+```
+?- (maybe -> write("heads"); write("tails")).
+```
+
+**random_member/2**
+
+There is random_member/2, nice for raffles:
+
+```
+?- random_member(X,[1,2,3,4,5,6]).
+X = 2.
+```
+
+**DEPRECATED: random/3**
+
+There is also the **deprecated** random/3 which works for both integers and floats, with the upper boundary **exclusive** but the lower **inclusive** in both cases:
+
+```
+?- 
+random(5,100,X),random(0.5,0.8,Y).
+X = 92,
+Y = 0.5810354805679784.
+```
+
+## More randomness?
+
+As said, for better (but still pseudo-random) numbers, use crypto_n_random_bytes/2
+
+```
+?- crypto_n_random_bytes(5,Bytes).
+Bytes = [222, 115, 198, 244, 228].
+```
+
+The appropriate OpenSSL man page for that would be (I think), "man RAND_bytes":
+
+https://www.openssl.org/docs/manmaster/man3/RAND_bytes.html
+
+### Still need more bytes?
+
+On Unix you may also directly get your bytes from the files /dev/random (blocks waiting for randomness from system activity) and /dev/urandom (does not block but emits pseudo-random bytes if there is not enough randomness from system activity, however that is measured)
+
+See also https://en.wikipedia.org/wiki//dev/random
+
+### Going extreme
+
+Extreme alternative & programming fun: Use the HTTP connector to get your random bytes from Internet paid services such as https://api.random.org/json-rpc/2 
+
+### Reading
+
+"Algorithmic Randomness" (Rod Downey & Denis R. Hirschfeldt, 2018):
+
+https://homepages.ecs.vuw.ac.nz/~downey/publications/algrand18.pdf
+
+## Generating random atoms 
+
+I need these for testing. 
+
+Although it uses the random/1 predicate instead of the function, I will just leave it here:
+
+   - [`random_atom.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/random_atom.pl)
+   - [`random_atom.plt`](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/random_atom.plt)
+
+For example:
+
+```
+?- random_text(Text,10,[what_text(string)]).
+Text = "moxnjhkujz".
+
+?- random_text(Text,10,[what_text(atom)]).
+Text = wshfeotfgr.
+```
+
+# Documentation convention needs help!
+
+Although the name of this entry is (as given by the URL)
+
+```
+f(random_float/0)
+```
+
+and the header says "Function random_float∕0", the **name of the function is not recognized**. 
+
+No URL is automatically inserted and the entry is rendered in red:
+
+random_float/0
+
+(Moreover, the subheading says just "random_float".)
+
+By default the entry for random∕1 (reasonably) points to the entry for predicate random/1 in library(random), NOT to the page for the function random/1 (i.e. this page). 
+
+How to specify and distinguish the case predicate and (arithmetic) function?
+
+**A new convention?**
+
+_Someone_ should maybe define a notational convention for functions (as opposed to predicates, which are named by name/arity "functors" or "predicate indicators"), as the
+ISO standard has omitted to take responsibility on that. Something like
+ 
+**random_float∕∕∕0** (three slashes indicate "function" of the given arity) 
+
+or 
+
+**random_float∕>0** (a function dataflows in a clear direction, which is suggested by the `>`). 
+
+**P.S.**
+
+To not make the pldoc generator create an URL automatically from a "predicate indicator" as done above in some places: Instead of the slash =/= use the similar-looking math glyph =∕=, Unicode 0x2215. See https://en.wikipedia.org/wiki/Mathematical_operators_and_symbols_in_Unicode:
+
+   - random/0 - Uses slash
+   - random∕0 - Uses 0x2215, just copy and paste it into the slash's position
+
+
+

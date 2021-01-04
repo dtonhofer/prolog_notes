@@ -1,0 +1,30 @@
+https://eu.swi-prolog.org/pldoc/man?section=strings
+
+This is a good way to implement [Here Documents](https://en.wikipedia.org/wiki/Here_document) (i.e. text directly included in the source, possibly subject to "interpolation" of variables) in Prolog.
+
+For quasi-quotation syntax as used here (defined for the keyword `string`), see
+
+[`library(quasiquotations)`](https://eu.swi-prolog.org/pldoc/man?section=quasiquotations)
+
+Another attempt at test code in SWI-Prolog 8.3.9:
+
+```
+:- use_module(library(strings)).
+  
+:- begin_tests(here_document).
+
+test("generate greeting",true(TXT == 'Dear Perl Developer,\n\nI\'m happy to announce a\nstring interpolation quasi quoter\nfor Prolog!\n')) :-
+    [To,Lang] = ["Perl Developer","Prolog"],
+    with_output_to(atom(TXT),
+       write({|string(To,Lang)||
+              | Dear {To},
+              |
+              | I'm happy to announce a
+              | string interpolation quasi quoter
+              | for {Lang}!
+              |})),
+    format("~w\n",[TXT]).
+    
+:- end_tests(here_document).
+```
+
