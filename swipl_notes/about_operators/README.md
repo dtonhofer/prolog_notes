@@ -55,15 +55,15 @@ X = 1*3+4**5-66.
 
 Which is the following parse tree written in prefix notation:
 
-![
+![parse tree of `1*3+4**5-66`](parse_tree.png)
 
-Note that the Prolog reader has to make a decision on how to cut up the string `1*3+4**5-66` into distinct tokens: 
+Note that the Prolog reader/parser has to make a decision on how to cut up the string `1*3+4**5-66` into distinct tokens: 
 
 ```
 1*3+4**5-66  -> 1 * 3 + 4 ** 5 - 66
 ```
 
-and these can then be assembled into a parse tree.
+These can then be assembled into a parse tree.
 Sometimes this tokenization does not do what one wants. Then parentheses need to be used or separating whitespace needs to be added:
 
 The first token here is `-2`:
@@ -77,7 +77,7 @@ write_canonical(X).
 X = -2**66.
 ```
 
-You may want `-(2)` (the token `-` and the token `2`, which is mapped to an unary operator):
+You may want `-(2)` (the token `-`, mapped to an unary operator prefixing the parenthesized token `2`). 
 
 ```
 ?- 
@@ -88,9 +88,17 @@ write_canonical(X).
 X =  (- 2)**66.
 ```
 
-Or maybe have the `-` in front of the `**` subexpression:
+Reasonably, `-(2)` reduces to the integer `-2` when passed through `is`:
 
-`` 
+```
+?- 
+X is  (-(2))**66.
+X = 73786976294838206464.
+```
+
+You may also want to see the `-` in front of the `**` subexpression:
+
+``` 
 ?- 
 X = - 2**66,
 write_canonical(X).
@@ -100,26 +108,38 @@ X = - 2**66.
 ```
 
 So, what do we do with the term `-(+(*(1,3),**(4,5)),66)`, which is a parse tree, with operators (and operands) 
-as tree nodes? Well, for example, one can feed it to an arithmetic expression evaluation engine. But that is outside 
-of the scope of "operators".
+as tree nodes? Well, for example, one can feed it to an arithmetic expression evaluation engine made available via `is`. 
+But that is outside of the scope of "operators".
 
 ## The `op/3` command
 
 The [`op/3`](https://www.swi-prolog.org/pldoc/doc_for?object=op/3) command, `op(+Precedence, +Type, :Name)` takes:
 
-   - **Precedence**: A numeric value between ⁰ and 1200. I prefer to call this **Precedence Value** instead of
-     **Precedence** because the two vary in inverse sense: The _higher_ the Precedence Value, the _lower_ the Precedence.
-     If you build the parse tree bottom-up, operators with low Precedence Value glom to their neighboring tokens first,
-     they are "near the leaves" of the parse tree. On the other hand. operators with high Precedence Value are left for late
-     in parse tree construction, they are "near the root" of the parse tree.
+   - **Precedence**: A numeric value between 0 and 1200. For clarity let's use the designation 
+     **Precedence Value** for the numeric value instead of **Precedence** because the two vary inversely: 
+     _The higher the precedence value, the lower the precedence._ If you build the parse tree bottom-up, operators
+     with low precedence value (and thus high precedence) glom onto their neighboring tokens first they are moved "to the leaves" 
+     of the parse tree. On the other hand. operators with high precedence value are left for late
+     in parse tree construction, they are moved "to the root" of the parse tree. 
    - **Name**: The atom designating the operator, which becomes the "functor name" of respective the node in the parse tree.
-   - **Type**: Indication to the parser regarding
-        - Whether this is a prefix operator, a postfix operator or an infix operator
-        - How to disambiguate a sequence of non-parenthesized operators with the same precedence value
+   - **Type**: Indication to the parser regarding:
+        - Whether this is a prefix operator, a postfix operator or an infix operator ; 
+        - How to disambiguate a sequence of non-parenthesized operators with the same precedence value.
      
-The parse tree from earlier, with precedence values and types indicates. Subtrees/Terms with precedence value 0
-(i.e. subtrees which do not have an operators as their root or subtrees which have been parenthesized explicitly, of which there
-are none here though) are shown in blue with no precedence. 
+Note that all of this is only relevant if an expression is unparenthesized and thus ambiguity arises as to how the parse
+tree should be structured. Once a subtree has been built from an operator and its one or two operands, the operand's precedence
+value becomes irrelevant and can be considered to be 0. Evidently if a subexpression is parenthesized, there is also no
+ambiguity above that parenthesized subexpression. So it also can be given precedence value 0.
+
+Here is a parsing example of the expression of earlier. Subtrees are created, with operators having highest
+precedence (lowest precedence value) handled first. An ambiguity arises for the operators `+` and `-`, both
+at precedence level 500. This is resolved by noticing that both operators have type `yfx` which means that 
+these operators can indeed co-exist in expression on the same level and then shall be considered left-associative.
+The final parse tree follows.
+
+![parse tree with precedence values](parse_tree_with_precedence_values.png)
+
+## op types explained!
 
 The following types exist:   
    
@@ -151,19 +171,15 @@ The following types exist:
                `yfx` (including `f` itself). The operator (and its neighboring operators) are considered **left-associative**. 
                The expression is parenthesized and the parse tree built accordingly.              
 
-## Example for prefix operators
+## Examples for prefix operators
 
 Define the following, using some interesting characters from the
 [Unicode Math pages](https://en.wikipedia.org/wiki/Mathematical_operators_and_symbols_in_Unicode):
 
-% Precedence value to the right must be lower or equal (more leaflike, higher precedence) -> no parentheses needed, repeat operators will work 	 
-% Precedence value to the right must be strictly lower (strictly more leaflike, higher precedence) -> repeat operators won't work
-
 ```
-?-
-op(500,fy,⊓), op(500,fx,⊔), 
-op(400,fx,⊗), 
-op(500,fy,∆), op(400,fy,⊞),
+op(500,fy,⊓).
+op(500,fy,∆).
+op(400,fy,⊞).
 ```
 
 Unparenthesized repeats are allowed for ⊓, although whitespace is needed for proper tokenization:
@@ -185,14 +201,15 @@ Mixing with a prefix operator having the same precedence value and type is ok:
 X = ⊓ ∆ ∆ ⊓g(x).
 ```
 
-Mixing with a prefix operator having lower precedence value is only ok if you parenthesize or glom onto the precedence 0 element:
+Mixing with a prefix operator having lower precedence value does not work:
 
 ```
 ?- X = ⊓ ∆ ⊞ ⊓g(x), write_canonical(X).
+
 ERROR: Syntax error: Operator priority clash
 ```
 
-Parenthesize then:
+You need to parenthesize:
 
 ```
 ?- X = ⊓ ∆ ⊞ (⊓g(x)), write_canonical(X).
@@ -201,39 +218,46 @@ Parenthesize then:
 X = ⊓ ∆ ⊞ (⊓g(x)).
 ```
 
-```
-?- X = ⊓ ∆ ⊞ g(x), write_canonical(X).
-
-⊓(∆(⊞(g(x))))
-X = ⊓ ∆ ⊞g(x).
-```
-
-`+` has precedence value, 500, yfx
+Try composing with `+`, which has precedence value 500 and type `yfx`:
 
 ```
-?- X = ⊓ ⊓ 4 + 5, write_canonical(X).
+?- 
+X = ⊓ ⊓ 4 + 5, write_canonical(X).
+
 +(⊓(⊓(4)),5)
 X = ⊓ ⊓4+5.
 
-?- X = ⊓ ⊓ (4 + 5), write_canonical(X).
+?- 
+X = ⊓ ⊓ (4 + 5), write_canonical(X).
+
 ⊓(⊓(+(4,5)))
-X = ⊓ ⊓4+5.    % This looks like a bug!
+X = ⊓ ⊓4+5.    % This looks like a bug though, that shouldn't be written this way
 
-?- X = ⊓ ⊓4+5, write_canonical(X).
+?- 
+X = ⊓ ⊓4+5, write_canonical(X).
+
 +(⊓(⊓(4)),5)
 X = ⊓ ⊓4+5.
+```
 
-`*` has precedence value, 400, yfx
+Try composing with `*`, which has precedence value 400 and type `yfx`: 
 
-?- X = ⊓ ⊓ 4 * 5, write_canonical(X).
+```
+?- 
+X = ⊓ ⊓ 4 * 5, write_canonical(X).
+
 ⊓(⊓(*(4,5)))
 X = ⊓ ⊓4*5.
 
-?- X = ⊓ ⊓ (4 * 5), write_canonical(X).
+?- 
+X = ⊓ ⊓ (4 * 5), write_canonical(X).
+
 ⊓(⊓(*(4,5)))
 X = ⊓ ⊓4*5.
 
-?- X = ⊓ ⊓4*5, write_canonical(X).
+?- 
+X = ⊓ ⊓4*5, write_canonical(X).
+
 ⊓(⊓(*(4,5)))
 X = ⊓ ⊓4*5.
 ```
@@ -244,6 +268,7 @@ Unparenthesized repeats are not allowed:
 
 ```
 ?- X = ⊔ ⊔ ⊔ g(x), write_canonical(X).
+
 ERROR: Syntax error: Operator priority clash
 ```
 
@@ -251,11 +276,10 @@ Parenthesized repeats are of course ok:
 
 ```
 ?- X = ⊔(⊔(⊔ g(x))), write_canonical(X). 
+
 ⊔(⊔(⊔(g(x))))
 X = ⊔ (⊔ (⊔g(x))).
 ```
 
-Operator `*` is precedence value 400, so has higher precedence. This means 
-
-
+## Examples for infix operators
 
