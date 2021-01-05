@@ -2,6 +2,8 @@
 
 Some accompanying notes on the pages concerning [operators](https://eu.swi-prolog.org/pldoc/man?section=operators) from the SWI-Prolog manual.
 
+Code to list the operators currently configured in the system: [`list_ops.pl`](code/list_ops.pl)
+
 ## Intro
 
 The goal of operators are to **support syntax**: They tune the parser so that you can write your expresssion (and read your expressions) more fluently
