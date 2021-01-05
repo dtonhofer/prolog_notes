@@ -145,7 +145,7 @@ The final parse tree follows.
 
 The following types exist:   
    
-   - **Postfix operator**: 
+   - **Unary postfix operator**: 
       - **yf**: This operator can appear in a sequence of unparenthesized postfix operators that have the same precedence value and also type `yf`.
               In particular, it can form unparenthesized repeats, as in `g(x) f f f`. The leftmost unparenthesized prefixed expression can
               be composed of an operator of the same precedence value. The implied parenthetization is "the leftmost subexpression is innermost".              
@@ -154,7 +154,7 @@ The following types exist:
       - **xf**:  This operator cannot appear in a sequence of unparenthesized postfix operators that have the same precedence value.
               In particular, it does not allow forming unparenthesized repeats. The postfixed subexpression **must be** of lower precedence value
               (which happens in particular if it is parenthesized).
-   - **Prefix operator**:   
+   - **Unary prefix operator**:   
       - **fy**: This operator can appear in a sequence of unparenthesized prefix operators that have the same precedence value and also type `fy`.
               In particular, it can form unparenthesized repeats, as in `f f f g(x)`. The rightmost unparenthesized prefixed expression can
               be composed of an operator of the same precedence value. The implied parenthetization is "the rightmost subexpression is innermost".              
@@ -163,17 +163,17 @@ The following types exist:
       - **fx**: This operator cannot appear in a sequence of unparenthesized prefix operators that have the same precedence.
               In particular, it does not allow forming unparenthesized repeats. The prefixed subexpression **must be** of lower precedence value
               (which happens in particular if it is parenthesized).
-   - **Infix operator**:   
+   - **Binary infix operator**:   
       - **xfx**: This operator cannot appear in an expression with other operators that have the same precedence value, in particular, in 
                expression where there are several `f`. It is **non-associative**.  Add parentheses as needed.
       - **xfy**: This operator can appear in an unparenthesized expression with other operators that have the same precedence value and also type
-               `xfy` (including `f` itself). The operator (and its neighboring operators) are considered **right-associative**.
-               The expression is implicitly parenthesized and the parse tree built accordingly.
+               `xfy` (including `f` itself). The operator (and its neighboring operators) are considered **right-associative**: `a f b f c f d`
+               is implicitly parenthesized as `a f (b f (c f d))`.
       - **yfx**: This operator can appear in an unparenthesized expression with other operators that have the same precedence value and also type
-               `yfx` (including `f` itself). The operator (and its neighboring operators) are considered **left-associative**. 
-               The expression is parenthesized and the parse tree built accordingly.              
+               `yfx` (including `f` itself). The operator (and its neighboring operators) are considered **left-associative**: `a f b f c f d`
+               is implicitly parenthesized as `(((a f b) f c) f d)`.
 
-## Examples for prefix operators
+## Examples for unary prefix operators
 
 Define the following, using some interesting characters from the
 [Unicode Math pages](https://en.wikipedia.org/wiki/Mathematical_operators_and_symbols_in_Unicode):
@@ -186,6 +186,8 @@ op(400,fy,⊞).
 
 ### Type _fy_ 
 
+**Repeats**
+
 Unparenthesized repeats are allowed for ⊓, although whitespace is needed for proper tokenization:
 
 ```
@@ -196,7 +198,9 @@ X = ⊓ ⊓ ⊓ ⊓g(x), write_canonical(X).
 X = ⊓ ⊓ ⊓ ⊓g(x).
 ```
 
-Mixing with a prefix operator having the same precedence value and type is ok:
+**Mixing with another prefix operator**
+
+Mixing with a prefix operator having the same precedence value and type is fine:
 
 ```
 ?- 
@@ -206,7 +210,7 @@ X = ⊓ ∆ ∆ ⊓g(x), write_canonical(X).
 X = ⊓ ∆ ∆ ⊓g(x).
 ```
 
-Mixing with a prefix operator having lower precedence value does not work:
+Mixing with a prefix operator having lower precedence value (i.e. higher precedence) does not work:
 
 ```
 ?- 
@@ -225,7 +229,10 @@ X = ⊓ ∆ ⊞ (⊓g(x)), write_canonical(X).
 X = ⊓ ∆ ⊞ (⊓g(x)).
 ```
 
-Try composing with `+`, which has precedence value 500 and type `yfx`:
+**Mixing with a same-precedence left-associative infix operator**
+
+Try composing with `+`, which has precedence value 500 and type `yfx`, i.e. has some precedence as `⊓`,
+but is infix & left-associative. What will happen, which operator wins.
 
 ```
 ?- 
@@ -235,13 +242,19 @@ X = ⊓ ⊓ 4 + 5, write_canonical(X).
 X = ⊓ ⊓4+5.
 ```
 
+This is different than above. However, the (non-canonical) printer prints it the same way,
+`X = ⊓ ⊓4+5`, creating ambiguity for the user: `+(⊓(⊓(4)),5)` and `⊓(⊓(+(4,5)))` 
+are indistinguishable. 
+
 ```
 ?- 
 X = ⊓ ⊓ (4 + 5), write_canonical(X).
 
 ⊓(⊓(+(4,5)))
-X = ⊓ ⊓4+5.    % This looks like a bug though, that shouldn't be written this way
+X = ⊓ ⊓4+5.    % This looks like a problem ... 
 ```
+
+When read back-in, `⊓ ⊓4+5` is interpreted as `+(⊓(⊓(4)),5)`
 
 ```
 ?- 
@@ -250,6 +263,77 @@ X = ⊓ ⊓4+5, write_canonical(X).
 +(⊓(⊓(4)),5)
 X = ⊓ ⊓4+5.
 ```
+
+Better beware when programming and use parentheses. And when printing (but not wanting to
+use `write_canonical/1`) this seems to require a special printing algorithm that injects
+parenthesis where they are needed. This printing algorithm could then check whether the
+printed representation indeed parses back to the original tree before putting it on screen.
+
+In [Issue 761](https://github.com/SWI-Prolog/swipl-devel/issues/761), Jan Wielemaker writes:
+
+> It is indeed not good. On the other hand this is basically ambiguous as both `⊓` and `+` winning
+> satisfies the operator constraints. I think this is not allowed in ISO. SWI-Prolog's parser
+> is more relaxed than ISO. SICStus Prolog parser is even more relaxed, doing a search process
+> that commits to the first solution. That too results in various non-intuitive results.
+> I've had some discussion with SICStus on this matter. Despite their strict adherence to the 
+> ISO standard they had concluded that their users did not like enforcing the restricted ISO 
+> interpretation of operators.
+>
+> Bottom line: make sure the operators you intend to combine are not ambiguous. Then you will
+> still be faced with a few cases where the SWI-Prolog parser may reject thing that you'd expect
+> to be accepted. SICStus will accept them all and ISO will reject more.
+> 
+> My recent encounters with this stuff have learned me that is is probably unwise to modify
+> anything or (eventually) adhere the SICStus model.
+
+**Mixing with a same-precedence right-associative infix operator**
+
+Try composing with an operator which has precedence value 500 and type `xfy`, i.e. has some precedence as `⊓`,
+but is infix & right-associative. There is no such operator in Prolog, so we define `⊳`. What will happen, which operator wins.
+
+```
+op(500,fy,⊓).   % as previously
+op(500,xfy,⊳).  % right-associative (for binary operators with the same precedence value)
+```
+
+```
+?- 
+X = ⊓ ⊓ 4 ⊳ 5, write_canonical(X).
+
+⊓(⊓(⊳(4,5)))
+X = ⊓ ⊓4⊳5.
+```
+
+Compare with
+
+```
+?- 
+X = ⊓ ⊓ 4 + 5, write_canonical(X).
++(⊓(⊓(4)),5)
+X = ⊓ ⊓4+5.
+```
+
+Try with parentheses:
+
+```
+?- 
+X = (⊓ ⊓ 4) ⊳ 5, write_canonical(X).
+⊳(⊓(⊓(4)),5)
+X =  (⊓ ⊓4)⊳5.
+```
+
+Read the non-canonical input back in:
+
+```
+?-
+X = ⊓ ⊓4⊳5, write_canonical(X).
+⊓(⊓(⊳(4,5)))
+X = ⊓ ⊓4⊳5.
+```
+
+Looks stable.
+
+**Mixing with a higher-precedence left-associative infix operator**
 
 Try composing with `*`, which has precedence value 400 and type `yfx`: 
 
@@ -269,6 +353,8 @@ X = ⊓ ⊓ (4 * 5), write_canonical(X).
 X = ⊓ ⊓4*5.
 ```
 
+Read the non-canonical input back in:
+
 ```
 ?- 
 X = ⊓ ⊓4*5, write_canonical(X).
@@ -276,6 +362,8 @@ X = ⊓ ⊓4*5, write_canonical(X).
 ⊓(⊓(*(4,5)))
 X = ⊓ ⊓4*5.
 ```
+
+Looks stable.
 
 ### Type _fx_
 
@@ -300,7 +388,7 @@ X = ⊔(⊔(⊔ g(x))), write_canonical(X).
 X = ⊔ (⊔ (⊔g(x))).
 ```
 
-## Examples for infix operators
+## Examples for binary infix operators
 
 Try these:
 
@@ -311,7 +399,7 @@ op(500,xfx,⋂).  % non-associative
 op(400,xfx,⋃).  % non-associative, lower precedence value (higher precedence)
 ```
 
-### Type _xfx_
+### Type _xfx_ (non-associative)
 
 The non-associative operators work as expected:
 
@@ -364,7 +452,7 @@ X = dd ⋃ aa ⋂ bb ⋃ cc, write_canonical(X).
 X = dd⋃aa⋂bb⋃cc.
 ```
 
-### Type _xfy_
+### Type _xfy_ (right-associative)
 
 The right-associative operator works as expected:
 
@@ -386,7 +474,7 @@ X = ((aa ⊳ bb) ⊳ cc) ⊳ dd, write_canonical(X).
 X =  ((aa⊳bb)⊳cc)⊳dd.
 ```
 
-### Type _yfx_
+### Type _yfx_ (left-associative)
 
 Similarly for the left-associative operator:
 
