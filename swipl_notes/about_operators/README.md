@@ -268,6 +268,8 @@ Better beware when programming and use parentheses. And when printing (but not w
 use `write_canonical/1`) this seems to require a special printing algorithm that injects
 parenthesis where they are needed. This printing algorithm could then check whether the
 printed representation indeed parses back to the original tree before putting it on screen.
+Or you can define distinct precedence values for each operator, making parsing and
+printing unambiguous - but will the user know about those values?
 
 In [Issue 761](https://github.com/SWI-Prolog/swipl-devel/issues/761), Jan Wielemaker writes:
 
