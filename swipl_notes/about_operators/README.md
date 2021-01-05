@@ -302,7 +302,7 @@ X = ⊔ (⊔ (⊔g(x))).
 
 ## Examples for infix operators
 
-Try these;
+Try these:
 
 ```
 op(500,xfy,⊳).  % right-associative (for binary operators with the same precedence value)
@@ -310,6 +310,8 @@ op(500,yfx,⊲).  % left-associative (for binary operators with the same precede
 op(500,xfx,⋂).  % non-associative
 op(400,xfx,⋃).  % non-associative, lower precedence value (higher precedence)
 ```
+
+### Type _xfx_
 
 The non-associative operators work as expected:
 
@@ -321,7 +323,7 @@ X = aa ⋂ bb, write_canonical(X).
 X = aa⋂bb.
 ```
 
-The ambinguity of several non-associative operators cannot be resolved:
+The ambinguity of several non-associative operators with the same precedence cannot be resolved:
 
 ```
 ?- 
@@ -330,13 +332,18 @@ X = aa ⋂ bb ⋂ cc.
 ERROR: Syntax error: Operator priority clash
 ```
 
-Parenthesize as needed:
+Parenthesize as needed then:
 
 ```
-?- X = aa ⋂ (bb ⋂ cc).
+?- X = aa ⋂ (bb ⋂ cc), write_canonical(X).
+
+⋂(aa,⋂(bb,cc))
 X = aa⋂(bb⋂cc).
 
-?- X = (aa ⋂ bb) ⋂ cc.
+
+?- X = (aa ⋂ bb) ⋂ cc, write_canonical(X).
+
+⋂(⋂(aa,bb),cc)
 X =  (aa⋂bb)⋂cc.
 ```
 
@@ -357,6 +364,8 @@ X = dd ⋃ aa ⋂ bb ⋃ cc, write_canonical(X).
 X = dd⋃aa⋂bb⋃cc.
 ```
 
+### Type _xfy_
+
 The right-associative operator works as expected:
 
 ```
@@ -376,6 +385,8 @@ X = ((aa ⊳ bb) ⊳ cc) ⊳ dd, write_canonical(X).
 ⊳(⊳(⊳(aa,bb),cc),dd)
 X =  ((aa⊳bb)⊳cc)⊳dd.
 ```
+
+### Type _yfx_
 
 Similarly for the left-associative operator:
 
