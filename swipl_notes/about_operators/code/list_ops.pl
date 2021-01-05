@@ -1,5 +1,9 @@
 % =============================================================================
-% Code to list the operators currently configured. Just call list_ops/0.
+% Code to list the operators currently configured. 
+%
+% Just call list_ops/0 for a text ouput.
+% 
+% Maybe such a command should be in the distribution.
 % =============================================================================
 % ronerycoder@gluino.name (me) says this is licensed under 
 % https://opensource.org/licenses/0BSD
