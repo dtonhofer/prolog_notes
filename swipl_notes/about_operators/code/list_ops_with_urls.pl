@@ -1,11 +1,11 @@
 % =============================================================================
-% Code to list the operators currently configured. Just call list_ops/0.
+% Code to list the operators currently configured. Just call list_ops_with_urls/0.
 % =============================================================================
 % ronerycoder@gluino.name (me) says this is licensed under 
 % https://opensource.org/licenses/0BSD
 % =============================================================================
 
-list_ops :-
+list_ops_with_urls :-
    bagof(PrecVal,Type^Name^current_op(PrecVal,Type,Name),AllPrecVals),
    sort(AllPrecVals,AllPrecValsSorted),  % duplicates have been removed!
    AllPrecValsSorted=[MinPrecVal|_],
@@ -75,14 +75,14 @@ append_op_info(_,_).
 
 op_info('-->'  , xfx , "DCG head-body separator" , "man?section=DCG").
 op_info(':-'   , fx  , "Directive prefix as used in source code" , "").
-op_info(':-'   , xfx , "Clause head-body separator" , "").
+op_info(':-'   , xfx , "Clause head-body separator (left-pointing material implication of constructive logic or positive classical logic)" , "").
 op_info('?-'   , fx  , "Query prefix as used on the command line", "").
 
-op_info('|'    , xfy , "Old-school 'or'", "doc_for?object=('|')/2").
-op_info(';'    , xfy , "Meta-predicate to combine goals into a (constructive) 'or' or Else part of If-Then-Else","doc_for?object=(%3B)/2").
+op_info('|'    , xfy , "Old-school disjunction meta-predicate", "doc_for?object=('|')/2").
+op_info(';'    , xfy , "Meta-predicate to combine goals into a (constructive) disjunction. Also 'else' part of 'if-then-else'","doc_for?object=(%3B)/2").
 op_info('*->'  , xfy , "Soft-cut","doc_for?object=(*->)/2").
 op_info('->'   , xfy , "If-Then (and maybe Else)","doc_for?object=(->)/2").
-op_info(','    , xfy , "Meta-predicate to combine goals into an 'and'","doc_for?object=(%27,%27)/2").
+op_info(','    , xfy , "Meta-predicate to combine goals into a conjunction","doc_for?object=(%27,%27)/2").
 op_info('\\+'  , fy  , "Negation-as-failure operator","doc_for?object=(%5C%2B)/1").
 op_info(':='   , xfx , "","").
 
@@ -140,6 +140,6 @@ op_info('**'   , xfx , "Arithmetic float or integer exponentiation","doc_for?obj
 op_info('+'    , fy  , "Arithmetic unary + sign", "doc_for?object=f((%2B)/1)").
 op_info('-'    , fy  , "Arithmetic unary - sign", "doc_for?object=f((-)/1)").
 op_info('\\'   , fy  , "Bitwise negation (one complement)", "doc_for?object=f((%5C)/1)").
-op_info('^'    , xfy , "Arithmetic float or integer exponentiation","doc_for?object=f((^)/2)").
+op_info('^'    , xfy , "Arithmetic float or integer exponentiation (also existential quantifier for bagof/3, setof/3)","doc_for?object=f((^)/2)").
 
-op_info('.'    , yfx , "Dict entry dereferencing and dict function call","man?section=bidicts").
+op_info('.'    , yfx , "Dict entry dereferencing and dict function call (also char-to-charcode conversion in arithmetic expressions)","man?section=bidicts").
