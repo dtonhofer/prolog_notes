@@ -141,7 +141,7 @@ The final parse tree follows.
 
 ![parse tree with precedence values](pics/parse_tree_with_precedence_values.png)
 
-## op types explained!
+## op types explained!<a name="op_types_explained"></a>
 
 The following types exist:   
    
