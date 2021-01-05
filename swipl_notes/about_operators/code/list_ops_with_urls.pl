@@ -1,5 +1,13 @@
 % =============================================================================
-% Code to list the operators currently configured. Just call list_ops_with_urls/0.
+% Code to list the operators configured at call time.
+%
+% Just call list_ops_with_urls/0.
+%
+% Output is in pldoc format (more or less markdown format).
+%
+% For known operators, a description and a link into the manual are provided
+% via predicate op_info/4. If they exist, description and link are bashed
+% into a pldoc URL and printed.
 % =============================================================================
 % ronerycoder@gluino.name (me) says this is licensed under 
 % https://opensource.org/licenses/0BSD
@@ -97,7 +105,6 @@ op_info('table'                 , fx , "Declares a predicate as subject to tabli
 op_info('thread_initialization' , fx , "Marks goal to be called when thread is started", "doc_for?object=(thread_initialization)/1").
 op_info('thread_local'          , fx , "Declares a predicate as dynamic, but local to the thread","doc_for?object=(thread_local)/1").
 op_info('volatile'              , fx , "Declares a predicate as not to be saved into a state file","doc_for?object=(volatile)/1").
-  
 op_info('+'    , yfx , "Arithmetic addition" , "doc_for?object=f((%2B)/2)"). 
 op_info('-'    , yfx , "Arithmetic subtraction" , "doc_for?object=f((-)/2)").
 op_info('/\\'  , yfx , "Bitwise AND" , "doc_for?object=f((/%5C)/2)").
@@ -133,7 +140,7 @@ op_info('@>='  , xfx , "Standard order of terms greater-than-or-equal test", "do
 op_info('\\='  , xfx , "Unification failure", "doc_for?object=(%5C%3D)/2").
 op_info('\\==' , xfx , "Term non-equivalence", "doc_for?object=(%5C%3D%3D)/2").
 op_info('\\=@=', xfx , "Term structural non-equivalence","doc_for?object=(%5C%3D@%3D)/2").
-op_info('as'   , xfx , "", "").
+op_info('as'   , xfx , "Particle used to add tabling options after table/1", "doc_for?object=(table)/1").
 op_info('is'   , xfx , "Arithmetic evaluation of RHS followed by unification with LHS","doc_for?object=(is)/2").
 
 op_info('**'   , xfx , "Arithmetic float or integer exponentiation","doc_for?object=f((**)/2)").
