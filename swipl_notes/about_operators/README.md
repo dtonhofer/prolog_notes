@@ -168,10 +168,10 @@ The following types exist:
                expression where there are several `f`. It is **non-associative**.  Add parentheses as needed.
       - **xfy**: This operator can appear in an unparenthesized expression with other operators that have the same precedence value and also type
                `xfy` (including `f` itself). The operator (and its neighboring operators) are considered **right-associative**: `a f b f c f d`
-               is implicitly parenthesized as `a f (b f (c f d))`.
+               is implicitly parenthesized as `a f (b f (c f d))`. (mnemonic: the heavy part of the parse tree is on the heavier letter "y": right)
       - **yfx**: This operator can appear in an unparenthesized expression with other operators that have the same precedence value and also type
                `yfx` (including `f` itself). The operator (and its neighboring operators) are considered **left-associative**: `a f b f c f d`
-               is implicitly parenthesized as `(((a f b) f c) f d)`.
+               is implicitly parenthesized as `(((a f b) f c) f d)`. (mnemonic: the heavy part of the parse tree is on the heavier letter "y": left)
 
 ## Examples for unary prefix operators
 
