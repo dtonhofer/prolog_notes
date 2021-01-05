@@ -165,7 +165,7 @@ The following types exist:
               (which happens in particular if it is parenthesized).
    - Infix operator:   
       - `xfx`: This operator cannot appear in an expression with other operators that have the same precedence value, in particular, in 
-               expression where there are several `f`. Add parentheses as needed.
+               expression where there are several `f`. It is **non-associative**.  Add parentheses as needed.
       - `xfy`: This operator can appear in an unparenthesized expression with other operators that have the same precedence value and also type
                `xfy` (including `f` itself). The operator (and its neighboring operators) are considered **right-associative**.
                The expression is implicitly parenthesized and the parse tree built accordingly.
@@ -183,6 +183,8 @@ op(500,fy,⊓).
 op(500,fy,∆).
 op(400,fy,⊞).
 ```
+
+### Type _fy_ 
 
 Unparenthesized repeats are allowed for ⊓, although whitespace is needed for proper tokenization:
 
@@ -231,13 +233,17 @@ X = ⊓ ⊓ 4 + 5, write_canonical(X).
 
 +(⊓(⊓(4)),5)
 X = ⊓ ⊓4+5.
+```
 
+```
 ?- 
 X = ⊓ ⊓ (4 + 5), write_canonical(X).
 
 ⊓(⊓(+(4,5)))
 X = ⊓ ⊓4+5.    % This looks like a bug though, that shouldn't be written this way
+```
 
+```
 ?- 
 X = ⊓ ⊓4+5, write_canonical(X).
 
@@ -253,19 +259,25 @@ X = ⊓ ⊓ 4 * 5, write_canonical(X).
 
 ⊓(⊓(*(4,5)))
 X = ⊓ ⊓4*5.
+```
 
+```
 ?- 
 X = ⊓ ⊓ (4 * 5), write_canonical(X).
 
 ⊓(⊓(*(4,5)))
 X = ⊓ ⊓4*5.
+```
 
+```
 ?- 
 X = ⊓ ⊓4*5, write_canonical(X).
 
 ⊓(⊓(*(4,5)))
 X = ⊓ ⊓4*5.
 ```
+
+### Type _fx_
 
 Let's try out `op(500,fx,⊔).`
 
@@ -289,5 +301,101 @@ X = ⊔ (⊔ (⊔g(x))).
 ```
 
 ## Examples for infix operators
+
+Try these;
+
+```
+op(500,xfy,⊳).  % right-associative (for binary operators with the same precedence value)
+op(500,yfx,⊲).  % left-associative (for binary operators with the same precedence value) 
+op(500,xfx,⋂).  % non-associative
+op(400,xfx,⋃).  % non-associative, lower precedence value (higher precedence)
+```
+
+The non-associative operators work as expected:
+
+```
+?- 
+X = aa ⋂ bb, write_canonical(X).
+
+⋂(aa,bb)
+X = aa⋂bb.
+```
+
+The ambinguity of several non-associative operators cannot be resolved:
+
+```
+?- 
+X = aa ⋂ bb ⋂ cc.
+
+ERROR: Syntax error: Operator priority clash
+```
+
+Parenthesize as needed:
+
+```
+?- X = aa ⋂ (bb ⋂ cc).
+X = aa⋂(bb⋂cc).
+
+?- X = (aa ⋂ bb) ⋂ cc.
+X =  (aa⋂bb)⋂cc.
+```
+
+It always works if the neighboring operators have lower precedence value:
+
+```
+?- X = aa ⋂ bb ⋃ cc, write_canonical(X).
+
+⋂(aa,⋃(bb,cc))
+X = aa⋂bb⋃cc.
+```
+
+```
+?-
+X = dd ⋃ aa ⋂ bb ⋃ cc, write_canonical(X).
+
+⋂(⋃(dd,aa),⋃(bb,cc))
+X = dd⋃aa⋂bb⋃cc.
+```
+
+The right-associative operator works as expected:
+
+```
+?- 
+X = aa ⊳ bb ⊳ cc ⊳ dd, write_canonical(X).
+
+⊳(aa,⊳(bb,⊳(cc,dd)))
+X = aa⊳bb⊳cc⊳dd.
+```
+
+Force it to associate on the left:
+
+```
+?- 
+X = ((aa ⊳ bb) ⊳ cc) ⊳ dd, write_canonical(X).
+
+⊳(⊳(⊳(aa,bb),cc),dd)
+X =  ((aa⊳bb)⊳cc)⊳dd.
+```
+
+Similarly for the left-associative operator:
+
+```
+?- 
+X = aa ⊲ bb ⊲ cc ⊲ dd, write_canonical(X).
+
+⊲(⊲(⊲(aa,bb),cc),dd)
+X = aa⊲bb⊲cc⊲dd.
+```
+
+Force it to associate on the right:
+
+```
+?- 
+X = aa ⊲ (bb ⊲ (cc ⊲ dd)), write_canonical(X).
+
+⊲(aa,⊲(bb,⊲(cc,dd)))
+X = aa⊲(bb⊲(cc⊲dd)).
+```
+
 
 
