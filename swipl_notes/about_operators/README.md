@@ -1,6 +1,6 @@
 # Operators
 
-Some notes on [operators](https://eu.swi-prolog.org/pldoc/man?section=operators)
+Some accompanying notes on the pages concerning [operators](https://eu.swi-prolog.org/pldoc/man?section=operators) from the SWI-Prolog manual.
 
 ## Intro
 
@@ -55,7 +55,7 @@ X = 1*3+4**5-66.
 
 Which is the following parse tree written in prefix notation:
 
-![parse tree of `1*3+4**5-66`](parse_tree.png)
+![parse tree of `1*3+4**5-66`](pics/parse_tree.png)
 
 Note that the Prolog reader/parser has to make a decision on how to cut up the string `1*3+4**5-66` into distinct tokens: 
 
@@ -137,7 +137,7 @@ at precedence level 500. This is resolved by noticing that both operators have t
 these operators can indeed co-exist in expression on the same level and then shall be considered left-associative.
 The final parse tree follows.
 
-![parse tree with precedence values](parse_tree_with_precedence_values.png)
+![parse tree with precedence values](pics/parse_tree_with_precedence_values.png)
 
 ## op types explained!
 
@@ -195,7 +195,8 @@ X = ⊓ ⊓ ⊓ ⊓g(x).
 Mixing with a prefix operator having the same precedence value and type is ok:
 
 ```
-?- X = ⊓ ∆ ∆ ⊓g(x), write_canonical(X).
+?- 
+X = ⊓ ∆ ∆ ⊓g(x), write_canonical(X).
 
 ⊓(∆(∆(⊓(g(x)))))
 X = ⊓ ∆ ∆ ⊓g(x).
@@ -204,7 +205,8 @@ X = ⊓ ∆ ∆ ⊓g(x).
 Mixing with a prefix operator having lower precedence value does not work:
 
 ```
-?- X = ⊓ ∆ ⊞ ⊓g(x), write_canonical(X).
+?- 
+X = ⊓ ∆ ⊞ ⊓g(x), write_canonical(X).
 
 ERROR: Syntax error: Operator priority clash
 ```
@@ -212,7 +214,8 @@ ERROR: Syntax error: Operator priority clash
 You need to parenthesize:
 
 ```
-?- X = ⊓ ∆ ⊞ (⊓g(x)), write_canonical(X).
+?- 
+X = ⊓ ∆ ⊞ (⊓g(x)), write_canonical(X).
 
 ⊓(∆(⊞(⊓(g(x)))))
 X = ⊓ ∆ ⊞ (⊓g(x)).
@@ -267,7 +270,8 @@ Let's try out `op(500,fx,⊔).`
 Unparenthesized repeats are not allowed:
 
 ```
-?- X = ⊔ ⊔ ⊔ g(x), write_canonical(X).
+?- 
+X = ⊔ ⊔ ⊔ g(x), write_canonical(X).
 
 ERROR: Syntax error: Operator priority clash
 ```
@@ -275,11 +279,13 @@ ERROR: Syntax error: Operator priority clash
 Parenthesized repeats are of course ok:
 
 ```
-?- X = ⊔(⊔(⊔ g(x))), write_canonical(X). 
+?- 
+X = ⊔(⊔(⊔ g(x))), write_canonical(X). 
 
 ⊔(⊔(⊔(g(x))))
 X = ⊔ (⊔ (⊔g(x))).
 ```
 
 ## Examples for infix operators
+
 
