@@ -146,30 +146,30 @@ The final parse tree follows.
 The following types exist:   
    
    - Postfix operator: 
-      - `yf`: This operator can appear in a sequence of unparenthesized postfix operators that have the same precedence value and also type `yf`.
+      - **yf**: This operator can appear in a sequence of unparenthesized postfix operators that have the same precedence value and also type `yf`.
               In particular, it can form unparenthesized repeats, as in `g(x) f f f`. The leftmost unparenthesized prefixed expression can
               be composed of an operator of the same precedence value. The implied parenthetization is "the leftmost subexpression is innermost".              
               Of course, the leftmost prefixed expression can always be based on a higher-precedence unary or binary operator or be a 
               subexpression of precedence value 0, in particular it can be parenthesized. There is no ambiguity to be resolved there.
-      - `xf:  This operator cannot appear in a sequence of unparenthesized postfix operators that have the same precedence value.
+      - **xf**:  This operator cannot appear in a sequence of unparenthesized postfix operators that have the same precedence value.
               In particular, it does not allow forming unparenthesized repeats. The postfixed subexpression **must be** of lower precedence value
               (which happens in particular if it is parenthesized).
    - Prefix operator:   
-      - `fy`: This operator can appear in a sequence of unparenthesized prefix operators that have the same precedence value and also type `fy`.
+      - **fy**: This operator can appear in a sequence of unparenthesized prefix operators that have the same precedence value and also type `fy`.
               In particular, it can form unparenthesized repeats, as in `f f f g(x)`. The rightmost unparenthesized prefixed expression can
               be composed of an operator of the same precedence value. The implied parenthetization is "the rightmost subexpression is innermost".              
               Of course, the rightmost prefixed expression can always be based on a higher-precedence unary or binary operator or be a 
               subexpression of precedence value 0, in particular it can be parenthesized. There is no ambiguity to be resolved there.
-      - `fx`: This operator cannot appear in a sequence of unparenthesized prefix operators that have the same precedence.
+      - **fx**: This operator cannot appear in a sequence of unparenthesized prefix operators that have the same precedence.
               In particular, it does not allow forming unparenthesized repeats. The prefixed subexpression **must be** of lower precedence value
               (which happens in particular if it is parenthesized).
    - Infix operator:   
-      - `xfx`: This operator cannot appear in an expression with other operators that have the same precedence value, in particular, in 
+      - **xfx**: This operator cannot appear in an expression with other operators that have the same precedence value, in particular, in 
                expression where there are several `f`. It is **non-associative**.  Add parentheses as needed.
-      - `xfy`: This operator can appear in an unparenthesized expression with other operators that have the same precedence value and also type
+      - **xfy**: This operator can appear in an unparenthesized expression with other operators that have the same precedence value and also type
                `xfy` (including `f` itself). The operator (and its neighboring operators) are considered **right-associative**.
                The expression is implicitly parenthesized and the parse tree built accordingly.
-      - `yfx`: This operator can appear in an unparenthesized expression with other operators that have the same precedence value and also type
+      - **yfx**: This operator can appear in an unparenthesized expression with other operators that have the same precedence value and also type
                `yfx` (including `f` itself). The operator (and its neighboring operators) are considered **left-associative**. 
                The expression is parenthesized and the parse tree built accordingly.              
 
