@@ -130,7 +130,7 @@ findall(X,member(X,[1,2,3]),Bag).
 Bag = [1, 2, 3].
 ```
 
-The bag is not a set, and it preserves the order of the generated solutions:
+The bag is not a set - it retains duplicates. It also preserves the order of the generated solutions:
 
 ```
 ?- 
@@ -139,7 +139,7 @@ findall(X,member(X,[3,2,1,3,2,1]),Bag).
 Bag = [3, 2, 1, 3, 2, 1].
 ```
 
-The generated solution need not have to do anything with the goal:
+The bagged terms need not have to do anything with the goal solutions. Here we just collect `true` atoms. Quite boring:
 
 ```
 ?- 
@@ -148,16 +148,18 @@ findall(true,member(X,[1,2,3]),Bag).
 Bag = [true, true, true].
 ```
 
-The generated solution need can be some complex term based on the goal:
+Contrariwise, the bagged terms can be complex terms constructed from the goal solutions:
 
 ```
 ?- 
-findall(found(X,Y),(member(X,[1,2]),member(Y,[3,4])),Bag).
+findall(found(X,Y),
+        (member(X,[1,2]),member(Y,[3,4])),
+        Bag).
 
 Bag = [found(1, 3), found(1, 4), found(2, 3), found(2, 4)].
 ```
 
-If the goal becomes hard to read, better de-inline it into a program:
+If the goal becomes hard to read, better de-inline it into a separate predicate:
 
 ```
 subgoal(found(X,Y)) :- member(X,[1,2]),member(Y,[3,4]).
@@ -172,7 +174,7 @@ findall(F,subgoal(F),Bag).
 Bag = [found(1, 3), found(1, 4), found(2, 3), found(2, 4)].
 ```
 
-which gives you the great advantage that you can call the subgoal separately:
+This gives you the great advantage that you can call the subgoal separately:
 
 ```
 ?- 
