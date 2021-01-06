@@ -1,6 +1,7 @@
 # Operators
 
-Some accompanying notes on the pages concerning [operators](https://eu.swi-prolog.org/pldoc/man?section=operators) from the SWI-Prolog manual.
+Some accompanying notes on the pages concerning [operators](https://eu.swi-prolog.org/pldoc/man?section=operators)
+and the predicate [`op/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=op/3) from the SWI-Prolog manual.
 
 Code to list the operators currently configured in the system: 
 
