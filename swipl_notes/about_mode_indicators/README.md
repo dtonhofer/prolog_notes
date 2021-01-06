@@ -53,10 +53,14 @@ Compare with the lingo used for lists:
 
 Ok, so, the interpretation of the ISO standard text:
 
-- `+` : At call time, the argument is _INS_. Used as *input* at call time, but can be further instantiated if nonground for *output*.
-- `?` : At call time, the argument is _UNC_. Used as *input* at call time, but can be further instantiated if nonground or a variable for *output*.
-- `@` : The argument will not be modified. Uses for *input only*. Generally, unbound variables in the argument become objects of analysis & processing themselves.
-- `-` : At call time, the argument is _VAR_ and it _must_ be (further) instantiated by the called predicate. This is *output only*, even *forced output*.
+- `+` : At call time, the argument is _INS_. 
+        Used as *input* at call time, but can be further instantiated if nonground for *output*.
+- `?` : At call time, the argument is _UNC_. 
+        Used as *input* at call time, but can be further instantiated if nonground or a variable for *output*.
+- `@` : The argument is UNC but will not be modified.
+        Used for *input only*. Generally, unbound variables in the argument become objects of analysis & processing themselves.
+- `-` : At call time, the argument is _VAR_ and it _must_ be (further) instantiated by the called predicate.
+        This is *output only*, even *forced output*.
 
 ## Modes in SWI-Prolog.
 
