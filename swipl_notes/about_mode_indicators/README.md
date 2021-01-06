@@ -33,7 +33,7 @@ To shorten the upcoming text, let's be pedantic for a few paragraphs:
 - _VAR_ : **The argument is a variable**: The argument (if it were named with a variable name) would denote
           an empty storage cell: The argument is an unbound variable. One abuses language and just says
           _"The argument is a variable"_ or even _"The argument is a var"_. Or one could also
-          say _"The argument is uninstantiated"_. Clear enough.
+          say _"The argument is uninstantiated"_ or "The argument is unbound" Clear enough.
 - _UNC_ : **The argument is unconstrained**: The argument (if it were named with a variable name) would denote an 
           empty storage cell or a ground or nonground term. There seems to be no proper adjective for this case,
           but _"unconstrained"_ seems a good designation.
