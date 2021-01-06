@@ -1,12 +1,16 @@
 # Operators
 
-Some accompanying notes on the pages concerning [operators](https://eu.swi-prolog.org/pldoc/man?section=operators) from the SWI-Prolog manual.
+Some accompanying notes on the pages concerning [operators](https://eu.swi-prolog.org/pldoc/man?section=operators)
+and the predicate [`op/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=op/3) from the SWI-Prolog manual.
 
-Code to list the operators currently configured in the system: [`list_ops.pl`](code/list_ops.pl)
+Code to list the operators currently configured in the system: 
+
+- [`list_ops.pl`](code/list_ops.pl) - Text output
+- [`list_ops_with_urls.pl`](code/list_ops_with_urls.pl) - pldoc output, including an URL into the SWI-Prolog manual for known operators
 
 ## Intro
 
-The goal of operators are to **support syntax**: They tune the parser so that you can write your expresssion (and read your expressions) more fluently
+The goal of operators are to **support syntax**: They configure the parser so that you can write your expresssion (and read your expressions) more fluently
 than would otherwise be possible:
 
 Instead of
@@ -21,7 +25,11 @@ This brings an interesting bag of complexity to a Prolog parser: The parser must
 operators are in effect at any current line to be able to properly parse it. This is why a "grammar for Prolog" won't do.
 
 Operators say nothing about what they mean. What they mean depends on some processing predicate that is fed
-the term that has been built from an expression featuring operators.
+the term that has been built from an expression featuring operators. The same operator may mean different things
+in different modules. Even for the configured operators, the meaning depends on context, for example `^` is used
+for exponentiation in arithmetic expressions: `2^3` but as "existential quantifier" in formulas that use `bagof/3` or
+`setof/3`: `bagof(P,T^N^cur(P,T,N),Bag)` (astonishingly, the same operator with the same precedence value and type
+works in both cases).
 
 For example:
 
