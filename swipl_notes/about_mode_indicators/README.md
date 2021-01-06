@@ -10,7 +10,7 @@ This is a companion page to the SWI-Prolog manual page [Notation of Predicate De
 
 ## Modes according to the ISO standard
 
-The ISO standard mentions modes on page 64, _chapter 8.1.2.2: Mode of an argument_
+The 1995 ISO standard mentions modes on page 64, _chapter 8.1.2.2: Mode of an argument_ (has this changed since then?)
 
 > The mode of each argument defines whether or not anargument shall be instantiated
 > when the built-in predicateis executed. The mode is one of the following atoms:
@@ -60,7 +60,7 @@ Ok, so, the interpretation of the ISO standard text:
 - `@` : The argument is UNC but will not be modified.
         Used for *input only*. Generally, unbound variables in the argument become objects of analysis & processing themselves.
 - `-` : At call time, the argument is _VAR_ and it _must_ be (further) instantiated by the called predicate.
-        This is *output only*, even *forced output*.
+        This is *output only*, even *forced output*. Again, this is not the meaning retained in the SWI-Prolog documentation.
 
 ## Modes in SWI-Prolog.
 
