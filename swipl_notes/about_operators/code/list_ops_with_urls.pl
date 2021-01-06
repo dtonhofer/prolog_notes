@@ -143,10 +143,10 @@ op_info('\\=@=', xfx , "Term structural non-equivalence","doc_for?object=(%5C%3D
 op_info('as'   , xfx , "Particle used to add tabling options after table/1", "doc_for?object=(table)/1").
 op_info('is'   , xfx , "Arithmetic evaluation of RHS followed by unification with LHS","doc_for?object=(is)/2").
 
-op_info('**'   , xfx , "Arithmetic float or integer exponentiation","doc_for?object=f((**)/2)").
-op_info('+'    , fy  , "Arithmetic unary + sign", "doc_for?object=f((%2B)/1)").
-op_info('-'    , fy  , "Arithmetic unary - sign", "doc_for?object=f((-)/1)").
+op_info('**'   , xfx , "Arithmetic exponentiation (float or integer) ('power' in ISO standard)","doc_for?object=f((**)/2)").
+op_info('+'    , fy  , "Arithmetic unary '+' sign", "doc_for?object=f((%2B)/1)").
+op_info('-'    , fy  , "Arithmetic unary '-' sign", "doc_for?object=f((-)/1)").
 op_info('\\'   , fy  , "Bitwise negation (one complement)", "doc_for?object=f((%5C)/1)").
-op_info('^'    , xfy , "Arithmetic float or integer exponentiation (also existential quantifier for bagof/3, setof/3)","doc_for?object=f((^)/2)").
+op_info('^'    , xfy , "Arithmetic exponentiation (float or integer), also existential quantifier for bagof/3, setof/3","doc_for?object=f((^)/2)").
 
 op_info('.'    , yfx , "Dict entry dereferencing and dict function call (also char-to-charcode conversion in arithmetic expressions)","man?section=bidicts").
