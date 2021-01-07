@@ -267,6 +267,10 @@ Things like `write_term/2` are automatically linkified.
 - what about `write_term//2`
 - there is no notation for "dict functions". Should be fixed.
 
+ If you use `\functor{}{}`, no links are created.
+ 
+ However, just writing the predicate indicator directly, as in `member/2`, will create a link to the page of the predicate (if that page exists).
+
 ### Predicate argument
 
 Italicized in the text
@@ -275,7 +279,7 @@ Italicized in the text
 \arg{x}
 ```
 
-### Predicate descriptors
+### Predicate declarations
 
 (does it work with arity 0?)
 
@@ -361,8 +365,10 @@ Jan says:
 
 Yes, these are still a thing. At least they are stylistically uniform:
 
+A `[fontsize=\small]` suffix after `\begin{code}` is not recognized and written verbatim.
+
 ```none
-\begin{code}[fontsize=\small]
+\begin{code}
    Traditional list               SWI-Prolog 7 list
 
        '.'                              '[|]'
