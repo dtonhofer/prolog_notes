@@ -184,6 +184,16 @@ Again, if the text within the parentheses of the `nonvar(.)` call is not a varia
 
 The definition given by the SWI-Prolog reference manual for
 [`var/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=var/1) uses the adjective _free_, which is something else
-entirely and should not be used: a variable is _free_ in a formula (of logic or a lambda expression) if it does not appear
-in a quantifier (or a lambda prefix) closing over the formula.
+entirely and should not be used: a variable is _free_ in a formula (of logic or a lambda expression) if it is not bound
+in a quantifier (or a lambda prefix) closing over the formula (making the formula not well-formed).
+
+On the other hand, the Mercury language indeed uses the adjectives "free" and "bound"
+
+[Insts, modes, and mode definitions](https://mercurylang.org/information/doc-release/mercury_ref/Insts-modes-and-mode-definitions.html#Insts-modes-and-mode-definitions):
+
+> if the node is “free”, then the corresponding node in the term (if any) is a free variable
+> that does not share with any other variable (we call such variables distinct);
+>
+> if the node is “bound”, then the corresponding node in the term (if any) is a function symbol. 
+
 
