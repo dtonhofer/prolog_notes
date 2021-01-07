@@ -14,6 +14,12 @@ There needs to be an example page in the manual.
 - https://tex.stackexchange.com/questions/7453/what-is-the-use-of-percent-signs-at-the-end-of-lines-why-is-my-macro-creat
 - https://en.wikibooks.org/wiki/LaTeX/Special_Characters
 
+## Problems
+
+- The quotes are crazy double backticks as intro generally works but double single quotes as outro behaves differently depending on
+  context (within parentheses etc.)
+- The processor doesn't understand dashes like `\textemdash.`: https://tex.stackexchange.com/questions/53413/what-is-the-latex-command-for-em-dash  
+
 ## How to modify the doc.
 
 - Fork SWI-Prolog repository to your github account (Fork A)
