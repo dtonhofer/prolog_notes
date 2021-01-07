@@ -1,14 +1,43 @@
-Some notes on the ambiguity concerning the word "variable" can be found [**here**](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_concept_of_variable/README.md)
+https://eu.swi-prolog.org/pldoc/doc_for?object=var/1
 
-Note that the above text uses "free", which is inappropriate IMHO.
+## That naming is confusing
 
-When you ask `var(X)` you are actually asking whether the _variable name_ `X` currently (at query time, a non-logical concept) designates an and uninstantiated/unbound term.
+When you ask 
 
-The predicate would be less confusing if it had been named `unbound(X)`. 
+==
+var(X).
+==
 
-Compare with Common Lisp's function
+you are actually asking whether the _variable name_ `X` currently (at query time, a non-logical concept) designates and uninstantiated term, (aka. and unbound term, aka. an "empty storage cell").
 
-[`boundp`](http://www.lispworks.com/documentation/HyperSpec/Body/f_boundp.htm)
+The predicate would be less confusing if it had been named
+
+==
+unbound(X).
+==
+
+However, an "empty storage cell" (_named_ by a variable name or _unnamed_ and deep inside a term at some term tree leaf position) is traditionally called a "variable" or an "unbound variable". So be it.
+
+## "free" is also confusing
+
+Note that the above text uses "free", which is even more confusing. "free" as an adjective applied to a variable means that said variable (in a first-order logic formula, a lambda expression etc.) is not bound by a quantifier (making the formula not well-formed). For example:
+
+==
+∃X: f(X,Y)
+==
+
+`Y` is free in the formula above. 
+
+On the other hand, the Mercury language uses the adjectives "free" and "bound"
+
+[Insts, modes, and mode definitions](https://mercurylang.org/information/doc-release/mercury_ref/Insts-modes-and-mode-definitions.html#Insts-modes-and-mode-definitions):
+
+> if the node is “free”, then the corresponding node in the term (if any) is a free variable that does not share with any other variable (we call such variables distinct);
+> if the node is “bound”, then the corresponding node in the term (if any) is a function symbol. 
+
+## Compare with Common Lisp's function
+
+[`boundp`](http://www.lispworks.com/documentation/HyperSpec/Body/f_boundp.htm) checks whether the variable name passed as argument (and thus quoted: `'x`) is bound to something: 
 
 ==
 (setq x 1) =>  1
@@ -17,7 +46,10 @@ Compare with Common Lisp's function
 (boundp 'x) =>  false
 ==
 
-It behaves like nonvar/1: `boundp(x)` evaluates to `false` if the cell 
-designated by symbol `x` is still "free" (i.e. if the variable `x` is not bound). 
-(It throws the argument is not actually a symbol). Unlike in Prolog, you can make a bound symbol "unbound" again.
+It behaves like nonvar/1: `(boundp 'x)` evaluates to `false` if the symbol 'x designates an actual value. (It throws the argument is not actually a symbol). 
 
+Unlike in Prolog, you can make a bound symbol "unbound" again.
+
+## More on naming
+
+Some notes on the ambiguity concerning the word "variable" can be found [**here**](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_concept_of_variable/README.md)
