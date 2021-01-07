@@ -357,6 +357,25 @@ Jan says:
 > Please do not build a story in code blocks using comments. Instead, use should code blocks and normal running text in 
 > between. That looks a lot better, notably in the PDF version where long code blocks causes poor page layout.
 
+## ASCII graphics
 
+Yes, these are still a thing. At least they are stylistically uniform:
 
+```none
+\begin{code}[fontsize=\small]
+   Traditional list               SWI-Prolog 7 list
+
+       '.'                              '[|]'
+      /   \                             /   \
+     1    '.'                          1   '[|]'
+         /   \                             /   \
+        2    '.'                          2   '[|]'
+            /   \                             /   \
+           3   '[]'                          3     []
+
+           terminated with                   terminated with
+           the atom '[]',                    a special constant
+           indistinguishable from text       which is printed as []
+\end{code}
+```
 
