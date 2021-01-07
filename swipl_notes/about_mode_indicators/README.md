@@ -15,10 +15,10 @@ The 1995 ISO standard mentions modes on page 64, _chapter 8.1.2.2: Mode of an ar
 > The mode of each argument defines whether or not anargument shall be instantiated
 > when the built-in predicateis executed. The mode is one of the following atoms:
 >
-> `+` : the argument shall be instantiated ; 
-> `?` : the argument shall be instantiated or a variable ; 
-> `@` : the argument shall remain unaltered ; 
-> `-` : the argument shall be a variable that will be instantiated iff the goal succeeds.
+> - `+` : the argument shall be instantiated ; 
+> - `?` : the argument shall be instantiated or a variable ; 
+> - `@` : the argument shall remain unaltered ; 
+> - `-` : the argument shall be a variable that will be instantiated iff the goal succeeds.
 >
 > NOTE: When the argument is an atomic term, there is no difference between the modes
 > `+` and `@`. The mode `@` is therefore used only when the argument may be a compound term.
