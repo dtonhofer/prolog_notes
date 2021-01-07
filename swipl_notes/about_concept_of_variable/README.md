@@ -10,6 +10,10 @@ Compare with:
 - The entry for ["variable"](http://www.cse.unsw.edu.au/~billw/prologdict.html#variable) from Bill Wilson's Prolog dictionary.
 - The entry for [`var/1`](http://www.cse.unsw.edu.au/~billw/prologdict.html#termtype) from Bill Wilson's Prolog dictionary.
 
+See also:
+
+- The entry for [`var/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=var/1) in the SWI-Prolog manual.
+
 ## TL;DR
 
 One basically has three things: 
