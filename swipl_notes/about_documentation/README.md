@@ -96,6 +96,49 @@ These are replaced by a link and a text like "section 8.1".
 
 For example, `\secref{attvar}` generates a live link to `https://eu.swi-prolog.org/pldoc/man?section=attvar`
  
+### Bibliography entries
+
+```
+No bibliography file
+No bibliography entry for "Bratko:86"
+No bibliography entry for "Sterling:86"
+No bibliography entry for "Clocksin:87"
+No bibliography entry for "Keefe:90"
+No bibliography entry for "stdprolog:98"
+No bibliography entry for "QUINTUS:manual"
+No bibliography entry for "Demoen:CW350"
+No bibliography entry for "Bowen:83"
+No bibliography entry for "Neumerkel:93"
+No bibliography entry for "Bowen:83"
+No bibliography entry for "byrd:80"
+No bibliography entry for "Clocksin:87"
+No bibliography entry for "byrd:80"
+No bibliography entry for "Clocksin:87"
+No bibliography entry for "CPROLOG:manual"
+No bibliography entry for "Clocksin:87"
+No bibliography entry for "DBLP:journals/tplp/SchrijversDDW13"
+No bibliography entry for "DBLP:journals/tplp/DesouterDS15"
+No bibliography entry for "DBLP:journals/tplp/SchrijversDDW13"
+No bibliography entry for "DBLP:journals/corr/abs-1301-7669"
+No bibliography entry for "graham82gprof"
+No bibliography entry for "logicalloops:2002"
+No bibliography entry for "declarativeloops:2010"
+No bibliography entry for "DBLP:journals/tplp/Swift14"
+No bibliography entry for "DBLP:conf/aaai/GrosofS13"
+No bibliography entry for "DBLP:journals/tplp/DesouterDS15"
+No bibliography entry for "DBLP:journals/toplas/SagonasS98"
+No bibliography entry for "SAGONAS20001"
+No bibliography entry for "holzbaur:1992"
+No bibliography entry for "Demoen:CW350"
+No bibliography entry for "clpb:Triska2016"
+No bibliography entry for "Freuhwirth:2009"
+No bibliography entry for "chrSite"
+No bibliography entry for "Butenhof:1997:PPT"
+No bibliography entry for "DBLP:conf/coordination/Tarau11"
+No bibliography entry for "Kernighan:78"
+```
+
+
 ### Text style
 
 Boldface:
