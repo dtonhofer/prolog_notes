@@ -80,3 +80,7 @@ Do not confuse:
 - uninstanted term: a term that is an unbound variable
 - partial term: an instantiated or uninstantiated term (basically, "any term" or an "unconstrained term")
 
+(All these terms have a certain information content, with an unbound variable having content 0. How can we express this
+content in a number that does not depend on context (i.e. the atom "foo" would have a high (Shannon) information content "in context"
+if it is rare on a channel, but we don't have access to that context)? Something like Kolomgorov Complexity (compressibility)
+sounds like the correct idea; gotta think about that)
