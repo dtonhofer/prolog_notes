@@ -150,3 +150,4 @@ op_info('\\'   , fy  , "Bitwise negation (one complement)", "doc_for?object=f((%
 op_info('^'    , xfy , "Arithmetic exponentiation (float or integer), also existential quantifier for bagof/3, setof/3","doc_for?object=f((^)/2)").
 
 op_info('.'    , yfx , "Dict entry dereferencing and dict function call (also char-to-charcode conversion in arithmetic expressions)","man?section=bidicts").
+op_info('$'    , fx  , "At the toplevel, reuse of bindings created by previous goals, as in '$Var'", "man?section=topvars").
