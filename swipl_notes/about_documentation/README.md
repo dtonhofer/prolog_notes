@@ -98,6 +98,46 @@ For example, `\secref{attvar}` generates a live link to `https://eu.swi-prolog.o
  
 ### Bibliography entries
 
+Take bibliography entry `Demoen:CW350`
+
+It is found in:
+
+- The master "BIB" file, which contains BIB entries (and is input to the BBL file). This is what is being maintained first!
+   - `man/pl.bib`
+- The documentation (.doc) files proper. They contain references. For example:
+   - `man/intro.doc`  `\cite{Demoen:CW350}`
+   - `man/attvar.doc`  `\cite{Demoen:CW350}`   
+- The BBL file, which is the result of piping the BIB file and TEX file through one round of pdflatex and bibtex. It contain bibitem entries
+  (For some reason, much too few; and if that is the case, the PDF won't be generated)
+   - `man/gen/swipl.bbl` --- actually a copy of man/SWI-Prolog-<version>.bbl
+- The bibliography file (.doc) which contains TeX `\bibitem` entries:
+   - `man/biblio.doc`  `\bibitem[Demoen, 2002]{Demoen:CW350}`
+
+Here is a filter to count entries in the BIB file:
+
+```
+#!/usr/bin/perl
+
+my $counters = {};
+
+while ($line = <>) {
+   if ($line =~ '^@(\w+)\{') {
+      my $code = $1;
+      if (exists $$counters{$code}) {
+         $$counters{$code}++;
+      }
+      else {
+         $$counters{$code}=1;
+      }
+   }
+}
+
+for $key (sort keys %$counters) {
+   print "$key : $$counters{$key}\n";
+}
+```
+
+
 ```
 No bibliography file
 No bibliography entry for "Bratko:86"
