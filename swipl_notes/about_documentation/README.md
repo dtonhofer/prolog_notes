@@ -334,9 +334,12 @@ Stylistically, I feel the manual overdoes footnotes. A lot of footnotes belong r
 
 ### Predicate indicator with or without link
 
+With link:
+
 ```
 \predref{=..}{2}
 \predref{.}{3}
+\predref{=}{2}
 ```
 
 The following suppresses predicate reference generation:
@@ -345,14 +348,17 @@ The following suppresses predicate reference generation:
 \nopredref{find_postal_code}{4}
 ```
 
-Things like `write_term/2` are automatically linkified.
+However, just writing the predicate indicator directly, as in `member/2`, will create a link to the page of the predicate (if that page exists).
 
-- what about `write_term//2`
-- there is no notation for "dict functions". Should be fixed.
+If you use
 
- If you use `\functor{}{}`, no links are created.
- 
- However, just writing the predicate indicator directly, as in `member/2`, will create a link to the page of the predicate (if that page exists).
+```
+\functor{x}{2}
+```
+
+no links are created.
+
+There is no notation for "dict functions". Should be fixed.
 
 ### Predicate argument
 
@@ -448,7 +454,9 @@ Jan says:
 
 Yes, these are still a thing. At least they are stylistically uniform:
 
-A `[fontsize=\small]` suffix after `\begin{code}` is not recognized and written verbatim.
+A `[fontsize=\small]` suffix after `\begin{code}` is not recognized and written verbatim. There is some package missing for that.
+
+Also, you can only use ASCII, not Unicode. That's a catastrophe, because it also means code with unicode cannot be processed.
 
 ```none
 \begin{code}
@@ -467,4 +475,31 @@ A `[fontsize=\small]` suffix after `\begin{code}` is not recognized and written 
            indistinguishable from text       which is printed as []
 \end{code}
 ```
+
+But better:
+
+https://stackoverflow.com/questions/3175105/inserting-code-in-this-latex-document-with-indentation
+
+https://ctan.org/texarchive/macros/latex/contrib/listings
+
+https://tex.stackexchange.com/questions/29816/algorithm-over-2-pages
+
+https://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings
+
+## Figures
+
+```
+\begin{figure}
+\begin{code}
+...
+\end{code}
+    \caption{Reusing top-level bindings}
+    \label{fig:topevelvars}
+\end{figure}
+```
+
+## Problem with stuff floating around on pages
+
+It happens in the PDF that a figure floats on top of a multi-page code listing. BAD!
+
 
