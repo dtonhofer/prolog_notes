@@ -64,6 +64,10 @@
 #   https://mvnrepository.com/artifact/junit/junit/           (currently 4.13.1; EPL 1.0)
 #
 # (On a longer timeframe, move JPL to Junit Jupiter)
+#
+# TODO: Disentangle building manual PDF
+#
+# TODO: Copying of modified files for rebuilding documentation is messy
 # ---
 
 # set -x # Uncomment for tracing information
@@ -81,7 +85,7 @@ set -o nounset # No unset bash variables allowed
 perso_github_account=https://github.com/dtonhofer        # Probably want to change that!!
 swipl_github_account=https://github.com/SWI-Prolog       # Well-known and respected
 system_install_dir=/usr/local/logic                      # This looks like a good place to me
-toplevel_dir_fq="$HOME/Development/2020_11/swiplmaking"  # Where to put stuff locally
+toplevel_dir_fq="$HOME/Development/2021_01"              # Where to put stuff locally
 
 giturl_and_subdir() {
    local finality=${1:-}                  # "jpl" or "docs" or "system"
@@ -283,7 +287,7 @@ clone() {
       echo "Could not cd to '$(pwd)/$element_dir' -- exiting!" >&2
       exit 1
    }
- 
+
    if [[ $modules_yesno == modules_yes ]]; then
       echo "Cloning submodules in '$(pwd)' ..." >&2
       git submodule update --init || {
@@ -335,7 +339,7 @@ copy() {
    # Exits in case of problems otherwise cds to the directory above the repodirs
    # with an initial push (so we can popd later)
 
-   dirchange_prepare "$here" "$toplevel_dir_fq" copy "$finality" 
+   dirchange_prepare "$here" "$toplevel_dir_fq" copy "$finality"
 
    # Two directories are involed: the one with the SWI-Prolog distro that can be compiled
    # and the one with modified files. We need to copy modified files from the second to the first.
@@ -359,7 +363,7 @@ copy() {
 
    infra_dir=$(echo "$giturl_and_subdir_infra" | cut --field=2 --delimiter='|')
    infra_dir=$(trim "$infra_dir")
-   forked_dir=$(echo "$giturl_and_subdir_forked" | cut --field=2 --delimiter='|') 
+   forked_dir=$(echo "$giturl_and_subdir_forked" | cut --field=2 --delimiter='|')
    forked_dir=$(trim "$forked_dir")
 
    local exit_now=
@@ -380,8 +384,10 @@ copy() {
 
    # Re-confirm with user before going on
 
-   local origin_dir="$(pwd)/$forked_dir"
-   local target_dir="$(pwd)/$infra_dir"
+   local origin_dir
+   local target_dir
+   origin_dir="$(pwd)/$forked_dir"
+   target_dir="$(pwd)/$infra_dir"
 
    echo "Going to copy files from directory : '$origin_dir'" >&2
    echo "to directory                       : '$target_dir'" >&2
@@ -391,6 +397,7 @@ copy() {
 
    # *******
    # Change this if your fileset changes
+   # TODO: Make this a bit more flexible
    # *******
 
    case "$finality" in
@@ -399,8 +406,11 @@ copy() {
          to_files=(   "packages/jpl/jpl.pl" "packages/jpl/test_jpl.pl" )
       ;;
       docs)
-         from_files=( "man/builtin.doc" "man/extensions.doc" "man/pl.bib" "man/runtex" "man/gen/swipl.bbl" "library/apply.pl" "src/Tests/library/test_apply.pl" )
-         to_files=(   "man/builtin.doc" "man/extensions.doc" "man/pl.bib" "man/runtex" "man/gen/swipl.bbl" "library/apply.pl" "src/Tests/library/test_apply.pl" )
+         # Make this configurable
+         # from_files=( "man/builtin.doc" "man/extensions.doc" "man/pl.bib" "man/runtex" "man/gen/swipl.bbl" "library/apply.pl" "src/Tests/library/test_apply.pl" )
+         # to_files=(   "man/builtin.doc" "man/extensions.doc" "man/pl.bib" "man/runtex" "man/gen/swipl.bbl" "library/apply.pl" "src/Tests/library/test_apply.pl" )
+         from_files=( "man/builtin.doc" "man/extensions.doc" "man/overview.doc" )
+         to_files=(   "man/builtin.doc" "man/extensions.doc" "man/overview.doc" )
       ;;
       *)
          echo "Unknown finality '$finality'" >&2
@@ -446,7 +456,7 @@ look() {
    local toplevel_dir_fq=${1:-}  # the directory we will be working in
    local finality=${2:-}         # "jpl" or "docs" or "system"
    local element=${3:-}          # "infra" or "forked" or unset
-   local here="look"             # The name of this routine     
+   local here="look"             # The name of this routine
 
    # The following exits in case of problems, otherwise cd-s to the directory
    # immediately above the repodir with an initial "pushd" (so we can "popd" later).
@@ -457,7 +467,7 @@ look() {
    echo "Currently in this directory: $(pwd)"
    echo
 
-   # the above performed "pushd" to "work_dir_fq" and then 
+   # the above performed "pushd" to "work_dir_fq" and then
    # "cd" to "infra_dir": we are in the repository directory
 
    echo "---"
@@ -587,8 +597,8 @@ build() {
    # the Java bridge "jpl" can be tested
 
    local jar_dir_fq="${toplevel_dir_fq}/jars"
-   local hamcrest_jar_fq="${jar_dir_fq}/hamcrest-2.2.jar"
-   local junit_jar_fq="${jar_dir_fq}/junit-4.13.1.jar"
+   local hamcrest_jar_fq="${jar_dir_fq}/hamcrest-2.2.jar"  # the version number has to updated sometimes
+   local junit_jar_fq="${jar_dir_fq}/junit-4.13.1.jar"     # the version number has to updated sometimes
 
    # Re-confirm with user (actually a bit late as we have already removed the build dir)
 
@@ -631,7 +641,7 @@ build() {
       local junit_jar_line=
       local pdf_line=
       if [[ -d "$jar_dir_fq" ]]; then
-         echo "Building with jars in '$jar_dir_fq'" >&2   
+         echo "Building with jars in '$jar_dir_fq'" >&2
          hamcrest_line="-DHAMCREST=$hamcrest_jar_fq"
          junit_jar_line="-DJUNIT_JAR=$junit_jar_fq"
       else
@@ -639,6 +649,19 @@ build() {
       fi
       if [[ $withpdf == yes ]]; then
          pdf_line="-DBUILD_PDF_DOCUMENTATION=ON"
+         #
+         # This should result in a PDF file: build/man/SWI-Prolog-8.3.16.pdf
+         # This is very dicey!! Building PDF from TeX doc and Bibliography may fail for various
+         # very obscure reasons (in particular missing tools and an unclear processing chain).
+         # How to make this reliable?
+         # There won't be any errors in the log either, cmake seems to suppress them
+         # On failure, try to build the documentation manually but be prepared for suffering.
+         # The first step in debugging is running the script manually:
+         # It's called "runtex" and it has to be run from build/man:
+         # cd build/man; ../../man/runtex --pdf SWI-Prolog-8.3.16.tex
+         #
+         # Extra: pdflatex is not "unicode aware"; any "ASCII images" cannot contain unicode. How to fix?
+         #
       fi
       # cmake can handle "empty arguments" so no special handling of "" - excellent!
       cmake \
@@ -671,7 +694,23 @@ build() {
    echo "Checking for installation problems using Prolog goal 'check_installation.'" >&2
 
    ./src/swipl -g "check_installation,halt."
- 
+
+   echo
+   echo "Note that:"
+   echo "1) A missing tcmalloc is not necessarily a problem. SWI-Prolog works"
+   echo "   perfectly well without it."
+   echo "   http://www.swi-prolog.org/build/issues/tcmalloc.html"
+   echo
+   echo "2) A missing library(ODBC) is not a problem if you are not going to"
+   echo "   access relational databases from Prolog."
+   echo "   http://www.swi-prolog.org/build/issues/odbc.html"
+   echo
+   echo "3) A missing library(yaml) is not a problem if you are not going to"
+   echo "   handle YAML text files."
+   echo "   https://en.wikipedia.org/wiki/YAML"
+   echo "   http://www.swi-prolog.org/build/issues/yaml.html"
+   echo
+
    # Maybe install
    # (What happens if the installation directory exists? Is it replaced?)
 
@@ -679,10 +718,23 @@ build() {
       ninja install
    fi
 
-   # retain the build directory
+   # retain the build directory for the caller
 
    global_build_dir_fq=$(pwd)
    global_install_dir_fq="$install_dir_fq"
+
+   local cmake_logfile
+   local file_length
+
+   for cmake_logfile in "CMakeFiles/CMakeOutput.log" "CMakeFiles/CMakeError.log"; do
+      if [[ -f "$cmake_logfile" ]]; then
+         echo -n "You may want to inspect CMake logfile '$(pwd)/$cmake_logfile' ... "
+         file_length=$(wc -l "$cmake_logfile" | sed 's/\s.*$//g')
+         echo "it has $file_length lines"
+      else
+         echo "There is no CMake logfile '$(pwd)/$cmake_logfile' ... weird!"
+      fi
+   done
 
    popd >/dev/null || exit 1
 
@@ -710,7 +762,7 @@ run_post_build_tests() {
    # Run tests concurrently 4-fold. See "man ctest" or "ctest --help"
 
    local jobs
-   
+
    if [[ $mono == yes ]]; then
       jobs=1
    else
@@ -751,7 +803,6 @@ run_post_build_tests() {
 
 }
 
-
 # ===
 # Move to the correct directory, possibly creating it.
 # ===
@@ -774,14 +825,14 @@ dirchange_prepare() {
 
    local action
    if [[ $action_full == rebuild ]]; then
-      action=build 
+      action=build
    else
       action=$action_full
    fi
 
-   # If we want to clone/build/look if finality is "system", it's always about 
+   # If we want to clone/build/look if finality is "system", it's always about
    # the infrastructure; no need for "element".
- 
+
    if [[ $finality == system ]]; then
      element=
    fi
@@ -790,7 +841,6 @@ dirchange_prepare() {
 
    local code="$action,$finality,$element"
    local can_create=
-   local must_exist_deeper=
 
    case $code in
       clone,system,)
@@ -830,9 +880,9 @@ dirchange_prepare() {
          ;;
       *)
          echo "Unknown action,finality,element code '$action_full,$finality,$element' in '$caller' -- exiting!" >&2
-         exit 1 
+         exit 1
    esac
-  
+
    # Maybe create finality-dependent subdir under $toplevel_dir_fq (which exists)
 
    local work_dir_fq="$toplevel_dir_fq/$finality"
@@ -939,10 +989,10 @@ arg5=${5:-}
 
 # this is done in order to make the argument order irrelevant:
 
-cmd_match      ${1:-}   # maybe sets variable cmd, which must be still unset
-finality_match ${1:-}   # maybe sets variable finality, which must still be unset
-cmd_match      ${2:-}   # maybe sets variable cmd, which must still be unset
-finality_match ${2:-}   # maybe sets variable finality, which must still be unset
+cmd_match      "${1:-}"   # maybe sets variable cmd, which must be still unset
+finality_match "${1:-}"   # maybe sets variable finality, which must still be unset
+cmd_match      "${2:-}"   # maybe sets variable cmd, which must still be unset
+finality_match "${2:-}"   # maybe sets variable finality, which must still be unset
 
 if [[ $cmd == clone ]]; then
    clone "$toplevel_dir_fq" "$finality" "$arg3"
@@ -959,7 +1009,7 @@ if [[ $cmd == look ]]; then
    exit 0
 fi
 
-if [[ $cmd == build || 
+if [[ $cmd == build ||
       $cmd == rebuild ]]; then
    build "$toplevel_dir_fq" "$finality" "$cmd" "$arg3" "$arg4" "$arg5"
    if [[ $finality == system ]]; then
