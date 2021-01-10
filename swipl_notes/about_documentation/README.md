@@ -13,6 +13,7 @@ There needs to be an example page in the manual.
 - http://applied-r.com/latex-line-and-page-breaks/
 - https://tex.stackexchange.com/questions/7453/what-is-the-use-of-percent-signs-at-the-end-of-lines-why-is-my-macro-creat
 - https://en.wikibooks.org/wiki/LaTeX/Special_Characters
+- https://tex.stackexchange.com/questions/83930/what-are-the-different-kinds-of-boxes-in-latex
 
 ## Problems
 
