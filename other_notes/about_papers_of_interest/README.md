@@ -133,6 +133,9 @@ If the paper is directly downloadable, a link is given.
 - 2003-10 [**The Essence of Strategic Programming**](https://www.researchgate.net/publication/277289331_The_Essence_of_Strategic_Programming) 
    - Ralf Lämmel, Eelco Visser, Joost Visser
    - _generic programming with the use of strategies_
+- 2009-09 [**Comparing Unification Algorithms in First-Order Theorem Proving**](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.329.1809)
+   - Kryŝtof Hoder, Andrei Voronkov
+   - in _KI 2009: Advances in Artificial Intelligence, 32nd Annual German Conference on AI, Paderborn, Germany, September 15-18, 2009. Proceedings_ [Book page](https://link.springer.com/book/10.1007/978-3-642-04617-9)
 - 2009-11 [**Coding Guidelines for Prolog**](https://arxiv.org/abs/0911.2899)
    - Michael A. Covington, Roberto Bagnara, Richard A. O'Keefe, Jan Wielemaker, Simon Price
 - 2009 [**As Time Goes By: A Survey of CHR Research from 1998 to 2007**](https://people.cs.kuleuven.be/~tom.schrijvers/Research/papers/chr_survey.pdf)
