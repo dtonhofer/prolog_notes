@@ -363,6 +363,20 @@ but there should be a construct for that: `\glossaryjargon{}`)
 \end{description}
 ```
 
+### Itemoization
+
+```
+    \begin{itemize}
+
+    \item source_file/2 describes the owner relation.
+    \item predicate_property/2 describes the source location (of the
+          first clause).
+    \item clause_property/2 provides access to both source and ownership.
+    \item source_file_property/2 can be used to query include relationships
+          between files.
+    \end{itemize}
+```
+
 ### A file
 
 ```
