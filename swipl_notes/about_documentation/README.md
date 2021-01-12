@@ -340,6 +340,7 @@ Italicized in the text
 \predicate[ISO]{write_term}{3}{+Stream, +Term, +Options}
 \predicate{setarg}{3}{+Arg, +Term, +Value}
 \predicate[deprecated]{current_stream}{3}{?Object, ?Mode, ?Stream}
+\infixop[ISO]{=}{?Term1}{?Term2}
 ```
 
 These are linkified and a reference is inserted into the TOC.
