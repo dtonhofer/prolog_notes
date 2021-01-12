@@ -322,6 +322,12 @@ no links are created.
 
 There is no notation for "dict functions". Should be fixed.
 
+### Special prolog flag link
+
+```
+\prologflag{occurs_check}
+```
+
 ### Predicate argument
 
 Italicized in the text
