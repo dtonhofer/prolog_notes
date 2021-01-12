@@ -46,26 +46,26 @@ Changing the bibliography, however, is hairy. Some [notes on this](bibliography)
 
 ### Labeling
 
-"4 Built-in Predicates"
-
 ```
 \chapter{Built-in Predicates}
 \label{sec:builtin}
 ```
- 
-"4.10 Exception handling"
+
+gives: "4 Built-in Predicates"
 
 ```
 \section{Exception handling}
 \label{sec:exception}
 ```
- 
-"4.10.3 The exception term"
+
+gives: "4.10 Exception handling"
 
 ```
 \subsection{The exception term}
 \label{sec:exceptterm}
 ```
+
+gives: "4.10.3 The exception term"
 
 These are not in the TOC, they seem to be too deep:
 
@@ -80,7 +80,7 @@ Note that referencing drops the "sec":
 \label{sec:argmode}
 ```
 
-but to reference:
+but to reference you need to use:
  
 ``` 
 \secref{argmode}
@@ -138,48 +138,6 @@ for $key (sort keys %$counters) {
 }
 ```
 
-
-```
-No bibliography file
-No bibliography entry for "Bratko:86"
-No bibliography entry for "Sterling:86"
-No bibliography entry for "Clocksin:87"
-No bibliography entry for "Keefe:90"
-No bibliography entry for "stdprolog:98"
-No bibliography entry for "QUINTUS:manual"
-No bibliography entry for "Demoen:CW350"
-No bibliography entry for "Bowen:83"
-No bibliography entry for "Neumerkel:93"
-No bibliography entry for "Bowen:83"
-No bibliography entry for "byrd:80"
-No bibliography entry for "Clocksin:87"
-No bibliography entry for "byrd:80"
-No bibliography entry for "Clocksin:87"
-No bibliography entry for "CPROLOG:manual"
-No bibliography entry for "Clocksin:87"
-No bibliography entry for "DBLP:journals/tplp/SchrijversDDW13"
-No bibliography entry for "DBLP:journals/tplp/DesouterDS15"
-No bibliography entry for "DBLP:journals/tplp/SchrijversDDW13"
-No bibliography entry for "DBLP:journals/corr/abs-1301-7669"
-No bibliography entry for "graham82gprof"
-No bibliography entry for "logicalloops:2002"
-No bibliography entry for "declarativeloops:2010"
-No bibliography entry for "DBLP:journals/tplp/Swift14"
-No bibliography entry for "DBLP:conf/aaai/GrosofS13"
-No bibliography entry for "DBLP:journals/tplp/DesouterDS15"
-No bibliography entry for "DBLP:journals/toplas/SagonasS98"
-No bibliography entry for "SAGONAS20001"
-No bibliography entry for "holzbaur:1992"
-No bibliography entry for "Demoen:CW350"
-No bibliography entry for "clpb:Triska2016"
-No bibliography entry for "Freuhwirth:2009"
-No bibliography entry for "chrSite"
-No bibliography entry for "Butenhof:1997:PPT"
-No bibliography entry for "DBLP:conf/coordination/Tarau11"
-No bibliography entry for "Kernighan:78"
-```
-
-
 ### Text style
 
 Boldface:
@@ -199,6 +157,9 @@ Emphasis. Looks better than boldface and expresses what one wants to do:
 Use _backtick_ twice at the start and _quote_ twice at the end.
 
 Seems fussy. There should probably be a special construct for that like `\quoting{}`.
+
+What is typeset is also context-dependent for some reason. What comes out when the quoted text
+is inside parantheses is different than otherwise. Who comes up with such rococo stuff?
 
 ```
 `something`             (this doesn't look right)  
@@ -369,7 +330,7 @@ Italicized in the text
 \arg{x}
 ```
 
-### Predicate declarations
+### Predicate declarations at the top of pages
 
 (does it work with arity 0?)
 
@@ -378,9 +339,11 @@ Italicized in the text
 \predicate[semidet]{write_length}{3}{+Term, -Length, +Options}
 \predicate[ISO]{write_term}{3}{+Stream, +Term, +Options}
 \predicate{setarg}{3}{+Arg, +Term, +Value}
+\predicate[deprecated]{current_stream}{3}{?Object, ?Mode, ?Stream}
 ```
 
 These are linkified and a reference is inserted into the TOC.
+
 
 ### Jargon
 
