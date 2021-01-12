@@ -152,19 +152,36 @@ Emphasis. Looks better than boldface and expresses what one wants to do:
 \emph{no} 
 ```
 
-### Quoting
+### Quoting / Quotation marks / Guillements
 
 Use _backtick_ twice at the start and _quote_ twice at the end.
 
-Seems fussy. There should probably be a special construct for that like `\quoting{}`.
+```none
+``test''
 
-What is typeset is also context-dependent for some reason. What comes out when the quoted text
-is inside parantheses is different than otherwise. Who comes up with such rococo stuff?
+``test``
 
+(``test'')
+
+`test'
+
+`test`
+
+(`test')
 ```
-`something`             (this doesn't look right)  
-``But these seem good'' (looks right but is ugly, the spacing is massacred)
-```
+
+This results in:
+
+![pics](guillements_example.png]
+
+Seems fussy and looks incorrect and weirdly context-dependent. There is probably some include that is missing.
+Also, there should probably be a special construct for that like `\quoting{}`. 
+
+Here is how it should look, from https://www.scribbr.com/language-rules/quotation-marks/
+
+![pics](quotation_marks.png]
+
+See also: https://www.overleaf.com/learn/latex/Typesetting_quotations
 
 ### Terms
 
