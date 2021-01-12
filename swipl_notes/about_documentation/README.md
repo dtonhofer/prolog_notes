@@ -172,14 +172,14 @@ Use _backtick_ twice at the start and _quote_ twice at the end.
 
 This results in:
 
-![pics](guillements_example.png]
+![guillements example](pics/guillements_example.png]
 
 Seems fussy and looks incorrect and weirdly context-dependent. There is probably some include that is missing.
 Also, there should probably be a special construct for that like `\quoting{}`. 
 
 Here is how it should look, from https://www.scribbr.com/language-rules/quotation-marks/
 
-![pics](quotation_marks.png]
+![quotation marks](pics/quotation_marks.png]
 
 See also: https://www.overleaf.com/learn/latex/Typesetting_quotations
 
