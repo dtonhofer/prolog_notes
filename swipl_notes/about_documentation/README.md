@@ -413,6 +413,9 @@ but there should be a construct for that: `\glossaryjargon{}`)
 ```
 \Scons{}   ---> rendered as [|]
 \Snil{}    ---> rendered as []
+\Snot      ---> rendered as \+
+\Sne       ---> rendered as \= 
+
 ```
 
 ### Tables
