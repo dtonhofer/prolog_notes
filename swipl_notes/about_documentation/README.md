@@ -44,6 +44,23 @@ Changing the bibliography, however, is hairy. Some [notes on this](bibliography)
 
 ## LaTeX style elements
 
+### Predicate declarations at the top of pages
+
+(does it work with arity 0?)
+
+```
+\predicate[ISO]{write_canonical}{1}{+Term}
+\predicate[semidet]{write_length}{3}{+Term, -Length, +Options}
+\predicate[ISO]{write_term}{3}{+Stream, +Term, +Options}
+\predicate{setarg}{3}{+Arg, +Term, +Value}
+\predicate[deprecated]{current_stream}{3}{?Object, ?Mode, ?Stream}
+\infixop[ISO]{=}{?Term1}{?Term2}
+```
+
+These are linkified and a reference is inserted into the TOC. 
+
+The marker can take on multiple values ... should one do that?
+
 ### Labeling
 
 ```
@@ -352,21 +369,6 @@ Italicized in the text
 ```
 \arg{x}
 ```
-
-### Predicate declarations at the top of pages
-
-(does it work with arity 0?)
-
-```
-\predicate[ISO]{write_canonical}{1}{+Term}
-\predicate[semidet]{write_length}{3}{+Term, -Length, +Options}
-\predicate[ISO]{write_term}{3}{+Stream, +Term, +Options}
-\predicate{setarg}{3}{+Arg, +Term, +Value}
-\predicate[deprecated]{current_stream}{3}{?Object, ?Mode, ?Stream}
-\infixop[ISO]{=}{?Term1}{?Term2}
-```
-
-These are linkified and a reference is inserted into the TOC.
 
 
 ### Jargon
