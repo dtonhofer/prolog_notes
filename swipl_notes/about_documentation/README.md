@@ -510,9 +510,22 @@ https://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings
 
 It happens in the PDF that a figure floats on top of a multi-page code listing. BAD!
 
+## Referencing libraries
+
+For example: 
+
+```
+pllib(error)
+```
+
+is transformed into `library(error)`, but not linkified. 
+
 ## Use the new example infrastructure
+
+It has its own git repository. Code is written in pldoc
 
 Jan says: 
 
 > In general I'd like to see more examples being moved to the new example infrastructure. The new infrastructure 
 > allows for more sophisticated display and search of examples.
+
