@@ -417,7 +417,19 @@ but there should be a construct for that: `\glossaryjargon{}`)
 \Sne       ---> rendered as \= 
 ```
 
-Jan says: Please do not use the \Sxxx macros directly. They are inserted automatically from {xxx} input.
+Jan says: 
+
+> Please do not use the \Sxxx macros directly. They are inserted automatically from {xxx} input.
+
+Does that mean `{[]}` is transformed to \Snil{}? It's just an escape, too. Fo HTML it's the same.
+
+Note on markup:
+
+After some reflection:
+
+- For the traditional atom [], we use: Verbatim with quotes inside: \verb$'[]'$ (to make it visibly "quoted")
+- For the SWI-Prolog 7 symbol [], we use: \Snil{} without quotes rather than constant without quotes: \const{[]}
+- For [|] there is \Scons{} but it should be quoted, being an atom
 
 ### Tables
 
