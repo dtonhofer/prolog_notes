@@ -510,4 +510,9 @@ https://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings
 
 It happens in the PDF that a figure floats on top of a multi-page code listing. BAD!
 
+## Use the new example infrastructure
 
+Jan says: 
+
+> In general I'd like to see more examples being moved to the new example infrastructure. The new infrastructure 
+> allows for more sophisticated display and search of examples.
