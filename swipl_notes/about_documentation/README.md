@@ -415,8 +415,9 @@ but there should be a construct for that: `\glossaryjargon{}`)
 \Snil{}    ---> rendered as []
 \Snot      ---> rendered as \+
 \Sne       ---> rendered as \= 
-
 ```
+
+Jan says: Please do not use the \Sxxx macros directly. They are inserted automatically from {xxx} input.
 
 ### Tables
 
