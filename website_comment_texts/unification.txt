@@ -1,0 +1,38 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=(%3D)/2
+
+## Docs neecs some help maybe?
+
+The text
+
+> It acts as if defined by the following fact `=(Term, Term).`
+
+does not make sense to me. 
+
+One could say that `=` is a relation over the Herbrand universe which is reflexive (note that this doesn't capture cyclic terms), but that doesn't really describe what happens at runtime when the terms participating in the unification are nonground.
+
+Unless you define the relation `=` itself using unification not over elements of the Herbrand universe but over Prolog terms, which are from an augmented set where terms' branches may have been excised and replaced by "empty cells" (aka. unbound variables). But that's the serpent biting its tail.
+
+## More Notes
+
+This is of course the **Core of Prolog** and should be gold-embossed or something. It is implicitly used whenever the parameters of a clause head of a predicate are unified with the arguments of the predicate call.
+
+See also: [Unification at Wikipedia](https://en.wikipedia.org/wiki/Unification_%28computer_science%29)
+
+See also: [Occurs Check at Wikipedia](https://en.wikipedia.org/wiki/Occurs_check)
+
+After unification, Term1 and Term2 are structurally equal See ==/2. All the variables appearing in Term1 and Term2 have been given appropriate bindings.
+
+**Unification fails if**:
+
+   - the terms involved in unification are ``sufficiently different'', or
+   - the global occur check (also known as occurs check) flag is set and unification would 
+     generate a cyclic structure (see current_prolog_flag/2 - occurs_check and unify_with_occurs_check/2), or
+   - there is a dif/2 constraint active on unbound variables appearing anywhere in Term1 or Term2
+     (meaning these variables must never become structurally equal going forward in the proof from the dif/2 call)
+     and unification would bind those variables to terms such that the variables would become structurally equal or
+   - there are freeze/2 or when/2 goals active on unbound variables appearing anywhere in Term1 or Term2
+     and unification triggers those goals (which are then run synchronously) and a least one goal fails, or
+   - there are unbound variables with ``attributes'' appearing anywhere in Term1} or Term2} and unification triggers
+     those goals (which are then run synchronously) and at least one goal fails. The goals ``veto the unification'';
+     for example they may enforce a constraint whereby a given unbound variable may only take on
+     integer values but unification would bind the variable to a float.

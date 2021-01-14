@@ -1,0 +1,41 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=nonground/2
+
+Grabbing an unbound variable from the term that appears as argument 1:
+
+**Standard usage** 
+
+```
+?- nonground(f(_),K).
+true.
+
+?- nonground(f(X,_,_),K).
+X = K.
+```
+
+**Failure if first argument is ground**
+
+```
+?- nonground(f(x),K).
+false.
+```
+
+**Unusual usage**
+
+```
+?- nonground(f(X),X).
+true.
+```
+
+**Unusual usage leading to instantiation of argument 1**
+
+```
+?- nonground(f(X,Y,_),Y).
+X = Y.
+```
+
+**This violates the mode. Weird things happen**
+
+```
+?- nonground(f(X,_,_),foo).
+F = foo.
+```
