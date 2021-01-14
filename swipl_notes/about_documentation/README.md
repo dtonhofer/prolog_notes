@@ -44,6 +44,23 @@ Changing the bibliography, however, is hairy. Some [notes on this](bibliography)
 
 ## LaTeX style elements
 
+### Predicate declarations at the top of pages
+
+(does it work with arity 0?)
+
+```
+\predicate[ISO]{write_canonical}{1}{+Term}
+\predicate[semidet]{write_length}{3}{+Term, -Length, +Options}
+\predicate[ISO]{write_term}{3}{+Stream, +Term, +Options}
+\predicate{setarg}{3}{+Arg, +Term, +Value}
+\predicate[deprecated]{current_stream}{3}{?Object, ?Mode, ?Stream}
+\infixop[ISO]{=}{?Term1}{?Term2}
+```
+
+These are linkified and a reference is inserted into the TOC. 
+
+The marker can take on multiple values ... should one do that?
+
 ### Labeling
 
 ```
@@ -172,14 +189,14 @@ Use _backtick_ twice at the start and _quote_ twice at the end.
 
 This results in:
 
-![pics](guillements_example.png]
+![guillements example](pics/guillements_example.png)
 
 Seems fussy and looks incorrect and weirdly context-dependent. There is probably some include that is missing.
 Also, there should probably be a special construct for that like `\quoting{}`. 
 
 Here is how it should look, from https://www.scribbr.com/language-rules/quotation-marks/
 
-![pics](quotation_marks.png]
+![quotation marks](pics/quotation_marks.png)
 
 See also: https://www.overleaf.com/learn/latex/Typesetting_quotations
 
@@ -353,21 +370,6 @@ Italicized in the text
 \arg{x}
 ```
 
-### Predicate declarations at the top of pages
-
-(does it work with arity 0?)
-
-```
-\predicate[ISO]{write_canonical}{1}{+Term}
-\predicate[semidet]{write_length}{3}{+Term, -Length, +Options}
-\predicate[ISO]{write_term}{3}{+Stream, +Term, +Options}
-\predicate{setarg}{3}{+Arg, +Term, +Value}
-\predicate[deprecated]{current_stream}{3}{?Object, ?Mode, ?Stream}
-\infixop[ISO]{=}{?Term1}{?Term2}
-```
-
-These are linkified and a reference is inserted into the TOC.
-
 
 ### Jargon
 
@@ -411,7 +413,23 @@ but there should be a construct for that: `\glossaryjargon{}`)
 ```
 \Scons{}   ---> rendered as [|]
 \Snil{}    ---> rendered as []
+\Snot      ---> rendered as \+
+\Sne       ---> rendered as \= 
 ```
+
+Jan says: 
+
+> Please do not use the \Sxxx macros directly. They are inserted automatically from {xxx} input.
+
+Does that mean `{[]}` is transformed to \Snil{}? It's just an escape, too. Fo HTML it's the same.
+
+Note on markup:
+
+After some reflection:
+
+- For the traditional atom [], we use: Verbatim with quotes inside: \verb$'[]'$ (to make it visibly "quoted")
+- For the SWI-Prolog 7 symbol [], we use: \Snil{} without quotes rather than constant without quotes: \const{[]}
+- For [|] there is \Scons{} but it should be quoted, being an atom
 
 ### Tables
 
@@ -504,4 +522,22 @@ https://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings
 
 It happens in the PDF that a figure floats on top of a multi-page code listing. BAD!
 
+## Referencing libraries
+
+For example: 
+
+```
+pllib(error)
+```
+
+is transformed into `library(error)`, but not linkified. 
+
+## Use the new example infrastructure
+
+It has its own git repository. Code is written in pldoc
+
+Jan says: 
+
+> In general I'd like to see more examples being moved to the new example infrastructure. The new infrastructure 
+> allows for more sophisticated display and search of examples.
 
