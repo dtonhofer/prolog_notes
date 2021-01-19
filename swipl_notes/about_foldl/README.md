@@ -7,6 +7,8 @@ This is a companion README for the SWI-Prolog manual page [`fold/4`](https://eu.
 - [Overbearing mode indicators in the manual](#overbearing)
 - [Where is SWI-Prolog's _foldr_?](#foldr)
    - [Implementing one-list _foldr/4_ with _reverse/2_ and the one-list _foldl/4_](#implement_foldr)
+- [Long-ish _foldl_ and _foldr_ explainers](#longish_explainers)
+- [Compare _maplist_, _foldl_, _scan_ for mapping a list](#compare)
 - [Examples](#examples)
    - [Example 1: Simple atom concatenation](#simple_atom_concatenation)
    - [Example 2: Creating a list of monotonically increasing integers](#monotonically_increasing_integers)
@@ -15,8 +17,6 @@ This is a companion README for the SWI-Prolog manual page [`fold/4`](https://eu.
    - [Example 5: A pipeline of operations (edgy usage)](#pipeline_of_operations)
    - [Example 6: maplist emulation](#maplist_emulation)
    - [Example 7: An infinite list of random numbers](#infinite_list_of_random_numbers)
-- [Compare _maplist_, _foldl_, _scan_ for mapping a list](#compare)
-
 
 ## Intro<a name="intro" />
 
@@ -223,8 +223,7 @@ F = 's(_8310)(_8322)(c)(b)(a)' ;
 F = 's(_8310)(_8322)(_8334)(c)(b)(a)' .
 ```
 
-
-## Long-ish _foldl_ and _foldr_ explainers
+## Long-ish _foldl_ and _foldr_ explainers<a name="longish_explainers" />
 
 I had some fun explaining and writing a `foldl/4` and `foldr/4`, complete with test cases.
 
@@ -232,24 +231,9 @@ A markdown page with lots of text, implementations and unit tests is here:
 
 [**Linear `foldl` and `foldr` in Prolog**](/other_notes/about_foldl_and_foldr)
 
-Directly from that page, the implementation of `foldr/4` on a list (a `foldr/4` is missing in library(apply)):
-
-```none
-foo_foldr(Foldy,[Item|Items],Starter,AccUp) :-    % case of nonempty list
-   !,                                             % GREEN CUT for determinism
-   foo_foldr(Foldy,Items,Starter,AccUpPrev),
-   call(Foldy,Item,AccUpPrev,AccUp).
-
-foo_foldr(_,[],Starter,AccUp) :-                  % empty list: bounce Starter "upwards" into AccUp
-   AccUp=Starter.                                 % unification not in head for clarity
-```
-
 The indicated page also includes a (completely pointless) implementation of `foldl/4` based on `maplist/5`. 
 
 Also good to peruse: [The Wikipedia entry on "linear folds"](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Linear_folds)
-
-## Naming
-
 
 ## Comparing _maplist_, _foldl_, _scan_ for mapping a list<a name="compare"/>
 
