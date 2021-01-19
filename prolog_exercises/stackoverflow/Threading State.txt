@@ -1,0 +1,206 @@
+https://stackoverflow.com/questions/65756364/threading-state-context-in-dcg-while-parsing-text
+
+Maybe this example helps. _I will leave the semicontext trick out for now, as a discussion for later._
+
+We want to count the occurences of `a` and `b` and `c` present in an atom. Any other characters are lumped into a `dropped` category (but also counted).
+
+The "state" is thus the current counts for `a`,`b`,`c`,`dropped`. The state shall be implement using a map, in this case an SWI-Prolog dict.
+
+Three ways of doing that:
+
+1. With `foldl/4`
+2. With `phrase/3`
+3. Using vanilla Prolog
+
+With the code below:
+
+```
+?-
+count_with_foldl(abgdbabba,DictWithCounts).
+DictWithCounts = counts{a:3,b:4,dropped:2}.
+
+?- 
+count_with_phrase(abgdbabba,DictWithCounts).
+DictWithCounts = counts{a:3,b:4,dropped:2} ;
+false.
+
+?- 
+count_with_recursion(abgdbabba,DictWithCounts).
+DictWithCounts = counts{a:3,b:4,dropped:2}.
+```
+
+**Code:**
+
+```none
+% ===
+% Morph DictIn to DictOut so that:
+% Only for Keys [a,b,c]:
+% If Key exists in DictIn, DictOut is DictIn with the count for Key incremented
+% If Key notexists in DictIn, DictOut is DictIn with a new entry Key with count 1
+% ===
+
+inc_for_key(Key,DictIn,DictOut) :-
+   memberchk(Key,[a,b,c]),
+   !,
+   add_it(Key,DictIn,DictOut).
+   
+inc_for_key(Key,DictIn,DictOut) :-
+   \+memberchk(Key,[a,b,c]),
+   add_it(dropped,DictIn,DictOut).
+
+add_it(Key,DictIn,DictOut) :-
+   (get_dict(Key,DictIn,Count) -> succ(Count,CountNew) ; CountNew=1),
+   put_dict(Key,DictIn,CountNew,DictOut).
+
+% ===
+% Using foldl to count
+% ===
+
+count_with_foldl(Atom,DictWithCounts) :-
+   atom_chars(Atom,Chars),
+   foldl(inc_for_key,Chars,counts{},DictWithCounts).
+
+% ===
+% Using a DCG to count
+% ===
+
+dcg_count(Dict,Dict)      --> [].
+dcg_count(DictIn,DictOut) --> [C], { inc_for_key(C,DictIn,Dict2) }, dcg_count(Dict2,DictOut).
+
+count_with_phrase(Atom,DictWithCounts) :-
+   atom_chars(Atom,Chars),
+   phrase(dcg_count(counts{},DictWithCounts),Chars).
+
+% ===
+% Using standard Prolog to count
+% ===
+
+count_with_recursion(Atom,DictWithCounts) :-
+   atom_chars(Atom,Chars),
+   count_rec(Chars,counts{},DictWithCounts).
+   
+count_rec([],Dict,Dict).
+count_rec([C|Cs],DictIn,DictOut) :- inc_for_key(C,DictIn,Dict2), count_rec(Cs,Dict2,DictOut).
+```
+
+With [`plunit`](https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/plunit.html%27)) tests:
+
+```none
+:- begin_tests(counting).
+
+test("count using foldl/4, #1", true(DictWithCounts == counts{a:3,b:4,dropped:2})) :-
+   count_with_foldl(abgdbabba,DictWithCounts).
+   
+test("count whith phrase/2, #1", [true(DictWithCounts == counts{a:3,b:4,dropped:2}),nondet]) :- 
+   count_with_phrase(abgdbabba,DictWithCounts).
+
+test("count whith recursion, #1", [true(DictWithCounts == counts{a:3,b:4,dropped:2})]) :- 
+   count_with_recursion(abgdbabba,DictWithCounts).
+   
+:- end_tests(counting).
+```
+
+**A single state variable in DCGs**
+
+In the above, the DCGs take an "input state" at argument position 1 which they develop into an "output state" which is eventually returned at argument position 2. 
+
+```
+dcg_count(DictIn,DictOut)
+```
+
+This is completely analogous to functional programming whereby immutable structures are passed into functions and returned by functions. Here, the structures are "related" by the predicate, which is another way of looking at things (a way which sometimes bumps against realities of a machine that necessarily computes forward in time).
+
+Note that above, the state variables are ground - no variables.
+
+A **single** state variable is sufficient if that state variable is the name of an "empty cell" at the leaf of a larger structure. The larger structure "grows at its leaves", a DCG fills in the empty cell, but leaves another empty cell for the next call. 
+
+For example, here is a DCG which grows an "open list" at its end `Fin`. `Fin` is always an unbound variable that shall be filled in by the rule:
+
+_Replace `tag` by `:` in an atom_:
+
+```none
+collect(Fin) --> [],         { Fin = [] }.
+collect(Fin) --> [t,a,g], !, collect(Fin2), { Fin = [':'|Fin2] }.
+collect(Fin) --> [C],        collect(Fin2), { Fin = [C|Fin2] }.
+
+collect(Atom,Collected) :-
+   atom_chars(Atom,Chars),
+   phrase(collect(Collected),Chars).
+```
+
+```none
+?- collect(xytagyx,Out).
+Out = [x,y,:,y,x] ;
+false.
+```
+
+The DCG code is traditionally written more compactly (this way also makes it amenable to tail-call optimization, which is not be disregarded):
+
+```none
+collect([])        --> [].
+collect([':'|Fin]) --> [t,a,g], !, collect(Fin).
+collect([C|Fin])   --> [C],        collect(Fin).
+
+collect(Atom,Collected) :-
+   atom_chars(Atom,Chars),
+   phrase(collect(Collected),Chars).
+```   
+
+In this case, every DCG call only see the empty cell at the far end of the open list, whereas `Collectecd` denotes its start:
+
+
+```none
+Collected ----> [|]        
+               /   \       
+              x    [|]     
+                  /   \    
+                 :   ~empty cell~ <--- Fin
+```
+
+So, when encountering `y` the rule 
+
+```none
+collect([C|Fin]) --> [C], collect(Fin).
+```
+
+just does its part on its `Fin` and grows the list by 1 listcell, but leaving it an "open list" for continuing appending:
+ 
+```none
+Collected ----> [|]        
+               /   \       
+              x    [|]     
+                  /   \    
+                 :    [|]
+                     /   \
+            C ----> y   ~empty cell~ <--- Fin
+```
+
+The rule
+
+```none
+collect(Fin) --> [], { Fin = [] }.
+```
+
+transforms the open list into a proper list, setting the empty cell to `[]`:
+
+```none
+Collected ----> [|]        
+               /   \       
+              x    [|]     
+                  /   \    
+                 :    [|]
+                     /   \
+                    y    []
+```
+
+This is of course exactly what happens in the tree example of the [DCG Primer](https://www.metalevel.at/prolog/dcg):
+
+```none
+tree_nodes(nil) --> [].
+tree_nodes(node(Name, Left, Right)) -->
+        tree_nodes(Left),
+        [Name],
+        tree_nodes(Right).
+```
+
+Here, the datastructure which grows at its leaves is not a list, but a binary tree.
