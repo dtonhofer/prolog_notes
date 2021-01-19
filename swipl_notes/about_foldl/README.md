@@ -22,7 +22,7 @@ This is a companion README for the SWI-Prolog manual page [`fold/4`](https://eu.
 
 `foldl(Goal,List,Starter,Out)`
 
-The _Goal_ in a `foldl` call is the stem of a predicate call. This can be either:
+The _Goal_ in a `foldl` call (sometimes called the _foldl step function_ in functional programming) is the stem of a predicate call. This can be either:
 
 - an atom, giving a predicate name, as in `foo`, in which case `foldl` will look for
   a predicate with indicator `foo/3`, or
