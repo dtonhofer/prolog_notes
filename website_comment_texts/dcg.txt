@@ -4,26 +4,28 @@ Introduction and tutorials:
 
    - [DCG Primer](https://www.metalevel.at/prolog/dcg) by Markus Triska
    - [DCG Tutorial](http://www.pathwayslms.com/swipltuts/dcg) by Anne Ogborn
-   - Wikipedia: [Definite Clause Grammar](https://en.wikipedia.org/wiki/Definite_clause_grammar) (has more references)
+   - Wikipedia: [Definite Clause Grammar](https://en.wikipedia.org/wiki/Definite_clause_grammar) (has more references but otherwise needs work also demands citations on places that are inappropriate)
    - In his manual: [DCG basic utilities](https://eu.swi-prolog.org/pldoc/doc/_SWI_/library/dcg/basics.pl)
 
 Also take a look at
 
-   - Wikipedia: [Attribute Grammar](https://en.wikipedia.org/wiki/Attribute_grammar)
+   - Wikipedia: [Attribute Grammar](https://en.wikipedia.org/wiki/Attribute_grammar) 
 
-And maybe
+And also, extended DCGs:
 
    - [Package EDCG](https://www.swi-prolog.org/pack/list?p=edcg) which implements Van Roy's Extended DCGs from "A useful extension to Prolog’s Definite Clause Grammar notation.", SIGPLAN notices, 24(11):132–134, November 1989.
 
 Markus Triska writes in his DCG primer:
 
-Consider using DCGs if you are:
-   - describing a list
-   - reading from a file
-   - passing around a state representation that only a few predicates actually use or modify.
+> Consider using DCGs if you are 
 
-In every serious Prolog program, you will find many opportunities to use DCGs due
-to some subset of the above reasons.
+> 1) describing a list 
+
+> 2) reading from a file 
+
+> 3) passing around a state representation that only a few predicates actually use or modify.
+
+> In every serious Prolog program, you will find many opportunities to use DCGs due to some subset of the above reasons.
 
 ## Pass through `phrase`!
 
@@ -43,7 +45,7 @@ Generate or test strings obeying the Perl Regex `(ab)*`
 
    - Code: [`ab_dcg.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/prolog_exercises/ab_dcg/ab_dcg.pl)
    - Test: [`test_ab_dcg.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/prolog_exercises/ab_dcg/test_ab_dcg.pl)
-
+  
 **Generate**
 
 ```
@@ -73,7 +75,7 @@ N = 2 ;
 T = ababab,
 N = 3 ;
 T = abababab,
-N = 4
+N = 4 
 ...
 ```
 
@@ -83,4 +85,75 @@ Pick a prefix of a nonempty sequence of digits out of an atom:
 
    - Code: [`digits_dcg.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/prolog_exercises/digits_dcg/digits_dcg.pl)
    - Test: [`test_digits_dcg.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/prolog_exercises/digits_dcg/test_digits_dcg.pl)
+
+## Comparing three approaches to counting characters in a list: DCG, foldl and recursion
+
+```
+% ===
+% Morph DictIn to DictOut so that:
+% Only for Keys [a,b,c]:
+% If Key exists in DictIn, DictOut is DictIn with the count for Key incremented
+% If Key notexists in DictIn, DictOut is DictIn with a new entry Key with count 1
+% ===
+
+inc_for_key(Key,DictIn,DictOut) :-
+   memberchk(Key,[a,b,c]),
+   !,
+   add_it(Key,DictIn,DictOut).
+   
+inc_for_key(Key,DictIn,DictOut) :-
+   \+memberchk(Key,[a,b,c]),
+   add_it(dropped,DictIn,DictOut).
+
+add_it(Key,DictIn,DictOut) :-
+   (get_dict(Key,DictIn,Count) -> succ(Count,CountNew) ; CountNew=1),
+   put_dict(Key,DictIn,CountNew,DictOut).
+
+% ===
+% Using foldl to count
+% ===
+
+count_with_foldl(Atom,DictWithCounts) :-
+   atom_chars(Atom,Chars),
+   foldl(inc_for_key,Chars,counts{},DictWithCounts).
+
+% ===
+% Using a DCG to count
+% ===
+
+dcg_count(Dict,Dict)      --> [].
+dcg_count(DictIn,DictOut) --> [C], { inc_for_key(C,DictIn,Dict2) }, dcg_count(Dict2,DictOut).
+
+count_with_phrase(Atom,DictWithCounts) :-
+   atom_chars(Atom,Chars),
+   phrase(dcg_count(counts{},DictWithCounts),Chars).
+
+% ===
+% Using standard Prolog to count
+% ===
+
+count_with_recursion(Atom,DictWithCounts) :-
+   atom_chars(Atom,Chars),
+   count_rec(Chars,counts{},DictWithCounts).
+   
+count_rec([],Dict,Dict).
+count_rec([C|Cs],DictIn,DictOut) :- inc_for_key(C,DictIn,Dict2), count_rec(Cs,Dict2,DictOut).
+
+% ===
+% Tests
+% ===
+
+:- begin_tests(counting).
+
+test("count using foldl/4, #1", true(DictWithCounts == counts{a:3,b:4,dropped:2})) :-
+   count_with_foldl(abgdbabba,DictWithCounts).
+   
+test("count whith phrase/2, #1", [true(DictWithCounts == counts{a:3,b:4,dropped:2}),nondet]) :- 
+   count_with_phrase(abgdbabba,DictWithCounts).
+
+test("count whith recursion, #1", [true(DictWithCounts == counts{a:3,b:4,dropped:2})]) :- 
+   count_with_recursion(abgdbabba,DictWithCounts).
+   
+:- end_tests(counting).
+```
 

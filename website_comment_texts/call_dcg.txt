@@ -1,0 +1,146 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=call_dcg/3
+
+## Doc needs help
+
+The second paragraph is about this (I think):
+
+call_dcg/3 exists because there was code out there that was using DCG to process things "other than lists" (sounds like something out of the Politically Correct Dictionary, doesn't it?). 
+
+Using phrase/2 or phrase/3 thus didn't work any longer.
+
+Thus this replacement facility.
+
+For example (I can't think of a good example, so here is [collatz](https://en.wikipedia.org/wiki/Collatz_conjecture)):
+
+```
+collatz(1,1) :- !.
+collatz(In,Out) :- 
+   (((In mod 2) =:= 0) 
+     -> Next is In//2 
+     ;  Next is 3*In+1),
+   format("~d -> ~d~n",[In,Next]),
+   collatz(Next,Out).
+```
+
+And this can be called with call_dcg/3 because collatz/2 (and the DCG implementation of SWI-Prolog) obeys the convention of having two hidden arguments. In this case, the arguments are not a list and the expected (or to-be-returned) rest of list but two integers. And so:
+
+```
+?- call_dcg(collatz,100,X).
+100 -> 50
+50 -> 25
+25 -> 76
+76 -> 38
+38 -> 19
+...
+10 -> 5
+5 -> 16
+16 -> 8
+8 -> 4
+4 -> 2
+2 -> 1
+X = 1.
+```
+
+The **second paragraph** is about an alternative and clean solution, whereby the state is just the head of a (1-element) list which **never shrinks**, but sees the state removed from the list on the left and put back on the list (possibly in modified form) using "semicontext facility" on the left.
+
+Like this:
+
+```
+collatz        --> [1].    % this empties the 1-element list, signifying termination
+collatz,[Next] --> [In],   % transform In to Next; list length stays 1
+                   { 
+                     In > 1,
+                     (((In mod 2) =:= 0)
+                       -> Next is In//2
+                       ;  Next is 3*In+1),
+                      format("~d -> ~d~n",[In,Next]) 
+                   }.
+
+collatz_loop(Start) :-
+   phrase(collatz,Start,Out),
+   (Out == [] -> true; collatz_loop(Out)).
+```
+
+And thus:
+
+```
+?- collatz_loop([100]).
+100 -> 50
+50 -> 25
+25 -> 76
+76 -> 38
+38 -> 19
+19 -> 58
+...
+4 -> 2
+2 -> 1
+true ;
+false.
+```
+
+Still looks not great.
+
+## Example for semicontext feature
+
+The "semicontext feature" can be used to replace a parse performed by a rule (and all its invoked subrules) by a single new list element (or maybe several new list elements). It sounds perfect for processing an arithmetic formula in polish or reverse polish notation.
+
+As an artificial example, a list of `a` and `b`, where we want to grab three nonempty prefixes (coming one after the other) and transform them into XML tags.
+
+```
+% Rule to collect a nomepty sequence of a,b and return it
+
+collect_ab([C])    --> [C],{member(C,[a,b])}.
+collect_ab([C|Cs]) --> [C],{member(C,[a,b])},collect_ab(Cs).
+
+% Semicontext feature using rule which collects using collect_ab//1,
+% then transforms the collected chars into a tag which is pushed back on the
+% list
+
+compress_ab,[Tag]  --> collect_ab(Cs),
+                       {atomic_list_concat(Cs,T0),
+                        atomic_list_concat(['<',T0,'>'],Tag)}.
+
+% repeater1 "jumps" over the first element, supposed to be a tag,
+% and calls compress_ab//0 on the rest of the list
+
+repeater1,[Tag] --> [Tag],compress_ab.
+
+% repeater2 "jumps" over the first two elements, supposed to be tags,
+% and calls compress_ab//0 on the rest of the list
+
+repeater2,[Tag1,Tag2] --> [Tag1,Tag2],compress_ab.
+
+% do it!
+
+do2(Out) :- 
+   atom_chars(aabab,Chars),
+   phrase(compress_ab,Chars,Out).
+
+do3(Out) :- 
+   atom_chars(aabab,Chars),
+   phrase(compress_ab,Chars,Out1),
+   phrase(repeater1,Out1,Out).
+   
+do4(Out) :- 
+   atom_chars(aabab,Chars),
+   phrase(compress_ab,Chars,Out1),
+   phrase(repeater1,Out1,Out2),
+   phrase(repeater2,Out2,Out).
+```
+
+And so:
+
+```
+?- do4(Out).
+Out = ['<a>','<a>','<b>',a,b] ;
+Out = ['<a>','<a>','<ba>',b] ;
+Out = ['<a>','<a>','<bab>'] ;
+Out = ['<a>','<ab>','<a>',b] ;
+Out = ['<a>','<ab>','<ab>'] ;
+Out = ['<a>','<aba>','<b>'] ;
+Out = ['<aa>','<b>','<a>',b] ;
+Out = ['<aa>','<b>','<ab>'] ;
+Out = ['<aa>','<ba>','<b>'] ;
+Out = ['<aab>','<a>','<b>'] ;
+false.
+```

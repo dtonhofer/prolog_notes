@@ -1,5 +1,137 @@
 https://eu.swi-prolog.org/pldoc/doc_for?object=must_be/2
 
+## Reviewed list of keywords
+
+These expressions absolutely need to become compositional. AND, OR, NOT of boolean algebra would be of some use. Maybe one also add `must_be(successful,Goal)`.
+
+Also needs a special cases for "not empty atom" and "not empty string" etc. or a "not empty" general expression.
+
+Confusingly, in many (most) cases an "instantiation error" is thrown if an unbound variable is passed, instead of a proper error that there is a "must_be problem". This is documented behaviour. That can be improved, it's like throwing a NullPointerException from inside a contract checking method. 
+
+As is the custom, ISO Prolog has absolutely no space for a "must_be/2" error (nothing good can be said about such a decision), so must_be/2 throws ISO "type errors" throughout which are unfortunately often just inappropriate (e.g. for "between(L,H)" tests)
+
+```
+--
+any                     : any term, including an unbound variable (this reduces to true)
+--
+atom,symbol             : passes atom/1
+atomic,constant         : passes atomic/1
+--
+oneof(L)                : ground term that is member of L; if there is an unbound variable in L, everything passes!
+--
+compound                : passes compound/1, the complement of atomic/1 (includes dicts, but don't use that fact as that dict implementation through compounds may change!)
+pair                    : a key-value pair or rather a compound term -/2
+--
+boolean                 : one of the two atoms 'true' or 'false'
+--
+integer                 : passes integer/1 
+positive_integer        : integer > 0
+negative_integer        : integer < 0
+nonneg                  : nonneg *integer*; this should really be called "nonneg_integer"
+...correspond >=0, >0 etc for general numbers are sadly missing
+--
+float                   : passes float/1 (in SWI-Prolog, an IEEE 64-bit float)
+--
+rational                : a non-integer rational or an integer 
+--
+number                  : passes number/1
+--
+between(FloatL,FloatU)  : if FloatL is float, all other values may be float or integer (FIXME?); the limits are both INCLUSIVE; limits may be equal but NOT reversed
+between(IntL,IntU) 	    : if IntL is integer, all other values must be integer; the limits are both INCLUSIVE; limits may be equal but NOT reversed
+                          FIXME: there should be specific between_int/2 and between_float/2 if one goes that way.
+--
+acyclic                 : passes acyclic_term/1, i.e. is an acyclic term; includes unbound var (the term is a tree if one disregards "internal sharing")
+cyclic                  : passes cyclic_term/1, i.e. the term contains cycles (the term is a "rational tree"). Does not accept an unbound variable.
+--
+char                    : atom of length 1
+chars                   : list of 1-character atoms; includes the empty list
+code	                : unicode code point (any integer between 0 and 0x10FFFF)
+codes                   : list of integers >= 0; includes the empty list
+string                  : passes string/1, an SWI-Prolog string
+text                    : atom or string or chars or codes (but not numbers even though some predicates "textify" those)
+--
+var                     : passes var/1; must be an unbound variable
+nonvar                  : passes nonvar/1; anything except an unbound variable
+--
+list,proper_list        : passes is_list/1 and is a proper/closed list; empty list is allowed
+list(Type)              : proper list with elements of type Type (must_be/2(Type,_) is called on elements); empty list is allowed;
+                          on error the index is not indicated, sadly. A type like "list(list(integer))" is ok!
+list_or_partial_list    : A partial list (one ending in a variable: [x|_]). This includes an unbound variable.
+--
+callable                : passes callable/1. Relatively usesless, as "callable" is ill-defined. Basically (atom(X);compound(X)) 
+--
+dict                    : passes is_dict/1, an SWI-prolog dict
+--
+encoding                : valid name for a character encoding; see current_encoding/1, e.g. utf8 (but not "utf8" or 'utf-8'; also fails for 'iso_8859_1')
+--
+stream	                : passes is_stream/1, is a stream name or valid stream handle
+--
+type                    : Meta: Term is a valid type specification for must_be/2. This is done by looking up whether a clause `has_type(Type,_) :- ....` exists.
+                          Example: must_be(type,list(integer)). However, "must_be(type,list(grofx))": OK, but "must_be(type,grofx)": NOT OK. 
+```
+
+## See also
+
+[`library(record)`](https://www.swi-prolog.org/pldoc/man?section=record) uses the must_be/2 type specifiers to declare field types of records.
+
+## Text fixes 
+
+We read:
+
+> list_or_partial_list:	A list or an open list (ending in a variable); see is_list_or_partial_list/1
+
+That predicate does not exist (although the doc generator directs you to error.pl; the predicate is likely not exported)
+
+## Sadly, it only throws "type error"
+
+The note under "throws" says that "type_error(Type, Term)" is thrown. This means that for in-type, but out-of-domain errors, you get an inappropriate type error instead of a domain error. (That's really fine-tuning though):
+
+```
+?- must_be(nonneg, -3).
+ERROR: Type error: `nonneg' expected, found `-3' (an integer)
+```
+
+```
+?- must_be(positive_integer, 0).
+ERROR: Type error: `positive_integer' expected, found `0' (an integer)
+```
+
+But note that the implementation for length/2 for example correctly throws domain_error for this:
+
+```
+?- length(L,-1).
+ERROR: Domain error: `not_less_than_zero' expected, found `-1'
+```
+
+## booleans
+
+`must_be(boolean,X)` accepts the atoms `true` and `false` as booleans (both corresponding to predicates true/0 and false/0), but not `undefined` (which corresponds to undefined/0)
+
+```
+?- must_be(boolean,undefined).
+ERROR: Type error: `boolean' expected, found `undefined' (an atom)
+```
+
+Maybe that's a "troolean?"
+
+## list_or_partial_list
+
+This predicate considers unbound variables as partial lists. That's ok.
+
+```
+?- must_be(list_or_partial_list,_).
+true.
+
+?- must_be(list_or_partial_list,[]).
+true.
+
+?- must_be(list_or_partial_list,[x,y|_]).
+true.
+
+?- must_be(list_or_partial_list,[x,y]).
+true.
+```
+
 ## When to use must_be?
 
 This predicate should be used exclusively to perform contract checks and assertion checks, i.e. to inspect the current computational state of the running program.
@@ -172,6 +304,25 @@ ERROR: Type error: `number' expected, found `z' (an atom)
 
 Yes!
 
+## When assertion is just better
+
+This predicate checks that a dict follows certain requirements on the content.
+
+You cannot cleanly code this with must_be/2, it would just decay into a tremendous mess.
+
+```
+assertion_is_vertex(V) :-
+  assertion(ground(V)),
+  assertion(is_dict(V)),
+  assertion((get_dict(name,V,Name),atom(Name),Name\=='')),
+  assertion((get_dict(prior,V,Prior),atom(Prior))),
+  assertion((get_dict(local_cost,V,LocalCost),number(LocalCost),LocalCost>=0)), 
+   % note that LocalCost is dropped after the previous call, so we have to retrieve it again below:
+  assertion((get_dict(overall_cost,V,OverallCost),get_dict(local_cost,V,LocalCost),number(OverallCost),OverallCost>=LocalCost)),
+  assertion((get_dict(state,V,State),atom(State),memberchk(State,[visit_next,probed,visited]))),
+  assertion((get_dict(hops,V,Hops),number(Hops),Hops>=0)).
+```
+
 ## Compare with
 
 Hamcrest matchers, originally from the Java Universe and used primarily in unit tests:
@@ -188,3 +339,31 @@ For example:
 string_is_only_digits_test() ->
     assert_that("12345", is(only_digits())).
 ==
+
+## Ouch time
+
+In https://groups.google.com/g/comp.lang.prolog/c/JToeE7Read8 Ulrich Neumerkel writes:
+
+~~~~
+
+Unfortunately, must_be/2 in SWI is itself not declaratively sound, as it provides some highly problematic domains:
+
+```
+?- X = s(X), must_be(cyclic,X).
+X = s(X).
+```
+
+```
+?- must_be(cyclic,X).
+ERROR: Domain error: `cyclic_term' expected, found `_G11118'
+```
+
+So a generalization of a success case leads to a domain error. That's impossible.
+
+Instead, use the more pedestrian itypes:
+
+http://stackoverflow.com/a/30600104/772868 
+
+~~~~
+
+
