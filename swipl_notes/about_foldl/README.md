@@ -2,55 +2,109 @@
 
 This is a companion README for the SWI-Prolog manual page [`fold/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=foldl/4).
 
-The _Goal_ in a `foldl` call is a predicate, which is either given by a predicate name,
-like `foo` (in which case `foldl` will look for a predicate with indicator `foo/3`), 
-or a Prolog-style closure, which is a predicate call with some of the leftmost arguments
-already defined, like `foo(x,y)` (in which case `foldl` will look with a predicate with indicator `foo/5` 
-and always call it with the first arguments set to `x` and `y`).
+- [Intro](#intro)
+- [Implementation caveats](#implementation_caveats)
+- [Overbearing mode indicators in the manual](#overbearing)
+- [Where is SWI-Prolog's _foldr_?](#foldr)
+   - [Implementing one-list _foldr/4_ with _reverse/2_ and the one-list _foldl/4_](#implement_foldr)
+- [Examples](#examples)
+   - [Example 1: Simple atom concatenation](#simple_atom_concatenation)
+   - [Example 2: Creating a list of monotonically increasing integers](#monotonically_increasing_integers)
+   - [Example 3: Logical operations over a list](#logical_operations_over_a_list)
+   - [Example 4: Filtering by occurence count](#filtering_by_occurence_count)
+   - [Example 5: A pipeline of operations (edgy usage)](#pipeline_of_operations)
+   - [Example 6: maplist emulation](#maplist_emulation)
+   - [Example 7: An infinite list of random numbers](#infinite_list_of_random_numbers)
+- [Compare _maplist_, _foldl_, _scan_ for mapping a list](#compare)
 
-The three arguments taked on to the _Goal_ are:
 
-   - The current "list element" 
+## Intro<a name="intro" />
+
+`foldl(Goal,List,Starter,Out)`
+
+The _Goal_ in a `foldl` call is the stem of a predicate call. This can be either:
+
+- an atom, giving a predicate name, as in `foo`, in which case `foldl` will look for
+  a predicate with indicator `foo/3`, or
+- a Prolog-style closure, which is a predicate call with some of the leftmost arguments already specified,
+  as in `foo(x,y)`, in which case `foldl` will look with a predicate with indicator `foo/5` 
+  and always call it with the first arguments set to `x` and `y`.
+
+The three arguments tacked onto the predicate call to which _Goal_ is the stem are:
+
+   - The current "list element" in argument `List`
    - The "folded value" up to that point
    - The variable to be instantiated to the next "folded value" 
 
-Diagrammed as a data flow, `foldl(Goal,[a,b,c,d],Starter,Out)` performs the following:
+Diagrammed as a data flow, `foldl(Goal,[a,b,c,d],Starter,Final)` performs the following:
 
 ```none
-Starter -->--Goal-->--Goal-->--Goal-->--Goal-->--Out
+Starter -->--Goal-->--Goal-->--Goal-->--Goal-->--Final
               ^        ^        ^        ^
               |        |        |        | 
           [   a   ,    b   ,    c   ,    d  ]
 ```
 
-At each node, `Goal` computes the next value "going rightwards" from the value coming
-in "from the left" and the list element at the current position.
+At each node, `Goal(Element,FromLeft,ToRight)` computes the next value "going rightwards"
+from the value coming in "from the left" and the list element at the current position.
 
 In the definition of the manual
 
    - `Starter` = `V0`
-   - `Out` = `V`
+   - `Final` = `V`
 
-with the above image, if you name the arguments of the `Goal`
+Note that `FromLeft,ToRight` form the pair of an "accumulator weave". The initial 
+accumulator value is `Starter`. At each weave in and out of `Goal` the current
+accumulator values is "upticked" to its next generation, eventually ending in
+`Final`.
+
+A more general case would be a "multi-accumulator waeve", for example, if
+one wanted to weave three accumulators:
 
 ```none
-Goal(Element,FromLeft,ToRight)
+foldl(:Goal,                  % Goal(Element,InA,OutA,InB,OutB,InC,OutC)
+      +List, 
+      +StarterA, -FinalA,     % Accumulator weave A
+      +StarterB, -FinalB,     % Accumulator weave B 
+      +StarterC, -FinalC)     % Accumulator weave C
 ```
 
-it becomes rather clear what's going on.
+One can of course pack/unpack the multiple accumulators into a single one.
 
-## Implementation caveats
+## Implementation caveats<a name="implementation_caveats" />
 
 `foldl`, when applied to multiple lists, does *not* check first whether the lengths of the lists are all equal. It will fail at 
 the earliest end-of-list encountered in case list lengths differ. The caller has to take precautions accordingly if this is 
 considered costly.
 
-`foldl` can also handle open lists like `[a,b,c|_]`, and even an unbound variable as `List` argument (that is arguably borderline, as the 
-predicate indicator for `List` is `+`, so unbound variables are in principle not allowed here: `foldl(:Goal, +List, +V0, -V)`)
+`foldl` can also handle open lists (lists with an unbound variable at the final position (the Fin position))
+as argument `List`, for example `[a,b,c|_]`. In that case `foldl` will generate (and process through Goal) longer and longer
+lists on redo. This includes the case where the `List` is just an unbound variable.
+Indeed, an unbound variable is considered to belong to the set of "open lists" even thought it could be _anything_,
+even a non-list. On the other hand, that is arguably borderline, as the predicate indicator for `List` is `+` in
+`foldl(:Goal, +List, +V0, -V)`, so unbound variables are in principle not allowed here. But it works:
 
-In that case `foldl` will generate (and process through Goal) longer and longer lists of fresh variables on backtracking.
+```
+?- foldl([Element,FromLeft,Element]>>succ(FromLeft,Element),L,0,Final).
+L = [], Final = 0 ;
+L = [1], Final = 1 ;
+L = [1,2], Final = 2 ;
+L = [1,2,3], Final = 3 ;
+L = [1,2,3,4], Final = 4 ;
+L = [1,2,3,4,5], Final = 5 ;
+L = [1,2,3,4,5,6], Final = 6 ;
+...
+```
 
-## Overbearing mode indicators
+```
+?- foldl([Element,FromLeft,Element]>>succ(FromLeft,Element),[4,5,6|L],3,Final).
+L = [], Final = 6 ;
+L = [7], Final = 7 ;
+L = [7,8], Final = 8 ;
+L = [7,8,9], Final = 9 
+```
+
+## Overbearing mode indicators in the manual<a name="overbearing" />
 
 The [mode indicators](https://eu.swi-prolog.org/pldoc/man?section=preddesc) are (currently, 2020-12):
 
@@ -61,24 +115,26 @@ foldl(:Goal, +List1, +List2, +List3, +V0, -V)
 foldl(:Goal, +List1, +List2, +List3, +List4, +V0, -V)
 ```
    
-- The `+List` on argument 2 may be too much: Open lists and the empty open list, i.e. the unbound variable, are also allowed here.
-- The `+V0` and `-V0` are definitely too much: `foldl/N` has no business specifying those as they depend on `Goal`. `foldl/N` just passes them along. Disregard!
+- The `+` mode indicator on `List` arguments may be too much: 
+  as said above, open lists and and empty open list, i.e. an unbound variable, are also allowed here.
+- The `+V0` and `-V` are definitely too much: `foldl/N` cannot specify those as they depend
+  on `Goal`. `foldl/N` just passes them along. I guess those indictors can be disregarded.
 
-## Where is SWI-Prolog's `foldr`?
+## Where is SWI-Prolog's _foldr_?<a name="foldr" /> 
 
-No implementation for a corresponding `foldr` is given. A `foldr` implementation would consist in first calling reverse/2 
-on each of the _m_ input lists, then applying the appropriate `foldl`. This is actually more efficient than using a properly 
+No implementation for a corresponding `foldr` is given. A `foldr` implementation would consist in first calling `reverse/2`
+on each of the _m_ input lists, then applying the appropriate `foldl`. This is actually **more efficient** than using a properly 
 programmed-out recursive algorithm that cannot be tail-call optimized. 
 
 Be aware, however, that this approach is fragile if open lists are involved: a failing `foldl` will create an infinite 
 failure-driven loop with any preceding reverse/2 working on an open list!
 
-Here is properly recursive code, which mirrors the `foldl` code:
+Here is **properly recursive code**, which mirrors the `foldl` code. If you need it, you can grab it:
 
    - [`foldr_recursive.pl`](/other_notes/about_foldl_and_foldr/foldr_for_library_apply/foldr_recursive.pl)
    - [Unit tests](/other_notes/about_foldl_and_foldr/foldr_for_library_apply/tests)
 
-### Implementing one-list foldr/4 with reverse/2 and one-list foldl/4.
+### Implementing one-list _foldr/4_ with _reverse/2_ and the one-list _foldl/4_<a name="implement_foldr"></a>
 
 Naturally one would say:
 
@@ -128,7 +184,9 @@ F = 's(_12194)(_12206)(_12218)(c)(b)(a)'
 etc..
 ```
 
-But with an `x` in the input and an open list, `foldl` fails, and you have an infinite failure-driven loop as `reverse` generates longer and longer lists to be folded, but with `foldl` never succeeding:
+But with an `x` in the input and an open list, `foldl/4` fails, and you have an
+infinite failure-driven loop: `reverse/2` generates longer and longer lists to be
+folded ... but `foldl` never succeeds:
 
 ```
 ?- foldr(printox,[a,x,c|_],'s',F).
@@ -137,8 +195,8 @@ But with an `x` in the input and an open list, `foldl` fails, and you have an in
 
 You want to:
 
-   - Succeed the `foldr` predicate with the possibility of backtracking if `foldl` succeeds.
-   - Fail the predicate with no possibility of backtracking if `foldl` fails.
+   - Succeed the `foldr/4` predicate with the possibility of backtracking if `foldl/4` succeeds.
+   - Fail the `foldr/4` predicate with no possibility of backtracking if `foldl/4` fails.
 
 Thus:
 
@@ -149,7 +207,7 @@ foldr(Goal,List,Start,Final) :-
     ->
     true
     ;
-    (!,fail)).
+    (!,fail)). % looks weird but it works
 ```
 
 Now the predicate is safe:
@@ -165,7 +223,126 @@ F = 's(_8310)(_8322)(c)(b)(a)' ;
 F = 's(_8310)(_8322)(_8334)(c)(b)(a)' .
 ```
 
-## Example 1: Simple atom concatenation
+
+## Long-ish _foldl_ and _foldr_ explainers
+
+I had some fun explaining and writing a `foldl/4` and `foldr/4`, complete with test cases.
+
+A markdown page with lots of text, implementations and unit tests is here: 
+
+[**Linear `foldl` and `foldr` in Prolog**](/other_notes/about_foldl_and_foldr)
+
+Directly from that page, the implementation of `foldr/4` on a list (a `foldr/4` is missing in library(apply)):
+
+```none
+foo_foldr(Foldy,[Item|Items],Starter,AccUp) :-    % case of nonempty list
+   !,                                             % GREEN CUT for determinism
+   foo_foldr(Foldy,Items,Starter,AccUpPrev),
+   call(Foldy,Item,AccUpPrev,AccUp).
+
+foo_foldr(_,[],Starter,AccUp) :-                  % empty list: bounce Starter "upwards" into AccUp
+   AccUp=Starter.                                 % unification not in head for clarity
+```
+
+The indicated page also includes a (completely pointless) implementation of `foldl/4` based on `maplist/5`. 
+
+Also good to peruse: [The Wikipedia entry on "linear folds"](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Linear_folds)
+
+## Naming
+
+
+## Comparing _maplist_, _foldl_, _scan_ for mapping a list<a name="compare"/>
+
+These all do the same thing:
+
+```
+% ---
+% Map a list using maplist/3. 
+% ---
+
+map_using_maplist(Mapper,ListIn,ListOut) :-
+   maplist(in_maplist(Mapper),ListIn,ListOut).
+
+in_maplist(Mapper,In,Out) :- get_dict(In,Mapper,Out).
+
+% ---
+% Map a list using foldl/4. 
+% ---
+    
+map_using_foldl(Mapper,ListIn,ListOut) :-
+   assertion(var(ListOut)),                     % ListOut must be an unbound variable
+   Tip=Fin,                                     % initialize open list consisting of a single variable (named by both "Tip" and "Fin")
+   foldl(in_foldl(Mapper),ListIn,Fin,FinOut),   % uptick "Fin" to "FinOut" (in_foldl/4 repeatedly appends to the open list)
+   FinOut=[],                                   % close the open list by unifying its Fin with []
+   assertion(is_list(Tip)),                     % this is now the case
+   ListOut=Tip.                                 % the list we seek *is* the list at "Tip"
+
+% "In" is the "Element",
+% "FinIn" is what comes "from the left",
+% "FinOut" is what "goes to the right"
+
+in_foldl(Mapper,In,FinIn,FinOut) :- get_dict(In,Mapper,Out),FinIn=[Out|FinOut].
+   
+% ---
+% Map a list using foldl/4, more compactly (but exactly as above)
+% ---
+    
+map_using_foldl_compact(Mapper,ListIn,ListOut) :-
+   assertion(var(ListOut)),
+   foldl(in_foldl_compact(Mapper),ListIn,ListOut,[]).
+
+in_foldl_compact(Mapper,In,[Out|FinOut],FinOut) :- get_dict(In,Mapper,Out).  
+
+% ---
+% Map using scanl/4
+% ---   
+
+map_using_scanl(Mapper,ListIn,ListOut) :-
+   scanl(in_scanl(Mapper),ListIn,dontcare,ListMid),
+   ListMid=[dontcare|ListOut].
+
+in_scanl(Mapper,In,_,Out) :- get_dict(In,Mapper,Out).
+   
+% ---
+% Run tests
+% ---
+
+:- begin_tests(various_ways_to_map).
+
+const_mapper(mapper{ a:1, b:x, c:y, d:4, e:5, f:z }).
+const_list_in(List) :- atom_chars(abcdabfa,List).
+const_list_out([1,x,y,4,1,x,z,1]).
+
+test(maplist,true(ListOut == Expected)) :- 
+   const_mapper(Mapper),
+   const_list_in(ListIn),
+   const_list_out(Expected),
+   map_using_maplist(Mapper,ListIn,ListOut).
+   
+test(foldl,true(ListOut == Expected)) :- 
+   const_mapper(Mapper),
+   const_list_in(ListIn),
+   const_list_out(Expected),
+   map_using_foldl(Mapper,ListIn,ListOut).
+
+test(foldl_compact,true(ListOut == Expected)) :- 
+   const_mapper(Mapper),
+   const_list_in(ListIn),
+   const_list_out(Expected),
+   map_using_foldl_compact(Mapper,ListIn,ListOut).
+   
+test(scanl,true(ListOut == Expected)) :- 
+   const_mapper(Mapper),
+   const_list_in(ListIn),
+   const_list_out(Expected),
+   map_using_scanl(Mapper,ListIn,ListOut).
+   
+:- end_tests(various_ways_to_map).   
+```
+
+## Examples<a name="examples" />
+
+### Example 1: Simple atom concatenation<a name="simple_atom_concatenation" />
 
 Suppose we want to create an atom that starts with `Begin:`, then contains
 the concatenation of atoms found in the in input list. 
@@ -214,7 +391,7 @@ foldl([E,FL,TR]>>atom_concat(FL,E,TR),[],'Begin:',Out).
 Out = 'Begin:'.
 ```
 
-## Example 2: Creating a list of monotonically increasing integers
+### Example 2: Creating a list of monotonically increasing integers<a name="monotonically_increasing_integers" />
 
 Creating a list of integers 0..5:
 
@@ -235,7 +412,7 @@ bagof(X,between(0,5,X),List).
 List = [0, 1, 2, 3, 4, 5].
 ```
 
-## Example 3: Logical operations over a list
+### Example 3: Logical operations over a list<a name="logical_operations_over_a_list" />
 
 If you have a list containing atoms `true` and `false`, check whether it contains only `true`:
 
@@ -299,7 +476,7 @@ true.
 
 Simple!
 
-## Example 4: Filtering by occurence count
+### Example 4: Filtering by occurence count<a name="filtering_by_occurence_count" />
 
 Filtering the elements in a list that occur more than _limit_ times. This is effortlessly done using SWI-Prolog _dicts_.
 
@@ -345,7 +522,7 @@ And so:
 true.
 ```
 
-## Example 5: A pipeline of operations
+### Example 5: A pipeline of operations (edgy usage)<a name="pipeline_of_operations" />
 
 First, a common base:
 
@@ -426,7 +603,7 @@ Out = sqrt(14*12-4),
 Sought = 12.806248474865697.
 ```
 
-## Example 6: maplist emulation
+### Example 6: maplist emulation<a name="maplist_emulation" />
 
 As nothing holds us back from passing "rightwards" complex values, we can emulate `maplist/3`, passing 
 an ever-growing result list to append to.
@@ -488,7 +665,7 @@ Lout = [].
 Lout = [0, 1, 4, 9, 16, 25].
 ```
 
-## Example 7: An infinite list of random numbers
+### Example 7: An infinite list of random numbers<a name="infinite_list_of_random_numbers">
 
 `foldl/4` can work with an open list. 
 
@@ -525,42 +702,3 @@ L2 = [5, 6, 4, 4],
 L3 = [5, 1, 3, 5] ;
 ```
 
-## Long-ish _foldl_ and _foldr_ explainers
-
-I had some fun explaining and writing a `foldl/4` and `foldr/4`, complete with test cases.
-
-A markdown page with lots of text, implementations and unit tests is here: 
-
-[**Linear `foldl` and `foldr` in Prolog**](/other_notes/about_foldl_and_foldr)
-
-Directly from that page, the implementation of `foldr/4` on a list (a `foldr/4` is missing in library(apply)):
-
-```none
-foo_foldr(Foldy,[Item|Items],Starter,AccUp) :-    % case of nonempty list
-   !,                                             % GREEN CUT for determinism
-   foo_foldr(Foldy,Items,Starter,AccUpPrev),
-   call(Foldy,Item,AccUpPrev,AccUp).
-
-foo_foldr(_,[],Starter,AccUp) :-                  % empty list: bounce Starter "upwards" into AccUp
-   AccUp=Starter.                                 % unification not in head for clarity
-```
-
-The indicated page also includes a (completely pointless) implementation of `foldl/4` based on `maplist/5`. 
-
-Also good to peruse: [The Wikipedia entry on "linear folds"](https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Linear_folds)
-
-## Naming
-
-Note that `V0` is an "accumulator", which is transformed as the iteration over the list proceeds, eventually appearing in its final form.
-
-A more general case would be "multi-accumulator":
-
-```none
-foldl(:Goal, 
-      +List, 
-      +V0, -V,
-      +W0, -W,
-      +K0, -K)
-```
-
-One can of course pack the multiple accumulators into a single one.
