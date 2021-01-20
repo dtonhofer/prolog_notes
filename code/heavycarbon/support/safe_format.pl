@@ -23,6 +23,18 @@
 %
 % ?- safe_format("Hello ~d",[hello],TXT).
 % TXT = "Exception in format/2. Args: <Hello ~d> & <hello>".
+%
+% Another example:
+% 
+% This works nicely:
+%
+% ?- safe_format("Everything is going extremely ~s. We have ~s complaints",["well","no"],Text).
+% Text = "Everything is going extremely well. We have no complaints".
+%
+% safe_format/3 saves your bacon, you forgot a placeholder in the template:
+%
+% ?- safe_format("Open the ~s.",["pod bay doors","HAL"],Text).
+% Text = "Exception in format/2. Args: <Open the ~s.> & <pod bay doors> & <HAL>".
 % ============================================================================
 % David Tonhofer (ronerycoder@gluino.name) says:
 % This code is licensed under: 
