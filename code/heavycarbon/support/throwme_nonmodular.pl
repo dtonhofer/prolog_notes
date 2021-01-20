@@ -1,7 +1,6 @@
-% ==============================================================================
+% =============================================================================
 % Predicates to throw exceptions
-% ==============================================================================
-%
+% =============================================================================
 % This is not a module! This file is "consulted" in any module that needs
 % it, thus creating "local copies" of the predicates in that module.
 %
@@ -17,7 +16,14 @@
 % TODO: Write a little program that extract the throwme/2 calls from
 %       code so that a plunit block can be created to call all the throwme/2
 %       to see whether they are well-formed
-% ==============================================================================
+% =============================================================================
+% David Tonhofer (ronerycoder@gluino.name) says:
+% This code is licensed under: 
+% "Zero-Clause BSD / Free Public License 1.0.0 (0BSD)"
+% https://opensource.org/licenses/0BSD
+% =============================================================================
+% Latest review: Tue 19 January 2021
+% =============================================================================
 
 % ===
 % throwme(+LookupPred,+LookupTerm)
@@ -44,6 +50,7 @@ throwme(LookupPred,LookupTerm) :-
    length(Bag,BagLength),
    throwme_help(BagLength,Bag,LookupPred,LookupTerm).
 
+% ---
 % Helper invoked if exactly 1 applicable "exception descriptor" could be found.
 % Throw the corresponding exception!
 % This is the first clause in line. If there is no match on arg1, the catchall
