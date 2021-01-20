@@ -398,36 +398,30 @@ List = [0, 1, 2, 3, 4, 5].
 
 ### Example 3: Logical operations over a list<a name="logical_operations_over_a_list" />
 
-If you have a list containing atoms `true` and `false`, check whether it contains only `true`:
+If you have a list containing atoms `true` and `false`, check whether it contains only `true` or only `false`
 
 ```none
-andify_rightwards(true,true,true).
-andify_rightwards(true,false,false).
-andify_rightwards(false,true,false).
-andify_rightwards(false,false,false).
+all_true(List)  :- foldl(and_ify,List,true,true).      % succeeds if the outcome is "true"
+all_false(List) :- foldl(and_not_ify,List,true,true).  % succeeds if the outcome is "true"
 
-all_true(List) :-
-    foldl([E,FromLeft,ToRight]>>once(andify_rightwards(FromLeft,E,ToRight)),
-       List,
-       true,
-       Out),
-   Out == true.
-```
+% ---
+% For the helpers predicates, success means "I can compute this" (and the truth value
+% is in arg 3) whereas failure means "I can'compute this"
+% ---
 
-Check whether it contains only `false`:
+% andify(Element,FromLeft,ToRight)
 
-```none
-andify_negation_rightwards(true,false,true).
-andify_negation_rightwards(true,true,false).
-andify_negation_rightwards(false,true,false).
-andify_negation_rightwards(false,false,false).
+and_ify(true,true,true)    :- !. % Found "true" and the AND is still "true" --> keep "true"
+and_ify(true,false,false)  :- !. % Exists to allow actually checking the list elements
+and_ify(false,true,false)  :- !. % Exists to allow actually checking the list elements
+and_ify(false,false,false) :- !. % Exists to allow actually checking the list elements
 
-all_false(List) :-
-   foldl([E,FromLeft,ToRight]>>once(andify_negation_rightwards(FromLeft,E,ToRight)),
-      List,
-      true,
-      Out),
-   Out == true.
+% and_not_ify(Element,FromLeft,ToRight)
+
+and_not_ify(false,true,true)   :- !. % Found "false" and the AND is still "true" --> keep "true"
+and_not_ify(false,false,false) :- !. % Exists to allow actually checking the list elements
+and_not_ify(true,false,false)  :- !. % Exists to allow actually checking the list elements 
+and_not_ify(true,true,false)   :- !. % Exists to allow actually checking the list elements
 ```
 
 And so:
@@ -448,17 +442,23 @@ false.
 ?- 
 all_true([true,true,true,true]).
 true.
+```
 
-?- 
-all_true([]).  % a "vacuous truth": https://en.wikipedia.org/wiki/Vacuous_truth
-true.
+A ["vacuous truth"](https://en.wikipedia.org/wiki/Vacuous_truth): every element in the empty list is `true`:
 
+```none
 ?- 
-all_false([]). % another "vacuous truth"
+all_true([]).  
 true.
 ```
 
-Simple!
+Similarly for `false`: 
+
+```none
+?- 
+all_false([]). 
+true.
+```
 
 ### Example 4: Filtering by occurence count<a name="filtering_by_occurence_count" />
 
