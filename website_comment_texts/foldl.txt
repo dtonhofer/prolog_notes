@@ -1,17 +1,23 @@
 https://eu.swi-prolog.org/pldoc/doc_for?object=foldl/4
 
-## Companion README
+## Doc needs help
 
-A companion README with several examples can be found
+The example says: 
 
-[**here**](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_foldl/README.md)
+> the last two arguments [of foldl/4-7] form a typical difference pair
 
-## Simple explainer
+That's definitely not right. These values may not even be lists! They form the start and the end of a data-flowing "accumulator" chain though.
 
-The key is: `foldl(Goal,[a,b,c,d],Starter,Out)` sets up a dataflow pipeline like this:
+## Companion README 
+
+A companion README with several examples (and an implementation of `foldr/4`) [**can be found here**](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_foldl/README.md)
+
+## Super Simple Explainer
+
+The key is: `foldl(Goal,[a,b,c,d],Starter,Final)` sets up a dataflow pipeline like this:
 
 ==
-Starter -->--Goal-->--Goal-->--Goal-->--Goal-->--Out
+Starter -->--Goal-->--Goal-->--Goal-->--Goal-->--Final
               ^        ^        ^        ^
               |        |        |        | 
           [   a   ,    b   ,    c   ,    d  ]
@@ -26,193 +32,4 @@ Goal(Element1,Element2,Element3,FromLeft,ToRight)           for three lists
 Goal(Element1,Element2,Element3,Element4,FromLeft,ToRight)  for four lists
 ==
 
-... and that's all on needs to know.
-
-## foldr?
-
-It doesn't exist! 
-
-   - If you want to do `foldr` for proper lists, the thing to do is to reverse/2 the list or lists, then use `foldl`. This is actually faster than a proper non-tail-recursive procedure!
-   - If you want to do `foldr` for open lists, you are in a world of hurt. I'm trying to write something that works for that.
-
-Or you can use this properly recursive code, which mirrors the `foldl` code:
-
-   - [`foldr_recursive.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/other_notes/about_foldl_and_foldr/foldr_for_library_apply/foldr_recursive.pl)
-   - [Unit tests](https://github.com/dtonhofer/prolog_notes/tree/master/other_notes/about_foldl_and_foldr/foldr_for_library_apply/tests)
-
-## Implementing one-list foldr with reverse and one-list foldl.
-
-Naturally one would say:
-
-```
-foldr(Goal,List,Start,Final) :-
-   reverse(List,Lrev),
-   foldl(Goal,Lrev,Start,Final).
-```
-
-Suppose we have this Goal:
-
-```
-% printox(?Element,+FromLeft,+ToRight)
-
-printox(E,FL,TR) :-
-   (E == x)
-   -> fail
-   ; 
-   (
-     format(string(S),"~q",[E]),
-     atomic_list_concat([FL,'(',S,')'],TR)
-   ).
-```
-
-With no `x` in the input and a closed list, things work well:
-
-```
-?- foldr(printox,[a,b,c],'s',F).
-F = 's(c)(b)(a)'.
-```
-
-With `x` in the input and a closed list, things work well:
-
-```
-?- foldr(printox,[a,x,c],'s',F).
-false.
-```
-
-With no `x` in the input and an open list, things work well:
-
-```
-?- foldr(printox,[a,b,c|_],'s',F).
-F = 's(c)(b)(a)' ;
-F = 's(_12194)(c)(b)(a)' ;
-F = 's(_12194)(_12206)(c)(b)(a)' ;
-F = 's(_12194)(_12206)(_12218)(c)(b)(a)'  
-etc..
-```
-
-But with an `x` in the input and an open list, `foldl` fails, and you have an infinite failure-driven loop as `reverse` generates longer and longer lists to be folded, but with `foldl` never succeeding:
-
-```
-?- foldr(printox,[a,x,c|_],'s',F).
-*adios*
-```
-
-You want to:
-
-   - Succeed the `foldr` predicate with the possibility of backtracking if `foldl` succeeds.
-   - Fail the predicate with no possibility of backtracking if `foldl` fails.
-
-Thus:
-
-```
-foldr(Goal,List,Start,Final) :-
-   reverse(List,Lrev),
-   (foldl(Goal,Lrev,Start,Final)
-    ->
-    true
-    ;
-    (!,fail)).
-```
-
-Now the predicate is safe:
-
-```
-?- foldr(printox,[a,x,c|_],'s',F).
-false.
-
-?- foldr(printox,[a,b,c|_],'s',F).
-F = 's(c)(b)(a)' ;
-F = 's(_8310)(c)(b)(a)' ;
-F = 's(_8310)(_8322)(c)(b)(a)' ;
-F = 's(_8310)(_8322)(_8334)(c)(b)(a)' .
-```
-
-## Compare maplist, foldl, scan for mapping a list
-
-These all do the same thing:
-
-```
-% ---
-% Map a list using maplist/3. 
-% ---
-
-map_using_maplist(Mapper,ListIn,ListOut) :-
-   maplist(in_maplist(Mapper),ListIn,ListOut).
-
-in_maplist(Mapper,In,Out) :- get_dict(In,Mapper,Out).
-
-% ---
-% Map a list using foldl/4. 
-% ---
-    
-map_using_foldl(Mapper,ListIn,ListOut) :-
-   assertion(var(ListOut)),                     % ListOut must be an unbound variable
-   Tip=Fin,                                     % initialize open list consisting of a single variable (named by both "Tip" and "Fin")
-   foldl(in_foldl(Mapper),ListIn,Fin,FinOut),   % uptick "Fin" to "FinOut" (in_foldl/4 repeatedly appends to the open list)
-   FinOut=[],                                   % close the open list by unifying its Fin with []
-   assertion(is_list(Tip)),                     % this is now the case
-   ListOut=Tip.                                 % the list we seek *is* the list at "Tip"
-
-% "In" is the "Element",
-% "FinIn" is what comes "from the left",
-% "FinOut" is what "goes to the right"
-
-in_foldl(Mapper,In,FinIn,FinOut) :- get_dict(In,Mapper,Out),FinIn=[Out|FinOut].
-   
-% ---
-% Map a list using foldl/4, more compactly (but exactly as above)
-% ---
-    
-map_using_foldl_compact(Mapper,ListIn,ListOut) :-
-   assertion(var(ListOut)),
-   foldl(in_foldl_compact(Mapper),ListIn,ListOut,[]).
-
-in_foldl_compact(Mapper,In,[Out|FinOut],FinOut) :- get_dict(In,Mapper,Out).  
-
-% ---
-% Map using scanl/4
-% ---   
-
-map_using_scanl(Mapper,ListIn,ListOut) :-
-   scanl(in_scanl(Mapper),ListIn,dontcare,ListMid),
-   ListMid=[dontcare|ListOut].
-
-in_scanl(Mapper,In,_,Out) :- get_dict(In,Mapper,Out).
-   
-% ---
-% Run tests
-% ---
-
-:- begin_tests(various_ways_to_map).
-
-const_mapper(mapper{ a:1, b:x, c:y, d:4, e:5, f:z }).
-const_list_in(List) :- atom_chars(abcdabfa,List).
-const_list_out([1,x,y,4,1,x,z,1]).
-
-test(maplist,true(ListOut == Expected)) :- 
-   const_mapper(Mapper),
-   const_list_in(ListIn),
-   const_list_out(Expected),
-   map_using_maplist(Mapper,ListIn,ListOut).
-   
-test(foldl,true(ListOut == Expected)) :- 
-   const_mapper(Mapper),
-   const_list_in(ListIn),
-   const_list_out(Expected),
-   map_using_foldl(Mapper,ListIn,ListOut).
-
-test(foldl_compact,true(ListOut == Expected)) :- 
-   const_mapper(Mapper),
-   const_list_in(ListIn),
-   const_list_out(Expected),
-   map_using_foldl_compact(Mapper,ListIn,ListOut).
-   
-test(scanl,true(ListOut == Expected)) :- 
-   const_mapper(Mapper),
-   const_list_in(ListIn),
-   const_list_out(Expected),
-   map_using_scanl(Mapper,ListIn,ListOut).
-   
-:- end_tests(various_ways_to_map).   
-```
-
+... and that's all one really needs to know.
