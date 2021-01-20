@@ -1,26 +1,34 @@
+% =============================================================================
+% Straightforward "string justification"
+% =============================================================================
+% Those little predicates may be called a lot of times (e.g. when formatting 
+% tables), so let's not become too slow when running it!
+% (Currently, there are meta-calls in there and checks and everything. Oh
+%  well, why have GHz CPUs when you can't use them!)
+% =============================================================================
+% David Tonhofer (ronerycoder@gluino.name) says:
+% This code is licensed under: 
+% "Zero-Clause BSD / Free Public License 1.0.0 (0BSD)"
+% https://opensource.org/licenses/0BSD
+% =============================================================================
+% Latest review: Tue 19 January 2021
+% =============================================================================
+
 :- module(heavycarbon_strings_justify,
    [
-    justify_left/3    % justify_left(Text,Width,Result)
-   ,justify_right/3   % justify_right(Text,Width,Result)
-   ,justify_center/3  % justify_center(Text,Width,Result)
-   ,justify_left/5    % justify_left(Text,Width,Result,Want,Nocheck)
-   ,justify_right/5   % justify_right(Text,Width,Result,Want,Nocheck)
-   ,justify_center/5  % justify_center(Text,Width,Result,Want,Nocheck)
-   ,justify/10        % justify(Text,Width,How,CutLeft,CutRight,Prefer,Offset,Result,Want,Nocheck)
+       justify_left/3    % justify_left(Text,Width,Result)
+      ,justify_right/3   % justify_right(Text,Width,Result)
+      ,justify_center/3  % justify_center(Text,Width,Result)
+      ,justify_left/5    % justify_left(Text,Width,Result,Want,Nocheck)
+      ,justify_right/5   % justify_right(Text,Width,Result,Want,Nocheck)
+      ,justify_center/5  % justify_center(Text,Width,Result,Want,Nocheck)
+      ,justify/10        % justify(Text,Width,How,CutLeft,CutRight,Prefer,Offset,Result,Want,Nocheck)
    ]).
 
-:- include(library('heavycarbon/support/meta_helpers_nonmodular.pl')). % Not a module, just (meta) predicates
+:- use_module(library('heavycarbon/support/meta_helpers.pl')).
 :- use_module(library('heavycarbon/strings/stringy.pl')). 
 :- use_module(library('heavycarbon/strings/string_of_spaces.pl')). 
 :- use_module(library('heavycarbon/strings/string_overwrite.pl')). 
-
-% ---
-% NOTE!!
-% The little predicate may be called a lot of times (e.g. when formatting tables), so let's not become
-% too slow when running it!
-% (This is not currently the case, there are meta-calls in there and checks and everything. Oh well,
-% why have GHz CPUs when you can't use them!)
-% ---
 
 % ===
 % Simple calls that don't check and always return strings
@@ -62,7 +70,7 @@ justify_center(Text,Width,Result,Want,Nocheck) :-
 % ===
 % Perform text justification, the whole enchilada.
 %
-% Prolog abosolutely needs name-based parameter passing. Productions systems traditionally have them....
+% (Prolog abosolutely needs name-based parameter passing. Productions systems traditionally have them!)
 %
 % Text     : The text to justify (spaces will be added)
 % Width    : The width of the field in which the text shall be justified (an integer >= 0)

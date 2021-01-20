@@ -1,23 +1,13 @@
-:- module(heavycarbon_strings_spaces,
-   [
-      string_of_spaces/2  % string_of_spaces(N,Spaces)
-   ]).
-
-:- use_module(library('heavycarbon/strings/stringy.pl')).
-:- include(library('heavycarbon/support/meta_helpers_nonmodular.pl')). % Not a module, just (meta) predicates
-
-% TODO: There should be something similar for atoms (or rather, the predicates need to take an option "text(W)" 
-%       with W being "string" or "atom" (by default, string) (should it then be called "text_of_spaces"?
-% TODO: Make it more self-contained, no need to pull in two other files!
-% TODO: Review throwing.
-% ==============================================================================
-% Generating/Recognizing/Verifying "strings made of spaces"
+% =============================================================================
+% Generate strings/atoms made entirely of the character 0x20 ("SPACE")
 %
 % string_of_spaces(?N,?Spaces)
 %   N      : integer >= 0
-%   Spaces : a string on output (accepts the same stuff atom_string/2 accepts on input)
+%   Spaces : a string on output (accepts the same stuff atom_string/2
+%            accepts on input)
 %
-% Example:
+% Examples
+% --------
 %
 % ?- 
 % use_module(library('heavycarbon/strings/string_of_spaces.pl')).
@@ -36,7 +26,7 @@
 % string_of_spaces(N," hey  ").
 % false.
 %
-% ------------------------------------------------------------------------------
+% -----------------------------------------------------------------------------
 %
 % Another way of "generating a string" is: 
 %
@@ -65,10 +55,31 @@
 %
 %    https://swi-prolog.discourse.group/t/power-implementation/1937
 %
-% But why spend brainpower on producing cute & Prolog-y ways of generating/accepting
-% strings-of-spaces where one doesn't even see later that that's what the code does?
-% Let's not indulge too much our penchant for puzzle solving!
+% But why spend brainpower on producing cute ways of generating/accepting
+% strings-of-spaces where one doesn't even see later that that's what the
+% code actually does (in other words "who uses such puzzle-solving tricks in
+% in actual code")
 % ==============================================================================
+% TODO: There should be something similar for atoms (or rather, the predicates
+%       need to take an option 'string' or 'atom' (by default, string) 
+%       (but should it then be called "atomic_of_spaces"?
+% =============================================================================
+% David Tonhofer (ronerycoder@gluino.name) says:
+% This code is licensed under: 
+% "Zero-Clause BSD / Free Public License 1.0.0 (0BSD)"
+% https://opensource.org/licenses/0BSD
+% =============================================================================
+% Latest review: Tue 19 January 2021
+% =============================================================================
+
+:- module(heavycarbon_strings_spaces,
+   [
+      string_of_spaces/2  % string_of_spaces(N,Spaces)
+   ]).
+
+:- use_module(library('heavycarbon/strings/stringy.pl')).
+:- use_module(library('heavycarbon/support/meta_helpers.pl')). 
+
 
 string_of_spaces(N,Spaces) :-
    nonvar(Spaces),                     % case: "check length or determine length of 'Spaces'"
@@ -91,7 +102,7 @@ string_of_spaces(N,Spaces) :-
 
 % ---
 % Actually generate (possibly large) strings rapidly using string_concat/3.
-% Add specific cases besides length 0 and 1 for fats generation for
+% Add specific cases besides length 0 and 1 for fast generation for
 % small strings.
 % ---
 

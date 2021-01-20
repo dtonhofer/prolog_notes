@@ -1,12 +1,3 @@
-:- module(heavycarbon_stringy_tablify,
-   [
-      tablify/4
-     ,test_tablify/1
-   ]).
- 
-:- use_module(library('heavycarbon/strings/justify.pl')).              % string printing
-:- include(library('heavycarbon/support/meta_helpers_nonmodular.pl')). % if_then_else/3 & friends
-
 % =============================================================================
 % Print tabular data.
 % =============================================================================
@@ -32,7 +23,7 @@
 %     3              key:atom      -------> column key in dataset (called "ColKey" in code)
 %     .              header:string -------> column header text (may be missing)
 %     .              justify:enum  -------> 'left', 'center', 'right' (or missing)
-%     .              enum:List     -------> if there is a list of known values,they can be listed here; the column widtzh will respect this
+%     .              enum:List     -------> if there is a list of known values,they can be listed here; the column width will respect this
 %     .
 %
 % Data set
@@ -63,6 +54,21 @@
 %     .                                           'key'  has ColKey3 as key
 %     .             
 % =============================================================================
+% Copyright 2021 David Tonhofer (ronerycoder@gluino.name)
+% This code is licensed under: The 3-Clause BSD License
+% https://opensource.org/licenses/BSD-3-Clause
+% =============================================================================
+% Latest review: Tue 19 January 2021 (this is still alpha)
+% =============================================================================
+
+:- module(heavycarbon_stringy_tablify,
+   [
+      tablify/4
+     ,test_tablify/1
+   ]).
+ 
+:- use_module(library('heavycarbon/strings/justify.pl')).      % string justification
+:- use_module(library('heavycarbon/support/meta_helpers.pl')). % if_then_else/3 & friends
 
 % ===
 % Called for testing
