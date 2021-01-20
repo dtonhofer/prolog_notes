@@ -1,11 +1,3 @@
-:- module(heavycarbon_clashfree_id_selection,
-          [
-              clashfree_id_selection/3    % clashfree_id_selection(Dict,Id,MaxId) - id chosen from [0,MaxId]
-             ,clashfree_id_selection/4    % clashfree_id_selection(Dict,Id,MinId,MaxId) - id chosen from [MinId,MaxId]
-             ,insert_with_clashfree_id/3  % insert_with_clashfree_id(Id-Value,acc(DictIn,DictOut),limit(MaxId))
-                                          % insert_with_clashfree_id(Id-Value,acc(DictIn,DictOut),limit(MinId,MaxId))
-          ]).
-
 % ============================================================================
 % Generate a new integer "Id" that doesn't exist as key in the passed Dict
 % yet. This will mostly succeed on first try!
@@ -31,6 +23,15 @@
 %    insert_with_clashfree_id(Id1-x,acc(Dict0,Dict1),limit(MaxId)),
 %    insert_with_clashfree_id(Id2-y,acc(Dict1,Dict2),limit(MaxId)).
 % ============================================================================
+
+:- module(heavycarbon_clashfree_id_selection,
+          [
+              clashfree_id_selection/3    % clashfree_id_selection(Dict,Id,MaxId) - id chosen from [0,MaxId]
+             ,clashfree_id_selection/4    % clashfree_id_selection(Dict,Id,MinId,MaxId) - id chosen from [MinId,MaxId]
+             ,insert_with_clashfree_id/3  % insert_with_clashfree_id(Id-Value,acc(DictIn,DictOut),limit(MaxId))
+                                          % insert_with_clashfree_id(Id-Value,acc(DictIn,DictOut),limit(MinId,MaxId))
+          ]).
+
 
 clashfree_id_selection(Dict,Id,MaxId) :-
    clashfree_id_selection(Dict,Id,0,MaxId).

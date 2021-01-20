@@ -1,25 +1,34 @@
+% =============================================================================
+% A between/3 which accepts unbound variables as Arg1 and Arg2.
+% 
+% NOTE: The exception throwing is not ISO Standard, pretty experimental,
+% and too unstructured. 
+% =============================================================================
+% Running the tests: There should be a file "between_x.plt" nearby.
+% Then, if the root directory for "code" is on the library path:
+%
+% ?- use_module(library('heavycarbon/utils/between_x.pl')).
+% ?- load_test_files([]).
+% ?- run_tests.
+% =============================================================================
+% David Tonhofer (ronerycoder@gluino.name) says:
+% This code is licensed under: 
+% "Zero-Clause BSD / Free Public License 1.0.0 (0BSD)"
+% https://opensource.org/licenses/0BSD
+% =============================================================================
+% Last review: 2020-12-14
+% =============================================================================
+
 :- module(between_x,
           [
-              between_x/3
+              between_x/3  % between_x(Low,High,Value) 
           ]).   
-
-% ============================================================================
-% 2020-12-14
-% https://github.com/dtonhofer/prolog_notes
-% ----------------------------------------------------------------------------
-% ronerycoder@gluino.name (me) says this is licensed under 
-% https://opensource.org/licenses/0BSD
-% ============================================================================
-
-% A between/3 which accepts unbound variables as Arg1 and Arg2.
-
-% NOTE: The exception throwing is not ISO Standard and pretty experimental and too unstructured.
 
 between_x(Low,High,Value) :-
    what_is_x(Low,Arg1),
    what_is_x(High,Arg2),
    what_is_x(Value,Arg3),
-   % let generators will take over!
+   % let generators take over!
    % pass Low,High,Value separately to avoid having to extract them for error handling
    decide(Arg1,Arg2,Arg3,Low,High,Value),
    assertion(integer(Value)),              % remove if you are sure it works

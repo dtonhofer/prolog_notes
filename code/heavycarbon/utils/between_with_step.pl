@@ -1,16 +1,4 @@
-:- module(between_with_step,
-          [
-              between/4
-             ,between/5
-          ]).
-
-% ============================================================================
-% 2020-05-XX
-% https://github.com/dtonhofer/prolog_notes
-% ----------------------------------------------------------------------------
-% ronerycoder@gluino.name (me) says this is licensed under 
-% https://opensource.org/licenses/0BSD
-% ============================================================================
+% =============================================================================
 % between(+Start,+End,+Step,?Value)
 % between(+Start,+End,+Step,?Value,?OptionList)
 %
@@ -48,7 +36,7 @@
 %        § If atom "throw_if_empty" is a member of the list,
 %          empty sequences lead to an exception.
 %          In default mode, the empty sequence leads to failure.
-% ============================================================================
+% =============================================================================
 % Notes
 %
 % - The core of the predicate is straightforward but the preparation is
@@ -64,8 +52,21 @@
 %   library - should be generally a good assumption.
 % - Kudos to jburse for noticing that I hadn't checked the bounds in VERIFY
 %   mode. Bugged! But thanks to the unit test, fixed with confidence.
-% ============================================================================
+% =============================================================================
+% Running the tests: There should be a file "between_with_step.plt" nearby.
+% Then, if the root directory for "code" is on the library path:
+%
+% ?- use_module(library('heavycarbon/utils/between_with_step.pl')).
+% ?- load_test_files([]).
+% ?- run_tests.
+% =============================================================================
+% David Tonhofer (ronerycoder@gluino.name) says:
+% This code is licensed under: 
+% "Zero-Clause BSD / Free Public License 1.0.0 (0BSD)"
+% https://opensource.org/licenses/0BSD
+% =============================================================================
 % Changes:
+%
 % 2020-05-21: Moved from throwing ISO standard "domain error" to
 %             "my error" because the standard "domain error" is badly designed:
 %             - doesn't carry information properly
@@ -81,11 +82,14 @@
 % 2020-12-14: License changed from UNLICENSE to 
 %             https://opensource.org/licenses/0BSD 
 %             Comment changes.
-% ============================================================================
+% 2021-01-20: Comment changes.
+% =============================================================================
 
-% ===
-% Entry point
-% ===
+:- module(between_with_step,
+          [
+              between/4
+             ,between/5
+          ]).
 
 between(Start,End,Step,Value) :-
    between(Start,End,Step,Value,[]).

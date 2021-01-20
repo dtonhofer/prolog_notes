@@ -1,20 +1,22 @@
-% ============================================================================
+% =============================================================================
+% Utilities to generate random atoms (generally, for tests)
+% =============================================================================
+% Running the tests: There should be a file "random_atom.plt" nearby.
+% Then, if the root directory for "code" is on the library path:
+%
+% ?- use_module(library('heavycarbon/utils/random_atom.pl')).
+% ?- load_test_files([]).
+% ?- run_tests.
+% =============================================================================
+% David Tonhofer (ronerycoder@gluino.name) says:
+% This code is licensed under: 
+% "Zero-Clause BSD / Free Public License 1.0.0 (0BSD)"
+% https://opensource.org/licenses/0BSD
+% =============================================================================
+% Changes:
 % 2020-09-XX Version 1
 % 2020-12-27 Version 2, using library(option) and otherwise rewritten
-%
-% https://github.com/dtonhofer/prolog_notes/code/heavycarbon/utils/
-% ----------------------------------------------------------------------------
-% ronerycoder@gluino.name (me) says this is licensed under
-% https://opensource.org/licenses/0BSD
-% ============================================================================
-%
-% TODO: Make the documentation visible via pldoc
-%
-% Load using use_module(library('heavycarbon/utils/random_atom.pl')).
-% once the topmost directory has been put on the library path using:
-% assertz(file_search_path(library,'...path.../prolog_notes/code')).
-
-% Below, option defaults are indicated with _underscores_
+% =============================================================================
 
 :- module(heavycarbon_random_atom,
    [

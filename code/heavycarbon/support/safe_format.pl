@@ -1,8 +1,3 @@
-:- module(heavycarbon_support_safe_format,
-          [
-          safe_format/3   % safe_format(+Msg,+Args,-FinalText)
-          ]).
-
 % ============================================================================
 % format/2 (https://eu.swi-prolog.org/pldoc/doc_for?object=format/2)
 % is **precise** in what it expects.
@@ -41,8 +36,13 @@
 % "Zero-Clause BSD / Free Public License 1.0.0 (0BSD)"
 % https://opensource.org/licenses/0BSD
 % =============================================================================
-% Latest review: Tue 19 January 2021
+% Latest review: Tue 20 January 2021
 % =============================================================================
+
+:- module(heavycarbon_support_safe_format,
+          [
+          safe_format/3   % safe_format(+Msg,+Args,-FinalText)
+          ]).
 
 safe_format(Msg,Args,FinalText) :-
    (is_list(Args) -> ListyArgs = Args ; ListyArgs = [Args]),

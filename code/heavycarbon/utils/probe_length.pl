@@ -1,31 +1,33 @@
-:- module(probe_length,
-          [
-               probe_length/3
-              ,probe_length/4
-          ]).
-
-% ============================================================================
-% 2020-12
-% https://github.com/dtonhofer/prolog_notes
-% ----------------------------------------------------------------------------
-% ronerycoder@gluino.name (me) says this is licensed under
-% https://opensource.org/licenses/0BSD
-% ============================================================================
+% =============================================================================
 % Probe the length of an unknown term (generally a list, but not necessarily)
 %
 % This is a complement to length/2, which only handles proper lists.
+%
+% When determining/computing values, the predicate always succeeds.
+% When verifying proposed values, the predicate may fail.
 %
 % Problems with this implementation:
 %
 % 1) It's much slower than length/2 because it doesn't call native code.
 % 2) It doesn't handle cyclic structures. That should be added (but will
-%    make it slower or be problematic for multithreading applications
-%    because you have to patch the structure as you examine it.
+%    make it even slower or be problematic for multithreading applications
+%    because you have to patch the structure as you examine it.)
 %
-% When determining/computing values, the predicate always succeeds.
-% When verifying proposed values, the predicate may fail.
-% ============================================================================
+% =============================================================================
+% Running the tests: There should be a file "between_with_step.plt" nearby.
+% Then, if the root directory for "code" is on the library path:
 %
+% ?- use_module(library('heavycarbon/utils/probe_length.pl')).
+% ?- load_test_files([]).
+% ?- run_tests.
+% =============================================================================
+% David Tonhofer (ronerycoder@gluino.name) says:
+% This code is licensed under: 
+% "Zero-Clause BSD / Free Public License 1.0.0 (0BSD)"
+% https://opensource.org/licenses/0BSD
+% =============================================================================
+
+% -----------------------------------------------------------------------------
 % Examples:
 %
 % ?- probe_length([],Length,What).
@@ -78,13 +80,20 @@
 %
 % ?- probe_length([a,b,c|_], Length, [closed,var]).
 % false.
-%
-% ============================================================================
+% -----------------------------------------------------------------------------
 
+:- module(probe_length,
+          [
+               probe_length/3  % probe_length(@MaybeList,?Length,?What)
+              ,probe_length/4  % probe_length(@MaybeList, ?Length, ?What, @Options)
+          ]).
+
+% ---
 % Switch on runtime printing with
 % :- debug(probe_length).
+% ---
 
-% ============================================================================
+% ===
 % probe_length(@MaybeList, ?Length, ?What)
 %
 % Identical to
@@ -93,12 +102,11 @@
 %
 % i.e. the predicate behaves leniently in that a proposed Length that is < 0
 % leads to failure instead of an ISO type exception.
-% ============================================================================
+% ===
 
-probe_length(MaybeList,Length,What) :-
-   probe_length(MaybeList,Length,What,[]).
+probe_length(MaybeList,Length,What) :- probe_length(MaybeList,Length,What,[]).
 
-% ============================================================================
+% ===
 % probe_length(@MaybeList, ?Length, ?What, @Options)
 %
 % MaybeList: The term to be examined. Maybe a list.
@@ -127,7 +135,7 @@ probe_length(MaybeList,Length,What) :-
 %            then the predicate throws is Length is proposed but < 0. If Options is
 %            anything else, this is interpreted as 'lenient', and the predicate fails
 %            if Length is proposed but < 0.
-% ============================================================================
+% ===
 
 probe_length(MaybeList,Length,What,Options) :-
    verify_what(What,IsClosedQueried,IsVarQueried,IsOpenNonvarQueried,IsNonlistQueried),
