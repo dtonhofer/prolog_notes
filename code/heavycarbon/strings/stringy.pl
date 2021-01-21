@@ -1,11 +1,12 @@
 % =============================================================================
 % A few very simple predicates that try to make "manipulation of strings"
 % and "manipulation of atoms" a bit more uniform.
-%
-% At the toplevel:
+% =============================================================================
+% Running the tests: There should be a file "stringy.plt" nearby.
+% Then, if the root directory for "code" is on the library path:
 %
 % ?- use_module(library('heavycarbon/strings/stringy.pl')).
-% ?- load_test_files([]).  % loads "stringy.plt"
+% ?- load_test_files([]).
 % ?- run_tests.
 % =============================================================================
 % David Tonhofer (ronerycoder@gluino.name) says:
@@ -17,41 +18,31 @@
 % =============================================================================
 
 :- module(heavycarbon_strings_stringy,
-   [
-
-       stringy/1            % is the argument an atom or a string or a number
-      ,stringy_is_empty/1   % is the argument the empty atom,string or list
-      ,stringy_is_chars/1   % is the argument a proper list of chars
-      ,stringy_is_codes/1   % is the argument a proper list of codes (integers)
-      ,stringy_is_atomic/1  % is the argument an atom or a string
-      ,stringy_is_text/1    % is the argument an atom or a string or chars or codes
-      ,stringy_is_anytext/1 % is the argument an atom or a string or chars or codes or a number
-      ,stringy_is_anytext/2 % as stringy_is_anytext/1, but also reifies the type of argument 1 (empty list is 'empty')
-
-      % "S" is the stringy thing made from chars in "Chars", "Want" is the atom giving the type of "S": 'atom' or 'string'
-
-      ,stringy_chars/3   % stringy_chars(S,Chars,Want)
-
-      % Concatenate multiple things to a single stringy thing "Sout" which shall be of type "Want" (either 'atom' or 'string')
-
-      ,stringy_concat/10  % stringy_concat(Sin1,Sin2,Sin3,Sin4,Sin5,Sin6,Sin7,Sin8,Sout,Want)
-      ,stringy_concat/9   % stringy_concat(Sin1,Sin2,Sin3,Sin4,Sin5,Sin6,Sin7,Sout,Want)
-      ,stringy_concat/8   % stringy_concat(Sin1,Sin2,Sin3,Sin4,Sin5,Sin6,Sout,Want)
-      ,stringy_concat/7   % stringy_concat(Sin1,Sin2,Sin3,Sin4,Sin5,Sout,Want)
-      ,stringy_concat/6   % stringy_concat(Sin1,Sin2,Sin3,Sin4,Sout,Want)
-      ,stringy_concat/5   % stringy_concat(Sin1,Sin2,Sin3,Sout,Want)
-      ,stringy_concat/4   % stringy_concat(Sin1,Sin2,Sout,Want)
-      ,stringy_concat/3   % stringy_concat(Sin1,Sout,Want)
-
-      % Transform a thing "Sin" into a stringy thing "Sout" which shall be of type "Want" (either 'atom' or 'string')
-
-      ,stringy_ensure/3  % string_ensure(Sin,Sout,Want)
-
-      % Determine the "stringy length" of a thing "Sin"
-
-      ,stringy_length/2  % string_length(Sin,Length)
-
-   ]).
+          [
+          stringy/1              % is the argument an atom or a string or a number
+         ,stringy_is_empty/1     % is the argument the empty atom,string or list
+         ,stringy_is_chars/1     % is the argument a proper list of chars
+         ,stringy_is_codes/1     % is the argument a proper list of codes (integers)
+         ,stringy_is_atomic/1    % is the argument an atom or a string
+         ,stringy_is_text/1      % is the argument an atom or a string or chars or codes
+         ,stringy_is_anytext/1   % is the argument an atom or a string or chars or codes or a number
+         ,stringy_is_anytext/2   % as stringy_is_anytext/1, but also reifies the type of argument 1 (empty list is 'empty')
+          % "S" is the stringy thing made from chars in "Chars", "Want" is the atom giving the type of "S": 'atom' or 'string'
+         ,stringy_chars/3        % stringy_chars(S,Chars,Want)
+          % Concatenate multiple things to a single stringy thing "Sout" which shall be of type "Want" (either 'atom' or 'string')
+         ,stringy_concat/10      % stringy_concat(Sin1,Sin2,Sin3,Sin4,Sin5,Sin6,Sin7,Sin8,Sout,Want)
+         ,stringy_concat/9       % stringy_concat(Sin1,Sin2,Sin3,Sin4,Sin5,Sin6,Sin7,Sout,Want)
+         ,stringy_concat/8       % stringy_concat(Sin1,Sin2,Sin3,Sin4,Sin5,Sin6,Sout,Want)
+         ,stringy_concat/7       % stringy_concat(Sin1,Sin2,Sin3,Sin4,Sin5,Sout,Want)
+         ,stringy_concat/6       % stringy_concat(Sin1,Sin2,Sin3,Sin4,Sout,Want)
+         ,stringy_concat/5       % stringy_concat(Sin1,Sin2,Sin3,Sout,Want)
+         ,stringy_concat/4       % stringy_concat(Sin1,Sin2,Sout,Want)
+         ,stringy_concat/3       % stringy_concat(Sin1,Sout,Want)
+         % Transform a thing "Sin" into a stringy thing "Sout" which shall be of type "Want" (either 'atom' or 'string')
+         ,stringy_ensure/3       % string_ensure(Sin,Sout,Want)
+         % Determine the "stringy length" of a thing "Sin"
+         ,stringy_length/2  % string_length(Sin,Length)
+         ]).
 
 :- use_module(library('heavycarbon/support/meta_helpers.pl')).
 

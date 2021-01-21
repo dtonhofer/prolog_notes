@@ -1,12 +1,3 @@
-:- module(heavycarbon_strings_string_overwrite,
-   [
-       overwrite_using_chars/7  % overwrite_using_chars(Lower,Upper,UpperPos,CutLeft,CutRight,Result,Want)
-      ,overwrite_using_runs/7   % overwrite_using_runs(Lower,Upper,UpperPos,CutLeft,CutRight,Result,Want)
-   ]).
-
-:- use_module(library('heavycarbon/strings/stringy.pl')).
-:- use_module(library('heavycarbon/strings/string_of_spaces.pl')).
-
 % ==============================================================================
 % Overwrite a string/atom "Lower" with another string/atom "Upper"
 % Character position 0 is the first character of "Lower".
@@ -24,7 +15,30 @@
 % easy to check.
 %
 % One which does run-of-character processing and is a bit hairy, but fast.
-% ==============================================================================
+% =============================================================================
+% Running the tests: There should be a file "string_overwrite.plt" nearby.
+% Then, if the root directory for "code" is on the library path:
+%
+% ?- use_module(library('heavycarbon/strings/string_overwrite.pl')).
+% ?- load_test_files([]).
+% ?- run_tests.
+% =============================================================================
+% David Tonhofer (ronerycoder@gluino.name) says:
+% This code is licensed under:
+% "Zero-Clause BSD / Free Public License 1.0.0 (0BSD)"
+% https://opensource.org/licenses/0BSD
+% =============================================================================
+% Latest review: Tue 19 January 2021
+% =============================================================================
+
+:- module(heavycarbon_strings_string_overwrite,
+          [
+          overwrite_using_chars/7  % overwrite_using_chars(Lower,Upper,UpperPos,CutLeft,CutRight,Result,Want)
+         ,overwrite_using_runs/7   % overwrite_using_runs(Lower,Upper,UpperPos,CutLeft,CutRight,Result,Want)
+          ]).
+
+:- use_module(library('heavycarbon/strings/stringy.pl')).
+:- use_module(library('heavycarbon/strings/string_of_spaces.pl')).
 
 % ===
 % Using chars
@@ -155,7 +169,7 @@ upper_completely_or_partially_on_the_right(Upper,UpperPos,UpperLen,UpperEnd,Lowe
     stringy_concat(Rprev,Run,Rnew,Want)).      % gives what we "Want"
 
 % ===
-% Into checking
+% Intro checking
 % ===
 
 overwrite_intro_assertions(Lower,Upper,UpperPos,CutLeft,CutRight,Result,Want) :-

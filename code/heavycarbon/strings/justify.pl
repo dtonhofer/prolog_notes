@@ -1,13 +1,20 @@
 % =============================================================================
-% Straightforward "string justification"
+% Straightforward "string justification": left, right, center, with cutting
 % =============================================================================
 % Those little predicates may be called a lot of times (e.g. when formatting 
 % tables), so let's not become too slow when running it!
 % (Currently, there are meta-calls in there and checks and everything. Oh
 %  well, why have GHz CPUs when you can't use them!)
 % =============================================================================
+% Running the tests: There should be a file "justify.plt" nearby.
+% Then, if the root directory for "code" is on the library path:
+%
+% ?- use_module(library('heavycarbon/strings/justify.pl')).
+% ?- load_test_files([]).
+% ?- run_tests.
+% =============================================================================
 % David Tonhofer (ronerycoder@gluino.name) says:
-% This code is licensed under: 
+% This code is licensed under:
 % "Zero-Clause BSD / Free Public License 1.0.0 (0BSD)"
 % https://opensource.org/licenses/0BSD
 % =============================================================================
@@ -15,15 +22,15 @@
 % =============================================================================
 
 :- module(heavycarbon_strings_justify,
-   [
-       justify_left/3    % justify_left(Text,Width,Result)
-      ,justify_right/3   % justify_right(Text,Width,Result)
-      ,justify_center/3  % justify_center(Text,Width,Result)
-      ,justify_left/5    % justify_left(Text,Width,Result,Want,Nocheck)
-      ,justify_right/5   % justify_right(Text,Width,Result,Want,Nocheck)
-      ,justify_center/5  % justify_center(Text,Width,Result,Want,Nocheck)
-      ,justify/10        % justify(Text,Width,How,CutLeft,CutRight,Prefer,Offset,Result,Want,Nocheck)
-   ]).
+          [
+          justify_left/3    % justify_left(Text,Width,Result)
+         ,justify_right/3   % justify_right(Text,Width,Result)
+         ,justify_center/3  % justify_center(Text,Width,Result)
+         ,justify_left/5    % justify_left(Text,Width,Result,Want,Nocheck)
+         ,justify_right/5   % justify_right(Text,Width,Result,Want,Nocheck)
+         ,justify_center/5  % justify_center(Text,Width,Result,Want,Nocheck)
+         ,justify/10        % justify(Text,Width,How,CutLeft,CutRight,Prefer,Offset,Result,Want,Nocheck)
+          ]).
 
 :- use_module(library('heavycarbon/support/meta_helpers.pl')).
 :- use_module(library('heavycarbon/strings/stringy.pl')). 

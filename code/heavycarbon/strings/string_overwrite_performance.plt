@@ -1,35 +1,25 @@
+% ============================================================================
+% How to run this:
+%
+% ?- ['string_overwrite_performance.plt'].
+% true.
+% 
+% ?- run_tests.
+% % PL-Unit: string_overwrite_performance Looping calls to string_overwrite using runs
+% % 50,966,357 inferences, 12.577 CPU in 12.640 seconds (100% CPU, 4052302 Lips)
+% Looping calls to string_overwrite using chars
+% % 243,191,573 inferences, 40.439 CPU in 40.621 seconds (100% CPU, 6013811 Lips)
+% . done
+% % test passed
+% true.
+%
+% 
+% When stringy.pl uses direct calls to "->" operator instead of the
+% switch/N metapredicate, speedup by 30% can be observed.
+% ============================================================================
+
 :- use_module(library('heavycarbon/strings/string_overwrite.pl')).
 :- use_module(library('heavycarbon/strings/stringy.pl')).
-
-/*
-
-When stringy.pl uses direct calls to "->" operator:
-
-?- run_tests.
-% PL-Unit: string_overwrite_performance
-Looping calls to string_overwrite using runs
-% 28,637,889 inferences, 7.443 CPU in 7.477 seconds (100% CPU, 3847478 Lips)
-Looping calls to string_overwrite using chars
-% 237,865,722 inferences, 41.849 CPU in 42.014 seconds (100% CPU, 5683895 Lips)
-. done
-% test passed
-true.
-
-When string.pl uses switch/N metapredicate instead of direct calls to "-"> operator:
-
-This is clearly slower!
-
-?- run_tests.
-% PL-Unit: string_overwrite_performance
-Looping calls to string_overwrite using runs
-% 33,882,723 inferences, 9.349 CPU in 9.389 seconds (100% CPU, 3624050 Lips)
-Looping calls to string_overwrite using chars
-% 243,198,262 inferences, 42.585 CPU in 42.746 seconds (100% CPU, 5710842 Lips)
-. done
-% All 15 tests passed
-true.
-
-*/
 
 % :- debug(performance).
 

@@ -1,10 +1,14 @@
 % =============================================================================
-% Generate strings/atoms made entirely of the character 0x20 ("SPACE")
+% Quickly generate strings made entirely of the character 0x20 ("SPACE")
+% =============================================================================
 %
 % string_of_spaces(?N,?Spaces)
+%
 %   N      : integer >= 0
 %   Spaces : a string on output (accepts the same stuff atom_string/2
 %            accepts on input)
+%
+% =============================================================================
 %
 % Examples
 % --------
@@ -26,7 +30,10 @@
 % string_of_spaces(N," hey  ").
 % false.
 %
-% -----------------------------------------------------------------------------
+% =============================================================================
+%
+% Alternatives
+% ------------
 %
 % Another way of "generating a string" is: 
 %
@@ -57,29 +64,37 @@
 %
 % But why spend brainpower on producing cute ways of generating/accepting
 % strings-of-spaces where one doesn't even see later that that's what the
-% code actually does (in other words "who uses such puzzle-solving tricks in
-% in actual code")
+% code actually does? (Yes, "Prolog coding" is very near "puzzle solving",
+% which is why it's appealing)
+%
 % ==============================================================================
 % TODO: There should be something similar for atoms (or rather, the predicates
 %       need to take an option 'string' or 'atom' (by default, string) 
 %       (but should it then be called "atomic_of_spaces"?
 % =============================================================================
+% Running the tests: There should be a file "string_of_spaces.plt" nearby.
+% Then, if the root directory for "code" is on the library path:
+%
+% ?- use_module(library('heavycarbon/strings/string_of_spaces.pl')).
+% ?- load_test_files([]).
+% ?- run_tests.
+% =============================================================================
 % David Tonhofer (ronerycoder@gluino.name) says:
-% This code is licensed under: 
+% This code is licensed under:
 % "Zero-Clause BSD / Free Public License 1.0.0 (0BSD)"
 % https://opensource.org/licenses/0BSD
 % =============================================================================
 % Latest review: Tue 19 January 2021
 % =============================================================================
 
+
 :- module(heavycarbon_strings_spaces,
-   [
-      string_of_spaces/2  % string_of_spaces(N,Spaces)
-   ]).
+          [
+          string_of_spaces/2  % string_of_spaces(N,Spaces)
+          ]).
 
 :- use_module(library('heavycarbon/strings/stringy.pl')).
 :- use_module(library('heavycarbon/support/meta_helpers.pl')). 
-
 
 string_of_spaces(N,Spaces) :-
    nonvar(Spaces),                     % case: "check length or determine length of 'Spaces'"
