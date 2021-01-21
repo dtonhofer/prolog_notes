@@ -1,6 +1,7 @@
 % ============================================================================
-% A length/3 predicate which can be dialed to behave more strictly or
-% more leniently than SWI-Prolog's length/2
+% Like length/2 but takes an additional option to select whether it should
+% behave like SWI-Prolog's length/2, additionally throw if it receives a 
+% negative integer as Length, or never throw and just fail on bad arguments.
 % =============================================================================
 % David Tonhofer (ronerycoder@gluino.name) says:
 % This code is licensed under:
@@ -12,7 +13,9 @@
 
 :- module(lenient_length,
           [
-             length/3  % length(List,Length,Option)
+           length/3           % length(List,Length,Option:[swi,lenient,strict])
+          ,length_lenient/2   % never throws, just fails
+          ,length_strict/2    % throws on negative Length argument
           ]).
 
 % ===

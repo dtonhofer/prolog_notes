@@ -1,5 +1,16 @@
 % =============================================================================
-% A between/3 which accepts unbound variables as Arg1 and Arg2.
+% A between/3 which accepts unbound variables as Arg1 and Arg2 and 
+% generates possible intervals [Arg1,Args] in which Arg3 lies on backtracking:
+%
+% ?- between_x(X,Y,4).
+% X = Y, Y = 4 ;
+% X = 3, Y = 4 ;
+% X = 4, Y = 5 ;
+% X = 2, Y = 4 ;
+% X = 3, Y = 5 ;
+% X = 4, Y = 6 ;
+% X = 1, Y = 4 ;
+% ...
 %
 % NOTE: The exception throwing is not ISO Standard, pretty experimental,
 % and too unstructured.
@@ -21,7 +32,7 @@
 
 :- module(between_x,
           [
-              between_x/3  % between_x(Low,High,Value)
+          between_x/3  % between_x(Low,High,Value)
           ]).
 
 between_x(Low,High,Value) :-

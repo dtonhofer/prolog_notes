@@ -1,23 +1,9 @@
-:- module(splinter0,
-          [
-              splinter0/5   % splinter0(List, N, Prefix, Element, Suffix)
-
-          ]).
-
-% ============================================================================
-% "Splinter a List by index, 0-based"
-%
-%   splinter0(+List, +N, ?Prefix, ?Element, ?Suffix)
-%   splinter0(?List, ?N, +Prefix, +Element, +Suffix)
-%
+% =============================================================================
 % Given a List and an index N into the list (N from 0 to N-1),
-% splinter a list at position N into:
+% splinter a list at position N into a prefix, the element at position N
+% (which is why the index must be 0..N-1) and a suffix.
 %
-% - a prefix-list
-% - the element at position N (which is why the index must be 0..N-1)
-% - a suffix-list
-%
-% for example:
+% For example:
 %
 % [a,b,c,d,e,f,g,h] N=0 ==> [] a [b,c,d,e,f,g,h]
 % [a,b,c,d,e,f,g,h] N=1 ==> [a] b [c,d,e,f,g,h]
@@ -28,13 +14,16 @@
 % [a,b,c,d,e,f,g,h] N=6 ==> [a,b,c,d,e,f] g [h]
 % [a,b,c,d,e,f,g,h] N=7 ==> [a,b,c,d,e,f,g] h []
 %
+%   splinter0(+List, +N, ?Prefix, ?Element, ?Suffix)
+%   splinter0(?List, ?N, +Prefix, +Element, +Suffix)
+%
 % This is done by judicious application of append/2.
 %
 % Error responses:
 %
 % - a negative index causes a throw
 % - an out-of-bounds positive or 0 index causes failure
-% ============================================================================
+% =============================================================================
 % Consider the following possibilites:
 % 1 = nonvar at that argument place
 % 0 = var at at that argument place
@@ -60,7 +49,17 @@
 %
 % [0 . . . 0] - Not enough info to limit length of List
 % [0 . 0 . 1] - Not enough info to limit length of list
-% ============================================================================
+% =============================================================================
+% David Tonhofer (ronerycoder@gluino.name) says:
+% This code is licensed under:
+% "Zero-Clause BSD / Free Public License 1.0.0 (0BSD)"
+% https://opensource.org/licenses/0BSD
+% =============================================================================
+
+:- module(splinter0,
+          [
+          splinter0/5   % splinter0(List, N, Prefix, Element, Suffix)
+          ]).
 
 splinter0(List, N, Prefix, Element, Suffix) :-
     ground_flags([List, N, Prefix, Element, Suffix], GroundFlags),

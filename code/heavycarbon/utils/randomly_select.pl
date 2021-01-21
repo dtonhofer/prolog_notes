@@ -1,39 +1,49 @@
+% ============================================================================
+% Randomly select a key from a dict, where the dict values indicate
+% the relative probability of selection by length-of-atom. 
+% ============================================================================
+%
+% For example, with this dict, the keys will appear with a probability
+% derived from the number of 'x' that appears in the atom defined as
+% value:
+%
+% randomly_select(
+%     sel{
+%            alfa     : ''             % selection probability = 0
+%           ,bravo    : xxxxx          % selection probability = 5/24
+%           ,charlie  : xxx            % selection probability = 3/24
+%           ,echo     : xxxxxxxxxx     % selection probability = 10/24
+%           ,foxtrott : xxxxxx         % selection probability = 6/24
+%        },
+%     Selected).
+%
+% Switch on debugging output with:
+%
+% ?- debug(randomly_select).
+%
+% =============================================================================
+% Running the tests: There should be a file "between_with_step.plt" nearby.
+% Then, if the root directory for "code" is on the library path:
+%
+% ?- use_module(library('heavycarbon/utils/randomly_select.pl')).
+% ?- load_test_files([]).
+% ?- run_tests.
+% =============================================================================
+% David Tonhofer (ronerycoder@gluino.name) says:
+% This code is licensed under:
+% "Zero-Clause BSD / Free Public License 1.0.0 (0BSD)"
+% https://opensource.org/licenses/0BSD
+% =============================================================================
+
 :- module(heavycarbon_randomly_select,
    [
    randomly_select/2   % randomly_select(+SelDict,-Selected)
    ]).
 
-:- include(library('heavycarbon/support/meta_helpers_nonmodular.pl')). % unless, if_then_else
-:- include(library('heavycarbon/support/throwme_nonmodular.pl')).      % better exceptions
+:- use_module(library('heavycarbon/support/meta_helpers.pl')).      % unless, if_then_else
+:- include(library('heavycarbon/support/throwme_nonmodular.pl')).   % better exceptions
 
 % :- debug(randomly_select).
-
-% ============================================================================
-% Randomly select a key from a dict, where the dict values indicate
-% relative probability of selection by length-of-atom
-% ============================================================================
-% Import this module with:
-%
-% :- use_module(library('heavycarbon/utils/randomly_select.pl')).
-%
-% Switch on debugging output:
-%
-% ?- debug(randomly_select).
-%
-% For example:
-
-/*
-
-randomly_select(
-     _{
-       alfa     : ''             % selection probability = 0
-      ,bravo    : xxxxx          % selection probability = 5/24
-      ,charlie  : xxx            % selection probability = 3/24
-      ,echo     : xxxxxxxxxx     % selection probability = 10/24
-      ,foxtrott : xxxxxx},       % selection probability = 6/24
-     Selected).
-
-*/
 
 % ---
 % Determining length of a list of '*' and summing over a list of such strings

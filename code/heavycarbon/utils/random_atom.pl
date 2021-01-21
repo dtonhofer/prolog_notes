@@ -1,5 +1,5 @@
 % =============================================================================
-% Utilities to generate random atoms (generally, for tests)
+% Utilities to generate random atoms or strings (generally, for tests)
 % =============================================================================
 % Running the tests: There should be a file "random_atom.plt" nearby.
 % Then, if the root directory for "code" is on the library path:
@@ -19,15 +19,18 @@
 % =============================================================================
 
 :- module(heavycarbon_random_atom,
-   [
-    random_char/1       % random_char(X) - generate char
-   ,random_text/2       % random_text(Text,Len) - generate atom of length Len (if given)
-   ,random_text/3       % random_text(Text,Len,Options) - generate atom or string depending
-                        % on options allow_empty(yes|_no_), what_text(string|_atom_)
-   ,random_char_list/2  % random_char_list(Chars,Options) - generate list of chars
-                        % with options allow_empty(yes|_no_)
-   ,random_char_list/3  % random_char_list(Chars,Options,Tosses) - generate list of chars with details on process
-   ]).
+          [
+          random_char/1       % random_char(X) - generate char
+         ,random_text/2       % random_text(Text,Len) - generate *atom* of length Len (if given)
+         ,random_text/3       % random_text(Text,Len,Options) - generate *atom* or *string* 
+                                 % with options
+                                 % empty(yes|no)      (default: no) 
+                                 % what(string|atom)  (default: atom)
+         ,random_char_list/2  % random_char_list(Chars,Options) - generate list of chars
+                                 % with options
+                                 % empty(yes|no)      (default: no)
+         ,random_char_list/3  % random_char_list(Chars,Options,Tosses) - generate list of chars with details on process
+          ]).
 
 :- use_module(library(option)).
 
@@ -51,10 +54,10 @@ char_list(Chars,Max) :-
 % determined (if L is unbound). Option processing is done through library(option).
 % See https://eu.swi-prolog.org/pldoc/man?section=option
 % Options is a list which may or may not contain:
-% - the option what_text(W), where W is one of the atoms 'atom', 'string' (default 'atom')
-% - the option allow_empty(YN), where YN is one of 'yes', 'no' (default 'no')
+% - the option what(W), where W is one of the atoms 'atom', 'string' (default 'atom')
+% - the option empty(YN), where YN is one of 'yes', 'no' (default 'no')
 % Corresponding "direct-to-atom" and "direct-to-string" predicates also exist.
-% The just look at the option allow_empty(YN)
+% The just look at the option empty(YN)
 % ===
 
 % EXPORTED
@@ -83,7 +86,7 @@ random_text(Text,Len,Options) :-
 % ===
 
 transform(Chars,Text,Options) :-
-   option(what_text(W),Options,atom),
+   option(what(W),Options,atom),
    if_then_else(
       (W==string),                  % non-standard case which must be specified
       string_chars(Text,Chars),
@@ -95,13 +98,13 @@ transform(Chars,Text,Options) :-
 %    Then:
 %    - The length of the resulting list that is eventually unified with "Chars" is chosen
 %      according to a Markov process.
-%    - The option "allow_empty(YN)" from the "Options" list is considered.
+%    - The option "empty(YN)" from the "Options" list is considered.
 %      YN is one of 'yes', 'no' (default 'no'). The resulting list may by this means be
 %      allowed to be empty.
 % "Chars" can be a proper list of unbound variables, thus specifying the length.
 %    Then:
-%    - The option "allow_empty(YN)" from the "Options" list is considered; if the
-%      specified length is 0 and "allow_empty(no)" is given, the predicate fails, thus
+%    - The option "empty(YN)" from the "Options" list is considered; if the
+%      specified length is 0 and "empty(no)" is given, the predicate fails, thus
 %      staying consistent with the case of "Chars" an unbound variable.
 %
 % Interesting thought: These are actually "compressed" clauses for the actual predicate
@@ -121,7 +124,7 @@ random_char_list(Chars,Options,Tosses) :-
    var(Chars),
    !,
    if_then_else(
-      option(allow_empty(no),Options,no),        % allow_empty(no) first in Options or allow_empty/1 missing from Options
+      option(empty(no),Options,no),              % empty(no) first in Options or empty/1 missing from Options
       (random_char_list_inner(L2,1,Tosses2),
        random_char(X),Chars=[X|L2],              % correctly start at length "1"
        Tosses = [1|Tosses2]),
@@ -139,10 +142,10 @@ random_char_list(Chars,Options) :-
    !,
    must_be(list(var),Chars),               % "an abundance of caution"; enforce a meaningful call!
    if_then(
-      (option(allow_empty(no),Options,no), % allow_empty(no) first in Options or allow_empty/1 missing from Options
+      (option(empty(no),Options,no),       % empty(no) first in Options or empty/1 missing from Options
        length(Chars,0)),                   % and user requested an empty list
       fail),                               % fail for consitency reasons
-   maplist(random_char,Chars).            % fill list
+   maplist(random_char,Chars).             % fill list
 
 % ===
 % random_char_list(-Result,+CharsGeneratedAlready)

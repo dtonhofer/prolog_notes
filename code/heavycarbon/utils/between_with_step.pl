@@ -87,8 +87,8 @@
 
 :- module(between_with_step,
           [
-              between/4
-             ,between/5
+          between/4
+         ,between/5
           ]).
 
 between(Start,End,Step,Value) :-

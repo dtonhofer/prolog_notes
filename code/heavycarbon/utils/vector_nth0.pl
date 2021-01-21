@@ -1,19 +1,3 @@
-:- module(vector_nth0,
-          [
-             vector_nth0/3
-          ]).
-
-% ==============================================================================
-% Sun 12 Apr 21:39:05 UTC 2020
-% ---
-% This is free and unencumbered software released into the public domain.
-%
-% Anyone is free to copy, modify, publish, use, compile, sell, or
-% distribute this software, either in source code form or as a compiled
-% binary, for any purpose, commercial or non-commercial, and by any
-% means.
-%
-% For more information, please refer to <http://unlicense.org/>
 % ==============================================================================
 % vector_nth0(+Indexes,+List,?Elements)
 % vector_nth0(+Indexes,?List,+Elements)
@@ -39,6 +23,26 @@
 %                                   [3,2,0],[a,b,c,b,e,c,g],[b,c,a]
 %                                   [3,5,0],[a,b,c,b,e,c,g],[b,c,a]
 % ==============================================================================
+% Running the tests: There should be a file "vector_nth0.plt" nearby.
+% Then, if the root directory for "code" is on the library path:
+%
+% ?- use_module(library('heavycarbon/utils/vector_nth0.pl')).
+% ?- load_test_files([]).
+% ?- run_tests.
+% =============================================================================
+% David Tonhofer (ronerycoder@gluino.name) says:
+% This code is licensed under:
+% "Zero-Clause BSD / Free Public License 1.0.0 (0BSD)"
+% https://opensource.org/licenses/0BSD
+% =============================================================================
+% Changes:
+% First version Sun 12 Apr 21:39:05 UTC 2020
+% =============================================================================
+
+:- module(vector_nth0,
+          [
+          vector_nth0/3
+          ]).
 
 vector_nth0(Indexes,List,Elements) :-
    % Make sure at least one of "Indexes" and "Elements" is a "nonvar"

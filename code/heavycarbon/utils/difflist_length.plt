@@ -1,16 +1,5 @@
 :- use_module(library('heavycarbon/utils/difflist_length.pl')).
 
-:- use_module(library('heavycarbon/support/utils.pl')).
-
-% ---
-% Aliases for var/1 and nonvar/1. Are the names of these less confusing?
-% I hope so. var/1 and nonvar/1 are really badly chosen.
-% TODO: export into another module
-% ---
-
-bound(X)   :- nonvar(X).
-unbound(X) :- var(X).
-
 :- begin_tests(difflist_length).
 
 % ---
@@ -93,11 +82,11 @@ test("intention bad guess 4", error(consistency(difflist_bound,type(_),length(_)
 
 test("templatize difflist of length 0, 4 args") :-
    difflist_length(DL,0,open,templatize),
-   DL=X-X,unbound(X).
+   DL=X-X,var(X).
 
 test("templatize difflist of length 0, 2 args") :-
    difflist_length(DL,0),
-   DL=X-X,unbound(X).
+   DL=X-X,var(X).
 
 test("templatize various difflists, 4 args", true(T)) :-
    bagof(DL,L^(

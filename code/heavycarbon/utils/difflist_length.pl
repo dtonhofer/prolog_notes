@@ -1,13 +1,3 @@
-:- module(heavycarbon_difflist_length,
-          [
-             difflist_length/2   % difflist_length(Tip-Fin,Length)
-            ,difflist_length/4   % difflist_length(Tip-Fin,Length,ListType,Intention)
-            ,openlist_length/2   % openlist_length(Tip,Length)
-          ]).
-
-:- include(library('heavycarbon/support/meta_helpers_nonmodular.pl')).
-:- include(library('heavycarbon/support/throwme_nonmodular.pl')).
-
 % ============================================================================
 % Notes on Vocabulary
 % ============================================================================
@@ -116,6 +106,16 @@
 %   by themselves.
 % ============================================================================
 
+:- module(heavycarbon_difflist_length,
+          [
+          difflist_length/2   % difflist_length(Tip-Fin,Length)
+         ,difflist_length/4   % difflist_length(Tip-Fin,Length,ListType,Intention)
+         ,openlist_length/2   % openlist_length(Tip,Length)
+          ]).
+
+:- use_module(library('heavycarbon/support/meta_helpers.pl')).
+:- include(library('heavycarbon/support/throwme_nonmodular.pl')).
+
 difflist_length(Difflist,Length) :-
    difflist_length(Difflist,Length,_,_).
 
@@ -126,17 +126,17 @@ difflist_length(Difflist,Length,Listtype,Intention) :-
    % Branch depending on what we want to do: templatize (if Difflist is unbound),
    % or analyze (verify/determine/verify-determine) (if Difflist is bound)
    if_then_else(
-      unbound(Difflist),
+      var(Difflist),
       templatize(Difflist,Length),
       (Difflist=Tip-Fin,analyze(Tip,Fin,Length,Listtype))).
 
 openlist_length(Tip,Length) :-
    switch(
-      (unbound(Tip),unbound(Length)),
+      (var(Tip),var(Length)),
          (Length=0),                                    % more or less reasonable
-      (unbound(Tip),bound(Length)),
+      (var(Tip),nonvar(Length)),
          (difflist_length(DL,Length),DL=Tip-_Fin),      % generate an open list of the given length
-      bound(Tip),
+      nonvar(Tip),
          (contract_checking(length(Length)),
           walk_openlist_backbone_finless(Tip,1,Length))). % determine or verify length
 
@@ -163,28 +163,28 @@ contract_checking(Difflist,Length,Listtype,Intention) :-
 % "Difflist" arg must be unbound variable or structured like a pair "Tip-Fin"
 
 contract_checking(difflist(DL)) :-
-   switch((unbound(DL)),true,
+   switch((var(DL)),true,
           (DL=_Tip-_Fin),true,
           throwme(contract_checking,bad_difflist(DL))).
 
 % "Length" arg must be an unbound variable or an integer >= 0
 
 contract_checking(length(L)) :-
-   switch((unbound(L)),true,
+   switch((var(L)),true,
           (integer(L),L>=0),true,
           throwme(contract_checking,bad_length(L))).
 
 % "Listtype" arg must be unbound variable or one of the known listtypes
 
 contract_checking(listtype(LT)) :-
-   switch((unbound(LT)),true,
+   switch((var(LT)),true,
           (const_listtypes(LTs),member(LT,LTs)),true,
           throwme(contract_checking,bad_listtype(LT))).
 
 % "Intention" arg must be unbound var or one of the known intentions
 
 contract_checking(intention(I)) :-
-   switch((unbound(I)),true,
+   switch((var(I)),true,
           (const_intentions(Is),member(I,Is)),true,
           throwme(contract_checking,bad_intention(I))).
 
@@ -226,11 +226,11 @@ consistency_checking(unbound(_DL), _TggLen, TggType, Intention)        :-     % 
 %   against the passed parameters.
 % - The intention may be to "verify_determine", part "verify", part "determine".
 
-consistency_checking(bound(_DL), unbound(_Len), unbound(_Type), determine)        :- !. % Good case
+consistency_checking(bound(_DL), unbound(_Len), unbound(_Type), determine) :- !.      % Good case
 consistency_checking(bound(_DL), unbound(_Len), bound(_Type), verify_determine) :- !. % Good case
 consistency_checking(bound(_DL), bound(_Len), unbound(_Type), verify_determine) :- !. % Good case
-consistency_checking(bound(_DL), bound(_Len), bound(_Type), verify)           :- !. % Good case
-consistency_checking(bound(_DL), TggLength, TggType, Intention) :-                  % Inconistent case
+consistency_checking(bound(_DL), bound(_Len), bound(_Type), verify) :- !.             % Good case
+consistency_checking(bound(_DL), TggLength, TggType, Intention) :-                    % Inconistent case
    bound_unbound_tag(Type,TggType),
    bound_unbound_tag(Length,TggLength),
    throwme(consistency_checking,difflist_bound_but(Type,Length,Intention)).
@@ -243,10 +243,10 @@ consistency_checking(bound(_DL), TggLength, TggType, Intention) :-              
 % length is bound.
 
 templatize(Difflist,Length) :-
-   assertion(unbound(Difflist)),                            % remind the developer what's up
-   assertion(unbound(Length);(integer(Length),Length>=0)),  % remind the developer what's up
+   assertion(var(Difflist)),                              % remind the developer what's up
+   assertion(var(Length);(integer(Length),Length>=0)),    % remind the developer what's up
    if_then(
-      unbound(Length),between(0,inf,Length)                 % backtrackable generation of increasing lengths
+      var(Length),between(0,inf,Length)                   % backtrackable generation of increasing lengths
    ),
    Tip=Fin,                                               % empty difflist
    templatize_construct(Length,Fin,FinOut),               % append Length unbound vars
@@ -269,16 +269,16 @@ templatize_construct(0,Shunt,Shunt).
 % The empty difference list, the "listtype" is "open"
 
 analyze(Tip,Fin,0,open) :-
-   unbound(Fin),
-   unbound(Tip),
+   var(Fin),
+   var(Tip),
    Tip == Fin,   % must be "equivalent" (i.e. be "sharing variables")
    !.            % commit
 
 % A nonempty difference list, the "listtype" is "open"
 
 analyze(Tip,Fin,Len,open) :-
-   bound(Tip),
-   unbound(Fin),
+   nonvar(Tip),
+   var(Fin),
    Tip \== Fin,           % must not be "equivalent" (sharing variables are equivalent!!)
    !,
    walk_openlist_backbone(Tip,Fin,1,Len).
@@ -304,14 +304,14 @@ analyze(_Tip,_Fin,_,_) :-
 % ---
 
 walk_openlist_backbone([_|Xs],Fin,Len,Out) :-
-   assertion(unbound(Fin)),    % remind the developer what's up
-   bound(Xs),!,              % the list backbone continues!
+   assertion(var(Fin)),     % remind the developer what's up
+   nonvar(Xs),!,            % the list backbone continues!
    succ(Len,LenPlus),
    walk_openlist_backbone(Xs,Fin,LenPlus,Out).
 
 walk_openlist_backbone([_|Xs],Fin,Shunt,Shunt) :-
-   assertion(unbound(Fin)),    % remind the developer what's up
-   unbound(Xs),!,              % the end of the backbone of the open list!
+   assertion(var(Fin)),    % remind the developer what's up
+   var(Xs),!,              % the end of the backbone of the open list!
    unless(Xs == Fin,throwme(analysis,bad_structure_at_fin)).
 
 walk_openlist_backbone([],_,_,_) :-
@@ -325,7 +325,7 @@ walk_openlist_backbone(X,_,_,_) :-
 % ---
 
 analyze_finless(Tip,Len) :-
-   assertion(bound(Tip)),
+   assertion(nonvar(Tip)),
    walk_openlist_backbone_finless(Tip,1,Len).
 
 % ---
@@ -333,27 +333,18 @@ analyze_finless(Tip,Len) :-
 % ---
 
 walk_openlist_backbone_finless([_|Xs],Len,Out) :-
-   bound(Xs),!,
+   nonvar(Xs),!,
    succ(Len,LenPlus),
    walk_openlist_backbone_finless(Xs,LenPlus,Out).
 
 walk_openlist_backbone_finless([_|Xs],Shunt,Shunt) :-
-   unbound(Xs),!.
+   var(Xs),!.
 
 walk_openlist_backbone_finless([],_,_) :-
    throwme(analysis,closed_list).
 
 walk_openlist_backbone_finless(X,_,_) :-
    throwme(analysis,not_a_listbox(X)).
-
-% ---
-% Aliases for var/1 and nonvar/1. Are the names of these less confusing?
-% I hope so. var/1 and nonvar/1 are really badly chosen.
-% TODO: export into another module
-% ---
-
-bound(X)   :- nonvar(X).
-unbound(X) :- var(X).
 
 % ---
 % Tagging a term (enclosing it into a arity 1 compound term giving information

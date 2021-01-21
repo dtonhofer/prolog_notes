@@ -1,7 +1,5 @@
 % =============================================================================
-% rotate_list(+List,+N,?Rotated).
-%
-% Rotates List by N positions.
+% rotate_list(+List,+N,?Rotated): Rotates "List" by "N" positions.
 %
 % N=0 : no rotation
 % N>0 : Rotate "leftwards": move a prefix of (N mod Length) list items to
@@ -51,7 +49,7 @@
 
 :- module(rotate_list,
           [
-             rotate_list/3
+          rotate_list/3
           ]).
 
 % rotate the empty list

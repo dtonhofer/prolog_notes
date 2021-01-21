@@ -1,6 +1,6 @@
 :- use_module(library('heavycarbon/utils/randomly_select.pl')).
 
-:- include(library('heavycarbon/support/meta_helpers_nonmodular.pl')).
+:- use_module(library('heavycarbon/support/meta_helpers.pl')).
 
 % This is "somewhat of a test", but is mainly a code to exercise the
 % randomly_select module.

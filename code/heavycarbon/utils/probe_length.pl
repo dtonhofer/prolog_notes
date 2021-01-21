@@ -1,6 +1,6 @@
 % =============================================================================
-% Probe the length of an unknown term (generally a list, but not necessarily)
-%
+% Probe the length of an unknown term (generally a proper list or an 
+% open list, but not necessarily). Tells you what it found.
 % This is a complement to length/2, which only handles proper lists.
 %
 % When determining/computing values, the predicate always succeeds.
@@ -84,8 +84,8 @@
 
 :- module(probe_length,
           [
-               probe_length/3  % probe_length(@MaybeList,?Length,?What)
-              ,probe_length/4  % probe_length(@MaybeList, ?Length, ?What, @Options)
+          probe_length/3  % probe_length(@MaybeList,?Length,?What)
+         ,probe_length/4  % probe_length(@MaybeList, ?Length, ?What, @Options)
           ]).
 
 % ---

@@ -1,21 +1,4 @@
-:- module(vector_replace0,
-          [
-             vector_replace0/4
-          ]).
-
-% ============================================================================
-% 2020-04-XX
-% https://github.com/dtonhofer/prolog_notes
-% ----------------------------------------------------------------------------
-% This is free and unencumbered software released into the public domain.
-%
-% Anyone is free to copy, modify, publish, use, compile, sell, or
-% distribute this software, either in source code form or as a compiled
-% binary, for any purpose, commercial or non-commercial, and by any
-% means.
-%
-% For more information, please refer to <http://unlicense.org/>
-% ============================================================================
+% =============================================================================
 % Replace multiple elements in ListIn by giving a list of pairs
 % Key-Value as ReplacePairs. Builds the list with replacements applied
 % called ListOut and a list of pairs Key-OldValue of the prior values.
@@ -33,7 +16,29 @@
 % INREP=[0-e,1-f,2-g,3-h],
 % vector_replace0(IN,INREP,OUT,OUTREP),
 % vector_replace0(OUT,OUTREP,IN,INREP).
-% ============================================================================
+% =============================================================================
+% Running the tests: There should be a file "vector_replace0.plt" nearby.
+% Then, if the root directory for "code" is on the library path:
+%
+% ?- use_module(library('heavycarbon/utils/vector_replace0.pl')).
+% ?- load_test_files([]).
+% ?- run_tests.
+% =============================================================================
+% David Tonhofer (ronerycoder@gluino.name) says:
+% This code is licensed under:
+% "Zero-Clause BSD / Free Public License 1.0.0 (0BSD)"
+% https://opensource.org/licenses/0BSD
+% =============================================================================
+% Changes:
+% First version 2020-04
+% =============================================================================
+
+:- module(vector_replace0,
+          [
+          vector_replace0/4
+          ]).
+
+:- use_module(library(assoc)). % Association lists via AVL trees
 
 vector_replace0(ListIn,ReplacePairs,ListOut,ReplacedPairs) :-
    maplist([_,_,_]>>true,ListIn,ListOut,Indexes),          % This "makes sure" that ListIn and ListOut are the same length and also creates Indexes
