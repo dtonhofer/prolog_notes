@@ -8,6 +8,8 @@ It is also a Prolog program, that when executed, does exactly that (for my setup
 
 [`load_and_test_script.pl`](load_and_test_script.pl)
 
+**The ones NOT marked green are currently being updated** 
+
 ![Pieces of Code](pieces_of_code.png)
 
 ## String handling utilites
