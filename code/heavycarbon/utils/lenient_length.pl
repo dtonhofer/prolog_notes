@@ -1,7 +1,16 @@
-% ============================================================================
+% =============================================================================
 % Like length/2 but takes an additional option to select whether it should
 % behave like SWI-Prolog's length/2, additionally throw if it receives a 
 % negative integer as Length, or never throw and just fail on bad arguments.
+%
+% Actually, it turns out that length_strict/2 is the same as length/2:
+%
+%                   SWI-Prolog length/2    length_lenient/2     length_strict/2
+% length not int       type error               fail              type error   
+% length int < 0      domain error              fail             domain error
+% length(L,L)            fail                   fail                 fail
+% length([1|L],L)        fail                   fail                 fail
+% length([1|X],L)      generates              generates            generates
 % =============================================================================
 % David Tonhofer (ronerycoder@gluino.name) says:
 % This code is licensed under:
