@@ -22,7 +22,7 @@ test("append to open list of length 3") :-
    var(NewFin),
    Fin == [payload|NewFin].
 
-test("Not reaching any fixpoint with this") :-   
+test("Not reaching any fixpoint with this") :-
    openlist_append(Olist,foo,_),
    openlist_append(Olist,foo,_),
    openlist_append(Olist,foo,_),
@@ -50,10 +50,10 @@ test("fail appending to a borked openlist: cyclic",error(type_error(openlist,_))
 % ---
 
 :- begin_tests(openlist_last).
-  
-test("fail getting an element from open list of length 0",fail) :- 
+
+test("fail getting an element from open list of length 0",fail) :-
    openlist_last(_Olist,_Last).
- 
+
 test("get the last element from open list of length 1",true(Last == foo)) :-
    openlist_last([foo|_],Last).
 
@@ -83,9 +83,9 @@ test("fail getting the last element from a borked openlist: cyclic",error(type_e
 
 :- begin_tests(is_openlist).
 
-test("a freshvar is an openlist") :- 
+test("a freshvar is an openlist") :-
    is_openlist(_).
- 
+
 test("check an openlist of length 1") :-
    is_openlist([foo|_]).
 
@@ -114,5 +114,5 @@ test("not an openlist: cyclic structure", fail) :-
    X=[1,2,3|X],is_openlist(X).
 
 :- end_tests(is_openlist).
- 
- 
+
+

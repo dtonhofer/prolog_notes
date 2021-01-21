@@ -4,7 +4,7 @@
    ]).
 
 % A quick hack working in one direction for now.
-% 
+%
 % ?- list_of_numbered_pairs(3,N).
 % N = [0-_11910, 1-_11898, 2-_11886].
 

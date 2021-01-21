@@ -1,11 +1,11 @@
-:- module(heavycarbon_in_prefix, 
+:- module(heavycarbon_in_prefix,
    [
     in_prefix/2                % in_prefix(Element,ListOrOpenList)
    ,in_prefix_with_stoplist/3  % in_prefix(Element,StopList,ListOrOpenList)
    ]).
 
 % ---
-% Is some element (not necessarily an atom) in a prefix of a proper list or 
+% Is some element (not necessarily an atom) in a prefix of a proper list or
 % an open list, where the list possibly contains variables that should not be
 % unified?
 %
@@ -21,14 +21,14 @@
 %
 % This is not a logic-releated predicate: The question is not about
 % logic-related objects ("for what variable values is this true"), but about
-% computation-related objects ("for these computation-related objects, 
+% computation-related objects ("for these computation-related objects,
 % is it true that ... ")
 %
 % Compare:
 %
 %    ?- in_prefix(foo,[1,2,X,Y]).
 %    false.
-% 
+%
 %    ?- member(foo,[1,2,X,Y]).
 %    X = foo ;
 %    Y = foo.
@@ -40,7 +40,7 @@
 %
 %    ?- in_prefix(K,[1,2,X,Y]).
 %    false.
-% 
+%
 %    ?- member(K,[1,2,X,Y]).
 %    K = 1 ;
 %    K = 2 ;
@@ -49,7 +49,7 @@
 %
 %    ?- memberchk(K,[1,2,X,Y]).
 %    K = 1.
-% 
+%
 % And:
 %
 %   ?- in_prefix(K,[1,2|X]).

@@ -4,12 +4,12 @@
 
 :- begin_tests(randomly_insert).
 
-the_test(L) :- 
+the_test(L) :-
    length(L,5),
    bagof(true,member("XXXXXXX",L),Bag),
    length(Bag,1).
 
-test("randomly inserting into nonempty list, multiple times") :- 
+test("randomly inserting into nonempty list, multiple times") :-
    L=[one,two,three,four],
    length(R,20),
    % Fill list R with examples of having randomly inserted "XXXXXXX" into L
@@ -18,7 +18,7 @@ test("randomly inserting into nonempty list, multiple times") :-
    debug(randomly_insert,"We obtained ~q",[R]),
    maplist(the_test,R).
 
-test("randomly inserting into empty list", true(R == ["XXXXXXX"])) :- 
+test("randomly inserting into empty list", true(R == ["XXXXXXX"])) :-
    randomly_insert("XXXXXXX",[],R).
 
 :- end_tests(randomly_insert).

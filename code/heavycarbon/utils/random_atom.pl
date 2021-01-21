@@ -9,7 +9,7 @@
 % ?- run_tests.
 % =============================================================================
 % David Tonhofer (ronerycoder@gluino.name) says:
-% This code is licensed under: 
+% This code is licensed under:
 % "Zero-Clause BSD / Free Public License 1.0.0 (0BSD)"
 % https://opensource.org/licenses/0BSD
 % =============================================================================
@@ -25,7 +25,7 @@
    ,random_text/3       % random_text(Text,Len,Options) - generate atom or string depending
                         % on options allow_empty(yes|_no_), what_text(string|_atom_)
    ,random_char_list/2  % random_char_list(Chars,Options) - generate list of chars
-                        % with options allow_empty(yes|_no_)   
+                        % with options allow_empty(yes|_no_)
    ,random_char_list/3  % random_char_list(Chars,Options,Tosses) - generate list of chars with details on process
    ]).
 
@@ -60,7 +60,7 @@ char_list(Chars,Max) :-
 % EXPORTED
 random_text(Text,Len) :-
    random_text(Text,Len,[]).         % only default options
- 
+
 % EXPORTED
 random_text(Text,Len,Options) :-
    nonvar(Len),
@@ -86,7 +86,7 @@ transform(Chars,Text,Options) :-
    option(what_text(W),Options,atom),
    if_then_else(
       (W==string),                  % non-standard case which must be specified
-      string_chars(Text,Chars),    
+      string_chars(Text,Chars),
       atom_chars(Text,Chars)).      % else/default case: W==atom or something else or W is var because Options is funky
 
 % ===

@@ -20,20 +20,20 @@ test("random_text/2, produce atom of length 0: if have to set option") :-
 
 test("random_text/2, produce atom of length 0: can be explicitly disallowed",fail) :-
    random_text(_Text,0,[allow_empty(no)]).
-   
-test("random_text/3, demand length 10, run 100x") :- 
+
+test("random_text/3, demand length 10, run 100x") :-
    length(R,100),
    maplist([Text]>>random_text(Text,10),R),
    maplist([Text]>>(assertion((atom(Text),atom_length(Text,10)))),R),
    debug(random_atom,"random atoms of length 10: ~q",[R]).
 
-test("random_text/3, random length, including length 0, run 100x") :- 
+test("random_text/3, random length, including length 0, run 100x") :-
    length(R,100),
    maplist([Text-Len]>>random_text(Text,Len,[allow_empty(yes)]),R),
    maplist([Text-Len]>>(assertion((atom(Text),atom_length(Text,Len),Len>=0))),R),
    debug(random_atom,"random atoms of random length: ~q",[R]).
 
-test("random_atom/3, random length but not length 0, run 100x") :- 
+test("random_atom/3, random length but not length 0, run 100x") :-
    length(R,100),
    maplist([Text-Len]>>random_text(Text,Len,[allow_empty(no)]),R),
    maplist([Text-Len]>>(assertion((atom(Text),atom_length(Text,Len),Len>0))),R),

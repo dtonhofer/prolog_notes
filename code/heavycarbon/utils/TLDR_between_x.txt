@@ -1,6 +1,6 @@
 To use between_x.pl:
 
-1) 
+1)
 
 Set up a directory hierarchy with the Prolog module and the Prolog plunit code in your directory $FOO like this, wherever $FOO is:
 
@@ -11,7 +11,7 @@ $FOO
             ├── between_x.pl    <-- the source for betweenx/3 in module "between_x"
             └── between_x.plt   <-- the source for the plunit test "between_x" (which will be put into module "plunit_between_x")
 
-2)             
+2)
 
 Start SWI Prolog
 
@@ -19,13 +19,13 @@ Add the topmost directory to the library search path (replace $FOO as usual with
 
 ?- assertz(file_search_path(library,'$FOO/heavycarbon')).
 
-3) 
+3)
 
 Load the module, which (confusingly) is given by file name, not module name:
 
 ?- use_module(library('heavycarbon/utils/between_x.pl')).
 
-4) 
+4)
 
 Load the associated .plt files automagically:
 
@@ -41,7 +41,7 @@ Run tests
 % All 12 tests passed
 true.
 
-6) 
+6)
 
 Use between/4 and between/5 as usual.
 

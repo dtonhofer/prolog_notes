@@ -61,7 +61,7 @@
 % ?- run_tests.
 % =============================================================================
 % David Tonhofer (ronerycoder@gluino.name) says:
-% This code is licensed under: 
+% This code is licensed under:
 % "Zero-Clause BSD / Free Public License 1.0.0 (0BSD)"
 % https://opensource.org/licenses/0BSD
 % =============================================================================
@@ -79,8 +79,8 @@
 %             !! In Unit test code, we then need to
 %                use the "throws" feature instead of the "error" feature to
 %                catch the exception.
-% 2020-12-14: License changed from UNLICENSE to 
-%             https://opensource.org/licenses/0BSD 
+% 2020-12-14: License changed from UNLICENSE to
+%             https://opensource.org/licenses/0BSD
 %             Comment changes.
 % 2021-01-20: Comment changes.
 % =============================================================================

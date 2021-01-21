@@ -41,7 +41,7 @@
 % ?- run_tests.
 % =============================================================================
 % David Tonhofer (ronerycoder@gluino.name) says:
-% This code is licensed under: 
+% This code is licensed under:
 % "Zero-Clause BSD / Free Public License 1.0.0 (0BSD)"
 % https://opensource.org/licenses/0BSD
 % =============================================================================
@@ -79,9 +79,9 @@ rotate_list(List,N,Rotated) :-
 
                            %    Collecting       Empty open difflist
                            %       prefix         to collect suffix
-                           %   to become suffix   to become prefix   
-                           %    Tip1     Fin1       Tip2   Fin2   
-copy_list([L|Ls],PrefixCounter, Tip1, [L|NewFin1] , Tip2 , Fin2) :- 
+                           %   to become suffix   to become prefix
+                           %    Tip1     Fin1       Tip2   Fin2
+copy_list([L|Ls],PrefixCounter, Tip1, [L|NewFin1] , Tip2 , Fin2) :-
    PrefixCounter>0,
    !,
    succ(PrefixCounterNext,PrefixCounter),
@@ -90,27 +90,27 @@ copy_list([L|Ls],PrefixCounter, Tip1, [L|NewFin1] , Tip2 , Fin2) :-
 % If the "PrefixCounter" is 0, continue moving down the
 % (input) "List", but now append every head element of "List" to the
 % second open difference list given by "Tip2-Fin2" (it will become
-% the new prefix), leaving the first open difference list (the 
+% the new prefix), leaving the first open difference list (the
 % collected prefix), given by "Tip1-Fin1", alone.
 
                  %  Collected       Becomes new
-                 %    Prefix          Prefix    
-                 %  Tip1   Fin1   Tip2      Fin2   
-copy_list([L|Ls],0, Tip1 , Fin1 , Tip2 , [L|NewFin2]) :- 
+                 %    Prefix          Prefix
+                 %  Tip1   Fin1   Tip2      Fin2
+copy_list([L|Ls],0, Tip1 , Fin1 , Tip2 , [L|NewFin2]) :-
    !,
    copy_list(Ls,0,Tip1,Fin1,Tip2,NewFin2).
 
 % If we hit the end of the (input) "List", then we are done!
 % The tip of the first open difference list (the collected prefix),
-% given by "Tip1", is unified with the fin of the second open 
+% given by "Tip1", is unified with the fin of the second open
 % difference list, "Fin2" (here, already unified), thus appending
 % the collected prefix to the list rooted in "Tip2". Simultaneously,
 % the fin of the collected prefix "Fin1" is unified with [], closing
 % the prefix, and closing the final result list, now rooted in Tip2.
 
              %  Collected    Becomes new
-             %    Prefix       Prefix    
-             %  Tip1  Fin1   Tip2   Fin2   
+             %    Prefix       Prefix
+             %  Tip1  Fin1   Tip2   Fin2
 copy_list([],0, Tip1 , []  ,  _   , Tip1).
 
 

@@ -40,7 +40,7 @@
 %                                      |
 %                                      []  "the empty list"
 %
-% An "open" list is a graph with list structure but with a "hole" at the 
+% An "open" list is a graph with list structure but with a "hole" at the
 % end, which can be designated by a variable, which in that case appears
 % as an "unbound variable".
 %
@@ -62,7 +62,7 @@
 % A list's termination is the empty list in case of a proper list, and
 % a "hole" (named by an "unbound variable") in case of an open list.
 %
-% A listbox's "first" argument ("car" in the LISP world) is a reference to 
+% A listbox's "first" argument ("car" in the LISP world) is a reference to
 % an element.
 %
 % A listbox's "second" argument ("cdr" in the LISP world) is a reference

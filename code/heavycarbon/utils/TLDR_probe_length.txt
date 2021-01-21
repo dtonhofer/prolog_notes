@@ -1,6 +1,6 @@
 To use probe_length.pl:
 
-1) 
+1)
 
 Set up a directory hierarchy with the Prolog module and the Prolog plunit code in your directory $FOO like this, wherever $FOO is:
 
@@ -11,7 +11,7 @@ $FOO
             ├── probe_length.pl    <-- the source for probe_length/2 and probe_length/3 in module "probe_length"
             └── probe_length.plt   <-- the source for the plunit test "probe_length" (which will be put into module "plunit_probe_length")
 
-2)             
+2)
 
 Start SWI Prolog
 
@@ -19,13 +19,13 @@ Add the topmost directory to the library search path (replace $FOO as usual with
 
 ?- assertz(file_search_path(library,'$FOO/heavycarbon')).
 
-3) 
+3)
 
 Load the module, which (confusingly) is given by file name, not module name:
 
 ?- use_module(library('heavycarbon/utils/probe_length.pl')).
 
-4) 
+4)
 
 Load the associated .plt files automagically:
 
@@ -41,7 +41,7 @@ Run tests
 % All 13 tests passed
 true.
 
-6) 
+6)
 
 Use probe_length/3 and probe_length/4 as usual.
 

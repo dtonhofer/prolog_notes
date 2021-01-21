@@ -22,7 +22,7 @@
 % ?- run_tests.
 % =============================================================================
 % David Tonhofer (ronerycoder@gluino.name) says:
-% This code is licensed under: 
+% This code is licensed under:
 % "Zero-Clause BSD / Free Public License 1.0.0 (0BSD)"
 % https://opensource.org/licenses/0BSD
 % =============================================================================

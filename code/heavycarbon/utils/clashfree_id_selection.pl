@@ -35,7 +35,7 @@
 
 clashfree_id_selection(Dict,Id,MaxId) :-
    clashfree_id_selection(Dict,Id,0,MaxId).
- 
+
 clashfree_id_selection(Dict,Id,MinId,MaxId) :-
    assertion((nonvar(MinId),integer(MinId),MinId>=0)),
    assertion((nonvar(MaxId),integer(MaxId),MaxId>=0)),

@@ -1,8 +1,8 @@
 % =============================================================================
 % A between/3 which accepts unbound variables as Arg1 and Arg2.
-% 
+%
 % NOTE: The exception throwing is not ISO Standard, pretty experimental,
-% and too unstructured. 
+% and too unstructured.
 % =============================================================================
 % Running the tests: There should be a file "between_x.plt" nearby.
 % Then, if the root directory for "code" is on the library path:
@@ -12,7 +12,7 @@
 % ?- run_tests.
 % =============================================================================
 % David Tonhofer (ronerycoder@gluino.name) says:
-% This code is licensed under: 
+% This code is licensed under:
 % "Zero-Clause BSD / Free Public License 1.0.0 (0BSD)"
 % https://opensource.org/licenses/0BSD
 % =============================================================================
@@ -21,8 +21,8 @@
 
 :- module(between_x,
           [
-              between_x/3  % between_x(Low,High,Value) 
-          ]).   
+              between_x/3  % between_x(Low,High,Value)
+          ]).
 
 between_x(Low,High,Value) :-
    what_is_x(Low,Arg1),
@@ -33,7 +33,7 @@ between_x(Low,High,Value) :-
    decide(Arg1,Arg2,Arg3,Low,High,Value),
    assertion(integer(Value)),              % remove if you are sure it works
    assertion(between(Low,High,Value)).     % remove if you are sure it works
-   
+
 % Transform argument into a nicer representation
 
 what_is_x(X,var(X))    :- var(X),!.
@@ -72,7 +72,7 @@ generate_interval_with_variable_a1(A1,A2,A3) :-
 generate_interval_below_fixed_a3(A1,A3) :-
    between(0,inf,D),
    A1 is A3-D.
-       
+
 % Three var: too loose!
 
 decide(var(_),var(_),var(_),Low,High,Value) :- non_iso_instantiation_error(expecting(not(all_args_unbound)),Low,High,Value).
@@ -93,7 +93,7 @@ decide(var(A1),int(A2),int(A3),_,_,_) :- !,generate_interval_with_variable_a1(A1
 
 decide(int(A1),int(A2),int(A3),_,_,_) :- !,between(A1,A2,A3).
 
-% infinity as argument A2 
+% infinity as argument A2
 
 decide(var(_),infinity,var(_),Low,High,Value) :- non_iso_domain_error(expecting(not(infinity(upper_interval_bound))),Low,High,Value).
 decide(var(A1),infinity,int(A3),_,_,_) :- generate_interval_below_fixed_a3(A1,A3).
@@ -118,7 +118,7 @@ non_iso_domain_error(Desc,A1,A2,A3) :-
 
 non_iso_type_error(Desc,A1,A2,A3) :-
     throw(my_error(type_error,Desc,info{low:A1, high:A2, value:A3})).
-        
+
 non_iso_instantiation_error(Desc,A1,A2,A3) :-
     throw(my_error(instantiation_error,Desc,info{low:A1, high:A2, value:A3})).
-    
+

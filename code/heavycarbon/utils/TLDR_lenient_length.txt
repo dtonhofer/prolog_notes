@@ -1,6 +1,6 @@
 To use lenient_length.pl:
 
-1) 
+1)
 
 Set up a directory hierarchy with the Prolog module in your directory $FOO like this, wherever $FOO is:
 
@@ -10,7 +10,7 @@ $FOO
         └── utils/
             └── lenient_length.pl    <-- the source for length/3 in module "lenient_length"
 
-2)             
+2)
 
 Start SWI Prolog
 
@@ -18,13 +18,13 @@ Add the topmost directory to the library search path (replace $FOO as usual with
 
 ?- assertz(file_search_path(library,'$FOO/heavycarbon')).
 
-3) 
+3)
 
 Load the module, which (confusingly) is given by file name, not module name:
 
 ?- use_module(library('heavycarbon/utils/lenient_length.pl')).
 
-4) 
+4)
 
 Use length/3
 

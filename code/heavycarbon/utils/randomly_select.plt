@@ -2,14 +2,14 @@
 
 :- include(library('heavycarbon/support/meta_helpers_nonmodular.pl')).
 
-% This is "somewhat of a test", but is mainly a code to exercise the 
+% This is "somewhat of a test", but is mainly a code to exercise the
 % randomly_select module.
 %
 % There is no failure criterium!
 
 :- begin_tests(randomly_select).
 
-test("run often") :- 
+test("run often") :-
    % debug(criterium),
    generate_stats(0,1000,stats{},Out),
    debug(criterium,"At termination: ~q",[Out]).
@@ -61,7 +61,7 @@ generate_stats(Count,CountLimit,StatsIn,Out) :-
 generate_stats(CountLimit,CountLimit,Stats,Out) :-
    compute_frequencies(Stats,CountLimit,Frequencies),
    Out = out{stats:Stats,stop_reason:limit_reached,count:CountLimit,frequencies:Frequencies}.
- 
+
 % ---
 % Increment the counter value for a given outcome in "DictIn",
 % giving "DictOut". If there is no entry for the selection yet,
@@ -87,7 +87,7 @@ frequencies_are_good(Stats,Count,Frequencies) :-
    debug(criterium,"Stats now: ~q ; Frequencies now: ~q",[Stats,Frequencies]),
    match_expected_frequencies(Frequencies,Out), % Reified result Out is either 'true' or 'false'
    Out == true. % succeeds if there is an approx match (obscurely, once could also write call(Out))
- 
+
 % ---
 % Compute frequencies by dividing the counters by Count
 % ---
@@ -108,7 +108,7 @@ match_expected_frequencies(Frequencies,Out) :-
    Shalls=[bravo-0.21,charlie-0.12,echo-0.42,foxtrott-0.25],
    foldl(foldy_goal(Frequencies),Shalls,true,Out),
    debug(criterium,"After foldl: ~q",[Out]).
-   
+
 foldy_goal(_,_,false,false). % once the result becomes false, it stays false
 
 foldy_goal(Frequencies,K-Shall,true,ToRight) :-

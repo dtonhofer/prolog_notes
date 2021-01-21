@@ -54,10 +54,10 @@ test("case of: list and prefix known") :-
 % "List and suffix known" (foreach with added cut)
 % ---
 
-% Mystery: 
+% Mystery:
 % In 8.3.4, there is no open choicepoint
 % But in SWI Prolog 8.3.5, this code leaves a final
-% choicepoint open apparently at the "append/2" in 
+% choicepoint open apparently at the "append/2" in
 % extract_a_suffix (hence a cut after that append/2), but
 % running that append at the toplevel does nothing of the sort.
 

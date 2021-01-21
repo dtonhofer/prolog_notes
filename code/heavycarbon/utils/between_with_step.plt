@@ -1,5 +1,5 @@
 % ===
-% ronerycoder@gluino.name (me) says this is licensed under 
+% ronerycoder@gluino.name (me) says this is licensed under
 % https://opensource.org/licenses/0BSD
 % ===
 
