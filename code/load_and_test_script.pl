@@ -102,20 +102,25 @@ Conventions
 
 */
 
-:- use_module(library('heavycarbon/strings/conversion.pl')).
-:- use_module(library('heavycarbon/strings/stringy.pl')).
+:- use_module(library('heavycarbon/strings/justify.pl')).
 :- use_module(library('heavycarbon/strings/string_of_spaces.pl')).
 :- use_module(library('heavycarbon/strings/string_overwrite.pl')).
-:- use_module(library('heavycarbon/strings/justify.pl')).
-:- use_module(library('heavycarbon/support/utils.pl')).
+:- use_module(library('heavycarbon/strings/stringy.pl')).
+:- use_module(library('heavycarbon/strings/tablify.pl')).
+
 :- use_module(library('heavycarbon/utils/between_with_step.pl')).
-:- use_module(library('heavycarbon/utils/in_prefix.pl')).
-:- use_module(library('heavycarbon/utils/openlist_append.pl')).
+:- use_module(library('heavycarbon/utils/between_x.pl')).
 :- use_module(library('heavycarbon/utils/clashfree_id_selection.pl')).
 :- use_module(library('heavycarbon/utils/difflist_length.pl')).
-:- use_module(library('heavycarbon/utils/randomly_select.pl')).
-:- use_module(library('heavycarbon/utils/randomly_insert.pl')).
+:- use_module(library('heavycarbon/utils/in_prefix.pl')).
+:- use_module(library('heavycarbon/utils/lenient_length.pl')).
+:- use_module(library('heavycarbon/utils/list_of_numbered_pairs.pl')).
+:- use_module(library('heavycarbon/utils/openlist_append.pl')).
+:- use_module(library('heavycarbon/utils/partition_freely.pl')).
+:- use_module(library('heavycarbon/utils/probe_length.pl')).
 :- use_module(library('heavycarbon/utils/random_atom.pl')).
+:- use_module(library('heavycarbon/utils/randomly_insert.pl')).
+:- use_module(library('heavycarbon/utils/randomly_select.pl')).
 :- use_module(library('heavycarbon/utils/replace0.pl')).
 :- use_module(library('heavycarbon/utils/rotate_list.pl')).
 :- use_module(library('heavycarbon/utils/splinter0.pl')).
@@ -123,7 +128,6 @@ Conventions
 :- use_module(library('heavycarbon/utils/vector_replace0.pl')).
 
 /*
-
    An alternative notation, though I prefer using an atom as relative
    pathname and making the suffix explicit (default behaviours made to
    help interactivity in non-interactive situations only lead to problems
