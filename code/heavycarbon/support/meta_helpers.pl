@@ -52,26 +52,24 @@
 % Latest review: Tue 19 January 2021
 % =============================================================================
 
-
 :- module(heavycarbon_meta_helpers,
-   [
-       switch/4          % switch(If1,Then1,If2,Then2)  (throws if 'else' condition is hit)
-      ,switch/5          % switch(If1,Then1,If2,Then2,Else)  
-      ,switch/6          % switch(If1,Then1,If2,Then2,If3,Then3)  (throws if 'else' condition is hit) 
-      ,switch/7          % switch(If1,Then1,If2,Then2,If3,Then3,Else) 
-      ,switch/8          % switch(If1,Then1,If2,Then2,If3,Then3,If4,Then4)  (throws if 'else' condition is hit)
-      ,switch/9          % switch(If1,Then1,If2,Then2,If3,Then3,If4,Then4,Else) 
-      ,switch/10         % switch(If1,Then1,If2,Then2,If3,Then3,If4,Then4,If5,Then5)  (throws if 'else' condition is hit)
-      ,switch/11         % switch(If1,Then1,If2,Then2,If3,Then3,If4,Then4,If5,Then5,Else)
-      ,switch/12         % switch(If1,Then1,If2,Then2,If3,Then3,If4,Then4,If5,Then5,If6,Then6)  (throws if 'else' condition is hit)
-      ,switch/13         % switch(If1,Then1,If2,Then2,If3,Then3,If4,Then4,If5,Then5,If6,Then6,Else)
- 
-      ,if_then_else/3    % if_then_else(Condition,Then,Else)
-      ,reify_outcome/4   % reify_outcome(Condition,SuccessThing,FailureThing,Out) (unifies "Out" with either "SuccessThing" or "FailureThing")
-      ,reify/2           % reify(Goal,Outcome) (unifies "Outcome" with either 'true' or 'false') (should properly be 'true' or 'fail')
-      ,if_then/2         % if_then(Condition,Then) (nothing happens if the 'else' condition is hit as "Condition" fails)
-      ,unless/2          % unless(Condition,Else)  (nothing happens if the 'then' condition is hit as "Condition" succeeds)
-   ]).
+          [
+          switch/4          % switch(If1,Then1,If2,Then2)  (throws if 'else' condition is hit)
+         ,switch/5          % switch(If1,Then1,If2,Then2,Else)  
+         ,switch/6          % switch(If1,Then1,If2,Then2,If3,Then3)  (throws if 'else' condition is hit) 
+         ,switch/7          % switch(If1,Then1,If2,Then2,If3,Then3,Else) 
+         ,switch/8          % switch(If1,Then1,If2,Then2,If3,Then3,If4,Then4)  (throws if 'else' condition is hit)
+         ,switch/9          % switch(If1,Then1,If2,Then2,If3,Then3,If4,Then4,Else) 
+         ,switch/10         % switch(If1,Then1,If2,Then2,If3,Then3,If4,Then4,If5,Then5)  (throws if 'else' condition is hit)
+         ,switch/11         % switch(If1,Then1,If2,Then2,If3,Then3,If4,Then4,If5,Then5,Else)
+         ,switch/12         % switch(If1,Then1,If2,Then2,If3,Then3,If4,Then4,If5,Then5,If6,Then6)  (throws if 'else' condition is hit)
+         ,switch/13         % switch(If1,Then1,If2,Then2,If3,Then3,If4,Then4,If5,Then5,If6,Then6,Else) 
+         ,if_then_else/3    % if_then_else(Condition,Then,Else)
+         ,reify_outcome/4   % reify_outcome(Condition,SuccessThing,FailureThing,Out) (unifies "Out" with either "SuccessThing" or "FailureThing")
+         ,reify/2           % reify(Goal,Outcome) (unifies "Outcome" with either 'true' or 'false') (should properly be 'true' or 'fail')
+         ,if_then/2         % if_then(Condition,Then) (nothing happens if the 'else' condition is hit as "Condition" fails)
+         ,unless/2          % unless(Condition,Else)  (nothing happens if the 'then' condition is hit as "Condition" succeeds)
+         ]).
 
 :- meta_predicate           % https://eu.swi-prolog.org/pldoc/doc_for?object=(meta_predicate)/1
        switch(0,0,0,0)
