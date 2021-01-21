@@ -4,7 +4,19 @@ For now just a five-minute note.
 
 ## Sorts for terms
 
-Sorting terms would of course demand a serious extension of unification.
+"Sorted terms" would of course demand a serious extension of unification. And maybe more. 
+Still, this is described in Socher-Ambrosius. 
+(Rolf Socher-Ambrosius, Patricia Johann: _Deduction System_, Springer 1997; Chapter 9: _Resolution in Sorted Logic_)
+
+It's been nearly 25 years 😬
+
+## A special symbol for NULL/NIL
+
+Relational Database Systems have the special value NULL to express "missing values". It would be nice to have
+a dedicated, unfakeable, non-var, unique value for this case in Prolog, too (similar to the special symbol `[]` signifying the
+empty list, as used in SWI-Prolog, which is absolutely the right thing to do).
+
+I will use `[]` for now...
 
 ## Enum types
 
