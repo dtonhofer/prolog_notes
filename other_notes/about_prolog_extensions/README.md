@@ -17,6 +17,98 @@ the tright thing to do). One would replace the variables by element from a creat
 
 This has effects on term I/O and probably modules.
 
+## Name-based parameter passing
+
+Prolog may show a lot of "action" due to in-lined unification directly in calls or headers and 
+information comin-in, going-out or being matched. This yields code that is very concise
+at writing time, but really hard to read later.
+
+For example, in this code:
+
+https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/rotate_list.pl
+
+The base case of processing reads like this:
+
+```
+copy_list([],0, Tip1 , []  ,  _   , Tip1).
+```
+
+This can only be unraveled with appropriate commenting:
+
+```
+% If we hit the end of the (input) "List", then we are done!
+% The tip of the first open difference list (the collected prefix),
+% given by "Tip1", is unified with the fin of the second open
+% difference list, "Fin2" (here, already unified), thus appending
+% the collected prefix to the list rooted in "Tip2". Simultaneously,
+% the fin of the collected prefix "Fin1" is unified with [], closing
+% the prefix, and closing the final result list, now rooted in Tip2.
+
+             %  Collected    Becomes new
+             %    Prefix       Prefix
+             %  Tip1  Fin1   Tip2   Fin2
+copy_list([],0, Tip1 , []  ,  _   , Tip1).
+```
+
+And it's still hard ot understand.
+
+If we had name-based arguments instead of position-based, one could annotate
+the arguments with the names indicating _the meaning the arguments have to the 
+called predicate_.
+
+```
+copy_list(list           : [L|Ls],
+          prefix_counter : PrefixCounter,
+          difflist1_tip  : Tip1,
+          difflist1_fin  : [L|NewFin1],
+          difflist2_tip  : Tip2,
+          difflist2_fin  : Fin2)
+```
+
+Then the mystery call above would read as:
+
+```
+copy_list(list           : [],
+          prefix_counter : 0,
+          difflist1_tip  : Tip1,
+          difflist1_fin  : [],
+          difflist2_tip  : _,
+          difflist2_fin  : Tip1)
+```
+
+This would also alleviate the problem of not being sure on what position 
+a certain argument should be found and making refactoring involving
+argument position reshuffling needlessly difficult.
+
+In sense, we can now have that if we collapse all the arguments into one,
+taking an SWI-Prolog dict with appropriately named keys, and passing
+only that. But that's not really a good solution, especially as unification
+of the individual values suffers.
+
+Rule-based systems supplemented position-based arguments with
+name-based arguments quickly. Languages like Clojure support them
+via maps.
+
+Prolog is lagging!
+
+## Global constants that are resolved at compile time.
+
+It's annoying to write a special predicate to retrieve a constant in code:
+
+```
+constant(foo,44455).
+
+bar :- constant(foo,FOO),p(FOO).
+```
+
+When one could simply do something like this for example:
+
+```
+:- define foo:44455.
+
+bar :- p($foo).
+```
+
 ## A unification with two new constraints
 
 - One would like to state in the head that "this variable in the head shall only unify with another variable"
