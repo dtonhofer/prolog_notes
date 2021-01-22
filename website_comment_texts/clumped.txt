@@ -1,0 +1,71 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=clumped/2
+
+## Missed opportunity
+
+This doesn't run in reverse, doing run-length decoding!?!
+
+That's just crazy.
+
+```
+?- clumped(X,[a-2,b-1,a-4,c-3]).
+false.
+```
+
+angry_coffee_slurp.jpg
+
+## Not "clumped" but "counted"
+
+The counterpart of "clumped" is "counted": getting the occurrence count of atomic terms:
+
+This one is based on SWI-Prolog dicts (which is "output" directly as "CountsDict". One could alternatively transform it into or even workd directly with a list of pairs.
+
+```
+% ===
+% "Items" is a list of atomic (and thus ground) terms
+% that will appear as keys in an SWI-Prolog dict.
+%
+% "CountsDict" is an SWI-Prolog dict mapping every
+% "Item" encountered in "Items" to its occurrence count.
+% The tag of "CountsDict" is (unified with) "Tag".
+%
+% counted(+Items,-CountsDict,+Tag)
+% ===
+
+counted(Items,CountsDict,Tag) :-
+   dict_create(EmptyDict,Tag,[]),
+   foldl(inc_for_key,Items,EmptyDict,CountsDict).
+
+% ---
+% Private helper
+% ---
+
+inc_for_key(Item,DictIn,DictOut) :-
+   assertion(atomic(Item)),     % lookup in a dict works via unification of atomic terms; make sure it's atomic
+   (get_dict(Item,DictIn,Count) % how efficient is lookup in a dict (is it a linear scan for an unifiying element?)
+    ->
+    succ(Count,CountNext)
+    ; 
+    CountNext=1), 
+   put_dict(Item,DictIn,CountNext,DictOut).
+
+% ===
+% Tests
+% ===
+
+:- begin_tests(counted).
+
+test("count empty list",true(Result == counts{})) :-
+   counted([],Result,counts).
+
+test("#1",true(Result == foo{a:4,b:2,c:3,d:1,e:1,f:1})) :-
+   counted([a,b,c,d,c,e,b,a,a,f,a,c],Result,foo).
+
+test("#2",true(Result == foo{' ':1,!:1,',':1,'H':1,'W':1,d:1,e:1,l:3,o:2,r:1})) :-
+   atom_chars("Hello, World!",Chars),
+   counted(Chars,Result,foo).
+
+:- end_tests(counted).   
+```
+
+
+

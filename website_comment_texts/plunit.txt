@@ -189,3 +189,12 @@ test("call me", [true(X == 1),nondet]) :-
 :- end_tests(footest).
 ==
 
+## See also
+
+From: https://stackoverflow.com/questions/65844487/unit-testing-in-gnu-prolog
+
+   - [Crisp - Crazy Simple Unit Testing in Prolog](https://github.com/khueue/crisp)
+   - [Logtalk's `lgunit`](https://logtalk.org/manuals/devtools/lgtunit.html)
+
+
+
