@@ -1,0 +1,39 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/2
+
+## Explainer
+
+Explainer including examples for the use of maplist/2 (and maplist/3 and maplist/4) here, including on using [`library(yall)`](https://eu.swi-prolog.org/pldoc/man?section=yall) lambda expressions: 
+
+[**Examples for the Prolog predicate maplist∕2**](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_maplist/maplist_2_examples.md), including on how to build the _Goal_.
+
+## What if argument 2 is not a list?
+
+If the List argument is not a list, then maplist _fails_ instead of throwing.
+
+```
+?- maplist(atom,foo).
+false.
+```
+
+Prolog predicates are often too lenient, which is actually what is desired in a "logic setting" but may lead to hard-to-find errors.
+
+## Note that
+
+forall/2 + member/2 is a replacement of maplist/2 (a not very useful observation; also forall/2 definitely rolls back any bindings made by the "verification" predicate)
+
+Example:
+
+```
+?- forall(member(X,[a,b,c]),atomic(X)).
+true.
+
+?- maplist(atomic,[a,b,c]).
+true.
+
+?- forall(member(X,[a,f(b),c]),atomic(X)).
+false.
+
+?- maplist(atomic,[a,f(b),c]).
+false.
+```
+
