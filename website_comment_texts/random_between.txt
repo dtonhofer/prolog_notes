@@ -1,5 +1,34 @@
 https://eu.swi-prolog.org/pldoc/doc_for?object=random_between/3
 
+Note that there is no requirement that either of the args be >= 0.
+
+```
+?- random_between(-100,-10,X).
+X = -39.
+```
+
+## See also
+
+The comments under https://eu.swi-prolog.org/pldoc/doc_for?object=f(random_float/0)
+
+## Should work in "accept mode" too:
+
+If the argument is instantiated, it should work exactly like `between/3`.
+Well, we don't know whether an instantiated 3rd argument is really "random",
+but we can ascertain that it is "between".
+
+```
+?- random_between(1,5,X).
+X = 4.
+
+?- random_between(1,5,4).
+false.
+```
+
+Does the failure in the second case really make sense? If there is a parameter check, it should throw. But in this case, it should just succeed.
+
+Together with the requirement that `L =< U` this would then reduce to a test `L =< R =< U`. 
+
 ## Example of selecting an id between 0 and 6 that is not in a (small) dict yet.
 
 This is an example of a "failure-driven loop".
@@ -14,7 +43,7 @@ clashfree_id_selection(Dict,Id) :-
    !.
 ==
 
-Then
+Then 
 
 ==
 ?- clashfree_id_selection(_{3:x,4:x,5:x,6:x,7:x},Id).
@@ -25,7 +54,7 @@ FOUND 1
 Id = 1.
 ==
 
-Philosophically, it is weird that that random_between/3 is "semidet" (i.e. fails or succeeds once). It could propose another solution for Id on "redo" endlessly after all. But then one could not backtrack over it in the same clause or without ;, which would be inconvenient. So the "endless proposal" is done by the conjunction
+Philosophically, it is weird that that random_between/3 is "semidet" (i.e. fails or succeeds once). It could propose another solution for Id on "redo" endlessly after all. But then one could not backtrack over it in the same clause or without ;, which would be inconvenient. So the "endless proposal" is done by the conjunction 
 
 ==
 repeat, random_between(X,Y,Z)
@@ -40,14 +69,40 @@ clashfree_id_selection(Dict,Id) :-
    \+ get_dict(Id,Dict,_),
    format("FOUND ~q\n",[Id]),
    !.
-
+      
 endlessly_propose_id(Id) :- repeat, random_between(0,6,Id).
 
 print_clash_on_redo(_)  :- true.
 print_clash_on_redo(Id) :- format("CLASH for ~q\n",[Id]),fail.
 ==
 
-## Simple application
+## Simple application: random pairs
+
+```
+list_of_random_pairs(List,Length) :-
+   length(List,Length),
+   maplist(
+      [Char-Num]>>(                    % this predicate with single arg "Char-Num" is properly deterministic 
+         random_between(0,9,Num),      % random number between 0 and 9 inclusive
+         random_between(97,122,Code),  % random 16-bit Unicode codepoint of a character in the range a-z
+         atom_codes(Char,[Code])       % transform code into "character" aka. "char", i.e. atom of length 1
+      ),
+      List).
+```
+
+Then:
+
+```
+?- 
+set_prolog_flag(answer_write_options,[max_depth(100)]).
+true.
+
+?- 
+list_of_random_pairs(L,10).
+L = [q-6,d-4,d-9,s-3,g-0,e-6,w-5,u-7,v-8,a-8].
+```
+
+## Simple application: random selection of an atom according to some probability
 
 Use a dict to indicate the relative probability of a selection with a number of `x` or some other character, except `space`:
 
@@ -64,3 +119,67 @@ randomly_select(
      Selected).
 ==
 
+## Simple application: an infinite stream of 0/1
+
+Via Stack Overflow from an idea by Will Ness:
+
+A bit eager as it generates as it tosses a coin even if 0 bits are demanded:
+
+```
+random_bit_stream([X|Xs]) :-
+   random_between(0,1,X), 
+   format("coin toss: ~q\n",[X]),
+   freeze(Xs, random_bit_stream(Xs)). 
+
+random_bits(Selection,Length) :-
+   random_bit_stream(Xs), 
+   length(Selection,Length), 
+   append(Selection,_More,Xs).
+```
+
+Better, does not toss a coin if 0 bits are demanded:
+
+```
+random_bit_stream_2([X|Xs]) :-
+   freeze(Xs,
+      (random_between(0,1,X),
+       format("coin toss: ~q\n",[X]),
+       random_bit_stream_2(Xs))).
+
+random_bits_2(Selection,Length) :- 
+   random_bit_stream_2(Xs), 
+   length(Selection,Length), 
+   append(Selection,[_|_],Xs).
+```
+
+## A random_between allowing exclusion of the upper limit
+
+```
+% ============================================================================
+% The same as random_between/3 but you can indicate where the upper limit
+% should be included. 
+%
+% Helps you avoid adding spurious "ActualHigh is High-1" 
+%
+% random_between(+HighInclusive:boolean, +Low:int, +High:int, -Random:int)
+% ============================================================================
+
+random_between(true,Low,High,Random) :-
+   !,
+   random_between_check(Low,High,Random),
+   random_between(Low,High,Random).
+   
+random_between(false,Low,High,Random) :-
+   !,
+   random_between_check(Low,High,Random),
+   ActualHigh is High-1,   
+   random_between(Low,ActualHigh,Random).
+   
+random_between(HighInclusive,_,_,_) :-
+   domain_error([true,false],HighInclusive).
+
+random_between_check(Low,High,Random) :-
+   assertion(integer(Low)),
+   assertion(integer(High)),
+   assertion(var(Random)).
+```

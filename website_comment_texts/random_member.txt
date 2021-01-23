@@ -1,0 +1,25 @@
+## Doc needs help
+
+Typo: 
+
+> Fails of List is the empty list. 
+
+to
+
+> Fails if List is the empty list. 
+
+## This needs either a throw or a fix
+
+This is not good (well, it it if you want to use random_member/2 to generate a stream of random booleans, but I think that's taking nondeterminism too far):
+
+```
+?- random_member(1,[1,2,3]).
+false.
+
+?- random_member(1,[1,2,3]).
+true.
+```
+
+`random_member(1,[1,2,3])` should succeed because 1 is, if not a "random" member, then at least a member of `[1,2,3]`
+
+ 

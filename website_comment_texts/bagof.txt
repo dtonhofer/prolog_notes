@@ -1,6 +1,12 @@
 https://eu.swi-prolog.org/pldoc/doc_for?object=bagof/3
 
+## See also
+
+[library(aggregate)](https://eu.swi-prolog.org/pldoc/man?section=aggregate)
+
 ## No solutions for Goal lead to failure, instead of an empty bag.
+
+"Failure" is the logically correct way of saying "there are no solutions".
 
 ==
 ?- bagof(X,member(X,[a,b,c]),Bag).
@@ -10,11 +16,10 @@ Bag = [a, b, c].
 false.
 ==
 
-I consider this (a bit) surprising.
+findall/3 is laxer in that regard and yields the empty bag if there is no solution. (see also:
+[**Notes about findall/3**](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_findall/README.md) ... how to use it etc.)
 
-findall/3 just yields the empty bag if there is no solution.
-
-In fact, this means binding the Bag to [] must always fail, because an empty Bag **is never generated**
+This means binding the Bag to [] must always fail, because an empty Bag **is never generated**
 
 ==
 ?- bagof(X,true,[]).
@@ -28,7 +33,7 @@ Note that the `true` goal generates a one-element bag with whatever can be found
 L = [_65320].
 ==
 
-You can use the if-then-else ->/2:
+You can use the if-then-else ->/2 (which _is_ non-logical) to emulate the behaviour of findall/3: 
 
 ==
 ?- (bagof(X,member(X,[a,b,c]),Bag) -> true ; Bag=[]).

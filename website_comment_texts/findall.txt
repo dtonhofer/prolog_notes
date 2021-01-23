@@ -1,0 +1,3 @@
+## Notes about findall
+
+[**Notes about findall/3**](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_findall/README.md) ... how to use it etc. 

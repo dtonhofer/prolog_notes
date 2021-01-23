@@ -1,0 +1,113 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=load_test_files/1
+
+## Note 
+
+There are two entries for `load_test_files`
+
+   - Under "packages" (this page): https://eu.swi-prolog.org/pldoc/doc_for?object=load_test_files/1  
+      - It's the one you find when poerforming "search documentation"
+   - Under "libraries": https://eu.swi-prolog.org/pldoc/doc_for?object=plunit%3Aload_test_files/1
+      - It's the one linked to when you add a dynamic link here, like so: load_test_files/1
+
+## Doc needs help
+
+What are the options? They are probably the same as load_files/2.
+
+## What does it do?
+
+The source code (click on the ':-' symbol) reveals that it checks for every source file loaded that does not have a `.plt` suffix whether there is a file named the same, in the same location, with a `.plt` suffix, and if so it calls
+
+==
+load_files(TestFile, [ if(changed), imports([]) ]),
+==
+
+The passed `Options` is not used for anything!
+
+See load_files/2
+
+## Some module magic problem
+
+For some reason this does not work for "raw code" files, i.e. files whose code gets loaded into module "user", as opposed to files that properly declare modules.
+
+Although a `.plt` file is loaded, the tests fail because they look for the "predicate-under-test" in the wrong module.
+
+Example:
+
+In file `foo.pl`
+
+==
+a(X) :- 0 =:= X mod 3.
+==
+
+In file `foo.plt`
+
+==
+:- begin_tests(footest).
+
+test("3 is ok")          :- a(3).
+test("2 is not ok",fail) :- a(2).
+
+:- end_tests(footest).
+==
+
+Then:
+
+==
+?- [foo].
+true.
+
+?- load_test_files([]).
+true.
+
+?- run_tests.
+% PL-Unit: footest 
+ERROR: foo.plt:3:
+        test 3 is ok: received error: setup_call_catcher_cleanup/4: Unknown procedure: plunit_footest:a/1
+ERROR: foo.plt:4:
+        test 2 is not ok: received error: catch/3: Unknown procedure: plunit_footest:a/1
+ done
+% 2 tests failed
+% 0 tests passed
+false.
+==
+
+**BUT**
+
+In file `foo.pl`
+
+==
+:- module(foo,[a/1]).
+
+a(X) :- 0 =:= X mod 3.
+==
+
+In file `foo.plt`:
+
+==
+:- use_module(['foo.pl']).
+
+:- begin_tests(footest).
+
+test("3 is ok")          :- a(3).
+test("2 is not ok",fail) :- a(2).
+
+:- end_tests(footest).
+==
+
+then
+
+==
+?- [foo].
+true.
+
+?- load_test_files([]).
+true.
+
+?- run_tests.
+% PL-Unit: footest .. done
+% All 2 tests passed
+true.
+==
+
+
+

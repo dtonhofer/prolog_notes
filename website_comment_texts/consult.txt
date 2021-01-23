@@ -1,0 +1,127 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=consult/1
+
+You can actually also pass a series of files:
+
+==
+?- consult([foo,roo]).
+==
+
+If you use 
+
+==
+[user].
+==
+
+The code entered will be added to the special "user" module. See: [Reserved Modules and using the‘user' module](https://eu.swi-prolog.org/pldoc/man?section=resmodules)
+
+## Edge case
+
+If there are files "roo", "foo", "foo.pl" and "foo.pl.pl"
+
+Then 
+
+==
+[foo].
+==
+
+loads "foo.pl"
+
+==
+['foo.pl'].
+==
+
+or
+
+==
+["foo.pl"].
+== 
+
+also load "foo.pl"
+
+==
+['foo.pl.pl'].
+== 
+
+loads "foo.pl.pl"
+
+Loading file "foo" is not possible, but
+
+==
+[roo].
+== 
+
+still loads "roo"
+
+It is only the suffix ".pl" which is processed this way. If the suffix is not ".pl",
+you cannot leave the suffix out in the argument to consult. This is relevant for files containing plunit unit test code, which are supposed to end in '.plt'.
+
+## Loading unit test files
+
+At [plunit](https://eu.swi-prolog.org/pldoc/doc_for?object=section%28%27packages/plunit.html%27%29), we read:
+
+"Test-units can be embedded in normal Prolog source-files. Alternatively, tests for a source-file can be placed in another file alongside the file to be tested. Test files use the extension .plt. The predicate load_test_files/1 can load all files that are related to source-files loaded into the current project."
+
+There is no direct support for files ending in .plt via [consult], you have to write
+
+==
+?- ['foo.plt']
+== 
+
+On the other hand, once you have read a `.pl` file using
+
+==
+?- use_module(library(foo)).
+==
+
+or
+
+==
+?- use_module(library('foo.pl')).
+==
+
+if it is a module file or
+
+==
+?- [foo]
+==
+
+if it is a source file, then 
+
+==
+?- load_test_files([]).
+==
+
+will read the files names the same way only with `.plt` extension. 
+
+After that, you can run the test code in the .plt files with
+
+==
+?- run_tests.
+==
+
+See also 
+
+   - `load_test_files` at https://eu.swi-prolog.org/pldoc/doc_for?object=load_test_files/1
+   - make/0 to force reload of all files changed since the last loading, instead of just reloading the one in brackets.
+
+## Encoding of source files
+
+See this:
+
+https://stackoverflow.com/questions/65851820/how-to-set-the-utf-8-for-the-code-file-pl-in-swi-prolog-desktop/
+
+In particular, this source file should be loadable without problems:
+
+```
+citation :-
+   писатель(1,Author),
+   цитирование(1,Citation),
+   format("Author: ~s~nCitation: ~s~n",[Author,Citation]).
+
+% Facts!
+
+писатель(1,"Р.П.Уоррен").
+цитирование(1,"Ты должна сделать добро из зла, потому что его больше не из чего сделать.").
+```
+
+

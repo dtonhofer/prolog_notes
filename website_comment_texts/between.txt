@@ -1,0 +1,133 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=between/3
+
+## Doc needs help
+
+> a feature that is particularly interesting for generating integers from a certain value.
+
+... in failure-driven loops. 
+
+But failure-driven loops are not particularly interesting (in fact, they are dangerous in practice as they can quickly morph into infinite loops amazingly easily).
+
+## Some potentially useful notes
+
+[About `between∕3`](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_between/README.md)
+
+## Extension of _between∕3_: a "between" which also takes a negative or positive "step" value
+
+Values are no pre-generated with `between/3` and then linearly transformed, but properly
+generated "on need".
+
+   - [Code](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/between_with_step.pl) ([raw code](https://raw.githubusercontent.com/dtonhofer/prolog_notes/master/code/heavycarbon/utils/between_with_step.pl))
+   - [Unit tests](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/between_with_step.plt) ([raw code](https://raw.githubusercontent.com/dtonhofer/prolog_notes/master/code/heavycarbon/utils/between_with_step.plt))
+   - New to modules? [TL;DR for installation](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/TLDR_between_with_step.txt)
+
+These are defined:
+
+   - `between(+Start,+End,+Step,?Value)`
+   - `between(+Start,+End,+Step,?Value,?OptionList)`
+
+Examples:
+
+```
+?- 
+between(10,20,3,L).
+
+L = 10 ;
+L = 13 ;
+L = 16 ;
+L = 19.
+```
+
+```
+?- 
+between(10,-10,-3,L).
+
+L = 10 ;
+L = 7 ;
+L = 4 ;
+L = 1 ;
+L = -2 ;
+L = -5 ;
+L = -8.
+```
+
+## Extension of _between∕3_: a "between" which which is able to propose valid intervals
+
+The standard `between/3` **dataflow** allows only to flow from a known `(LowerLimit,UpperLimit)` to a sequence of `Value`.
+Why not allow alternative directions:
+
+   - `(LowerLimit,Value)` to a sequence of `UpperLimit`
+   - `(UpperLimit,Value)` to a sequence of `LowerLimit`
+   - `Value` to a sequence of `(LowerLimit,UpperLimit)`
+
+These are defined:
+
+   - `between_x(?Low, ?High, ?Value)`
+
+For example, define:
+
+```
+intervalsize(_,inf,inf)        :- !.
+intervalsize(Lower,Upper,Size) :- Size is Upper-Lower+1.
+```
+
+Then generate intervals around 0 (below, the printout has been rearranged by hand):
+
+```
+?- 
+between_x(Lower,Upper,0), intervalsize(Lower,Upper,Size), format("~q:[~q,~q]\n",[Size,Lower,Upper]).
+
+1:[0,0]
+2:[-1,0]  2:[0,1]
+3:[-2,0]  3:[-1,1]  3:[0,2]
+4:[-3,0]  4:[-2,1]  4:[-1,2]  4:[0,3]
+5:[-4,0]  5:[-3,1]  5:[-2,2]  5:[-1,3]  5:[0,4] 
+...
+```
+
+   - [Code](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/between_x.pl) ([raw code](https://raw.githubusercontent.com/dtonhofer/prolog_notes/master/code/heavycarbon/utils/between_x.pl))
+   - [Unit tests](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/between_x.plt) ([raw code](https://raw.githubusercontent.com/dtonhofer/prolog_notes/master/code/heavycarbon/utils/between_x.plt))
+   - New to modules? [TL;DR for installation](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/TLDR_between_x.txt)
+
+## Why doesn't this exist
+
+Instead of trying puzzling code to obtain a list of integers:
+
+```
+% ============================================================================
+% Create a list of integers, monotonically increasing by 1.
+%
+% TODO: Make it work in "reverse direction", too.
+% TODO: A lazy list using freeze/2 that generates the next integer on need
+%
+% create_list_of_integers_between(+Low,+High,?List)
+%
+% create_list_of_integers_between(+HighInclusive:['high_yes','high_no'],+Low,+High,?List) 
+% ============================================================================
+
+list_of_integers_between(Low,High,List) :-
+   list_of_integers_between(high_yes,Low,High,List).
+
+list_of_integers_between(high_yes,Low,High,List) :-
+   !,
+   bagof(X,between(Low,High,X),List). 
+   
+list_of_integers_between(high_no,Low,High,List) :-
+   !,
+   ActualHigh is High-1,
+   bagof(X,between(Low,ActualHigh,X),List). 
+   
+list_of_integers_between(HighInclusive,_,_,_) :-
+   domain_error([high_yes,high_no],HighInclusive).
+```
+
+```
+?- list_of_integers_between(0,4,L).
+L = [0,1,2,3,4].
+
+?- list_of_integers_between(false,0,4,L).
+L = [0,1,2,3].
+
+?- list_of_integers_between(true,0,4,L).
+L = [0,1,2,3,4].
+```
