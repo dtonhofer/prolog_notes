@@ -16,6 +16,7 @@
 % Changes:
 % 2020-09-XX Version 1
 % 2020-12-27 Version 2, using library(option) and otherwise rewritten
+% 2021-01-23 Various fixes & improvements
 % =============================================================================
 
 :- module(heavycarbon_random_atom,
@@ -140,13 +141,16 @@ random_char_list(Chars,Options) :-
 random_char_list(Chars,Options) :-
    nonvar(Chars),
    !,
-   must_be(list(var),Chars),               % "an abundance of caution"; enforce a meaningful call!
-   if_then(
-      (option(empty(no),Options,no),       % empty(no) first in Options or empty/1 missing from Options
-       length(Chars,0)),                   % and user requested an empty list
-      fail),                               % fail for consitency reasons
-   maplist(random_char,Chars).             % fill list
+   assertion(is_list(Chars)),                % Chars must be a closed list
+   assertion(maplist(var,Chars)),            % Chars must be a list of unbound variables
+   self_defeating_case(Chars,Options),       % another check
+   maplist(random_char,Chars).               % fill list
 
+self_defeating_case(Chars,Options) :- 
+  (option(empty(no),Options,no),  % Caller doesn't want empty list (empty(no) first in Options or empty/1 missing from Options)
+   Chars==[])                     % and Caller demands empty list
+  -> fail ; true.
+     
 % ===
 % random_char_list(-Result,+CharsGeneratedAlready)
 %
