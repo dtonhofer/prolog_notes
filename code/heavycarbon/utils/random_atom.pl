@@ -34,6 +34,7 @@
           ]).
 
 :- use_module(library(option)).
+:- use_module(library('heavycarbon/support/meta_helpers.pl')).
 
 % ===
 % "char_list/2" always returns the same values computed at runtime, namely:
@@ -205,13 +206,4 @@ random_char(X) :-
 sigmoid_value(L,P) :-
    P is 1-(1/(1+exp(2-(L/2)))).
 
-% ===
-% Helpers to beautify conditions. TODO: Move these to a library.
-% ===
-
-if_then(Condition,Then) :-
-   call(Condition) -> call(Then) ; true.
-
-if_then_else(Condition,Then,Else) :-
-   call(Condition) -> call(Then) ; call(Else).
 

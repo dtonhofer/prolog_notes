@@ -4,13 +4,14 @@
 
 :- module(snippets_increasing_integers,
           [
-           list_of_integers_between/3
-          ,list_of_integers_between/4
-          ,random_between/4
-          ,integer_strictly_positive/1
-          ,integer_strictly_negative/1
-          ,integer_positive/1
-          ,integer_negative/1
+           list_of_integers_between/3    % list_of_integers_between(+Low,+High,?List)
+          ,list_of_integers_between/4    % list_of_integers_between(+HighInclusive:['high_yes','high_no'],+Low,+High,?List)
+          ,random_between/4              % random_between(+HighInclusive:['high_yes','high_no'], +Low:int, +High:int, -Random:int)
+          ,integer_strictly_positive/1   % integer_strictly_positive(@X)
+          ,integer_strictly_negative/1   % integer_strictly_negative(@X)
+          ,integer_positive/1            % integer_positive(@X)
+          ,integer_negative/1            % integer_negative(@X)
+          ,dict_size/2                   % dict_size(+Dict,-Size)
           ]).
 
 :- use_module(library('heavycarbon/support/meta_helpers.pl')).
@@ -21,9 +22,13 @@
 % TODO: Make it work in "reverse direction", too.
 % TODO: A lazy list using freeze/2 that generates the next integer on need
 %
-% create_list_of_integers_between(+Low,+High,?List)
+% (The style of using a flag or option is actually Prolog-unlike and much
+% more imperative-like... in Prolog one would create a slightly differently
+% names predicate I think)
 %
-% create_list_of_integers_between(+HighInclusive:['high_yes','high_no'],+Low,+High,?List) 
+% list_of_integers_between(+Low,+High,?List)
+%
+% list_of_integers_between(+HighInclusive:['high_yes','high_no'],+Low,+High,?List) 
 % ============================================================================
 
 list_of_integers_between(Low,High,List) :-
@@ -77,4 +82,13 @@ integer_strictly_positive(X) :- integer(X),X>0.
 integer_strictly_negative(X) :- integer(X),X<0.
 integer_positive(X)          :- integer(X),X>=0.
 integer_negative(X)          :- integer(X),X=<0.
-   
+
+% ============================================================================
+% Get the number of entries (the "size") of a dict
+% ============================================================================
+  
+dict_size(Dict,Size) :-
+   assertion(is_dict(Dict)),
+   assertion(var(Size);integer(Size)),
+   compound_name_arity(Dict,_,Arity),
+   Size is (Arity-1)//2. 
