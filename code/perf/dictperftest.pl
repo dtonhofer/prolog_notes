@@ -32,6 +32,9 @@
 %       a change to the statistics predicates
 % ============================================================================
 
+% :- use_module(library(yall)).
+% :- use_module(library(apply_macros)).
+
 using_dict(SizeOfDict,LookupCount,BuildDictHow,BuildLookupSequenceHow,Quiet) :-
    assertion(integer_strictly_positive(SizeOfDict)),
    assertion(integer_strictly_positive(LookupCount)),
