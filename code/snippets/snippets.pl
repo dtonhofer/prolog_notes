@@ -12,6 +12,7 @@
           ,integer_positive/1            % integer_positive(@X)
           ,integer_negative/1            % integer_negative(@X)
           ,dict_size/2                   % dict_size(+Dict,-Size)
+          ,dict_functor_name/1           % dict_functor_name(+Blob)
           ]).
 
 :- use_module(library('heavycarbon/support/meta_helpers.pl')).
@@ -92,3 +93,13 @@ dict_size(Dict,Size) :-
    assertion(var(Size);integer(Size)),
    compound_name_arity(Dict,_,Arity),
    Size is (Arity-1)//2. 
+   
+% ============================================================================
+% Obtain the special "SWI-Prolog dict functor name". 
+% ============================================================================
+% It is a dedicated blob that is used as functor symbol in the compound term 
+% used in the implementation of the dict under the hood. 
+% It is printed as C'dict' ... but one cannot type that directly.
+
+dict_functor_name(DFN) :- compound_name_arity(_{},DFN,_Arity).
+   
