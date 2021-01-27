@@ -1,5 +1,7 @@
 # SWI-Prolog Latex-based documentation
 
+## About 
+
 There are two documentation systems:
 
 - `pldoc` to document code directly in the source, similar to [Doxygen](https://en.wikipedia.org/wiki/Doxygen),
@@ -7,22 +9,22 @@ There are two documentation systems:
    See the manual page on [pldoc](https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/pldoc.html%27)).
 - The manual documentation itself is based on LaTeX. The .doc files in the distribution are LaTeX.   
 
-There needs to be an example page in the manual.
-
 ## Random LaTeX links
 
-- http://applied-r.com/latex-line-and-page-breaks/
-- https://tex.stackexchange.com/questions/7453/what-is-the-use-of-percent-signs-at-the-end-of-lines-why-is-my-macro-creat
-- https://en.wikibooks.org/wiki/LaTeX/Special_Characters
-- https://tex.stackexchange.com/questions/83930/what-are-the-different-kinds-of-boxes-in-latex
+- [What is the use of percent signs (%) at the end of lines? (Why is my macro creating extra space?)](https://tex.stackexchange.com/questions/7453/what-is-the-use-of-percent-signs-at-the-end-of-lines-why-is-my-macro-creat)
+- [What are the different kinds of boxes in (La)TeX?](https://tex.stackexchange.com/questions/83930/what-are-the-different-kinds-of-boxes-in-latex)
+- [Wikibooks: LaTeX/Special Characters](https://en.wikibooks.org/wiki/LaTeX/Special_Characters)
+- [Applied R: Latex Line and Page Breaks](http://applied-r.com/latex-line-and-page-breaks/)
 
-## Problems
+## Problems encountered
 
-- The quotes are crazy double backticks as intro generally works but double single quotes as outro behaves differently depending on
-  context (within parentheses etc.)
-- The processor doesn't understand dashes like `\textemdash.`: https://tex.stackexchange.com/questions/53413/what-is-the-latex-command-for-em-dash  
+- The quotes are crazy. "double backticks" as intro generally works but "double single quotes" as outro behaves differently depending on
+  context (whether the quoted expression appears within within parentheses etc.)
+- The processor doesn't understand dashes like `\textemdash.`: [What is the LaTeX command for “em dash” (—)?](https://tex.stackexchange.com/questions/53413/what-is-the-latex-command-for-em-dash)  
 
 ## How to modify the doc.
+
+### My way:
 
 ![editing process](pics/editing_process.png)
 
@@ -43,13 +45,24 @@ There needs to be an example page in the manual.
 
 The `swiprologpull.sh` installation script in [compiling](/compiling) helps doing the above.
 
-Changing the bibliography, however, is hairy. Some [notes on this](bibliography)   
+### There is an arguably simpler way
+
+https://www.swi-prolog.org/howto/SubmitPatch.txt
 
 ## LaTeX style elements
 
-### Predicate declarations at the top of pages
+- [Predicate banners at the top of pages](#predicate_banners)
+- [Section levels, numbering and labeling](#section_levels)
+- [Referencing other sections by name](#referencing)
+- [Bibliography entries](#bibliography_entries)
+- [Text styles](#text_styles)
+- [Quoting / Quotation marks / Guillements](#quoting)
+   
+### Predicate banners (predicate descriptions) at the top of pages<a name="predicate_banners" />
 
-(does it work with arity 0?)
+[findall predicate banner](pics/findall_predicate_banner.png)
+
+(does it work with arity 0? ... nope)
 
 ```
 \predicate[ISO]{write_canonical}{1}{+Term}
@@ -62,62 +75,65 @@ Changing the bibliography, however, is hairy. Some [notes on this](bibliography)
 
 These are linkified and a reference is inserted into the TOC. 
 
-The marker can take on multiple values ... should one do that?
+The "marker" can take on multiple values ... should one do that, as in `[ISO,semidet]`? Probably not. 
 
-### Labeling
+For ISO predicates and "simple" predicates, the det/semidet/nondet/multi annotatin is not added.
+
+For details on the notations, see [Predicate Descriptions](https://www.swi-prolog.org/pldoc/man?section=preddesc)
+
+### Section levels, numbering and labeling<a name="section_levels" />
+
+How does section numbering look like?
+
+The following gives: _"4 Built-in Predicates"_ in the TOC
+
+(The label is "sec" but should it be "chap" as in `\chapref{modules}`)?
 
 ```
 \chapter{Built-in Predicates}
 \label{sec:builtin}
 ```
 
-gives: "4 Built-in Predicates"
+The following gives: _"4.10 Exception handling"_ in the TOC
 
 ```
 \section{Exception handling}
 \label{sec:exception}
 ```
 
-gives: "4.10 Exception handling"
+The folowing gives: _"4.10.3 The exception term"_ in the TOC
 
 ```
 \subsection{The exception term}
 \label{sec:exceptterm}
 ```
 
-gives: "4.10.3 The exception term"
-
-These are not in the TOC, they seem to be too deep:
+The following are not in the TOC, they seem to be too deep:
 
 ```
 \subsubsection{Throwing exceptions from applications and libraries}
 \label{sec:throwsfromuserpreds}
 ```
 
-Note that referencing drops the "sec":
+### Referencing other sections by name<a name="referencing" />
+ 
+To label the section, define the "section" label:
  
 ``` 
 \label{sec:argmode}
 ```
 
-but to reference you need to use:
+but to reference it, drop the `sec`:
  
 ``` 
 \secref{argmode}
 ```
 
-### Referencing other sections by name
+`\secref{attvar}` generates a live link to `https://eu.swi-prolog.org/pldoc/man?section=attvar`
 
-These are replaced by a link and a text like "section 8.1".
-
-```
-\chapref{modules}
-\secref{attvar}
-```
-
-For example, `\secref{attvar}` generates a live link to `https://eu.swi-prolog.org/pldoc/man?section=attvar`
+The label of the live link is a text like "section 8.1".
  
-### Bibliography entries
+### Bibliography entries<a name="bibliography_entries" />
 
 Take bibliography entry `Demoen:CW350`
 
@@ -158,7 +174,9 @@ for $key (sort keys %$counters) {
 }
 ```
 
-### Text style
+**Changing the bibliography is hairy**. Some [notes on this](bibliography) 
+
+### Text styles<a name="text_styles" />
 
 Boldface:
 
@@ -172,7 +190,7 @@ Emphasis. Looks better than boldface and expresses what one wants to do:
 \emph{no} 
 ```
 
-### Quoting / Quotation marks / Guillements
+### Quoting / Quotation marks / Guillements<a name="quoting">
 
 Use _backtick_ twice at the start and _quote_ twice at the end.
 
@@ -190,18 +208,21 @@ Use _backtick_ twice at the start and _quote_ twice at the end.
 (`test')
 ```
 
-This results in:
+This results in the following output in the PDF:
 
 ![guillements example](pics/guillements_example.png)
 
-Seems fussy and looks incorrect and weirdly context-dependent. There is probably some include that is missing.
+Seems fussy and looks incorrect and weirdly context-dependent. There is probably some _include_ that is missing.
 Also, there should probably be a special construct for that like `\quoting{}`. 
 
-Here is how it should look, from https://www.scribbr.com/language-rules/quotation-marks/
+Here is how it _should_ look, from https://www.scribbr.com/language-rules/quotation-marks/
 
 ![quotation marks](pics/quotation_marks.png)
 
 See also: https://www.overleaf.com/learn/latex/Typesetting_quotations
+
+
+
 
 ### Terms
 
