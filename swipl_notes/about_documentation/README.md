@@ -27,7 +27,7 @@ There are two documentation systems:
 - `pllib(library)` markup should linkify the result.
 - The PDF should have live links, as is done in papers.
 
-### Maybe these should be exploited for ASCII graphics improvements:
+**Maybe these should be exploited for ASCII graphics improvements**
 
 - [Inserting code in this LaTeX document with indentation](https://stackoverflow.com/questions/3175105/inserting-code-in-this-latex-document-with-indentation)
 - [listings – Typeset source code listings using LaTeX](https://ctan.org/texarchive/macros/latex/contrib/listings)
@@ -134,7 +134,6 @@ The "marker" can take on multiple values ... should one do that, as in `[ISO,sem
 For ISO predicates and "simple" predicates, the det/semidet/nondet/multi annotatin is not added.
 
 For details on the notations, see [Predicate Descriptions](https://www.swi-prolog.org/pldoc/man?section=preddesc)
-
 
 
 
@@ -350,6 +349,15 @@ yields
 
 Just writing the predicate indicator directly, as in `member/2`, will create a link to the page of the predicate (if that page exists).
 
+Jan says:
+
+> Note that `.doc` files are translated into `.tex` using `man/doc2tex.pl`, which notably translates `name/arity` 
+> into links using `\predref{name}{arity}` and ensures that difficult to write atoms such as `=\=`, if they appear
+> in `{}`, e.g., `{=\=}` is translated into some `\urldef` sequence. So, anywhere outside code blocks you write 
+> simply `{=\=}` and it will be rendered correctly. Typically you pass these atoms to one of the other macros.
+> at is precisely why this exists as you cannot pass `\verb$=\=$` to a macro in LaTeX.
+
+
 The following suppresses predicate reference generation, which is needed becaue there is no predicate `find_postal_code` to link to:
 
 ```
@@ -371,6 +379,7 @@ But if you write them like this, no links are created:
 ```
 
 Note that there is no notation for "dict functions". Should be fixed.
+
 
 
 
