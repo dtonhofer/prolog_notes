@@ -1,8 +1,51 @@
-***
-*** This text is in the comment section of https://eu.swi-prolog.org/pldoc/man?section=yall
-***
+https://eu.swi-prolog.org/pldoc/man?section=yall
 
-## Don't forget the bracy part
+## IMPORTANT IMPORTANT IMPORTANT
+
+If you have yall expression in your source, make sure you explicitly do
+
+```
+:- use_module(library(yall)).
+:- use_module(library(apply)).
+```
+
+and (to also compile maplist/2, maplist/3 etc. calls.):
+
+```
+:- use_module(library(apply_macros)).
+```
+
+Either put the above into source file (module or code) or run the corresponding goals on the toplevel:
+
+```
+?-
+use_module(library(yall)),
+use_module(library(apply)),
+use_module(library(apply_macros)).
+```
+
+If you don't do that, the program will run. However, yall expressions will not have been compiled and will be interpreted (i.e. the predicates from `library(yall)` will be used). This results in extreme program slowdowns if you the expressions are encountered often because the these predicates perform term copying (loops calling these become literally 1000 times slower).
+
+For some reason (I'm not sure why), if you forget the `use_module` instructions, reconsulting the module or source will cause SWI-Prolog to properly compile the expressions that occur therein. If you wonder why code runs faster after reloading it, that may be the reason.
+
+It seems best to put the above `use_module` calls into your
+
+```
+$HOME/.config/swi-prolog/init.pl
+```
+
+If you want to be verify whether you code was compiled properly, use listing/1 to dump the code of the predicate that uses a `yall` expression.
+
+## A slight fix for the text of "closure"
+
+> The term's name is the name of a predicate of arity K and the term's L arguments
+> (where L could be 0) correspond to L leftmost arguments of said predicate. The 
+> remaining K-L arguments are left open and will be filled in by at metacall time. 
+> For example, a closure involving atom_concat/3 might be the term
+> `atom_concat(prefix)`. In order of increasing L, one would have increasingly more
+>  complete closures that could be passed to call/3, all giving the same result
+
+## Don't forget the bracy part 
 
 A question that often comes up is due to different behaviour in autoloading/late-compilation and non-autoloading/compilation:
 
@@ -13,7 +56,7 @@ bracy(L)   :- X=a, maplist({X}/[Y,Z]>>atom_concat(X,Y,Z), [1,2,3,4], L).
 nobracy(L) :- X=a, maplist([Y,Z]>>atom_concat(X,Y,Z), [1,2,3,4], L).     % KINDA FAULTY
 ==
 
-At the toplevel, add the above predicates with =[user].=
+At the toplevel, add the above predicates with =[user].= 
 
 ==
 ?- bracy(L).

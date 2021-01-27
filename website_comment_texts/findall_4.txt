@@ -1,0 +1,75 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=findall/4
+
+Useful when you want to append to a list using several calls to findall/4.
+
+In that case, `Bag` is an unbound variable. That variable will be instantiated to the open list of elements found. `Tail` is an unbound variable. That variable will _stay unbound_ but will designate the uninstantiated far end (the "fin") of the open list rooted in `Bag`.
+
+For example, if we have the data:
+
+==
+f(a,1).
+f(a,2).
+f(a,3).
+f(b,10).
+f(b,20).
+f(b,30).
+==
+
+Now call
+
+==
+?- findall(X,f(a,X),Bag,Tail).
+==
+
+with `Bag` and `Tail` fresh unbound variables.
+
+```
+   Bag ----->~empty cell~
+
+                     ~empty cell~ <--- Tail
+```
+
+Then the following result is obtained:
+
+```
+   Bag ----->[|]             +
+            /   \            | "list difference" Bag-Tail is
+           1    [|]          | [1,2,3]
+               /   \         +
+              2    [|]
+                  /   \
+                 3   ~empty cell~ <--- Tail
+```
+
+==
+?- findall(X,f(a,X),Bag,Tail).
+Bag = [1, 2, 3|Tail].
+==
+
+This =Tail= can be used for appending more stuff:
+
+==
+?- findall(X,f(a,X),Bag,Tail), findall(X,f(b,X),Tail,NewTail).
+Bag = [1, 2, 3, 10, 20, 30|NewTail]
+==
+
+The above also outputs the "sublist perspective" 
+
+==
+Tail = [10, 20, 30|NewTail]
+==
+
+When we are done with finding stuff, we close the list, making it a proper list. This is done by instantiating the last "Tail" variable obtained to the empty list:
+
+==
+?- findall(X,f(a,X),Bag,Tail), findall(X,f(b,X),Tail,NewTail), NewTail=[].
+Bag = [1, 2, 3, 10, 20, 30]
+==
+
+The above also outputs the "sublist perspective" and "subsublist perspective"
+
+==
+Tail = [10, 20, 30],NewTail = []
+==
+
+
