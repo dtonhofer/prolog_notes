@@ -60,9 +60,9 @@ https://www.swi-prolog.org/howto/SubmitPatch.txt
    
 ### Predicate banners (predicate descriptions) at the top of pages<a name="predicate_banners" />
 
-[findall predicate banner](pics/findall_predicate_banner.png)
+![findall predicate banner](pics/findall_predicate_banner.png)
 
-(does it work with arity 0? ... nope)
+Examples:
 
 ```
 \predicate[ISO]{write_canonical}{1}{+Term}
@@ -73,7 +73,9 @@ https://www.swi-prolog.org/howto/SubmitPatch.txt
 \infixop[ISO]{=}{?Term1}{?Term2}
 ```
 
-These are linkified and a reference is inserted into the TOC. 
+(does it work with arity 0? ... nope)
+
+The above are linkified and a reference is inserted into the TOC. 
 
 The "marker" can take on multiple values ... should one do that, as in `[ISO,semidet]`? Probably not. 
 
