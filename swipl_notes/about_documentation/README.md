@@ -21,6 +21,28 @@ There are two documentation systems:
 - The quotes are crazy. "double backticks" as intro generally works but "double single quotes" as outro behaves differently depending on
   context (whether the quoted expression appears within within parentheses etc.)
 - The processor doesn't understand dashes like `\textemdash.`: [What is the LaTeX command for “em dash” (—)?](https://tex.stackexchange.com/questions/53413/what-is-the-latex-command-for-em-dash)  
+- Page layout in the PDF is a problem. Someone knowledgeable with TeX needs to check that. It happens in the PDF that a figure floats right on top of (i.e. it is printed on top of) a multi-page code listing. BAD!
+- Code blocks in the PDF have a font that's just too large (ugly, and sometimes the text overflows on the right). I haven't managed to reduce the font though.
+- ASCII graphics don't take unicode characters (the TeX processor barfs). This is literally hell!
+- `pllib(library)` markup should linkify the result.
+- The PDF should have live links, as is done in papers.
+
+### Maybe these should be exploited for ASCII graphics improvements:
+
+- [Inserting code in this LaTeX document with indentation](https://stackoverflow.com/questions/3175105/inserting-code-in-this-latex-document-with-indentation)
+- [listings – Typeset source code listings using LaTeX](https://ctan.org/texarchive/macros/latex/contrib/listings)
+- [Algorithm over 2 pages](https://tex.stackexchange.com/questions/29816/algorithm-over-2-pages)
+- [LaTeX/Source Code Listings](https://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings)
+
+
+## Use the new example infrastructure
+
+It has its own git repository. Code is written in "pldoc", i.e. markup: https://github.com/SWI-Prolog/plweb-examples
+
+Jan says: 
+
+> In general I'd like to see more examples being moved to the new example infrastructure. The new infrastructure 
+> allows for more sophisticated display and search of examples.
 
 ## How to modify the doc.
 
@@ -49,14 +71,45 @@ The `swiprologpull.sh` installation script in [compiling](/compiling) helps doin
 
 https://www.swi-prolog.org/howto/SubmitPatch.txt
 
-## LaTeX style elements
+## Style notes
 
-- [Predicate banners at the top of pages](#predicate_banners)
-- [Section levels, numbering and labeling](#section_levels)
-- [Referencing other sections by name](#referencing)
-- [Bibliography entries](#bibliography_entries)
-- [Text styles](#text_styles)
-- [Quoting / Quotation marks / Guillements](#quoting)
+Do not put descriptions intto code blocks (ASCII graphics). Jan says:
+
+> Please do not build a story in code blocks using comments. Instead, use should code blocks and normal running text in 
+> between. That looks a lot better, notably in the PDF version where long code blocks causes poor page layout.
+
+## LaTeX style elements
+  
+See also: file `man/pl.sty` in the distribution.   
+
+
+- [Predicate banners (predicate descriptions) at the top of pages](predicate_banners)
+- [Line break or line fuse](line_break_or_fuse)
+- [Section levels, numbering and labeling](section_levels)
+- [Referencing other sections by name](referencing)
+- [Bibliography entries](bibliography_entries)
+- [Text styles](text_styles)
+- [Quoting / Quotation marks / Guillements](quoting)
+- [How to write compound terms](compound_terms)
+- [How to write predicate indicators](predicate_indicators)
+- [Predicate arguments](predicate_arguments)
+- [Constants](constants)
+- [Special symbols](special_symbols)
+- [Single characters](single_characters)
+- [Verbatim quote](verbatim_quote)
+- [Example code](example_code)
+- [Footnote](footnotes)
+- [Special "prolog flag" link](prolog_flag_link)
+- [Jargon](jargon)
+- [A list of "descriptions"](list_of_descriptions)
+- [A list of "term items"](list_of_term_items)
+- [Align a list with a terminating line break](align_list_with_terminating_line_break)
+- [A file](file)
+- [Tables](tables)
+- [ASCII graphics](ascii_graphics)
+- [Figures](figures)
+- [Referencing libraries](referencing_libraries)
+   
    
 ### Predicate banners (predicate descriptions) at the top of pages<a name="predicate_banners" />
 
@@ -82,6 +135,17 @@ The "marker" can take on multiple values ... should one do that, as in `[ISO,sem
 For ISO predicates and "simple" predicates, the det/semidet/nondet/multi annotatin is not added.
 
 For details on the notations, see [Predicate Descriptions](https://www.swi-prolog.org/pldoc/man?section=preddesc)
+
+
+
+
+### Line break or line fuse<a name="line_break_or_fuse" />
+
+- `%`   to break at the end of the line
+- `\\`  to fuse two lines
+
+
+
 
 ### Section levels, numbering and labeling<a name="section_levels" />
 
@@ -117,6 +181,9 @@ The following are not in the TOC, they seem to be too deep:
 \label{sec:throwsfromuserpreds}
 ```
 
+
+
+
 ### Referencing other sections by name<a name="referencing" />
  
 To label the section, define the "section" label:
@@ -134,6 +201,10 @@ but to reference it, drop the `sec`:
 `\secref{attvar}` generates a live link to `https://eu.swi-prolog.org/pldoc/man?section=attvar`
 
 The label of the live link is a text like "section 8.1".
+ 
+ 
+ 
+ 
  
 ### Bibliography entries<a name="bibliography_entries" />
 
@@ -178,6 +249,10 @@ for $key (sort keys %$counters) {
 
 **Changing the bibliography is hairy**. Some [notes on this](bibliography) 
 
+
+
+
+
 ### Text styles<a name="text_styles" />
 
 Boldface:
@@ -192,7 +267,11 @@ Emphasis. Looks better than boldface and expresses what one wants to do:
 \emph{no} 
 ```
 
-### Quoting / Quotation marks / Guillements<a name="quoting">
+
+
+
+
+### Quoting / Quotation marks / Guillements<a name="quoting" />
 
 Use _backtick_ twice at the start and _quote_ twice at the end.
 
@@ -226,9 +305,10 @@ See also: https://www.overleaf.com/learn/latex/Typesetting_quotations
 
 
 
-### Terms
 
-To write compound terms `x(y)`
+### How to write compound terms<a name="compound_terms" />
+
+To write compound terms like `x(y)`
  
 ```
 \term{x}{y}
@@ -253,27 +333,63 @@ yields:
 ![Result of typesetting term](pics/result_of_typesetting_term.png)
 
 
-Note that the typesetting is a bit surprising:
+Typesetting is a bit surprising:
 
 ```
 \term{dotlists}{true}
 ```
 
+yields
+
 ![Result of term](pcis/result_of_term_dotlists_true.png)
 
 
-### Line break or line fuse
 
-- `%`   to break at the end of the line
-- `\\`  to fuse two lines
 
-### Align a list with a terminating line break
+### How to write predicate indicators<a name="predicate_indicators" />
+
+
+Just writing the predicate indicator directly, as in `member/2`, will create a link to the page of the predicate (if that page exists).
+
+The following suppresses predicate reference generation, which is needed becaue there is no predicate `find_postal_code` to link to:
 
 ```
-++& Argument must be ... \\ 
+\nopredref{find_postal_code}{4}
 ```
 
-### Constants
+You can also write them like this, which is needed if there are special sequences involved and you want klinks to be created:
+
+```
+\predref{=..}{2}
+\predref{.}{3}
+\predref{=}{2}
+```
+
+But if you write them like this, no links are created:
+
+```
+\functor{.}{2}
+```
+
+Note that there is no notation for "dict functions". Should be fixed.
+
+
+
+
+### Predicate arguments<a name="predicate_arguments" />
+
+Italicized in the text
+
+```
+\arg{x}
+```
+
+
+
+
+
+
+### Constants<a name="constants" />
 
 ```
 \const{type_error}
@@ -311,130 +427,11 @@ yields:
 
 ![Result of typesetting empty list](pics/result_of_testing_typesetting_empty_list.png)
 
-### Character
-
-```
-\chr{+}
-```
-
-Different semantics than `\const{}` I would say.
-
-### Verbatim quote 
-
-For code etc. The documentation uses the `$` marker:
-
-```
-\verb$:=$
-```
-
-Stack Overflow says:
-
-https://tex.stackexchange.com/questions/2790/when-should-one-use-verb-and-when-texttt
-
-> ... you use \verb where you need to write a small piece of inline verbatim material that contains characters
-> TeX treats (or rather, is currently treating) as special. `\texttt` is for when you just want typewriter font.
-
-### Example code
-
-```
-\exam{findall(X, Goal, 1)}
-```
-
-### Footnote
-
-```
-\footnote{The ISO standard dictates that}
-```
-
-Stylistically, I feel the manual overdoes footnotes. A lot of footnotes belong right into the text.
-
-### Predicate indicator, functor
-
-```
-\functor{.}{2}
-```
-
-### Predicate indicator with or without link
-
-With link:
-
-```
-\predref{=..}{2}
-\predref{.}{3}
-\predref{=}{2}
-```
-
-The following suppresses predicate reference generation:
-
-```
-\nopredref{find_postal_code}{4}
-```
-
-However, just writing the predicate indicator directly, as in `member/2`, will create a link to the page of the predicate (if that page exists).
-
-If you use
-
-```
-\functor{x}{2}
-```
-
-no links are created.
-
-There is no notation for "dict functions". Should be fixed.
-
-### Special prolog flag link
-
-```
-\prologflag{occurs_check}
-```
-
-### Predicate argument
-
-Italicized in the text
-
-```
-\arg{x}
-```
 
 
-### Jargon
 
-```
-\jargon{ground}
-```
 
-The text is italicized. No references to a glossary are inserted (that's ok, it would overload the text, 
-but there should be a construct for that: `\glossaryjargon{}`)
-
-### A not very beautiful list of "term items"
-
-```
-\begin{description} 
-\termitem{x}{y} 
-\end{description}
-```
-
-### Itemoization
-
-```
-    \begin{itemize}
-
-    \item source_file/2 describes the owner relation.
-    \item predicate_property/2 describes the source location (of the
-          first clause).
-    \item clause_property/2 provides access to both source and ownership.
-    \item source_file_property/2 can be used to query include relationships
-          between files.
-    \end{itemize}
-```
-
-### A file
-
-```
-\file{SWI-Prolog.h}.
-```
-
-### Special symbols
+### Special symbols<a name="special_symbols" />
 
 ```
 \Scons{}   ---> rendered as [|]
@@ -442,6 +439,9 @@ but there should be a construct for that: `\glossaryjargon{}`)
 \Snot      ---> rendered as \+
 \Sne       ---> rendered as \= 
 ```
+
+Many more are listed in file `man/pl.sty` in the distribution.
+
 
 Jan says: 
 
@@ -457,7 +457,139 @@ After some reflection:
 - For the SWI-Prolog 7 symbol [], we use: \Snil{} without quotes rather than constant without quotes: \const{[]}
 - For [|] there is \Scons{} but it should be quoted, being an atom
 
-### Tables
+
+
+
+
+### Single characters<a name="single_characters" />
+
+```
+\chr{+}
+```
+
+Different semantics than `\const{}` I would say.
+
+
+
+
+### Verbatim quote<a name="verbatim_quote" />
+
+For code etc. The documentation uses the `$` marker:
+
+```
+\verb$:=$
+```
+
+Stack Overflow says:
+
+https://tex.stackexchange.com/questions/2790/when-should-one-use-verb-and-when-texttt
+
+> ... you use \verb where you need to write a small piece of inline verbatim material that contains characters
+> TeX treats (or rather, is currently treating) as special. `\texttt` is for when you just want typewriter font.
+
+
+
+
+
+### Example code<a name="example_code" />
+
+```
+\exam{findall(X, Goal, 1)}
+```
+
+
+
+
+### Footnote<a name="footnotes" />
+
+```
+\footnote{The ISO standard dictates that}
+```
+
+Stylistically, I feel the manual overdoes footnotes. A lot of footnotes belong right into the text.
+
+
+
+
+
+### Special "prolog flag" link<a name="prolog_flag_link" />
+
+```
+\prologflag{occurs_check}
+```
+
+
+
+
+### Jargon<a name="jargon" />
+
+```
+\jargon{ground}
+```
+
+The text is italicized. No references to a glossary are inserted (that's ok, it would overload the text, 
+but there should be a construct for that: `\glossaryjargon{}`)
+
+
+
+
+### A list of "descriptions"<a name="list_of_descriptions" />
+
+```
+begin{description}
+    \item [ A DCG literal ]  Although represented as ...
+\end{description}
+```
+
+
+
+
+### A list of "term items"<a name="list_of_term_items" />
+
+Not very beautiful though:
+
+
+```
+\begin{description} 
+\termitem{x}{y} 
+\end{description}
+```
+
+
+
+### A list of "items"<a name="list_of_items" />
+
+```
+\begin{itemize}
+
+\item source_file/2 describes the owner relation.
+\item predicate_property/2 describes the source location (of the
+     first clause).
+\item clause_property/2 provides access to both source and ownership.
+\item source_file_property/2 can be used to query include relationships
+     between files.
+\end{itemize}
+```
+
+
+
+### Align a list with a terminating line break<a name="align_list_with_terminating_line_break" />
+
+```
+++& Argument must be ... \\ 
+```
+
+
+
+### A file<a name="file" />
+
+```
+\file{SWI-Prolog.h}.
+```
+
+
+
+### Tables<a name="tables" />
 
 An example
 
@@ -479,30 +611,16 @@ Version~7 default & string & codes \\
 \end{table}
 ```
 
-## A list of descriptions
 
-The descriptions are written in bold
 
-```
-begin{description}
-    \item [ A DCG literal ]  Although represented as ...
-\end{description}
-```
 
-## Style notes
-
-Jan says:
-
-> Please do not build a story in code blocks using comments. Instead, use should code blocks and normal running text in 
-> between. That looks a lot better, notably in the PDF version where long code blocks causes poor page layout.
-
-## ASCII graphics
+### ASCII graphics<a name="ascii_graphics" />
 
 Yes, these are still a thing. At least they are stylistically uniform:
 
 A `[fontsize=\small]` suffix after `\begin{code}` is not recognized and written verbatim. There is some package missing for that.
 
-Also, you can only use ASCII, not Unicode. That's a catastrophe, because it also means code with unicode cannot be processed.
+You can only use ASCII, not Unicode. That's a catastrophe, because it also means code with unicode cannot be processed.
 
 ```none
 \begin{code}
@@ -522,33 +640,29 @@ Also, you can only use ASCII, not Unicode. That's a catastrophe, because it also
 \end{code}
 ```
 
-But better:
 
-https://stackoverflow.com/questions/3175105/inserting-code-in-this-latex-document-with-indentation
 
-https://ctan.org/texarchive/macros/latex/contrib/listings
 
-https://tex.stackexchange.com/questions/29816/algorithm-over-2-pages
+### Figures<a name="figures" />
 
-https://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings
-
-## Figures
+A figure around code:
 
 ```
 \begin{figure}
+
 \begin{code}
 ...
 \end{code}
+
     \caption{Reusing top-level bindings}
     \label{fig:topevelvars}
 \end{figure}
 ```
 
-## Problem with stuff floating around on pages
 
-It happens in the PDF that a figure floats on top of a multi-page code listing. BAD!
 
-## Referencing libraries
+
+### Referencing libraries<a name="referencing_libraries" />
 
 For example: 
 
@@ -557,13 +671,4 @@ pllib(error)
 ```
 
 is transformed into `library(error)`, but not linkified. 
-
-## Use the new example infrastructure
-
-It has its own git repository. Code is written in pldoc
-
-Jan says: 
-
-> In general I'd like to see more examples being moved to the new example infrastructure. The new infrastructure 
-> allows for more sophisticated display and search of examples.
 
