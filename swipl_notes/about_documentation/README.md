@@ -80,7 +80,7 @@ Do not put descriptions intto code blocks (ASCII graphics). Jan says:
 
 ## LaTeX style elements
   
-**See also: file [`man/pl.sty`](pl.sty) in the distribution.**
+**See also: file [`man/pl.sty`](https://github.com/SWI-Prolog/swipl-devel/blob/master/man/pl.sty) in the distribution.**
 
 - [Predicate banners (predicate descriptions) at the top of pages](predicate_banners)
 - [Line break or line fuse](line_break_or_fuse)
