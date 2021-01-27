@@ -2,8 +2,9 @@
 
 There are two documentation systems:
 
-- `pldoc` to document code directly in the source, similar to Doxygen, Javadoc etc. This is the same system used for the SWI-Prolog manual website
-   - [pldoc](https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/pldoc.html%27))
+- `pldoc` to document code directly in the source, similar to [Doxygen](https://en.wikipedia.org/wiki/Doxygen),
+   [Javadoc](https://en.wikipedia.org/wiki/Javadoc) etc. This is the same system used for the SWI-Prolog manual website
+   See the manual page on [pldoc](https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/pldoc.html%27)).
 - The manual documentation itself is based on LaTeX. The .doc files in the distribution are LaTeX.   
 
 There needs to be an example page in the manual.
@@ -22,6 +23,8 @@ There needs to be an example page in the manual.
 - The processor doesn't understand dashes like `\textemdash.`: https://tex.stackexchange.com/questions/53413/what-is-the-latex-command-for-em-dash  
 
 ## How to modify the doc.
+
+![editing process](pics/editing_process.png)
 
 - Fork SWI-Prolog repository to your github account (Fork A)
 - Clone that fork to your machine. Documentation is _edited_ there. (Clone A)
