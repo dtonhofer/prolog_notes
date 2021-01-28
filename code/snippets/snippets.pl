@@ -13,6 +13,7 @@
           ,integer_negative/1            % integer_negative(@X)
           ,dict_size/2                   % dict_size(+Dict,-Size)
           ,dict_functor_name/1           % dict_functor_name(+Blob)
+          ,dict_equality_sans_tag/2      % dict_equality_sans_tag(+Dict1,+Dict2)
           ]).
 
 :- use_module(library('heavycarbon/support/meta_helpers.pl')).
@@ -103,3 +104,18 @@ dict_size(Dict,Size) :-
 
 dict_functor_name(DFN) :- compound_name_arity(_{},DFN,_Arity).
    
+% ============================================================================
+% Equality of dicts (==) while disregarding differences in tags:
+% ============================================================================
+
+dict_equality_sans_tag(D1,D2) :-
+   ((var(D1);is_dict(D1)) -> true ; type_error("dict or var",D1)),
+   ((var(D2);is_dict(D2)) -> true ; type_error("dict or var",D2)),
+   (var(D1);var(D2))
+   -> false
+   ;
+   (assertion((is_dict(D1),is_dict(D2))),
+    dict_pairs(D1,_Tag1,Pairs1), % Pairs1 will be ordered by natural order of keys
+    dict_pairs(D2,_Tag2,Pairs2), % Pairs2 will be ordered by natural order of keys
+    Pairs1 == Pairs2).
+
