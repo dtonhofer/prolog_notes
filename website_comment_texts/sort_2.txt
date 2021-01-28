@@ -1,0 +1,153 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=sort/2
+
+## So many sort predicates!
+
+I have gone through the available "sort predicates" and assembled some unit test code as example. 
+
+Nothing complex (all terms are ground, too), just executable documentation:
+
+[`test_sort_predicates.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/various_code/test_sort_predicates.pl)
+
+This also shows how to assemble/disassemble a list of "Key-Value" pair terms that can be passed to keysort/2, for those who are unsure about how to do it.
+
+## For a more general predicate
+
+Use sort/4, which is a generalization of sort/2.
+
+## sort is somewhat problematic
+
+```
+sort([B,A,1], [2,3,1]).
+```
+
+This succeeds. 😱
+
+It means that the second arg (here completely ground and unsorted: `[2,3,1]`) is not necessarily sorted at all after a successful call. In this case it is not even undetermined whether it is sorted (because possibly not all elements are ground). It just isn't sorted. RAH!
+
+One had better call
+
+```
+sort(List, Sorted), sort(Sorted, Sorted) 
+```
+
+to make doubly sure before someone gets hurt.
+
+The problem may be that sort/2 follows some operationally defined semantics.
+
+Maybe like this: "sort the "In" list according to the [standard order of terms](https://eu.swi-prolog.org/pldoc/man?section=standardorder) (for unbound variables, this means "sorting by address" because there is no way to determine the "variable name", of which there may be many, that designates the unbound variables to be sorted), then unify with the `Out` list."
+
+These semantics do not cover what one would expect of sort/2. After a call to sort, the `Out` list should indeed be sorted if "ground" and if nonground, there should be constraints between the members regarding their future ordering that make any unification about to violate that ordering fail. (can that be implemented? I think so, we have attributed variables!) or else sort/2 should throw a fat exception when it can't take out this insurance on the future.
+
+In the ISO Standard of 1995, chapter 7.1.6.5 defines what the "sorted list of a list" is but there is no word on sort/2. It's probably in a later version.
+
+Here is an example from a discussion at Discourse ( https://swi-prolog.discourse.group/t/what-does-sort-2-do/2418 )
+
+```
+?- 
+sort([A,B], Sorted), A = 2, B = 1.
+```
+
+Then (among others):
+
+```
+Sorted = [2,1].
+```
+
+but with
+
+```
+?- 
+C = [B,A], sort([A,B], Sorted), A = 2, B = 1.
+```
+
+Then:
+
+```
+Sorted = [1,2].
+```
+
+`A` and `B` are unbound and get sorted "according to the standard order of terms". Which collapses to the order in which the variables appeared in source code ("were declared"). In the first case, this means `[A,B]` sorts to `[A,B]`, and in the second this means `[A,B]` sorts to `[B,A]`. The variables are then bound to actual integers with `A = 2, B = 1`, leading to the printed result.
+
+However, you can "delay the sort till the whole list is ground". This means the code has to be somehow written that it doesn't use the sorted list and continues doing something that will ground the list. That's up to developer .... 
+
+```
+?- 
+use_module(library(when)).
+
+?- 
+when(ground([A,B]), (format("Sorting!~n"),sort([A, B], Sorted))),
+format("~q~n",[[A,B]]),
+A = 2, B = 1.
+```
+
+Then:
+
+```
+[_125134,_123896]
+Sorting!
+A = 2,
+B = 1,
+Sorted = [1,2].
+```
+   
+Similarly:
+
+```
+?- 
+C=[B,A], when(ground([A,B]), (format("Sorting!~n"),sort([A, B], Sorted))),
+format("~q~n",[[A,B]]),
+A = 1, B = 2.
+```
+
+Then:
+
+```
+[_5108,_3666]
+Sorting!
+C = [2,1],
+B = 2,
+A = 1,
+Sorted = [1,2].
+```
+
+Better than earlier!
+
+**Another justification for the incomplete behaviour of sort/2:**
+
+sort/2 has mode `(+,-)`. This means the semantics of this is defined to be equal to this:
+
+```
+sort([A,B,C], Tmp), Tmp = [3,2,1])
+```
+
+`Tmp` is indeed sorted. 
+
+But I'm not happy, as this sidesteps the issue again by referring to an operational semantics.
+
+## A saner approach.
+
+SICStus Prolog CLP(FD) has something (via Jan Burse):
+
+```
+sorting(+Xs,+Ps,+Ys)
+
+where Xs = [X1,…,Xn], Ps = [P1,…,Pn], and Ys = [Y1,…,Yn] are lists of domain 
+variables. The constraint holds if the following are true:
+
+- Ys is in ascending order.
+- Ps is a permutation of 1…n.
+- for all i in 1…n : Xi = Y(Pi)
+
+In practice, the underlying algorithm [Mehlhorn 00] is likely to achieve bounds
+consistency, and is guaranteed to do so if Ps is ground or completely free.
+
+Corresponds to sort in MiniZinc.
+```
+
+https://sicstus.sics.se/sicstus/docs/latest4/html/sicstus.html/Arithmetic_002dLogical-Constraints.html
+
+## And also
+
+The description of "Natural Merge Sort":
+
+https://en.wikipedia.org/wiki/Merge_sort#Natural_merge_sort
