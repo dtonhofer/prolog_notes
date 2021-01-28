@@ -28,7 +28,7 @@ There are two documentation systems:
 - `pllib(library)` markup should linkify the result.
 - The PDF should have live links, as is done in papers.
 - The LaTeX `include{filename}` command doesn't work properly. Actually the filename is subject to macro expansion even when enclosed in `{}`, so predref's are appearing in the pathname if there is an underscore in the pathname etc. Jesus Christ!
-- OTOH, files are enormous, e.g. everything about "extensions" is in a single "extensions.doc", everything about builtins is in a single "builtins.doc". It might be profitable to cut up these files into a more manageable hierarchy of subfiles.. It's a matter of preference I guess. 
+- OTOH, files are enormous, e.g. everything about "extensions" is in a single "extensions.doc", everything about builtins is in a single "builtins.doc". It might be profitable to cut up these files into a more manageable hierarchy of subfiles. Currently the text is hard to navigate (a folding editor and folding markup in the TeX file might help). It's a matter of preference I guess. 
 
 **Maybe these should be exploited for ASCII graphics improvements**
 
