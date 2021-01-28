@@ -2,7 +2,10 @@
 
 This is companion information for the SWI-Prolog manual page [Dicts: structures with named arguments](https://eu.swi-prolog.org/pldoc/man?section=bidicts).
 
-Some time ago I prepared a revised version of the "dict" entry in the SWI-Prolog manula but it was ultimately not accepted. It's still here: [dict_manual_review](manual_review/dict_manual_review.pdf) (LaTeX and generated HTML are here: [manual_review](manual_review)).
+Some time ago I prepared a revised version of [Dicts: structures with named arguments](https://eu.swi-prolog.org/pldoc/man?section=bidicts) that I hope is easier to digest but it was ultimately not accepted. It's still here:
+
+   - [PDF](manual_review/dict_manual_review.pdf)
+   - [manual_review](LaTeX and generated HTML)
 
 ## What
 
