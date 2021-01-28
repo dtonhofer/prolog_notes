@@ -85,7 +85,7 @@ set -o nounset # No unset bash variables allowed
 perso_github_account=https://github.com/dtonhofer        # Probably want to change that!!
 swipl_github_account=https://github.com/SWI-Prolog       # Well-known and respected
 system_install_dir=/usr/local/logic                      # This looks like a good place to me
-toplevel_dir_fq="$HOME/Development/2021_01"              # Where to put stuff locally
+toplevel_dir_fq="$HOME/Development/2021_02"              # Where to put stuff locally
 
 giturl_and_subdir() {
    local finality=${1:-}                  # "jpl" or "docs" or "system"
@@ -313,11 +313,12 @@ clone() {
       exit 1
    }
 
-   # In case this is about documentation, create a symlink to the file describing builtins
+   # In case this is about documentation, create symlinks to certain files
 
    if [[ "${finality},${element}" == docs,forked ]]; then
       if [[ ! -e builtin.doc ]]; then
          ln -s "${element_dir}/man/builtin.doc" "builtin.doc"
+         ln -s "${element_dir}/man/overview.doc" "overview.doc"
          # Add more here
       fi
    fi
@@ -568,6 +569,7 @@ build() {
    # As we are currently in the distro directory, configure & compile in here!
 
    local build_dir="build"
+   local build_dir_fq="$(pwd)/build"  # for later, to find it back easily
 
    if [[ -d $build_dir ]]; then
       if [[ $rebuild != rebuild ]]; then
@@ -735,9 +737,58 @@ build() {
          echo "There is no CMake logfile '$(pwd)/$cmake_logfile' ... weird!"
       fi
    done
+ 
+   # back to the directory immediately above the repodir
 
    popd >/dev/null || exit 1
 
+   # if this is about documentation, create certain symlinks (TODO: move out to a separate command)
+
+   if [[ "${finality}" == docs ]]; then
+      create_symlinks_to_built_docs "$(pwd)" "$install_dir_fq" "$build_dir_fq" "$version"
+   fi
+
+}
+
+# ===========================================================================
+# Set up symlinks to built documentation (in the install dir, except for
+# the manual's PDF, which is in the build dir)
+# ===========================================================================
+
+create_symlinks_to_built_docs() {
+   local where=${1}           # the directory above the repodir
+   local install_dir_fq=${2}  # the fully qualified install dir (TODO: relativize relative to "where")
+   local build_dir_fq=${3}    # the fully qualified build dir (TODO: relativize relative to "where")
+   local version=${4}         # the version string; needed to find the manual's PDF
+   pushd "$where" || {
+      echo "Could not cd to '$where' -- exiting" >&2 
+      exit 1
+   }
+   if [[ -s builtin.html ]]; then
+      /bin/rm builtin.html
+   fi
+   if [[ -s overview.html ]]; then
+      /bin/rm overview.html
+   fi
+   if [[ -s manual.pdf ]]; then
+      /bin/rm manual.pdf
+   fi
+   create_symlink_or_skip "${install_dir_fq}/lib/swipl/doc/Manual/overview.html" "overview.html"
+   create_symlink_or_skip "${install_dir_fq}/lib/swipl/doc/Manual/builtin.html"  "builtin.html"
+   # manual PDF only exists if PDF has been requested
+   create_symlink_or_skip "${build_dir_fq}/man/SWI-Prolog-${version}.pdf"        "manual.pdf"
+}
+
+create_symlink_or_skip() {
+   local target=${1}
+   local name=${2}
+   if [[ -f $target ]]; then
+      ln -s "$target" "$name" || {
+         echo "Could not create symlink to '$target' in '$(pwd)'" >&2
+      }
+   else
+      echo "File '$target' does not exist -- skipping symlink creation in '$(pwd)'" >&2
+   fi
 }
 
 # ===========================================================================
@@ -879,6 +930,8 @@ dirchange_prepare() {
       copy,docs,)
          ;;
       *)
+         # TODO: This error message is extremely confusing. The only way out is to display --help...
+         # "Unknown action,finality,element code 'clone,,forked' in 'clone' -- exiting!"
          echo "Unknown action,finality,element code '$action_full,$finality,$element' in '$caller' -- exiting!" >&2
          exit 1
    esac
