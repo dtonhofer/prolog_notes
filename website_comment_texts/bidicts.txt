@@ -1,28 +1,105 @@
 https://eu.swi-prolog.org/pldoc/man?section=bidicts
 
+## What's missing
+
+**1**
+
+A predicate that gives the size of a dict without having to decompose it into pairs. Currently this works (but only because we now that the dict is a compound):
+
+```
+dict_size(Dict,Size) :-
+   assertion(is_dict(Dict)),
+   assertion(var(Size);integer(Size)),
+   compound_name_arity(Dict,_,Arity),
+   Size is (Arity-1)//2.
+```
+
+**2**
+
+A prettyprinter. If the values hold on one line: [`prettyprint_dict.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/code/snippets/prettyprint_dict.pl)
+
+**3**
+
+Performing "dict equality" while disregarding the tag, as in this [test code](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_dicts/code/dict_equality_testing.pl)
+
 ## Some additional documentation
 
-Notes I took: 
+Notes I took. Includes plunit test code to exercise dict functionality: [**About Dicts**](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_dicts/README.md)
 
-[**About Dicts**](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_dicts/README.md)
+## Use dicts as arrays
+
+Yes you can. After all, these are just maps keyed by integer values.
+
+For example:
+
+```
+?- 
+Dict = data{0:a, 1:b, 2:c, 3:d, 4:e}, forall(between(0,4,Key),(Value=Dict.get(Key),format("~q",[Value]))).
+abcde
+Dict = data{0:a,1:b,2:c,3:d,4:e}.
+
+?- 
+Dict = data{0:a, 1:b, 2:c, 3:d, 4:e}, forall(get_dict(Key,Dict,Value),format("~q",[Value])).
+abcde
+Dict = data{0:a,1:b,2:c,3:d,4:e}.
+```
+
+## Quick predicate list
+
+   - Type testing
+      - is_dict/1 
+      - is_dict/2
+   - Getting values by key (or enumerating them on backtracking)
+      - get_dict/3 : Same as .get/1 dot-call but fails if key does not exist.
+      - get_dict/5 : Combined get/put, should really be called fork_dict/5 or mint_dict/5.
+   - Extracting keys into a list (from library(dicts)):
+      - dict_keys/2 : True when Keys is an ordered set of the keys appearing in Dict.
+   - Assembling/disassembling dicts ([test code](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_dicts/code/dict_assembly_disassembly_testing.pl))
+      - dict_create/3 : Assemble a dict from a tag and "several possible forms of list".
+      - dict_pairs/3 : Assemble/disassemble a dict from/to a tag and a key-value list.
+   - Minting new dicts from existing ones   
+      - put_dict/3 : Mint a dict from "several possible forms of list" ; the predicate counterpart of `.put/1`
+      - put_dict/4 : Mint a dict from an existing dict with single addition/replacement, where one can specify a path through nested dicts; the predicate counterpart of `.put/2`
+      - del_dict/4 : Mint a dict from an existing dict with single deletion.
+   - Selecting/Projecting one dict onto another
+      - :</2: "Selection operator" (I would really prefer "projection operator"): Project the right-hand dict onto the left-hand dict, unifying the values of common keys (thus either failing or continuing with possibly both dicts involved in the operation further refined). Fails if the left-hand dict has a key that is not in the right-hand dict. [test code](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_dicts/code/dict_selection_testing.pl)
+      - select_dict/3: Similar to the "selection operator", but also retains the Rest: those Key-Value pairs only present in the right-hand dict.
+      - >:</2: "Symmetric selection operator" or "partial unification" (vague) (I prefer "Symmetric projection operator"): Unify the values of common keys, ignoring any other keys, thus either failing or continuing with possibly both dicts involved in the operation further refined.
+    - Joining (Merging) dicts on a given key
+        dicts_join/3: Join dicts in one input list of dicts into a single dict by value of
+        dicts_join/4: Join dicts in two input lists of dicts into new dicts by key
 
 ## Do not forget to look at
 
-   - [`library(dicts)`](https://www.swi-prolog.org/pldoc/man?section=dicts): Dict utilities
-   - [Dict integration](https://www.swi-prolog.org/pldoc/man?section=ext-integration)
+   - [`library(dicts)`](https://www.swi-prolog.org/pldoc/man?section=dicts): "It "defines utilities that operate on lists of dicts, 
+     notably to make lists of dicts consistent by adding missing keys, converting between lists of compounds and lists of dicts,
+     joining and slicing lists of dicts". It provides these predicates:
+      - dicts_same_tag/2 - True when List is a list of dicts that all have the tag Tag.
+      - dict_keys/2 - True when Keys is an ordered set of the keys appearing in Dict.
+      - dicts_same_keys/2 - True if List is a list of dicts that all have the same keys and Keys is an ordered set of these keys.
+      - dicts_to_same_keys/3 - DictsOut is a copy of DictsIn, where each dict contains all keys appearing in all dicts of DictsIn. 
+      - dict_fill/4 - Implementation for the dicts_to_same_keys/3 OnEmpty closure
+      - dicts_join/3 - Join dicts in Dicts that have the same value for Key
+      - dicts_join/4 - Join two lists of dicts (Dicts1 and Dicts2) on Key
+      - dicts_slice/3 - DictsOut is a list of Dicts only containing values for Keys.
+      - dicts_to_compounds/4
 
 ## Related implementations
 
-The alternative (not using language built-ins) is `library(assoc)`. It creates maps by providing an AVL tree implementation (based on adequately structured terms, the same way as lists are based on adequately structured terms):
+See [When to use dicts?](https://eu.swi-prolog.org/pldoc/man?section=ext-dicts-usage)
+
+Dicts is more integrated than the alternatives below. But you may want to take a look:
+
+`library(assoc)` creates maps by providing an [AVL tree implementation](https://en.wikipedia.org/wiki/AVL_tree) (based on adequately structured terms, the same way as lists are based on adequately structured terms). Venerable, but the interface looks clunky:
 
    - [`library(assoc)`](https://eu.swi-prolog.org/pldoc/man?section=assoc)
 
-If one looks at maps as records with named fields, a (maybe fallen into disuse?) alternative implementation is 
+Instead of AVL trees, [Red-Black trees](https://en.wikipedia.org/wiki/Red%E2%80%93black_tree):
+
+   - [`library(rbtrees)`](https://eu.swi-prolog.org/pldoc/doc/_SWI_/library/rbtrees.pl)
+
+If one looks at maps as "records with named fields", a (maybe fallen into disuse?) alternative implementation is 
 
    - [`library(record)`](https://eu.swi-prolog.org/pldoc/man?section=record)
 
-## Simple code to prettyprint a dict
 
-If the values hold on one line...
-
-[`prettyprint_dict.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/code/snippets/prettyprint_dict.pl)
