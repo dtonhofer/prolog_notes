@@ -4,7 +4,7 @@ This is companion information for the SWI-Prolog manual page [Dicts: structures 
 
 ## What
 
-_Dicts_ are an SWI-Prolog-specific extension (at least for now, maybe they will find a way into the ISO standard one day).
+_Dicts_ are an SWI-Prolog-specific extension 
 
 They are the SWI-Prolog equivalent of "maps", "hashes", "hashmap", "dictionaries" or "association lists" in other programming languages.
 The idea is to associate a (possibly complex or recursive) _value_ to a _key_ inside a _container_. 
@@ -19,39 +19,53 @@ a _tag_ and 0..N _key-value pairs_ where the keys are unique and must be an atom
 very large integer).
 
 The tag should be an atomic type (generally an atom) or an unbound variable ("anonymous dict"). 
-You actually _can_ use any term whatsover as tag, even the dict itself, but this is an implementation artifact; 
-do not go overboard here!
+You actually _can_ use any term whatsover as tag, even the dict itself, but this is an implementation artifact.
 
-The dict is essentially an immutable data structure. Using the dict in Prolog can be done by having dicts
-with initially unbound variables as values that are refined as computation progresses ("logic programming style")
-or by constructing new dicts from existing dicts whenever needed by adding, removing or changing entries. The
-ever-regenerated dict is then be passed between the predicate activations ("functional programming style/accumulator style").
+The dict is essentially an immutable data structure. You use dicts in the following way in Prolog:
 
-### See also
+- Logic programming style: Start with a dict with a fixed number of keys, where the values are uninstantiated
+  or just partially instantiated. The values are refined as computation progresses, eventually becoming ground.
+- Functional programming style/accumulator style: Construct (mint?) new dicts from existing dicts whenever needed by adding, removing or
+  changing dict entries. The ever-regenerated dict is weaved in and out of predicate calls.
 
-For an alternative using a library (as opposed to a language built-in), take a look at:
+Dicts can be easily used as (immutable) random-access arrays (possibly with missing keys) if you use integer keys.
 
-[`library(assoc)`: Association lists](https://eu.swi-prolog.org/pldoc/man?section=assoc)
+Example of using a dict as array:
 
-### Helper library
+```
+?- 
+Dict = data{0:a, 1:b, 2:c, 3:d, 4:e}, forall(between(0,4,Key),(Value=Dict.get(Key),format("~q",[Value]))).
+abcde
+Dict = data{0:a,1:b,2:c,3:d,4:e}.
 
-There is an additional helper library:
+?- 
+Dict = data{0:a, 1:b, 2:c, 3:d, 4:e}, forall(get_dict(Key,Dict,Value),format("~q",[Value])).
+abcde
+Dict = data{0:a,1:b,2:c,3:d,4:e}.
+```
 
-[`library(dicts)`](https://eu.swi-prolog.org/pldoc/man?section=dicts).
+## Large dicts? Why not!
 
-It "defines utilities that operate on lists of dicts, notably to make lists of dicts consistent by adding missing keys,
-converting between lists of compounds and lists of dicts, joining and slicing lists of dicts".
+Dicts can be LARGE and lookup performance is very good.
 
-(A pretty printer seems to be missing in that library. TODO!).
+Here is some performance-exercising code:
 
-## Assembly/Disassembly
+[`dictperftest.pl`](/blob/master/code/perf/dictperftest.pl)
 
-To provide some examples, here is some [`plunit`](https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/plunit.html%27))
-test code to assemble/disassemble a dict: 
+Building a dict of **50'000 entries** and performing **500'000 lookups** on it is fast.
 
-[`dict_assembly_disassembly_testing.pl`](code/dict_assembly_disassembly_testing.pl)
+We are getting 1'000'000 lookups/s on a Linux machine for which:
 
-As usual, one can run it with `run_tests.` once loaded.
+   - `cat /proc/cpuinfo` reports: `Intel(R) Xeon(R) CPU W3520  @ 2.67GHz` and
+   - `free -h` reports 23GiB free
+
+```
+?- using_dict(50_000,500_000,builtin,dict,verbose).
+...
+Looking up 500000 entries in a dict of size 50000 (storing the result)
+% 2,709,105 inferences, 0.474 CPU in 0.476 seconds (100% CPU, 5719981 Lips)
+Performed 1050336 lookup/s (delta = 0.476038 s)
+```
 
 ## Comparison and unification
 
@@ -59,10 +73,10 @@ When comparing two dicts, you can use:
 
    - `==`, then the tags must pass `==`, the key sets must be equal and all the key-value pairs must pass `==`
    - `=`,  then the tags must unify, the key sets must be equal and the values must unify for each key
-     (at least that's the current approach).
-     Unification being well defined, dicts can appear in clause heads in particular.
+     (at least that's the current approach). Unification of dicts being thus well-defined, dicts can appear
+     in clause heads.
 
-There should be a way to perform `==` while disregarding the tag. There is not, but you can use this:
+There should be a way to perform `==` while disregarding the tag. There is not, but you can use the following:
 
 ```none
 dict_equality_sans_tag(D1,D2) :-
@@ -76,10 +90,14 @@ dict_equality_sans_tag(D1,D2) :-
     Pairs1 == Pairs2).
 ```
 
-Some [`plunit`](https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/plunit.html%27)) unit tests:
+Some [`plunit`](https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/plunit.html%27)) unit tests to exercise functionality:
 
-- [`dict_equality_testing.pl`](code/dict_equality_testing.pl) (uses `dict_equality_sans_tag/2`)
-- [`dict_unification_testing.pl`](code/dict_equality_testing.pl)
+- [`dict_getting_testing.pl'](code/dict_getting_testing.pl)
+- [`dict_unification_testing.pl'](code/dict_unification_testing.pl)
+- [`dict_assembly_disassembly_testing.pl'](code/dict_assembly_disassembly_testing.pl)
+- [`dict_put_dotcall_testing.pl'](code/dict_put_dotcall_testing.pl)
+- [`dict_equality_testing.pl'](code/dict_equality_testing.pl)
+- [`dict_selection_testing.pl'](code/dict_selection_testing.pl)
 
 ## dot-calls involving dicts
 
@@ -166,17 +184,24 @@ false.
 
 ## Predicate calls involving dicts
 
+- Type testing
    - [`is_dict/1`](https://eu.swi-prolog.org/pldoc/man?predicate=is_dict/1), 
      [`is_dict/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=is_dict/2) : Check for dicty-ness, possibly unifying tag, too.
+- Getting values by key (or enumerating them on backtracking)     
    - [`get_dict/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=get_dict/3) : Same as `.get/1`  dot-call but fails if key does not exist.
    - [`get_dict/5`](https://eu.swi-prolog.org/pldoc/doc_for?object=get_dict/5) : Combined get/put, should really be called **fork_dict/5**. 
+- Extracting keys into a list (from `library(dicts)`):
+   - [`dict_keys/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=dict_keys/2) : True when Keys is an ordered set of the keys appearing in Dict.
+- Assembling/disassembling dicts   
    - [`dict_create/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=dict_create/3) : Assemble a dict from a tag and "several possible forms of list".
    - [`dict_pairs/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=dict_pairs/3) : Assemble/disassemble a dict from/to a tag and a key-value list.
+- Minting new dicts from existing ones   
    - [`put_dict/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=put_dict/3) : Update a dict to a new dict from "several possible forms of
      list"  ; the predicate counterpart of `.put/1`
    - [`put_dict/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=put_dict/4) : Update a dict to a new dict with single addition/replacement,
      where one can specify a path through nested dicts; the predicate counterpart of `.put/2`
    - [`del_dict/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=del_dict/4): Update a dict to a new dict with single deletion.
+- Projecting one dict onto another   
    - [`:</2`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3A%3C)/2): "Selection operator" (I would really prefer
      "projection operator"): Project the right-hand dict onto the left-hand dict, unifying the values of common keys (thus either failing
      or continuing with possibly both dicts involved in the operation further refined). Fails if the left-hand dict has a key that is not in
@@ -186,6 +211,27 @@ false.
    - [`>:</2`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3E%3A%3C)/2): "Symmetric selection operator" or "partial unification" (vague)
      (I prefer "Symmetric projection operator"): Unify the values of common keys, ignoring any other keys, thus either failing or
      continuing with possibly both dicts involved in the operation further refined.
+- Joining (Merging) dicts on a given key
+   - [`dicts_join/3`](https://www.swi-prolog.org/pldoc/doc_for?object=dicts_join/3): Join dicts in one input list of dicts into a single
+     dict by value of 
+   - [`dicts_join/4`](https://www.swi-prolog.org/pldoc/doc_for?object=dicts_join/4): Join dicts in two input lists of dicts into new dicts by key
+
+There is also [`library(dicts)`](https://www.swi-prolog.org/pldoc/man?section=dicts) which 
+
+> defines utilities that operate on lists of dicts, notably to make lists of dicts consistent by adding missing keys, 
+> converting between lists of compounds and lists of dicts, joining and slicing lists of dicts
+
+- [`dicts_same_tag/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=dicts_same_tag/2)
+- [`dict_keys/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=dict_keys/2)
+- [`dicts_same_keys/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=dicts_same_keys/2)
+- [`dicts_to_same_keys/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=dicts_to_same_keys/3)
+- [`dict_fill/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=dict_fill/4)
+- [`dicts_join/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=dicts_join/3)
+- [`dicts_join/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=dicts_join/4)
+- [`dicts_slice/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=dicts_slice/3)
+- [`dicts_to_compounds/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=dicts_to_compounds/4)
+
+See also [Dict integration](https://www.swi-prolog.org/pldoc/man?section=ext-integration)
 
 ## Destructive assignment in dicts
 
