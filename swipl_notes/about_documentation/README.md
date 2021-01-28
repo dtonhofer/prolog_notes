@@ -27,7 +27,7 @@ There are two documentation systems:
 - ASCII graphics don't take unicode characters (the TeX processor barfs). This is literally hell!
 - `pllib(library)` markup should linkify the result.
 - The PDF should have live links, as is done in papers.
-- The LaTeX `ibnclude` command doesn't work properly. Actually the filename is subject to macro expansion even when enclosed in `{}`, so predref's are appearing in the pathname etc. Jesus Christ!
+- The LaTeX `include{filename}` command doesn't work properly. Actually the filename is subject to macro expansion even when enclosed in `{}`, so predref's are appearing in the pathname if there is an underscore in the pathname etc. Jesus Christ!
 
 **Maybe these should be exploited for ASCII graphics improvements**
 
