@@ -1,0 +1,337 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+<head>
+<title>SWI-Prolog 8.3.18 Reference Manual</title><link rel="home" href="index.html">
+<link rel="contents" href="Contents.html">
+<link rel="index" href="DocIndex.html">
+<link rel="summary" href="summary.html">
+<link rel="previous" href="miscpreds.html">
+<link rel="next" href="ext-lists.html">
+
+<style type="text/css">
+
+/* Style sheet for SWI-Prolog latex2html
+*/
+
+dd.defbody
+{ margin-bottom: 1em;
+}
+
+dt.pubdef, dt.multidef
+{ color: #fff;
+padding: 2px 10px 0px 10px;
+margin-bottom: 5px;
+font-size: 18px;
+vertical-align: middle;
+overflow: hidden;
+}
+
+dt.pubdef { background-color: #0c3d6e; }
+dt.multidef { background-color: #ef9439; }
+
+.bib dd
+{ margin-bottom: 1em;
+}
+
+.bib dt
+{ float: left;
+margin-right: 1.3ex;
+}
+
+pre.code
+{ margin-left: 1.5em;
+margin-right: 1.5em;
+border: 1px dotted;
+padding-top: 5px;
+padding-left: 5px;
+padding-bottom: 5px;
+background-color: #f8f8f8;
+}
+
+div.navigate
+{ text-align: center;
+background-color: #f0f0f0;
+border: 1px dotted;
+padding: 5px;
+}
+
+div.title
+{ text-align: center;
+padding-bottom: 1em;
+font-size: 200%;
+font-weight: bold;
+}
+
+div.author
+{ text-align: center;
+font-style: italic;
+}
+
+div.abstract
+{ margin-top: 2em;
+background-color: #f0f0f0;
+border: 1px dotted;
+padding: 5px;
+margin-left: 10%; margin-right:10%;
+}
+
+div.abstract-title
+{ text-align: center;
+padding: 5px;
+font-size: 120%;
+font-weight: bold;
+}
+
+div.toc-h1
+{ font-size: 200%;
+font-weight: bold;
+}
+
+div.toc-h2
+{ font-size: 120%;
+font-weight: bold;
+margin-left: 2em;
+}
+
+div.toc-h3
+{ font-size: 100%;
+font-weight: bold;
+margin-left: 4em;
+}
+
+div.toc-h4
+{ font-size: 100%;
+margin-left: 6em;
+}
+
+span.sec-nr
+{
+}
+
+span.sec-title
+{
+}
+
+span.pred-ext
+{ font-weight: bold;
+}
+
+span.pred-tag
+{ float: right;
+padding-top: 0.2em;
+font-size: 80%;
+font-style: italic;
+color: #fff;
+}
+
+div.caption
+{ width: 80%;
+margin: auto;
+text-align:center;
+}
+
+/* Footnotes */
+.fn {
+color: red;
+font-size: 70%;
+}
+
+.fn-text, .fnp {
+position: absolute;
+top: auto;
+left: 10%;
+border: 1px solid #000;
+box-shadow: 5px 5px 5px #888;
+display: none;
+background: #fff;
+color: #000;
+margin-top: 25px;
+padding: 8px 12px;
+font-size: larger;
+}
+
+sup:hover span.fn-text
+{ display: block;
+}
+
+/* Lists */
+
+dl.latex
+{ margin-top: 1ex;
+margin-bottom: 0.5ex;
+}
+
+dl.latex dl.latex dd.defbody
+{ margin-bottom: 0.5ex;
+}
+
+/* PlDoc Tags */
+
+dl.tags
+{ font-size: 90%;
+margin-left: 5ex;
+margin-top: 1ex;
+margin-bottom: 0.5ex;
+}
+
+dl.tags dt
+{ margin-left: 0pt;
+font-weight: bold;
+}
+
+dl.tags dd
+{ margin-left: 3ex;
+}
+
+td.param
+{ font-style: italic;
+font-weight: bold;
+}
+
+/* Index */
+
+dt.index-sep
+{ font-weight: bold;
+font-size: +1;
+margin-top: 1ex;
+}
+
+/* Tables */
+
+table.center
+{ margin: auto;
+}
+
+table.latex
+{ border-collapse:collapse;
+}
+
+table.latex tr
+{ vertical-align: text-top;
+}
+
+table.latex td,th
+{ padding: 2px 1em;
+}
+
+table.latex tr.hline td,th
+{ border-top: 1px solid black;
+}
+
+table.frame-box
+{ border: 2px solid black;
+}
+
+</style>
+</head>
+<body style="background:white">
+<div class="navigate"><a class="nav" href="index.html"><img src="home.gif" alt="Home"></a>
+<a class="nav" href="Contents.html"><img src="index.gif" alt="Contents"></a>
+<a class="nav" href="DocIndex.html"><img src="yellow_pages.gif" alt="Index"></a>
+<a class="nav" href="summary.html"><img src="info.gif" alt="Summary"></a>
+<a class="nav" href="miscpreds.html"><img src="prev.gif" alt="Previous"></a>
+<a class="nav" href="ext-lists.html"><img src="next.gif" alt="Next"></a>
+</div>
+<h1 id="sec:extensions"><a id="sec:5"><span class="sec-nr">5</span> <span class="sec-title">SWI-Prolog 
+extensions</span></a></h1>
+
+<a id="sec:extensions"></a>
+
+<p>This chapter describes extensions to the Prolog language introduced 
+with SWI-Prolog version&nbsp;7 in 2014. The changes bring more modern 
+syntactical conventions to Prolog such as key-value maps, called <em>dicts</em>, 
+as primary citizens and a restricted form of <em>functional notation</em>. 
+They also extend Prolog basic types with strings, providing a natural 
+notation to textual material as opposed to identifiers (atoms) and 
+lists.
+
+<p>These extensions make the syntax more intuitive to new users, 
+simplify the integration of domain specific languages (DSLs) and 
+facilitate a more natural Prolog representation for popular exchange 
+languages such as XML and JSON.
+
+<p>While many programs run unmodified in SWI-Prolog version&nbsp;7, some 
+require modifications, especially those that pass double quoted strings 
+to general purpose list processing predicates. See <a class="sec" href="string.html#sec:5.2.4">section 
+5.2.4</a> and <a class="sec" href="string.html#sec:5.2.5">section 5.2.5</a> 
+for information and tools on porting. We provide a tool (<a id="idx:liststrings0:1771"></a><a class="pred" href="string.html#list_strings/0">list_strings/0</a>) 
+that we used to port a huge code base in half a day.
+
+<p>
+<hr>
+<div style="text-align:center">
+
+<h2>Section Index</h2>
+
+</div>
+<hr>
+<div class="toc">
+<div class="toc-h2"><a class="sec" href="ext-lists.html"><span class="sec-nr">5.1</span> <span class="sec-title">Lists 
+are special</span></a></div>
+<div class="toc-h3"><a class="sec" href="ext-lists.html#sec:5.1.1"><span class="sec-nr">5.1.1</span> <span class="sec-title">Motivating&lsquo;<code>[|]</code>&rsquo;and <code>[]</code> 
+for lists</span></a></div>
+<div class="toc-h2"><a class="sec" href="string.html"><span class="sec-nr">5.2</span> <span class="sec-title">The 
+string type and its double quoted syntax</span></a></div>
+<div class="toc-h3"><a class="sec" href="string.html#sec:5.2.1"><span class="sec-nr">5.2.1</span> <span class="sec-title">Representing 
+text: strings, atoms and code lists</span></a></div>
+<div class="toc-h3"><a class="sec" href="string.html#sec:5.2.2"><span class="sec-nr">5.2.2</span> <span class="sec-title">Predicates 
+that operate on strings</span></a></div>
+<div class="toc-h3"><a class="sec" href="string.html#sec:5.2.3"><span class="sec-nr">5.2.3</span> <span class="sec-title">Why 
+has the representation of double quoted text changed?</span></a></div>
+<div class="toc-h3"><a class="sec" href="string.html#sec:5.2.4"><span class="sec-nr">5.2.4</span> <span class="sec-title">Adapting 
+code for double quoted strings</span></a></div>
+<div class="toc-h3"><a class="sec" href="string.html#sec:5.2.5"><span class="sec-nr">5.2.5</span> <span class="sec-title">Predicates 
+to support adapting code for double quoted strings</span></a></div>
+<div class="toc-h2"><a class="sec" href="ext-syntax.html"><span class="sec-nr">5.3</span> <span class="sec-title">Syntax 
+changes since SWI-Prolog&nbsp;7</span></a></div>
+<div class="toc-h3"><a class="sec" href="ext-syntax.html#sec:5.3.1"><span class="sec-nr">5.3.1</span> <span class="sec-title">Operators 
+and quoted atoms</span></a></div>
+<div class="toc-h3"><a class="sec" href="ext-syntax.html#sec:5.3.2"><span class="sec-nr">5.3.2</span> <span class="sec-title">Compound 
+terms with zero arguments</span></a></div>
+<div class="toc-h3"><a class="sec" href="ext-syntax.html#sec:5.3.3"><span class="sec-nr">5.3.3</span> <span class="sec-title">Block 
+operators</span></a></div>
+<div class="toc-h2"><a class="sec" href="bidicts.html"><span class="sec-nr">5.4</span> <span class="sec-title">Dicts: 
+structures with named arguments</span></a></div>
+<div class="toc-h3"><a class="sec" href="bidicts.html#sec:5.4.1"><span class="sec-nr">5.4.1</span> <span class="sec-title">Growing 
+and shrinking dicts</span></a></div>
+<div class="toc-h3"><a class="sec" href="bidicts.html#sec:5.4.2"><span class="sec-nr">5.4.2</span> <span class="sec-title">Functions 
+on dicts</span></a></div>
+<div class="toc-h4"><a class="sec" href="bidicts.html#sec:5.4.2.1"><span class="sec-nr">5.4.2.1</span> <span class="sec-title">General 
+approach</span></a></div>
+<div class="toc-h4"><a class="sec" href="bidicts.html#sec:5.4.2.2"><span class="sec-nr">5.4.2.2</span> <span class="sec-title">Value 
+selection using ./2</span></a></div>
+<div class="toc-h4"><a class="sec" href="bidicts.html#sec:5.4.2.3"><span class="sec-nr">5.4.2.3</span> <span class="sec-title">User-defined 
+functions on dicts</span></a></div>
+<div class="toc-h4"><a class="sec" href="bidicts.html#sec:5.4.2.4"><span class="sec-nr">5.4.2.4</span> <span class="sec-title">Predefined 
+functions on dicts</span></a></div>
+<div class="toc-h4"><a class="sec" href="bidicts.html#sec:5.4.2.5"><span class="sec-nr">5.4.2.5</span> <span class="sec-title">Dict 
+functions calls in a clause head</span></a></div>
+<div class="toc-h4"><a class="sec" href="bidicts.html#sec:5.4.2.6"><span class="sec-nr">5.4.2.6</span> <span class="sec-title">Expression 
+containing ./2 are evaluated eagerly as dict function calls</span></a></div>
+<div class="toc-h3"><a class="sec" href="bidicts.html#sec:5.4.3"><span class="sec-nr">5.4.3</span> <span class="sec-title">Predicates 
+for managing dicts</span></a></div>
+<div class="toc-h4"><a class="sec" href="bidicts.html#sec:5.4.3.1"><span class="sec-nr">5.4.3.1</span> <span class="sec-title">Destructive 
+assignment in dicts</span></a></div>
+<div class="toc-h3"><a class="sec" href="bidicts.html#sec:5.4.4"><span class="sec-nr">5.4.4</span> <span class="sec-title">When 
+to use dicts?</span></a></div>
+<div class="toc-h3"><a class="sec" href="bidicts.html#sec:5.4.5"><span class="sec-nr">5.4.5</span> <span class="sec-title">A 
+motivation for dicts as primary citizens</span></a></div>
+<div class="toc-h3"><a class="sec" href="bidicts.html#sec:5.4.6"><span class="sec-nr">5.4.6</span> <span class="sec-title">Implementation 
+notes about dicts</span></a></div>
+<div class="toc-h2"><a class="sec" href="ext-integration.html"><span class="sec-nr">5.5</span> <span class="sec-title">Integration 
+of strings and dicts in the libraries</span></a></div>
+<div class="toc-h3"><a class="sec" href="ext-integration.html#sec:5.5.1"><span class="sec-nr">5.5.1</span> <span class="sec-title">Dicts 
+and option processing</span></a></div>
+<div class="toc-h3"><a class="sec" href="ext-integration.html#sec:5.5.2"><span class="sec-nr">5.5.2</span> <span class="sec-title">Dicts 
+in core data structures</span></a></div>
+<div class="toc-h3"><a class="sec" href="ext-integration.html#sec:5.5.3"><span class="sec-nr">5.5.3</span> <span class="sec-title">Dicts, 
+strings and XML</span></a></div>
+<div class="toc-h3"><a class="sec" href="ext-integration.html#sec:5.5.4"><span class="sec-nr">5.5.4</span> <span class="sec-title">Dicts, 
+strings and JSON</span></a></div>
+<div class="toc-h3"><a class="sec" href="ext-integration.html#sec:5.5.5"><span class="sec-nr">5.5.5</span> <span class="sec-title">Dicts, 
+strings and HTTP</span></a></div>
+<div class="toc-h2"><a class="sec" href="ext-issues.html"><span class="sec-nr">5.6</span> <span class="sec-title">Remaining 
+issues</span></a></div>
+</div>
+</body></html>
