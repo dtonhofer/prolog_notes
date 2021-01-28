@@ -92,12 +92,12 @@ dict_equality_sans_tag(D1,D2) :-
 
 Some [`plunit`](https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/plunit.html%27)) unit tests to exercise functionality:
 
-- [`dict_getting_testing.pl'](code/dict_getting_testing.pl)
-- [`dict_unification_testing.pl'](code/dict_unification_testing.pl)
-- [`dict_assembly_disassembly_testing.pl'](code/dict_assembly_disassembly_testing.pl)
-- [`dict_put_dotcall_testing.pl'](code/dict_put_dotcall_testing.pl)
-- [`dict_equality_testing.pl'](code/dict_equality_testing.pl)
-- [`dict_selection_testing.pl'](code/dict_selection_testing.pl)
+- [`dict_getting_testing.pl`](code/dict_getting_testing.pl)
+- [`dict_unification_testing.pl`](code/dict_unification_testing.pl)
+- [`dict_assembly_disassembly_testing.pl`](code/dict_assembly_disassembly_testing.pl)
+- [`dict_put_dotcall_testing.pl`](code/dict_put_dotcall_testing.pl)
+- [`dict_equality_testing.pl`](code/dict_equality_testing.pl)
+- [`dict_selection_testing.pl`](code/dict_selection_testing.pl)
 
 ## dot-calls involving dicts
 
