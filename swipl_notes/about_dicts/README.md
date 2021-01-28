@@ -196,11 +196,9 @@ false.
    - [`dict_create/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=dict_create/3) : Assemble a dict from a tag and "several possible forms of list".
    - [`dict_pairs/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=dict_pairs/3) : Assemble/disassemble a dict from/to a tag and a key-value list.
 - Minting new dicts from existing ones   
-   - [`put_dict/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=put_dict/3) : Update a dict to a new dict from "several possible forms of
-     list"  ; the predicate counterpart of `.put/1`
-   - [`put_dict/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=put_dict/4) : Update a dict to a new dict with single addition/replacement,
-     where one can specify a path through nested dicts; the predicate counterpart of `.put/2`
-   - [`del_dict/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=del_dict/4): Update a dict to a new dict with single deletion.
+   - [`put_dict/3`](https://eu.swi-prolog.org/pldoc/doc_for?object=put_dict/3) : Mint a dict from "several possible forms of list"  ; the predicate counterpart of `.put/1`
+   - [`put_dict/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=put_dict/4) : Mint a dict from an existing dict with single addition/replacement, where one can specify a path through nested dicts; the predicate counterpart of `.put/2`
+   - [`del_dict/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=del_dict/4): Mint a dict from an existing dict with single deletion.
 - Projecting one dict onto another   
    - [`:</2`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3A%3C)/2): "Selection operator" (I would really prefer
      "projection operator"): Project the right-hand dict onto the left-hand dict, unifying the values of common keys (thus either failing
@@ -211,10 +209,6 @@ false.
    - [`>:</2`](https://eu.swi-prolog.org/pldoc/doc_for?object=(%3E%3A%3C)/2): "Symmetric selection operator" or "partial unification" (vague)
      (I prefer "Symmetric projection operator"): Unify the values of common keys, ignoring any other keys, thus either failing or
      continuing with possibly both dicts involved in the operation further refined.
-- Joining (Merging) dicts on a given key
-   - [`dicts_join/3`](https://www.swi-prolog.org/pldoc/doc_for?object=dicts_join/3): Join dicts in one input list of dicts into a single
-     dict by value of 
-   - [`dicts_join/4`](https://www.swi-prolog.org/pldoc/doc_for?object=dicts_join/4): Join dicts in two input lists of dicts into new dicts by key
 
 There is also [`library(dicts)`](https://www.swi-prolog.org/pldoc/man?section=dicts) which 
 
