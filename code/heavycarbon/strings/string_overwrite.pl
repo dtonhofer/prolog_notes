@@ -1,20 +1,25 @@
 % ==============================================================================
-% Overwrite a string/atom "Lower" with another string/atom "Upper"
-% Character position 0 is the first character of "Lower".
-% The "Upper" string is placed at position "UpperPos", which may be negative
-% or beyond the end of "Lower". Any gap is filled with spaces.
+% Overwrite a string/atom "LowerText" with another string/atom "UpperText"
+%
+% Character position 0 is the first character of "LowerText".
+%
+% The "UpperText" is placed at position "UpperPos", which may be negative
+% or beyond the end of "LowerText". Any gap is filled with spaces.
+%
 % If "CutLeft" is "true", the any characters at positions less than 0 are cut,
+%
 % If "CutRight" is "true", the any characters at positions larger or equal than
-% the length of "Lower" are cut.
-% If "Want" is 'atom' you will get an atom.
-% If "Want" is 'string' you will get a string.
+% the length of "LowerText" are cut.
+%
+% If "Want" is 'atom' you will get an atom, if 'string' you will get a string.
 %
 % There are two version with the same functionality:
 %
-% One which does brute-force character-by-character processing and is slow but
-% easy to check.
+% overwrite_using_chars/7: Does brute-force character-by-character processing 
+% and is slow but easy to check.
 %
-% One which does run-of-character processing and is a bit hairy, but fast.
+% overwrite_using_runs/7: Does run-of-character processing and is a bit hairy,
+% but fast.
 % =============================================================================
 % Running the tests: There should be a file "string_overwrite.plt" nearby.
 % Then, if the root directory for "code" is on the library path:
@@ -28,13 +33,14 @@
 % "Zero-Clause BSD / Free Public License 1.0.0 (0BSD)"
 % https://opensource.org/licenses/0BSD
 % =============================================================================
-% Latest review: Tue 19 January 2021
+% 2021-01-19: Review
+% 2021-01-29: Changes in naming, review overwrite_intro_assertions/7
 % =============================================================================
 
 :- module(heavycarbon_strings_string_overwrite,
           [
-          overwrite_using_chars/7  % overwrite_using_chars(Lower,Upper,UpperPos,CutLeft,CutRight,Result,Want)
-         ,overwrite_using_runs/7   % overwrite_using_runs(Lower,Upper,UpperPos,CutLeft,CutRight,Result,Want)
+          overwrite_using_chars/7  % overwrite_using_chars(LowerText,UpperText,UpperPos,CutLeft,CutRight,Result,Want)
+         ,overwrite_using_runs/7   % overwrite_using_runs(LowerText,UpperText,UpperPos,CutLeft,CutRight,Result,Want)
           ]).
 
 :- use_module(library('heavycarbon/strings/stringy.pl')).
@@ -44,12 +50,13 @@
 % Using chars
 % ===
 
-overwrite_using_chars(Lower,Upper,UpperPos,CutLeft,CutRight,Result,Want) :-
-   overwrite_intro_assertions(Lower,Upper,UpperPos,CutLeft,CutRight,Result,Want),
-   stringy_chars(Lower,LowerChars,_),
-   stringy_chars(Upper,UpperChars,_),
-   stringy_length(Lower,LowerLen),
-   stringy_length(Upper,UpperLen),
+% EXPORTED
+overwrite_using_chars(LowerText,UpperText,UpperPos,CutLeft,CutRight,Result,Want) :-
+   overwrite_intro_assertions(LowerText,UpperText,UpperPos,CutLeft,CutRight,Result,Want),
+   stringy_chars(LowerText,LowerChars,_),
+   stringy_chars(UpperText,UpperChars,_),
+   stringy_length(LowerText,LowerLen),
+   stringy_length(UpperText,UpperLen),
    PrelimStartPos is min(UpperPos,0),
    PrelimEndPos   is max(LowerLen,UpperPos+UpperLen),
    ((CutLeft  == true) -> StartPos = 0      ; StartPos = PrelimStartPos),
@@ -85,28 +92,29 @@ collect(Pos,EndPos,UpperPos,UpperEnd,UpperChars,LowerChars,LowerLen,Fin,FinalFin
 % Using runs
 % ===
 
-overwrite_using_runs(Lower,Upper,UpperPos,CutLeft,CutRight,Result,Want) :-
-   overwrite_intro_assertions(Lower,Upper,UpperPos,CutLeft,CutRight,Result,Want),
-   stringy_length(Lower,LowerLen),
-   stringy_length(Upper,UpperLen),
+% EXPORTED
+overwrite_using_runs(LowerText,UpperText,UpperPos,CutLeft,CutRight,Result,Want) :-
+   overwrite_intro_assertions(LowerText,UpperText,UpperPos,CutLeft,CutRight,Result,Want),
+   stringy_length(LowerText,LowerLen),
+   stringy_length(UpperText,UpperLen),
    UpperEnd is UpperPos+UpperLen,
-   upper_completely_or_partially_on_positions_below_position0(Upper,UpperPos,UpperEnd,CutLeft,R1,Want),
+   upper_completely_or_partially_on_positions_below_position0(UpperText,UpperPos,UpperEnd,CutLeft,R1,Want),
    filler_between_end_of_upper_and_position0(UpperEnd,CutLeft,R1,R2,Want),
-   lower_visible_between_position0_and_start_of_upper(UpperPos,LowerLen,Lower,R2,R3,Want),
-   upper_covering_lower(Upper,UpperPos,UpperEnd,LowerLen,R3,R4,Want),
-   lower_visible_between_end_of_upper_and_end_of_lower(Lower,UpperEnd,LowerLen,R4,R5,Want),
+   lower_visible_between_position0_and_start_of_upper(UpperPos,LowerLen,LowerText,R2,R3,Want),
+   upper_covering_lower(UpperText,UpperPos,UpperEnd,LowerLen,R3,R4,Want),
+   lower_visible_between_end_of_upper_and_end_of_lower(LowerText,UpperEnd,LowerLen,R4,R5,Want),
    filler_between_end_of_lower_and_start_of_upper(UpperPos,LowerLen,CutRight,R5,R6,Want),
-   upper_completely_or_partially_on_the_right(Upper,UpperPos,UpperLen,UpperEnd,LowerLen,CutRight,R6,Result,Want).
+   upper_completely_or_partially_on_the_right(UpperText,UpperPos,UpperLen,UpperEnd,LowerLen,CutRight,R6,Result,Want).
 
 
-upper_completely_or_partially_on_positions_below_position0(Upper,UpperPos,UpperEnd,CutLeft,Rnew,Want) :-
+upper_completely_or_partially_on_positions_below_position0(UpperText,UpperPos,UpperEnd,CutLeft,Rnew,Want) :-
    (CutLeft == true ; 0 =< UpperPos)
    ->
    stringy_ensure("",Rnew,Want) % do nothing except returning the empty string/atom
    ;
    (Len is min(0,UpperEnd)-UpperPos,
-    sub_atom(Upper,0,Len,_,Run),     % this gives an atom
-    stringy_ensure(Run,Rnew,Want)).  % gives what we "Want"
+    sub_atom(UpperText,0,Len,_,Run),     % this gives an atom
+    stringy_ensure(Run,Rnew,Want)).      % gives what we "Want"
 
 filler_between_end_of_upper_and_position0(UpperEnd,CutLeft,Rprev,Rnew,Want) :-
    (CutLeft == true ; 0 =< UpperEnd)
@@ -126,7 +134,7 @@ lower_visible_between_position0_and_start_of_upper(UpperPos,LowerLen,Lower,Rprev
     sub_atom(Lower,0,Len,_,Run),            % gives an atom
     stringy_concat(Rprev,Run,Rnew,Want)).   % gives what we "Want"
 
-upper_covering_lower(Upper,UpperPos,UpperEnd,LowerLen,Rprev,Rnew,Want) :-
+upper_covering_lower(UpperText,UpperPos,UpperEnd,LowerLen,Rprev,Rnew,Want) :-
    (UpperEnd =< 0 ; LowerLen =< UpperPos)
    ->
    (Rnew=Rprev) % do nothing
@@ -135,18 +143,18 @@ upper_covering_lower(Upper,UpperPos,UpperEnd,LowerLen,Rprev,Rnew,Want) :-
     StartPosInUpper is -min(0,UpperPos),
     EndPos   is min(LowerLen,UpperEnd),
     Len      is EndPos-StartPos,
-    sub_atom(Upper,StartPosInUpper,Len,_,Run), % gives an atom
-    stringy_concat(Rprev,Run,Rnew,Want)).      % gives what we "Want"
+    sub_atom(UpperText,StartPosInUpper,Len,_,Run), % gives an atom
+    stringy_concat(Rprev,Run,Rnew,Want)).          % gives what we "Want"
 
-lower_visible_between_end_of_upper_and_end_of_lower(Lower,UpperEnd,LowerLen,Rprev,Rnew,Want) :-
+lower_visible_between_end_of_upper_and_end_of_lower(LowerText,UpperEnd,LowerLen,Rprev,Rnew,Want) :-
    (LowerLen =< UpperEnd)
    ->
    (Rnew=Rprev) % do nothing
    ;
    (Len is min(LowerLen,LowerLen-UpperEnd),
     StartPos is max(0,UpperEnd),
-    sub_atom(Lower,StartPos,Len,_,Run),   % gives an atom
-    stringy_concat(Rprev,Run,Rnew,Want)). % gives what we "Want"
+    sub_atom(LowerText,StartPos,Len,_,Run),   % gives an atom
+    stringy_concat(Rprev,Run,Rnew,Want)).     % gives what we "Want"
 
 filler_between_end_of_lower_and_start_of_upper(UpperPos,LowerLen,CutRight,Rprev,Rnew,Want) :-
    (UpperPos =< LowerLen ; CutRight == true)
@@ -157,7 +165,7 @@ filler_between_end_of_lower_and_start_of_upper(UpperPos,LowerLen,CutRight,Rprev,
     string_of_spaces(Len,Run),             % gives a string
     stringy_concat(Rprev,Run,Rnew,Want)).  % gives what we "Want"
 
-upper_completely_or_partially_on_the_right(Upper,UpperPos,UpperLen,UpperEnd,LowerLen,CutRight,Rprev,Rnew,Want) :-
+upper_completely_or_partially_on_the_right(UpperText,UpperPos,UpperLen,UpperEnd,LowerLen,CutRight,Rprev,Rnew,Want) :-
    (UpperEnd =< LowerLen ; CutRight == true)
    ->
    (Rnew=Rprev) % do nothing
@@ -165,18 +173,18 @@ upper_completely_or_partially_on_the_right(Upper,UpperPos,UpperLen,UpperEnd,Lowe
    (StartPos is max(LowerLen,UpperPos),
     Len      is UpperEnd-StartPos,
     StartPosInUpper is UpperLen-Len,
-    sub_atom(Upper,StartPosInUpper,Len,_,Run), % gives an atom
-    stringy_concat(Rprev,Run,Rnew,Want)).      % gives what we "Want"
+    sub_atom(UpperText,StartPosInUpper,Len,_,Run), % gives an atom
+    stringy_concat(Rprev,Run,Rnew,Want)).          % gives what we "Want"
 
 % ===
 % Intro checking
 % ===
 
-overwrite_intro_assertions(Lower,Upper,UpperPos,CutLeft,CutRight,Result,Want) :-
-   assertion(stringy(Lower)),
-   assertion(stringy(Upper)),
+overwrite_intro_assertions(LowerText,UpperText,UpperPos,CutLeft,CutRight,_Result,Want) :-
+   assertion(stringy(LowerText)),
+   assertion(stringy(UpperText)),
    assertion(integer(UpperPos)),
-   assertion((atom(CutLeft),memberchk(CutLeft,[true,false]))),
-   assertion((atom(CutRight),memberchk(CutRight,[true,false]))),
-   assertion((atom(Want),memberchk(Want,[atom,string]))),
-   assertion(var(Result)).
+   assertion((CutLeft==true;CutLeft==false)),
+   assertion((CutRight==true;CutRight==false)),
+   assertion((Want==atom;Want==string)).
+   % assertion(var(Result)). may not be needed
