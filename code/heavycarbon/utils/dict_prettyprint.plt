@@ -2,42 +2,42 @@
 
 :- begin_tests(dict_prettyprint).
 
-test("format empty dict") :- 
+test("format empty dict") :-
    dict_pp_lines(_{},Lines),
    assertion(Lines == []).
 
-test("format dict with integers") :- 
+test("format dict with integers") :-
    dict_pp_lines(_{w: 100, ww: 200, www: 300, wwww: 400},Lines),
-   assertion(Lines == 
+   assertion(Lines ==
       [ "w    : 100",
         "ww   : 200",
         "www  : 300",
         "wwww : 400" ]).
 
-test("format dict with floats") :- 
+test("format dict with floats") :-
    dict_pp_lines(_{w: 0.25984759, ww: 1.4587598, www: 643764856, wwww: 400},Lines),
-   assertion(Lines == 
+   assertion(Lines ==
       [ "w    : 0.259848",
         "ww   : 1.458760",
         "www  : 643764856",
         "wwww : 400" ]).
 
-test("format dict with floats; format as g") :- 
+test("format dict with floats; format as g") :-
    dict_pp_lines(_{w: 0.25984759, ww: 1.4587598, www: 643764856, wwww: 400},_{float:g},Lines),
-   assertion(Lines == 
+   assertion(Lines ==
       [ "w    : 0.259848",
         "ww   : 1.45876",
         "www  : 643764856",
         "wwww : 400" ]).
 
-test("format dict with floats; format as e") :- 
+test("format dict with floats; format as e") :-
    dict_pp_lines(_{w: 0.25984759, ww: 1.4587598, www: 643764856, wwww: 400},_{float:e},Lines),
-   assertion(Lines == 
+   assertion(Lines ==
       [ "w    : 2.598476e-01",
         "ww   : 1.458760e+00",
         "www  : 643764856",    % stays int
         "wwww : 400" ]).       % stays int
- 
+
 test("format dict with integers of varying length; justify left") :-
    dict_pp_lines(_{w1: 10, w2: 200, w3: 3000, w4: 40000},_{justify:left},Lines),
    assertion(Lines ==
@@ -53,7 +53,7 @@ test("format dict with integers of varying length; justify right") :-
         "w2 :   200",
         "w3 :  3000",
         "w4 : 40000" ]).
- 
+
 test("format dict with integers of varying length; justify center") :-
    dict_pp_lines(_{w1: 10, w2: 200, w3: 3000, w4: 40000},_{justify:center},Lines),
    assertion(Lines ==
@@ -78,7 +78,7 @@ test("padded all around by 2 spaces") :-
       _{w: 100, ww: 200, www: 300, wwww: 400},
       _{pad_top:2,pad_btm:2,pad_left:2,pad_right:2,border:false},
       PaddedLines),
-   assertion(PaddedLines = 
+   assertion(PaddedLines =
       ["              ",
        "              ",
        "  w    : 100  ",
@@ -93,7 +93,7 @@ test("padded all around by 2 spaces and a border") :-
       _{w: 100, ww: 200, www: 300, wwww: 400},
       _{pad_top:2,pad_btm:2,pad_left:2,pad_right:2,border:true},
       PaddedLines),
-   assertion(PaddedLines = 
+   assertion(PaddedLines =
       ["+--------------+",
        "|              |",
        "|              |",
@@ -179,7 +179,7 @@ test("recursive dicts with borders, justify right") :-
    dict_pp_lines(_{w1: 10, w2: 200, w3: 3000, w4: _{w1: 10, w2: 20, w3: _{ a: 12, b: 13}}},
       _{border:true,justify:right},
       Lines),
-   assertion(Lines = 
+   assertion(Lines =
       ["w1 :   10",
        "w2 :  200",
        "w3 : 3000",

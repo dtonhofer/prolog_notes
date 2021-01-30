@@ -10,7 +10,7 @@
 %
 % To run tests:
 % -------------
-% 
+%
 % ?- use_module(library('heavycarbon/utils/dict_prettyprint.pl')).
 % ?- load_test_files([]).
 % ?- run_tests.
@@ -37,6 +37,9 @@
 % As above, but do not print directly:
 %
 %    dict_pp_lines_padded/3 % dict_pp_lines_padded(+Dict,+SettingsDict,-paddedLines)
+%
+% TODO: dict_pp_padded and dict_pp_lines_padded shall be removed.
+% A desired padding will be communicated through SettingsDict.
 %
 % Examples (see also the plunit test code)
 % ----------------------------------------
@@ -75,8 +78,8 @@
 %
 % RECURSIVE DICTS
 %
-% ?- dict_pp_padded(_{w1: 10, w2: 200, w3: 3000, 
-%                     w4: _{w1: 10, w2: 20, 
+% ?- dict_pp_padded(_{w1: 10, w2: 200, w3: 3000,
+%                     w4: _{w1: 10, w2: 20,
 %                        w3: _{ a: 12, b: 13}}},_{border:true}).
 %
 % +--------------------+
@@ -99,8 +102,8 @@
 % w1 : 10
 % w2 : 200
 % w3 : 3000
-% w4 : w1 : 10    
-%      w2 : 20    
+% w4 : w1 : 10
+%      w2 : 20
 %      w3 : a : 12
 %           b : 13
 %
@@ -133,12 +136,12 @@
 :- use_module(library(debug)).
 
 % ===
-% Prettyprint "Dict" directly using format/2, i.e. write to "current_output". 
+% Prettyprint "Dict" directly using format/2, i.e. write to "current_output".
 % Use with with_output_to/2 to redirect the output to a stream of choice.
 %
 % Behaves like dict_lines/3 followed by immediatey emission of output,
 % and all setting set to default.
-% 
+%
 % dict_pp(+Dict)
 % ===
 
@@ -147,22 +150,22 @@ dict_pp(Dict) :-
    dict_pp(Dict,_{}).
 
 % ===
-% Prettyprint "Dict" directly using format/2, i.e. write to "current_output". 
+% Prettyprint "Dict" directly using format/2, i.e. write to "current_output".
 % Use with with_output_to/2 to redirect the output to a stream of choice.
-% 
+%
 % Behaves like dict_lines/3 followed by immediatey emission of output.
-% 
+%
 % dict_lines(+Dict,+SettingsDict)
 % ===
-  
+
 % EXPORT
 dict_pp(Dict,SettingsDict) :-
    dict_pp_lines(Dict,SettingsDict,Lines),
    maplist([Line]>>format("~s~n",[Line]),Lines). % All the lines are strings, so "~s"
- 
+
 % ===
 % Prettyprint "Dict" by generating strings that are put into list and unified
-% with "Lines", maybe for later emission to a stream. The lines do not have a 
+% with "Lines", maybe for later emission to a stream. The lines do not have a
 % newline at their end.
 %
 % Also takes a dict with settings to configure prettyprinting, although
@@ -176,7 +179,7 @@ dict_pp(Dict,SettingsDict) :-
 % EXPORT
 dict_pp_lines(Dict,Lines) :-
  dict_pp_lines(Dict,_{},Lines).
- 
+
 % EXPORT
 dict_pp_lines(Dict,SettingsDict,Lines) :-
    assertion((var(Lines);is_list(Lines))),
@@ -186,10 +189,10 @@ dict_pp_lines(Dict,SettingsDict,Lines) :-
    ((Pairs==[]
     -> Lines=[]
      ;  pp_lines_2(Pairs,SettingsDict,Lines))), % Continue only if there is content
-   assertion(is_list_of_string(Lines)).   
+   assertion(is_list_of_string(Lines)).
 
 % ===
-% Prettyprint "Dict" directly using format/2, i.e. write to "current_output". 
+% Prettyprint "Dict" directly using format/2, i.e. write to "current_output".
 % Use with with_output_to/2 to redirect the output to a stream of choice.
 %
 % Behaves like dict_lines_padded/3 followed by immediatey emission of output.
@@ -201,16 +204,16 @@ dict_pp_lines(Dict,SettingsDict,Lines) :-
 dict_pp_padded(Dict,SettingsDict) :-
    dict_pp_lines_padded(Dict,SettingsDict,PaddedLines),
    maplist([Line]>>format("~s~n",[Line]),PaddedLines). % they are all strings, so placeholder "~s"
- 
+
 % ===
 % Prettyprint "Dict" by generating strings that are put into list and unified
 % with "Lines", maybe for later emission to a stream. The lines do not have a
-% newline at their end. 
+% newline at their end.
 %
-% Pads the output with whitespace so that every line has the same 
+% Pads the output with whitespace so that every line has the same
 % width with additional withespace added around that "rectangle of characters"
 % according to the values in "SettingsDict". You can additionally request that
-% a border made of dashes should enclose the "rectangle of characters". 
+% a border made of dashes should enclose the "rectangle of characters".
 %
 % The following settings exist. Missing settings assume default values.
 %
@@ -236,7 +239,7 @@ dict_pp_lines_padded(Dict,SettingsDict,PaddedLines) :-
    assertion(is_list_of_positive_integers([PadTop,PadBtm,PadLeft,PadRight])),
    assertion(is_boolean(BorderFlag)),
    dict_pp_lines(Dict,SettingsDict,Lines),                 % this gives the basic output; "Lines" may be empty
-   max_line_width(Lines,MaxLineWidth),                     % may give MaxLineWidth==0 
+   max_line_width(Lines,MaxLineWidth),                     % may give MaxLineWidth==0
    PaddedWidth is MaxLineWidth + PadLeft + PadRight,       % how wide a line is when padding is considered
    padded_lines(BorderFlag,Lines,PaddedWidth,PadLeft,PadTop,PadBtm,PaddedLines).
 
@@ -244,7 +247,7 @@ dict_pp_lines_padded(Dict,SettingsDict,PaddedLines) :-
 % Called from dict_pp_lines/3 to actually do something.
 % ===
 
-pp_lines_2(Pairs,SettingsDict,Lines) :-  
+pp_lines_2(Pairs,SettingsDict,Lines) :-
    assertion(Pairs \== []),
    pairs_to_entries(Pairs,SettingsDict,Entries,[]),            % from "Pairs" build "Entries" as an open list to be terminated with []
    max_key_width(Entries,MaxKeyWidth),                         % it is possible that MaxKeyWidth is 0 because '' is a valid key.
@@ -269,8 +272,8 @@ in_foldl_max_key_width(String-_,FromLeft,ToRight) :-
 max_monovalue_width(Entries,MaxMonoValueWidth) :-
    foldl(in_foldl_max_monovalue_width,Entries,0,MaxMonoValueWidth).
 
-in_foldl_max_monovalue_width(_-mono(String),FromLeft,ToRight) :-  
-   !, 
+in_foldl_max_monovalue_width(_-mono(String),FromLeft,ToRight) :-
+   !,
    string_length(String,Width),
    ToRight is max(FromLeft,Width).
 
@@ -293,7 +296,7 @@ lineify_entries([KeyString-mono(MonoString)|MoreEntries],MaxKeyWidth,MaxMonoValu
    justify_mono_string(SettingsDict,MaxMonoValueWidth,MonoString,MonoStringJustified),
    stringy_concat(KeyStringJustified," : ",MonoStringJustified,Line,string),
    lineify_entries(MoreEntries,MaxKeyWidth,MaxMonoValueWidth,SettingsDict,MoreLines,FinalFin).
- 
+
 % case where "Lineified" contains multiple lines ("poly") but the count is actually 0
 
 lineify_entries([KeyString-poly([])|MoreEntries],MaxKeyWidth,MaxMonoValueWidth,SettingsDict,[FirstLine|MoreLines],FinalFin) :-
@@ -347,7 +350,7 @@ filler_string(MaxKeyWidth,Filler) :-
 % Iterating over the pairs found in a dict and transforming them into lines (strings)
 %
 % pairs_to_entries(Pairs,SettingsDict,Entries,FinalFin)
-% === 
+% ===
 % This constructs "Entries" as a list (actually an open list with the fin unified to
 % "FinalFin") structured as follows:
 % - "Entries contains" the transformed pairs (i.e. the dict entries) in the order in
@@ -376,7 +379,7 @@ pairs_to_entries(Pairs,SettingsDict,Entries,FinalFin) :-
 % ---
 
 stringify_key(Key,_SettingsDict,String) :-
-   (atom(Key) 
+   (atom(Key)
     -> F="~a"
     ;  integer(Key)
     -> F="~d"
@@ -396,7 +399,7 @@ lineify_value(Value,SettingsDict,poly(Lines)) :-
    is_dict(Value),
    !,
    dict_pp_lines_padded(Value,SettingsDict,Lines). % recursive call! this structure better not be cyclic!
- 
+
 lineify_value(Value,SettingsDict,Lineified) :-
    % TODO: Rewrite the below to Prolog style..
    atom(Value)
@@ -431,7 +434,7 @@ float_format(SettingsDict,Float,String) :-
    stringy_concat("~",Placeholder,FormatString,string),
    % format("FormatString is ~q\n",[FormatString]),
    format(string(String),FormatString,[Float]).
- 
+
 % ===
 % Called from dict_pp_lines_padded/3 to pad the lines
 % padded_lines(BorderFlag,Lines,PaddedWidth,PadLeft,PadTop,PadBtm,PaddedLines)
@@ -467,18 +470,18 @@ padded_lines(false,Lines,PaddedWidth,PadLeft,PadTop,PadBtm,PaddedLines) :-
 
 pad_around(0,_BgString,FinalFin,FinalFin) :- !.
 
-pad_around(PadCount,BgString,[BgString|NewFin],FinalFin) :- 
+pad_around(PadCount,BgString,[BgString|NewFin],FinalFin) :-
    assertion(PadCount>0),
    PadCountMinus is PadCount-1,
    pad_around(PadCountMinus,BgString,NewFin,FinalFin).
-  
+
 % ----
 % The iteration over the basic output lines to construct the "padded lines".
-% On each line, the background string "BgString" (which contains the padding whitespace 
+% On each line, the background string "BgString" (which contains the padding whitespace
 % and maybe a border) is overwritten by "Line" at position "Pos".
 % ---
 
-padded_iter([],_,_,FinalFin,FinalFin). 
+padded_iter([],_,_,FinalFin,FinalFin).
 
 padded_iter([Line|MoreLines],BgString,Pos,[PaddedLine|MorePaddedLines],FinalFin) :-
    overwrite_using_runs(BgString,Line,Pos,true,true,PaddedLine,string), % from module "string_overwrite.pl"
@@ -494,11 +497,11 @@ padded_iter([Line|MoreLines],BgString,Pos,[PaddedLine|MorePaddedLines],FinalFin)
 
 background_string(false,PaddedWidth,Line) :-
    string_of_spaces(PaddedWidth,Line).  % from module "string_of_spaces.pl"
-   
+
 background_string(true,PaddedWidth,Line) :-
    string_of_spaces(PaddedWidth,Str1),  % from module "string_of_spaces.pl"
    stringy_concat("|",Str1,"|",Line,string).
-   
+
 % ---
 % Create a "top/bottom-border string" that looks like "+--------+"
 % There are "PaddedWidth" dashes surrounded by "+" (this is only called
@@ -508,12 +511,12 @@ background_string(true,PaddedWidth,Line) :-
 top_or_bottom_border_line(PaddedWidth,Line) :-
    string_of_dashes(PaddedWidth,String),
    stringy_concat("+",String,"+",Line,string).
- 
+
 % ===
 % Find max of linewidth over all lines using foldl/4
 % ===
 
-max_line_width(Lines,MaxLineWidth) :- 
+max_line_width(Lines,MaxLineWidth) :-
    foldl(in_foldl_for_line,Lines,0,MaxLineWidth).
 
 in_foldl_for_line(Line,FromLeft,ToRight) :-
@@ -532,11 +535,11 @@ get_setting(SettingsDict,Key,Value,Default) :-
 % ===
 
 maplist_which_appends_to_open_list(_,[],FinalFin,FinalFin) :- !.
- 
+
 maplist_which_appends_to_open_list(Goal,[NominalIn|MoreNominalIns],[NominalOut|Fin],FinalFin) :-
    call(Goal,NominalIn,NominalOut),
    maplist_which_appends_to_open_list(Goal,MoreNominalIns,Fin,FinalFin).
- 
+
 % ===
 % Assorted
 % ===
@@ -554,5 +557,5 @@ is_list_of_string(L) :-
 
 is_boolean(X) :-
    X==false;X==true.
- 
+
 

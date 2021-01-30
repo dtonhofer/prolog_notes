@@ -37,3 +37,53 @@ false.
 false.
 ```
 
+## Missed opportunity
+
+There should be a "maplist which appends to an open list". Like this:
+
+```
+maplist_which_appends_to_open_list(_,[],FinalFin,FinalFin) :- !.
+
+maplist_which_appends_to_open_list(Goal,[NominalIn|MoreNominalIns],[NominalOut|Fin],FinalFin) :-  
+   call(Goal,NominalIn,NominalOut),
+   maplist_which_appends_to_open_list(Goal,MoreNominalIns,Fin,FinalFin).
+```
+
+Then one could write things like this instead of getting headaches with recuesive calls (i.e. incidental complexity):
+
+```   
+process_ints(Integers,Fin,FinalFin) :-
+   maplist_which_appends_to_open_list([X,O]>>(O is 2*X),Integers,Fin,FinalFin).
+
+process_strings(Strings,Fin,FinalFin) :-
+   maplist_which_appends_to_open_list([S,O]>>(string_length(S,O)),Strings,Fin,FinalFin).
+
+process_ints_differently(Integers,Fin,FinalFin) :-
+   maplist_which_appends_to_open_list([X,O]>>(O is sqrt(X)),Integers,Fin,FinalFin).
+
+process_all(Tip) :-
+   % Start with unbound variable interpreted as an "empty open list": Tip
+   process_ints([1,2,3,4,5],Tip,Fin1),            
+   % Now Tip-Fin1 is a difference list; it is still open.   
+   process_strings(["alpha","bravo","charlie"],Fin1,Fin2),
+   % Now Tip-Fin2 is a difference list; it is still open.   
+   % It is also true that Fin1-Fin2 is a difference list; but we don't need it   
+   process_ints_differently([1,2,3,4,5],Fin2,Fin3),
+   % Now Tip-Fin3 is a difference list; it is still open.   
+   Fin3=[].
+   % Now Tip is a closed list.
+   % We could have written directly: process_ints_differently(Integers,Fin2,[]).
+   % Alternatively, one might not close the list and pass Fin3 as
+   % argument to process_all/2 to continue appending.   
+```
+
+Thus:
+
+```
+?- process_all(X).
+X = [2,4,6,8,10,5,5,7,1.0,1.4142135623730951,1.7320508075688772,2.0,2.23606797749979].
+```
+
+
+
+
