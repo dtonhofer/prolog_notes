@@ -2,56 +2,44 @@
 % Dict prettyprinting (if the values and keys fit on one line)
 % ============================================================================
 % Load module with:
+% -----------------
 %
 % ?- use_module(library('heavycarbon/utils/dict_prettyprint.pl')).
 %
 % as long as the directory 'heavycarbon' is on the library path of 'swipl'·
 %
 % To run tests:
-%
+% -------------
+% 
 % ?- use_module(library('heavycarbon/utils/dict_prettyprint.pl')).
 % ?- load_test_files([]).
 % ?- run_tests.
 %
 %
-% dict_lines(+Dict,+Placeholder)
+% Exports:
+% --------
 %
-%   Prettyprint the "Dict" directly to "current_output" (i.e. print it
-%   with format/2). The "Placeholder" is used in the format/2 formatting
-%   string to format dict values. For example, if there are strings, 
-%   use "s", if there are integers, use "d". If in doubt, use "q".
-%   As usual, output can be captured/redirected to anotehr stream 
-%   by using with_output_to/2 around the dict_lines/2 goal.
+% Print "Dict" to current output, possibly with "SettingsDict":
 %
-% dict_lines(+Dict,+Placeholder,?Lines)
+%    dict_pp/1              % dict_pp(+Dict)
+%    dict_pp/2              % dict_pp(+Dict,+SettingsDict)
 %
-%   Prettyprint the "Dict" to a list-of-strings, "Lines". The 
-%   lines do not include a terminating newline. Useful if you want to
-%   "generate now, but side-effect later".
+% Do not print directly, instead generate a list of string:
 %
-% dict_lines_framed(+Dict,+Placeholder,+SettingsDict)
+%    dict_pp_lines/2        % dict_pp_lines(+Dict,-Lines)
+%    dict_pp_lines/3        % dict_pp_lines(+Dict,+SettingsDict,-Lines)
 %
-%   All the lines will have the same length, and have been
-%   suitably padded with space on the right.
-%   You can add additional padding and maybe a border around
-%   the output by filling the "SettingsDict" appropriately
-%   (if the dict does not have a key, hardcoded defaults are
-%   chosen instead):
+% Print directly, and pad and/or box the outermost dict (subdicts
+% may be boxed too, if "SettingsDict" contains "boxed:true")
 %
-%   pad_left   : additional spaces on the left (default 0)
-%   pad_right  : additional spaces on the right (default 0)
-%   pad_top    : additional spaces on top (default 0)
-%   pad_btm    : additional spaces on btm (default 0)
-%   border     : 'true' or 'false': but an ASCII border around it
-%              (default false)
+%    dict_pp_padded/2       % dict_pp_padded(+Dict,+SettingsDict)
 %
-% dict_lines_framed(+Dict,+Placeholder,+SettingsDict,?FramedLines)
+% As above, but do not print directly:
 %
-%   As above, only printed to a list-of-string, "FramedLines"
+%    dict_pp_lines_padded/3 % dict_pp_lines_padded(+Dict,+SettingsDict,-paddedLines)
 %
-% ----
-% 
 % Examples (see also the plunit test code)
+% ----------------------------------------
 %
 % ?- dict_lines(_{a:1,b:2},d,Lines).
 % Lines = ["a : 1  ","b : 2  "].
@@ -75,15 +63,6 @@
 % +-------------------+
 %
 % ?- dict_lines_framed(_{w: 0.25984759, ww: 1.4587598, www: 643764856, wwww: 400},e,
-%    _{border:true,pad_left:1,pad_right:1}).
-% +---------------------+
-% | w    : 2.598476e-01 |
-% | ww   : 1.458760e+00 |
-% | www  : 6.437649e+08 |
-% | wwww : 4.000000e+02 |
-% +---------------------+
-%
-% ?- dict_lines_framed(_{w: 0.25984759, ww: 1.4587598, www: 643764856, wwww: 400},e,
 %    _{border:true,pad_left:1,pad_right:1,pad_top:1,pad_btm:1}).
 % +---------------------+
 % |                     |
@@ -93,6 +72,38 @@
 % | wwww : 4.000000e+02 |
 % |                     |
 % +---------------------+
+%
+% RECURSIVE DICTS
+%
+% ?- dict_pp_padded(_{w1: 10, w2: 200, w3: 3000, 
+%                     w4: _{w1: 10, w2: 20, 
+%                        w3: _{ a: 12, b: 13}}},_{border:true}).
+%
+% +--------------------+
+% |w1 : 10             |
+% |w2 : 200            |
+% |w3 : 3000           |
+% |w4 : +-------------+|
+% |     |w1 : 10      ||
+% |     |w2 : 20      ||
+% |     |w3 : +------+||
+% |     |     |a : 12|||
+% |     |     |b : 13|||
+% |     |     +------+||
+% |     +-------------+|
+% +--------------------+
+%
+% Simpler:
+%
+% ?- dict_pp(_{w1: 10, w2: 200, w3: 3000, w4: _{w1: 10, w2: 20, w3: _{ a: 12, b: 13}}}).
+% w1 : 10
+% w2 : 200
+% w3 : 3000
+% w4 : w1 : 10    
+%      w2 : 20    
+%      w3 : a : 12
+%           b : 13
+%
 % ============================================================================
 % David Tonhofer (ronerycoder@gluino.name) says:
 % This code is licensed under:
@@ -104,134 +115,350 @@
 
 :- module(heavycarbon_utils_dict_prettyprint,
           [
-           dict_lines/2        % dict_lines(+Dict,+Placeholder)
-          ,dict_lines/3        % dict_lines(+Dict,+Placeholder,-?Lines)
-          ,dict_lines_framed/3 % dict_lines_framed(+Dict,+Placeholder,+SettingsDict)
-          ,dict_lines_framed/4 % dict_lines_framed(+Dict,+Placeholder,+SettingsDict,-FramedLines)
+           dict_pp/1              % dict_pp(+Dict)
+          ,dict_pp/2              % dict_pp(+Dict,+SettingsDict)
+          ,dict_pp_lines/2        % dict_pp_lines(+Dict,-Lines)
+          ,dict_pp_lines/3        % dict_pp_lines(+Dict,+SettingsDict,-Lines)
+          ,dict_pp_padded/2       % dict_pp_padded(+Dict,+SettingsDict)
+          ,dict_pp_lines_padded/3 % dict_pp_lines_padded(+Dict,+SettingsDict,-paddedLines)
           ]).
 
 :- use_module(library('heavycarbon/strings/string_of_spaces.pl')).
 :- use_module(library('heavycarbon/strings/string_overwrite.pl')).
+:- use_module(library('heavycarbon/strings/stringy.pl')).
+:- use_module(library('heavycarbon/strings/justify.pl')).
 :- use_module(library(yall)).
 :- use_module(library(apply)).
 :- use_module(library(apply_macros)).
 :- use_module(library(debug)).
 
 % ===
-% Output directly using format/2, i.e. write to "current_output". 
-% Use with with_output_to/2 to redirect the output.
+% Prettyprint "Dict" directly using format/2, i.e. write to "current_output". 
+% Use with with_output_to/2 to redirect the output to a stream of choice.
 %
-% Does not fail if "Dict" is empty. It just does nothing in that case.
+% Behaves like dict_lines/3 followed by immediatey emission of output,
+% and all setting set to default.
 % 
-% dict_lines_direct(+Dict,+Placeholder)
+% dict_pp(+Dict)
 % ===
 
 % EXPORT
-dict_lines(Dict,Placeholder) :-
-   dict_lines(Dict,Placeholder,Lines),
-   maplist([Line]>>format("~s~n",[Line]),Lines).
+dict_pp(Dict) :-
+   dict_pp(Dict,_{}).
+
+% ===
+% Prettyprint "Dict" directly using format/2, i.e. write to "current_output". 
+% Use with with_output_to/2 to redirect the output to a stream of choice.
+% 
+% Behaves like dict_lines/3 followed by immediatey emission of output.
+% 
+% dict_lines(+Dict,+SettingsDict)
+% ===
+  
+% EXPORT
+dict_pp(Dict,SettingsDict) :-
+   dict_pp_lines(Dict,SettingsDict,Lines),
+   maplist([Line]>>format("~s~n",[Line]),Lines). % All the lines are strings, so "~s"
  
 % ===
-% All generated output is put into a list, which is unified with "Lines".
-% After the call, "Lines" is a list of string. The lines do not have a
-% newline at their end (yet). 
+% Prettyprint "Dict" by generating strings that are put into list and unified
+% with "Lines", maybe for later emission to a stream. The lines do not have a 
+% newline at their end.
+%
+% Also takes a dict with settings to configure prettyprinting, although
+% for now, there are no settings. Pass an empty dict "_{}" here.
 %
 % Does not fail if "Dict" is empty. It just does nothing in that case.
 %
-% dict_lines(+Dict,+Placeholder,?Lines)
+% dict_lines(+Dict,+SettingsDict,?Lines)
 % ===
 
 % EXPORT
-dict_lines(Dict,Placeholder,Lines) :-
+dict_pp_lines(Dict,Lines) :-
+ dict_pp_lines(Dict,_{},Lines).
+ 
+% EXPORT
+dict_pp_lines(Dict,SettingsDict,Lines) :-
    assertion((var(Lines);is_list(Lines))),
    assertion(is_dict(Dict)),
-   assertion(atomic(Placeholder)),
-   dict_pairs(Dict,_,Pairs),                   % Does NOT fail if Dict is empty. Pairs is sorted.
-   (Pairs==[]
+   assertion(is_dict(SettingsDict)),
+   dict_pairs(Dict,_,Pairs),   % Does NOT fail if Dict is empty. Pairs is sorted.
+   ((Pairs==[]
     -> Lines=[]
-    ;  dict_lines_2(Pairs,Placeholder,Lines)). % Continue only if there is content
-
-dict_lines_2(Pairs,Placeholder,Lines) :-      
-   max_key_width(Pairs,MaxKeyWidth),
-   build_format_string(MaxKeyWidth,FormatString,Placeholder),
-   format_pairs_iter(Pairs,FormatString,Lines). 
-
-max_key_width(Pairs,MaxKeyWidth) :-
-   foldl(in_foldl_for_pair,Pairs,0,MaxKeyWidth).
-
-in_foldl_for_pair(Key-_,FromLeft,ToRight) :-
-   atom_length(Key,KeyWidth), % Key is an atom or a "small" (actually very large) integer
-   ToRight is max(FromLeft,KeyWidth).
-
-build_format_string(MaxKeyWidth,FormatString,Placeholder) :-
-   FieldWidth is MaxKeyWidth+1,
-   % 1) Set tab ~|, print atom ~a, add tab expanding-filler (will thus "left justify") ~t,
-   % 2) Set next tab stop "FieldWidth" positions after the previous tab stop: "~FieldWidth+",
-   % 3) Print datum "~" + "Placeholder" (which is s, q, a, ...) , add tab expanding-filler (will thus left justify) ~t,
-   % 4) set next tab stop 5 positions after the previous tab stop
-   atomics_to_string(['~|~a~t~',FieldWidth,'+: ~', Placeholder, '~t~5+'],FormatString),
-   debug(dict_prettyprint,"Format string is: '~s'~n",[FormatString]).
-
-% ---
-% The iteration that formats key-value pairs into a list of string (i.e. lines)
-% ---
-
-format_pairs_iter([Key-Value|MorePairs],FormatString,[Line|MoreLines]) :-
-   format(string(Line),FormatString,[Key,Value]),
-   format_pairs_iter(MorePairs,FormatString,MoreLines).
-
-format_pairs_iter([],_,[]).
+     ;  pp_lines_2(Pairs,SettingsDict,Lines))), % Continue only if there is content
+   assertion(is_list_of_string(Lines)).   
 
 % ===
-% Put a "frame" around the output. The output goes directly to "current_output"
+% Prettyprint "Dict" directly using format/2, i.e. write to "current_output". 
+% Use with with_output_to/2 to redirect the output to a stream of choice.
+%
+% Behaves like dict_lines_padded/3 followed by immediatey emission of output.
+%
+% dict_lines_padded(+Dict,+SettingsDict)
 % ===
 
 % EXPORT
-dict_lines_framed(Dict,Placeholder,SettingsDict) :-
-   dict_lines_framed(Dict,Placeholder,SettingsDict,FramedLines),
-   maplist([Line]>>format("~s~n",[Line]),FramedLines).
+dict_pp_padded(Dict,SettingsDict) :-
+   dict_pp_lines_padded(Dict,SettingsDict,PaddedLines),
+   maplist([Line]>>format("~s~n",[Line]),PaddedLines). % they are all strings, so placeholder "~s"
  
 % ===
-% Put a "frame" around the output. The output goes to "FramedLines"
+% Prettyprint "Dict" by generating strings that are put into list and unified
+% with "Lines", maybe for later emission to a stream. The lines do not have a
+% newline at their end. 
+%
+% Pads the output with whitespace so that every line has the same 
+% width with additional withespace added around that "rectangle of characters"
+% according to the values in "SettingsDict". You can additionally request that
+% a border made of dashes should enclose the "rectangle of characters". 
+%
+% The following settings exist. Missing settings assume default values.
+%
+%  pad_left   : int>=0,     default 0
+%  pad_right  : int>=0,     default 0
+%  pad_top    : int>=0,     default 0
+%  pad_bottom : int>=0,     default 0
+%  border     : boolean,    default false
+%
+% Does not fail if "Dict" is empty. It just does nothing in that case.
+%
+% dict_pp_lines_padded(+Dict,+SettingsDict,?PaddedLines)
 % ===
 
 % EXPORT
-dict_lines_framed(Dict,Placeholder,SettingsDict,FramedLines) :-
+dict_pp_lines_padded(Dict,SettingsDict,PaddedLines) :-
    assertion(is_dict(SettingsDict)),
    get_setting(SettingsDict,pad_top,PadTop,0),
    get_setting(SettingsDict,pad_btm,PadBtm,0),
    get_setting(SettingsDict,pad_left,PadLeft,0),
    get_setting(SettingsDict,pad_right,PadRight,0),
    get_setting(SettingsDict,border,BorderFlag,false),
-   assertion(maplist([X]>>(integer(X),X>=0),[PadTop,PadBtm,PadLeft,PadRight])),
-   assertion((BorderFlag==false;BorderFlag==true)),
-   dict_lines(Dict,Placeholder,Lines),                     % this gives the basic output; note that "Lines" may be []
+   assertion(is_list_of_positive_integers([PadTop,PadBtm,PadLeft,PadRight])),
+   assertion(is_boolean(BorderFlag)),
+   dict_pp_lines(Dict,SettingsDict,Lines),                 % this gives the basic output; "Lines" may be empty
    max_line_width(Lines,MaxLineWidth),                     % may give MaxLineWidth==0 
    PaddedWidth is MaxLineWidth + PadLeft + PadRight,       % how wide a line is when padding is considered
-   dict_lines_framed_2(BorderFlag,Lines,PaddedWidth,PadLeft,PadTop,PadBtm,FramedLines).
+   padded_lines(BorderFlag,Lines,PaddedWidth,PadLeft,PadTop,PadBtm,PaddedLines).
+
+% ===
+% Called from dict_pp_lines/3 to actually do something.
+% ===
+
+pp_lines_2(Pairs,SettingsDict,Lines) :-  
+   assertion(Pairs \== []),
+   pairs_to_entries(Pairs,SettingsDict,Entries,[]),            % from "Pairs" build "Entries" as an open list to be terminated with []
+   max_key_width(Entries,MaxKeyWidth),                         % it is possible that MaxKeyWidth is 0 because '' is a valid key.
+   max_monovalue_width(Entries,MaxMonoValueWidth),             % may also be 0
+   lineify_entries(Entries,MaxKeyWidth,MaxMonoValueWidth,SettingsDict,Lines,[]). % iterate over entries, building "Lines" as an open list to be terminated with []
 
 % ---
-% Frame lines if "Border" is true
+% Find the max key width in "Entries" which is a list "KeyString-Lineified"
 % ---
 
-dict_lines_framed_2(true,Lines,PaddedWidth,PadLeft,PadTop,PadBtm,FramedLines) :-
+max_key_width(Entries,MaxKeyWidth) :-
+   foldl(in_foldl_max_key_width,Entries,0,MaxKeyWidth).
+
+in_foldl_max_key_width(String-_,FromLeft,ToRight) :-
+   string_length(String,Width),
+   ToRight is max(FromLeft,Width).
+
+% ---
+% Find the max mono-value width in "Entries" which is a list "KeyString-Lineified"
+% ---
+
+max_monovalue_width(Entries,MaxMonoValueWidth) :-
+   foldl(in_foldl_max_monovalue_width,Entries,0,MaxMonoValueWidth).
+
+in_foldl_max_monovalue_width(_-mono(String),FromLeft,ToRight) :-  
+   !, 
+   string_length(String,Width),
+   ToRight is max(FromLeft,Width).
+
+in_foldl_max_monovalue_width(_-poly(_),PassThrough,PassThrough).
+
+% ===
+% Transforming entries from "Entries" which is a list "KeyString-Lineified"
+% into "Lines" (i.e. strings). This is the final operation in pp_lines_2/3
+%
+% lineify_entries(Entries,MaxKeyWidth,MaxMonoValueWidth,SettingsDict,Lines,FinalFin).
+% ===
+
+lineify_entries([],_,_,_,FinalFin,FinalFin).
+
+% case where "Lineified" contains only a string ("mono")
+
+lineify_entries([KeyString-mono(MonoString)|MoreEntries],MaxKeyWidth,MaxMonoValueWidth,SettingsDict,[Line|MoreLines],FinalFin) :-
+   !,
+   justify_left(KeyString,MaxKeyWidth,KeyStringJustified),
+   justify_mono_string(SettingsDict,MaxMonoValueWidth,MonoString,MonoStringJustified),
+   stringy_concat(KeyStringJustified," : ",MonoStringJustified,Line,string),
+   lineify_entries(MoreEntries,MaxKeyWidth,MaxMonoValueWidth,SettingsDict,MoreLines,FinalFin).
+ 
+% case where "Lineified" contains multiple lines ("poly") but the count is actually 0
+
+lineify_entries([KeyString-poly([])|MoreEntries],MaxKeyWidth,MaxMonoValueWidth,SettingsDict,[FirstLine|MoreLines],FinalFin) :-
+   !,
+   first_line(KeyString,MaxKeyWidth,"",FirstLine),
+   lineify_entries(MoreEntries,MaxKeyWidth,MaxMonoValueWidth,SettingsDict,MoreLines,FinalFin).
+
+% case where "Lineified" contains multiple lines ("poly") and the count is at least 1
+
+lineify_entries([KeyString-poly([FirstSubLine|MoreSubLines])|MoreEntries],MaxKeyWidth,MaxMonoValueWidth,SettingsDict,Fin,FinalFin) :-
+   first_line(KeyString,MaxKeyWidth,FirstSubLine,FirstLine),
+   Fin=[FirstLine|Fin1],                                 % append this "FirstLine"
+   filler_string(MaxKeyWidth,Filler),
+   maplist_which_appends_to_open_list(                   % append the rest of the lines
+      ({Filler}/[SubLine,Concatted]>>stringy_concat(Filler,SubLine,Concatted,string)),
+      MoreSubLines,
+      Fin1,
+      Fin2),
+   lineify_entries(MoreEntries,MaxKeyWidth,MaxMonoValueWidth,SettingsDict,Fin2,FinalFin).
+
+% ---
+% justify a "mono" string
+% ---
+
+% TODO: After justification, StringOut may have trailing spaces due to
+% both a mix of trailing spaces in StringIn (ok) and the spaces of the
+% field width "Width" because the justification is based on overwriting
+% a field spaces of that width. One may not always want the latter!
+
+justify_mono_string(SettingsDict,Width,StringIn,StringOut) :-
+   get_setting(SettingsDict,justify,How,none),
+   justify_how(How,StringIn,Width,StringOut).
+
+% ---
+% Construct the first resulting line for a "poly" case
+% ---
+
+first_line(KeyString,MaxKeyWidth,SubLine,FirstLine) :-
+   justify_left(KeyString,MaxKeyWidth,KeyJustified),
+   stringy_concat(KeyJustified," : ",SubLine,FirstLine,string).
+
+% ---
+% Construct a filler string for a "poly" case
+% ---
+
+filler_string(MaxKeyWidth,Filler) :-
+   string_of_spaces(MaxKeyWidth,Spaces),      % from "string_of_spaces.pl"
+   stringy_concat(Spaces,"   ",Filler,string).
+
+% ===
+% Iterating over the pairs found in a dict and transforming them into lines (strings)
+%
+% pairs_to_entries(Pairs,SettingsDict,Entries,FinalFin)
+% === 
+% This constructs "Entries" as a list (actually an open list with the fin unified to
+% "FinalFin") structured as follows:
+% - "Entries contains" the transformed pairs (i.e. the dict entries) in the order in
+%   which they appear (and will be printed).
+% - Each element in "Entries" is a pair "KeyString-Lineified" where:
+% -- "KeyString" is a string generated from the dict key (which is always atom or small
+%    integer). The caller will want to justify this string left or right.
+% -- "Lineified" is a compound term:
+%    mono(X) - "X" is a single string generated by formatting the value; it can be
+%              printed "as is" (after suitable left/right justification)
+%    poly(X) - "X" is a list of string generated by formatting a "child dict";
+%              the strings need to be integrated into the lines generated for this
+%              "parent dict"
+
+pairs_to_entries(Pairs,SettingsDict,Entries,FinalFin) :-
+   maplist_which_appends_to_open_list(
+     ({SettingsDict}/[Key-Value,KeyString-Lineified]>>
+        (stringify_key(Key,SettingsDict,KeyString),          % straightforward
+         lineify_value(Value,SettingsDict,Lineified))),      % may cause recursion if the value is a dict
+     Pairs,Entries,FinalFin).
+
+% ---
+% String generation for a dict key. "SettingsDict" is passed because there
+% may be some parameters in there in a future version. No justification
+% occurs here yet!
+% ---
+
+stringify_key(Key,_SettingsDict,String) :-
+   (atom(Key) 
+    -> F="~a"
+    ;  integer(Key)
+    -> F="~d"
+    ;  domain_error([atom,integer],Key)), % never happens unless the implementation of dict changes
+   format(string(String),F,[Key]).
+
+% ---
+% Multi-String generation (i.e. "lines generation") for a dict value.
+% This may perform a recursive call if the "Value" is a dict in itself.
+% "SettingsDict" is passed because there may be some parameters in there in a
+% future version.
+% ---
+
+% TODO: limit recursive descent;
+
+lineify_value(Value,SettingsDict,poly(Lines)) :-
+   is_dict(Value),
+   !,
+   dict_pp_lines_padded(Value,SettingsDict,Lines). % recursive call! this structure better not be cyclic!
+ 
+lineify_value(Value,SettingsDict,Lineified) :-
+   % TODO: Rewrite the below to Prolog style..
+   atom(Value)
+   -> (format(string(String),"~a",[Value]), Lineified=mono(String))
+   ;
+   string(Value)
+   -> (format(string(String),"~s",[Value]), Lineified=mono(String))
+   ;
+   integer(Value)
+   -> (format(string(String),"~d",[Value]), Lineified=mono(String))
+   ;
+   var(Value)
+   -> (format(string(String),"~q",[Value]), Lineified=mono(String))
+   ;
+   float(Value)
+   -> (float_format(SettingsDict,Value,String), Lineified=mono(String))
+   ;
+   (format(string(String),"~q",[Value]),
+       Lineified=mono(String)).
+
+% ---
+% Formatting a float. The placeholder is "f" unless there is a value
+% registerewd in "SettingsDict" under 'float'. Note that if that is
+% an illegal placeholder, format/2 will throw an exception. (TODO: Should we
+% catch that exception locally?)
+%
+% Note that this is ONLY used for floats. Integers are NOT pass through here!
+% ---
+
+float_format(SettingsDict,Float,String) :-
+   get_setting(SettingsDict,float,Placeholder,f),
+   stringy_concat("~",Placeholder,FormatString,string),
+   % format("FormatString is ~q\n",[FormatString]),
+   format(string(String),FormatString,[Float]).
+ 
+% ===
+% Called from dict_pp_lines_padded/3 to pad the lines
+% padded_lines(BorderFlag,Lines,PaddedWidth,PadLeft,PadTop,PadBtm,PaddedLines)
+% ===
+
+% ---
+% Pad lines in case "Border" is true
+% ---
+
+padded_lines(true,Lines,PaddedWidth,PadLeft,PadTop,PadBtm,PaddedLines) :-
    top_or_bottom_border_line(PaddedWidth,LimitLine),             % create (one instance) of the "+-----+" line to put at the top and bottom
    background_string(true,PaddedWidth,BgString),                 % create (one instance) of the "|     |" background string
-   FramedLines=[LimitLine|Fin0],                                 % start working on the "FramedLines" list, which becomes a difflist FrameLines-Fin0
-   pad_around(PadTop,BgString,Fin0,Fin1),                        % continue working on the "FrameLines" list, but now on the difflist part Fin0-Fin1
+   PaddedLines=[LimitLine|Fin0],                                 % start working on the "PaddedLines" list, which becomes a difflist PaddedLines-Fin0
+   pad_around(PadTop,BgString,Fin0,Fin1),                        % continue working on the "PaddedLines" list, but now on the difflist part Fin0-Fin1
    CorrPadLeft is PadLeft+1,                                     % add 1 because we have a border "|" on the left
-   framed_iter(Lines,BgString,CorrPadLeft,Fin1,Fin2),            % continue working on the "FrameLines" list, but now on the difflist part Fin1-Fin2
-   pad_around(PadBtm,BgString,Fin2,[LimitLine]).                 % after bottom-padding, close the open "FrameLines" list by unifying with [LimitLine]
+   padded_iter(Lines,BgString,CorrPadLeft,Fin1,Fin2),            % continue working on the "PaddedLines" list, but now on the difflist part Fin1-Fin2
+   pad_around(PadBtm,BgString,Fin2,[LimitLine]).                 % after bottom-padding, close the open "PaddedLines" list by unifying its fin with [LimitLine]
 
 % ---
-% Frame lines if "Border" is false
+% Pad lines in case "Border" is false
 % ---
 
-dict_lines_framed_2(false,Lines,PaddedWidth,PadLeft,PadTop,PadBtm,FramedLines) :-
+padded_lines(false,Lines,PaddedWidth,PadLeft,PadTop,PadBtm,PaddedLines) :-
    background_string(false,PaddedWidth,BgString),                % create (one instance) of the "       " background string
-   pad_around(PadTop,BgString,FramedLines,Fin1),                 % start working on the "FramedLines" list, which becomes a difflist FrameLines-Fin1
-   framed_iter(Lines,BgString,PadLeft,Fin1,Fin2),                % continue working on the "FrameLines" list, but now on the difflist part Fin1-Fin2
-   pad_around(PadBtm,BgString,Fin2,[]).                          % after bottom-padding, close the open "FrameLines" list by unifying with []
+   pad_around(PadTop,BgString,PaddedLines,Fin1),                 % start working on the "PaddedLines" list, which becomes a difflist FrameLines-Fin1
+   padded_iter(Lines,BgString,PadLeft,Fin1,Fin2),                % continue working on the "PaddedLines" list, but now on the difflist part Fin1-Fin2
+   pad_around(PadBtm,BgString,Fin2,[]).                          % after bottom-padding, close the open "PaddedLines" list by unifying its fin with []
 
 % ---
 % Iteration for top or bottom padding
@@ -246,16 +473,16 @@ pad_around(PadCount,BgString,[BgString|NewFin],FinalFin) :-
    pad_around(PadCountMinus,BgString,NewFin,FinalFin).
   
 % ----
-% The iteration over the basic output lines to construct the "framed lines".
+% The iteration over the basic output lines to construct the "padded lines".
 % On each line, the background string "BgString" (which contains the padding whitespace 
 % and maybe a border) is overwritten by "Line" at position "Pos".
 % ---
 
-framed_iter([Line|MoreLines],BgString,Pos,[FramedLine|MoreFramedLines],FinalFin) :-
-   overwrite_using_runs(BgString,Line,Pos,true,true,FramedLine,string),
-   framed_iter(MoreLines,BgString,Pos,MoreFramedLines,FinalFin).
- 
-framed_iter([],_BgString,_Pos,FinalFin,FinalFin). 
+padded_iter([],_,_,FinalFin,FinalFin). 
+
+padded_iter([Line|MoreLines],BgString,Pos,[PaddedLine|MorePaddedLines],FinalFin) :-
+   overwrite_using_runs(BgString,Line,Pos,true,true,PaddedLine,string), % from module "string_overwrite.pl"
+   padded_iter(MoreLines,BgString,Pos,MorePaddedLines,FinalFin).
 
 % ---
 % Create a "background string" that looks like "|      |" with "PaddedWidth"
@@ -266,11 +493,11 @@ framed_iter([],_BgString,_Pos,FinalFin,FinalFin).
 % ---
 
 background_string(false,PaddedWidth,Line) :-
-   string_of_spaces(PaddedWidth,Line).
+   string_of_spaces(PaddedWidth,Line).  % from module "string_of_spaces.pl"
    
 background_string(true,PaddedWidth,Line) :-
-   string_of_spaces(PaddedWidth,Str1),
-   atomics_to_string(["|",Str1,"|"],Line).
+   string_of_spaces(PaddedWidth,Str1),  % from module "string_of_spaces.pl"
+   stringy_concat("|",Str1,"|",Line,string).
    
 % ---
 % Create a "top/bottom-border string" that looks like "+--------+"
@@ -279,14 +506,12 @@ background_string(true,PaddedWidth,Line) :-
 % ---
 
 top_or_bottom_border_line(PaddedWidth,Line) :-
-   length(Chars,PaddedWidth),
-   maplist(=("-"),Chars),                   % "Chars" is now "PaddedWidth" dashes
-   atomics_to_string(Chars,Str1),           % Messy & Ugly
-   atomics_to_string(["+",Str1,"+"],Line).
+   string_of_dashes(PaddedWidth,String),
+   stringy_concat("+",String,"+",Line,string).
  
-% ----
-% Find max of line-width over all lines using foldl/4
-% ---
+% ===
+% Find max of linewidth over all lines using foldl/4
+% ===
 
 max_line_width(Lines,MaxLineWidth) :- 
    foldl(in_foldl_for_line,Lines,0,MaxLineWidth).
@@ -295,12 +520,39 @@ in_foldl_for_line(Line,FromLeft,ToRight) :-
    string_length(Line,LineWidth),
    ToRight is max(FromLeft,LineWidth).
 
-% ---
+% ===
 % Getting the "Value" for "Key" out of dict "Settings". If tit is missing, "Default" is assumed
-% ---
+% ===
 
-get_setting(Settings,Key,Value,Default) :-
-  get_dict(Key,Settings,Value) -> true ; Value = Default.
+get_setting(SettingsDict,Key,Value,Default) :-
+  get_dict(Key,SettingsDict,Value) -> true ; Value = Default.
 
+% ===
+% A useful helper that seems to be missing in Prolog
+% ===
 
+maplist_which_appends_to_open_list(_,[],FinalFin,FinalFin) :- !.
+ 
+maplist_which_appends_to_open_list(Goal,[NominalIn|MoreNominalIns],[NominalOut|Fin],FinalFin) :-
+   call(Goal,NominalIn,NominalOut),
+   maplist_which_appends_to_open_list(Goal,MoreNominalIns,Fin,FinalFin).
+ 
+% ===
+% Assorted
+% ===
+
+string_of_dashes(Width,String) :-
+   length(Chars,Width),
+   maplist(=("-"),Chars),           % "Chars" is now "Width" dashes
+   atomics_to_string(Chars,String).
+
+is_list_of_positive_integers(L) :-
+   maplist([X]>>(integer(X),X>=0),L).
+
+is_list_of_string(L) :-
+   maplist([X]>>(string(X)),L).
+
+is_boolean(X) :-
+   X==false;X==true.
+ 
 

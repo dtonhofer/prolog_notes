@@ -26,6 +26,7 @@
           justify_left/3    % justify_left(Text,Width,Result)
          ,justify_right/3   % justify_right(Text,Width,Result)
          ,justify_center/3  % justify_center(Text,Width,Result)
+         ,justify_how/4     % justify_how(How,Text,Width,Result)
          ,justify_left/5    % justify_left(Text,Width,Result,Want,Nocheck)
          ,justify_right/5   % justify_right(Text,Width,Result,Want,Nocheck)
          ,justify_center/5  % justify_center(Text,Width,Result,Want,Nocheck)
@@ -55,6 +56,26 @@ justify_center(Text,Width,Result) :-
    justify(Text,Width,center,_,_,_,_,Result,string,false).
 
 % ===
+% Simple calls that don't check and always return strings
+%
+% How      : One of: left, right, center, none - specifies how to justify (none: just pass the text through)
+% Text     : The text to justify (spaces will be added)
+% Width    : The width of the field in which the text shall be justified (an integer >= 0)
+% Result   : The Result, a string (not an atom)
+% ===
+
+justify_how(How,Text,Width,Result) :-
+   ((How==left)
+    -> justify_left(Text,Width,Result) ;
+    (How==right)
+    -> justify_right(Text,Width,Result) ;
+    (How==center)
+    -> justify_center(Text,Width,Result) ;
+    (How==none)
+    -> stringy_ensure(Text,Result,string) ; 
+   domain_error([left,right,center,none],How)).
+
+% ===
 % Simple calls with reduced parameter count
 %
 % Text     : The text to justify (spaces will be added)
@@ -81,7 +102,7 @@ justify_center(Text,Width,Result,Want,Nocheck) :-
 %
 % Text     : The text to justify (spaces will be added)
 % Width    : The width of the field in which the text shall be justified (an integer >= 0)
-% How      : On of the atoms 'left', 'right', 'center' or leave it at _, in which case 'left' is assumed (and unified).
+% How      : One of the atoms 'left', 'right', 'center', 'none'. No default is accepted.
 % Want     : One of 'atom' or 'string' to indicate what the "Result" should be. No default is accepted.
 % CutLeft  : Cut off on the left (lower than position 0?). One of 'true' or 'false' or leave it at _, in which case 'true' is assumed (and unified).
 % CutRight : Cut off on the right (higher than position Width?). One of 'true' or 'false' or leave it at _, in which case 'true' is assumed (and unified).
@@ -94,7 +115,6 @@ justify_center(Text,Width,Result,Want,Nocheck) :-
 justify(Text,Width,How,CutLeft,CutRight,Prefer,Offset,Result,Want,Nocheck) :-
    unless((Nocheck == true),assertions_intro_for_justify(Text,Width,How,CutLeft,CutRight,Prefer,Offset,Want)),
    unless((var(Result);stringy(Result)),fail), % shortcut in case of "checking the result"
-   if_then(var(How),How=left),
    if_then(var(CutLeft),CutLeft=true),
    if_then(var(CutRight),CutRight=true),
    if_then(var(Prefer),Prefer=left),
@@ -118,6 +138,9 @@ justify_helper(center,Prefer,Text,Width,Offset,CutLeft,CutRight,Result,Want) :-
    reify(odd(Width),IsOddWidth),
    actual_offset(IsOddTextLen,IsOddWidth,TextLen,Width,Offset,Prefer,ActualOffset),
    overwrite_using_runs(Spaces,Text,ActualOffset,CutLeft,CutRight,Result,Want).
+
+justify_helper(none,_,Text,_,_,_,_,Result,Want) :-
+   stringy_ensure(Text,Result,Want).
 
 % ---
 % Computing the actual offset to apply in case of a "centrally justified text"
@@ -168,7 +191,7 @@ correction(_,_,_,0).
 assertions_intro_for_justify(Text,Width,How,CutLeft,CutRight,Prefer,Offset,Want) :-
    assertion(stringy(Text)),
    assertion((integer(Width), Width >= 0)),
-   assertion((var(How);memberchk(How,[left,right,center]))),
+   assertion(memberchk(How,[left,right,center,none])),
    assertion((var(CutLeft);memberchk(CutLeft,[true,false]))),
    assertion((var(CutRight);memberchk(CutRight,[true,false]))),
    assertion((var(Prefer);memberchk(Prefer,[left,right]))),
