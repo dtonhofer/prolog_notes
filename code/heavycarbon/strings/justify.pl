@@ -12,6 +12,11 @@
 % ?- use_module(library('heavycarbon/strings/justify.pl')).
 % ?- load_test_files([]).
 % ?- run_tests.
+% 
+% TODO:
+% Justification always implies that the resulting string has the width given
+% by "Width" (via string_of_spaces(Width,Spaces)). This may not be desired in 
+% that one would like to not have the trailing spaces. One more parameter!
 % =============================================================================
 % David Tonhofer (ronerycoder@gluino.name) says:
 % This code is licensed under:
@@ -63,6 +68,8 @@ justify_center(Text,Width,Result) :-
 % Width    : The width of the field in which the text shall be justified (an integer >= 0)
 % Result   : The Result, a string (not an atom)
 % ===
+
+% TODO: Use switch meta-predicate here
 
 justify_how(How,Text,Width,Result) :-
    ((How==left)
