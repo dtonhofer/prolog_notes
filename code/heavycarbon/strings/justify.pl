@@ -17,6 +17,9 @@
 % Justification always implies that the resulting string has the width given
 % by "Width" (via string_of_spaces(Width,Spaces)). This may not be desired in 
 % that one would like to not have the trailing spaces. One more parameter!
+% TODO:
+% What happenms if you justify a string inside a field that has the length of 
+% that string?
 % =============================================================================
 % David Tonhofer (ronerycoder@gluino.name) says:
 % This code is licensed under:
