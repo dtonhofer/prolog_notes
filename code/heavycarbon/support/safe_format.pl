@@ -1,73 +1,85 @@
-% ============================================================================
-% format/2 (https://eu.swi-prolog.org/pldoc/doc_for?object=format/2)
-% is **precise** in what it expects.
-% It throws an exception if there is a mismatch in argument count or type.
-% This is unfortunate in situations of dynamic code or code lacking coverage.
-% Use this predicate to make format/2 generate "FinalText" (always a string) 
-% from "Msg" and "Args", catch any exceptions generated and generate some 
-% replacement message instead.
-%
-% safe_format(+Msg,+Args,-FinalText)
-%
-% Usage:
-%
-% ?- use_module(library('heavycarbon/support/safe_format.pl')).
-%
-% ?- safe_format("Hello ~d",[7889],TXT).
-% TXT = "Hello 7889".
-%
-% ?- safe_format("Hello ~d",[hello],TXT).
-% TXT = "Exception in format/2. Args: <Hello ~d> & <hello>".
-%
-% Another example:
-% 
-% This works nicely:
-%
-% ?- safe_format("Everything is going extremely ~s. We have ~s complaints",["well","no"],Text).
-% Text = "Everything is going extremely well. We have no complaints".
-%
-% safe_format/3 saves your bacon, you forgot a placeholder in the template:
-%
-% ?- safe_format("Open the ~s.",["pod bay doors","HAL"],Text).
-% Text = "Exception in format/2. Args: <Open the ~s.> & <pod bay doors> & <HAL>".
-% ============================================================================
-% David Tonhofer (ronerycoder@gluino.name) says:
-% This code is licensed under: 
-% "Zero-Clause BSD / Free Public License 1.0.0 (0BSD)"
-% https://opensource.org/licenses/0BSD
-% =============================================================================
-% Latest review: Tue 20 January 2021
-% =============================================================================
-
 :- module(heavycarbon_support_safe_format,
           [
-          safe_format/3   % safe_format(+Msg,+Args,-FinalText)
+          safe_format/3   % safe_format(+Msg,+Args,-ResultString)
           ]).
 
-safe_format(Msg,Args,FinalText) :-
+%! safe_format(+Msg,+Args,-ResultString) is det
+%
+% format/2 and format/3 are **precise** in what they expect. They throw an
+% exception if there is a mismatch in argument count or argument type. This is
+% unfortunate in situations of dynamic code or code lacking coverage, as 
+% latent faults can cause exceptions at inopportune times.
+%
+% Use this predicate to make format/3 generate ResultString (always an 
+% SWI-Prolog string) from Msg and Args. If an exception is thrown by format/3,
+% it is caught and a replacement message is generated in ResultString.
+%
+% ### Examples
+%
+% ```
+% ?- use_module(library('heavycarbon/support/safe_format.pl')).
+%
+% ?- safe_format("Hello ~d",[7889],Result).
+% Result = "Hello 7889".
+%
+% ?- safe_format("Hello ~d",[hello],Result).
+% Result = "Exception in format/3 with format string <Hello ~d> and args <hello>".
+%
+% ?- safe_format("Open the ~s.",["pod bay doors","HAL"],Result).
+% Result = "Exception in format/3 with format string <Open the ~s.> and args <\"pod bay doors\">,<\"HAL\">".
+% ```
+%
+% ### History
+% 
+%    1. 2021-01-20 - Code review.
+%    1. 2021-02-04 - Documentation rewritten to pldoc.
+%
+% ### More
+%
+%    @arg Msg The placeholder-adorned message to print
+%    @see format/2, format/3
+%    @arg Args The list of parameters that will be inserted into Msg. If not a list,
+%         Args is transformed into a list with a single argument.
+%    @arg ResultString The result of formatting. Always an SWI-Prolog string.
+%         Contains a replacement message in case format/3 threw an exception.
+%    @license [Zero-Clause BSD / Free Public License 1.0.0 (0BSD)](https://opensource.org/licenses/0BSD)
+%    @author David Tonhofer (ronerycoder@gluino.name)
+%    @tbd Escape non-printable characters to their hex respresentation.
+
+safe_format(Msg,Args,Result) :-
    (is_list(Args) -> ListyArgs = Args ; ListyArgs = [Args]),
    catch(
-      format(string(FinalText),Msg,ListyArgs), % this "should" work
-      _Catcher1,
-      safe_format_exception_handler(Msg,ListyArgs,FinalText)).
+      format(string(Result),Msg,ListyArgs), % this "should" work
+      _,
+      safe_format_exception_handler(Msg,ListyArgs,Result)).
 
-% we end up here if format/3 doesn't like what it sees; finagle something!
-% while still catching in case of further problems
+% ---
+% We end up here if format/3 doesn't like what it sees; finagle something!
+% While still catching in case of further problems.
+% ---
 
-safe_format_exception_handler(Msg,ListyArgs,FinalText) :-
+safe_format_exception_handler(Msg,ListyArgs,Result) :-
    catch(
-      (foldl(format_whatever,[Msg|ListyArgs],TheList,[]), % this generates a new closed list
-       TheList = [_|OutList], % shave off the first separator
-       atomics_to_string(["Exception in format/2. Args: "|OutList],FinalText)),
-      _Catcher2,
-      FinalText = "Exception inside of exception handler of safe_format/3").
+      build_replacement_string(Msg,ListyArgs,Result),
+      _,
+      (Result = "Exception inside of exception handler of safe_format/3")).
 
-% add a separator & the datum, ToRight is the new FIN of open list
+% ---
 
-format_whatever(Element,FromLeft,ToRight) :-
-   format(string(Out),"<~s>",[Element]),
-   FromLeft = [" & ",Out|ToRight].
-   
-   
-   
- 
+build_replacement_string(Msg,ListyArgs,Result) :-
+   maplist(
+       format_whatever,
+       ListyArgs,           % input
+       FormattedArgs),      % ouput is a list of string
+   atomics_to_string(FormattedArgs,",",ArgsString),
+   atomics_to_string([
+       "Exception in format/3 with format string <",
+       Msg,
+       "> and args ",
+       ArgsString],Result).
+
+% ---
+
+format_whatever(Element,Formatted) :-
+   format(string(Formatted),"<~p>",[Element]). % "~p" == "print term for debugging purposes"
+
