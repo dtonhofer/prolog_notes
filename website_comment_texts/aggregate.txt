@@ -2,7 +2,7 @@ https://eu.swi-prolog.org/pldoc/doc_for?object=aggregate/3
 
 ## Beware of the empty solution 
 
-"The aggregate/3 version performs bagof/3 on Goal." means that the call will **fail** when there are no solutions. This may be unexpected:
+"The aggregate/3 version performs bagof/3 on Goal." means that the call will **fail** when there are no solutions. This is exactly right when working in "logical mode" where you search for an acceptable solution and fail if there is none. As opposed to "computational/traditional mode" where you are ok with an empty solution set and then decide to throw, issue an error message or explicity try something else. (Prolog code is actually an interleaving of those two thinking modes, one driven by logic&search, the other by computation&interaction, but this is never made really explicit anywhere)
 
 Take this logic program:
 
@@ -26,16 +26,14 @@ But instead of `Count==0`, you get a failure if there are no solutions:
 false.
 ==
 
-To make sure use the if-then-else operator ->/2.
+To "switch to computational mode" use the if-then-else operator ->/2.
 
 ==
 ?- (aggregate(count, X^fact(c,X), Count) -> true ; Count=0).
 Count = 0.
 ==
 
-Or use aggregate_all/3, which is based on findall/3, which doesn't fail if the solution is empty.
-
-That predicate doesn't use the caret notation because findall/3 doesn't use the caret notation:
+Or use aggregate_all/3, which is based on findall/3, which works in "computational mode" (its solution is the empty list if there are no solutions). That predicate doesn't use the caret notation because findall/3 doesn't use the caret notation:
 
 ==
 ?- aggregate_all(count, fact(c,X), Count).

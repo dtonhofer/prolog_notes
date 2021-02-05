@@ -5,14 +5,20 @@
 
 %! safe_format(+Msg,+Args,-ResultString) is det
 %
-% format/2 and format/3 are **precise** in what they expect. They throw an
-% exception if there is a mismatch in argument count or argument type. This is
-% unfortunate in situations of dynamic code or code lacking coverage, as 
-% latent faults can cause exceptions at inopportune times.
+% Call format/3 to format Msg with Args resulting in ResultString, but catch
+% and defuse any exceptions raised.
 %
-% Use this predicate to make format/3 generate ResultString (always an 
-% SWI-Prolog string) from Msg and Args. If an exception is thrown by format/3,
-% it is caught and a replacement message is generated in ResultString.
+% format/3 and format/2 are demanding in what they require as arguments. 
+% They throw an exception if there is a mismatch between the placeholders
+% count and the count of elements in Args, or if an element in Args is
+% a mismatch for a placeholder in Msg. This can lead to exceptions at inopportune
+% times, especially if the Msg or Args arguments are built dynamically and code
+% lacks sufficient coverage.
+%
+% Use this predicate to make format/3 generate 
+% ResultString (always an SWI-Prolog string) from Msg and Args. If an 
+% exception is thrown from the call to format/3, it is caught and a 
+% replacement message is generated in ResultString.
 %
 % ### Examples
 %
@@ -54,8 +60,9 @@ safe_format(Msg,Args,Result) :-
       safe_format_exception_handler(Msg,ListyArgs,Result)).
 
 % ---
-% We end up here if format/3 doesn't like what it sees; finagle something!
-% While still catching in case of further problems.
+% We end up here if format/3 doesn't like its arguments; finagle something!
+% While still catching any exception thrown by the building of the replacement
+% string.
 % ---
 
 safe_format_exception_handler(Msg,ListyArgs,Result) :-
