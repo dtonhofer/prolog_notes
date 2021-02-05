@@ -1,0 +1,105 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/pldoc.html%27)
+
+And also:
+
+```
+Technical prose is almost immortal.
+
+— Frederick P. Brooks, Jr.
+```
+
+as cited in 
+
+["Code Documentation"](https://www.spinellis.gr/blog/20100711/index.html) by Diomidis Spinellis (appears in "IEEE Software", 27(4):18–19, July/August 2010.)
+
+## Doc needs help
+
+The URL to the doc server started with 
+
+```
+doc_server(4000).
+```
+
+is http://localhost:4000/pldoc/
+
+The page provides a drop-down list of available directories (those from which documented code has been collected).
+
+If you loaded one of your modules with use_module/1, the corresponding directory will appear here.
+
+Note that the help/1 instruction does not seem to directly have access to the pldoc text. How do you fix that?
+
+After the documentation has been updated in the source, a `make` call will update the web server contents. Nice.
+
+## The first sentence is important
+
+The first sentence after the declaration is used in an index of the directory in which the documented file resides. So it should briefly describe the predicate (but be followed by a longer explanation as needed)
+
+## Module documentation behaviour
+
+   - Predicates that are not exported do not appear in the documentation (irrespective of whether there is a documentation block or not)
+   - The comment/documentation block does not need to immediately precede the predicate (but it should)
+   - In the final documentation, the predicates appear listed in the order in which the comment/documentation blocks are encountered 
+   - If there is a predicate that is exported but not documented, the documentation web server throws an error on the console and you get a blank page in the browser.
+
+## Maybe Missing
+
+   - A `@history(Date)` entry to describe the history of the source. Yup, it should be there.
+   - A way to hyperlink an e-mail.
+   - Maybe the `@arg` should be like `@arg(ArgName)`
+   - A way to comment out a line inside a pldoc comment
+
+## Block structure is important
+
+It tells the pldoc processor where a unit ends!
+
+For example, this will properly start a list and terminate a list:
+
+```
+% History
+% 
+%    1. **2021-01-20** - Code review.
+%    1. **2021-02-04** - Documentation rewritten to pldoc.
+%
+% If you pass the first argument...
+```
+
+But this will suck all subsequent text into the second list item.
+
+```
+% History
+% 
+% 1. **2021-01-20** - Code review.
+% 1. **2021-02-04** - Documentation rewritten to pldoc.
+%
+% If you pass the first argument...
+```
+
+## The @ notation
+
+The description says "Optionally, the description may be followed by one or more tags."
+
+It really must be **followed** (you cannot put the tags in the middle of the text).
+Once you start writing the tags there is no going back to "standard mode". 
+
+Anything marked `@arg` is hoovered into a separate section with the title "Arguments".
+
+The remainder of the tags are arranged according to some standard order. So you have an output like:
+
+```
+Arguments:
+    Msg - The placeholder-adorned message to print
+    Args - The list of parameters that will be... 
+    ResultString - The result of formatting...
+author
+    - Me
+See also
+    - format/2, format/3
+license
+    - Zero-Clause BSD / Free Public License 1.0.0 (0BSD) 
+```
+
+## Bugs
+
+- Level 1 headers are rather big & ugly and seem useless in pldoc. But switching to sublevels immediately causes indentation problems.
+- The doc server presents a content list on the left side, with modules and their exported predicates. Sometimes the predicates are shown and sometimes not but I haven't been able to find out why.
+
