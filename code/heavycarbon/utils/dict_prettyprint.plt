@@ -3,19 +3,58 @@
 :- begin_tests(dict_prettyprint).
 
 test("format empty dict") :-
-   dict_pp_lines(_{},Lines),
-   assertion(Lines == []).
+   dict_pp( _{}, _{}, LinesOut),
+   assertion(LinesOut == []).
 
-test("format dict with integers") :-
-   dict_pp_lines(_{w: 100, ww: 200, www: 300, wwww: 400},Lines),
-   assertion(Lines ==
+test("format dict with integers, no tag") :-
+   dict_pp( _{w: 10, ww: 100, www: 1000, wwww: 10000}, _{}, LinesOut),
+   assertion(LinesOut ==
+      [ "w    : 10   "
+        "ww   : 100  "
+        "www  : 1000 "
+        "wwww : 10000" ]).
+
+test("format dict with integers, no tag, justify right") :-
+   dict_pp( _{w: 10, ww: 100, www: 1000, wwww: 10000}, _{justify_key:right,justify_value:right}, LinesOut),
+   assertion(LinesOut ==
+      [ "   w :    10"
+        "  ww :   100"
+        " www :  1000"
+        "wwww : 10000" ]).
+
+test("format dict with integers, no tag, justify center") :-
+   dict_pp( _{w: 10, ww: 100, www: 1000, wwww: 10000}, _{justify_key:center,justify_value:center}, LinesOut),
+   assertion(LinesOut ==
+      [ " w   :  10  "
+        " ww  :  100 "
+        "www  : 1000 "
+        "wwww : 10000" ]).
+
+test("format dict with integers, no tag, border") :-
+   dict_pp( _{w: 10, ww: 100, www: 1000, wwww: 10000}, _{border:true}, LinesOut),
+   assertion(LinesOut ==
+      [ " w   :  10  "
+        " ww  :  100 "
+        "www  : 1000 "
+        "wwww : 10000" ]).
+
+
+
+
+test("format dict with integers, tag") :-
+   dict_pp(
+      the_tag{w: 100, ww: 200, www: 300, wwww: 400},
+      _{},LinesOut),
+   assertion(LinesOut ==
       [ "w    : 100",
         "ww   : 200",
         "www  : 300",
         "wwww : 400" ]).
 
+
+/*
 test("format dict with floats") :-
-   dict_pp_lines(_{w: 0.25984759, ww: 1.4587598, www: 643764856, wwww: 400},Lines),
+   dict_pp(_{w: 0.25984759, ww: 1.4587598, www: 643764856, wwww: 400},Lines),
    assertion(Lines ==
       [ "w    : 0.259848",
         "ww   : 1.458760",
@@ -23,7 +62,7 @@ test("format dict with floats") :-
         "wwww : 400" ]).
 
 test("format dict with floats; format as g") :-
-   dict_pp_lines(_{w: 0.25984759, ww: 1.4587598, www: 643764856, wwww: 400},_{float:g},Lines),
+   dict_pp(_{w: 0.25984759, ww: 1.4587598, www: 643764856, wwww: 400},_{float:g},Lines),
    assertion(Lines ==
       [ "w    : 0.259848",
         "ww   : 1.45876",
@@ -31,7 +70,7 @@ test("format dict with floats; format as g") :-
         "wwww : 400" ]).
 
 test("format dict with floats; format as e") :-
-   dict_pp_lines(_{w: 0.25984759, ww: 1.4587598, www: 643764856, wwww: 400},_{float:e},Lines),
+   dict_pp(_{w: 0.25984759, ww: 1.4587598, www: 643764856, wwww: 400},_{float:e},Lines),
    assertion(Lines ==
       [ "w    : 2.598476e-01",
         "ww   : 1.458760e+00",
@@ -39,7 +78,7 @@ test("format dict with floats; format as e") :-
         "wwww : 400" ]).       % stays int
 
 test("format dict with integers of varying length; justify left") :-
-   dict_pp_lines(_{w1: 10, w2: 200, w3: 3000, w4: 40000},_{justify:left},Lines),
+   dict_pp(_{w1: 10, w2: 200, w3: 3000, w4: 40000},_{justify:left},Lines),
    assertion(Lines ==
       [ "w1 : 10   ",
         "w2 : 200  ",
@@ -47,7 +86,7 @@ test("format dict with integers of varying length; justify left") :-
         "w4 : 40000" ]).
 
 test("format dict with integers of varying length; justify right") :-
-   dict_pp_lines(_{w1: 10, w2: 200, w3: 3000, w4: 40000},_{justify:right},Lines),
+   dict_pp(_{w1: 10, w2: 200, w3: 3000, w4: 40000},_{justify:right},Lines),
    assertion(Lines ==
       [ "w1 :    10",
         "w2 :   200",
@@ -55,7 +94,7 @@ test("format dict with integers of varying length; justify right") :-
         "w4 : 40000" ]).
 
 test("format dict with integers of varying length; justify center") :-
-   dict_pp_lines(_{w1: 10, w2: 200, w3: 3000, w4: 40000},_{justify:center},Lines),
+   dict_pp(_{w1: 10, w2: 200, w3: 3000, w4: 40000},_{justify:center},Lines),
    assertion(Lines ==
       [ "w1 :  10  ",
         "w2 :  200 ",
@@ -63,7 +102,7 @@ test("format dict with integers of varying length; justify center") :-
         "w4 : 40000"]).
 
 test("padded left and right by 2 spaces") :-
-   dict_pp_lines_padded(
+   dict_pp(
       _{w: 100, ww: 200, www: 300, wwww: 400},
       _{pad_top:0,pad_btm:0,pad_left:2,pad_right:2,border:false},
       PaddedLines),
@@ -74,7 +113,7 @@ test("padded left and right by 2 spaces") :-
        "  wwww : 400  "]).
 
 test("padded all around by 2 spaces") :-
-   dict_pp_lines_padded(
+   dict_pp(
       _{w: 100, ww: 200, www: 300, wwww: 400},
       _{pad_top:2,pad_btm:2,pad_left:2,pad_right:2,border:false},
       PaddedLines),
@@ -89,7 +128,7 @@ test("padded all around by 2 spaces") :-
        "              "]).
 
 test("padded all around by 2 spaces and a border") :-
-   dict_pp_lines_padded(
+   dict_pp(
       _{w: 100, ww: 200, www: 300, wwww: 400},
       _{pad_top:2,pad_btm:2,pad_left:2,pad_right:2,border:true},
       PaddedLines),
@@ -106,7 +145,7 @@ test("padded all around by 2 spaces and a border") :-
        "+--------------+"]).
 
 test("empty dict, padded all around by 2 spaces and a border") :-
-   dict_pp_lines_padded(
+   dict_pp(
       _{},
       _{pad_top:2,pad_btm:2,pad_left:2,pad_right:2,border:true},
       PaddedLines),
@@ -119,7 +158,7 @@ test("empty dict, padded all around by 2 spaces and a border") :-
         "+----+"]).
 
 test("empty dict, enclosed by a border") :-
-   dict_pp_lines_padded(
+   dict_pp(
       _{},
       _{border:true},
       PaddedLines),
@@ -128,7 +167,7 @@ test("empty dict, enclosed by a border") :-
         "++"]).
 
 test("empty dict, padded left by 1, enclosed by a border") :-
-   dict_pp_lines_padded(
+   dict_pp(
       _{},
       _{border:true,pad_left:1,pad_top:1},
       PaddedLines),
@@ -138,7 +177,7 @@ test("empty dict, padded left by 1, enclosed by a border") :-
         "+-+"]).
 
 test("recursive dicts with borders (on subdicts)") :-
-   dict_pp_lines(
+   dict_pp(
       _{w1: 10, w2: 200, w3: 3000, w4: _{w1: 10, w2: 20, w3: _{ a: 12, b: 13}}},
       _{border:true},
       Lines),
@@ -156,7 +195,7 @@ test("recursive dicts with borders (on subdicts)") :-
        "     +-------------+"]).
 
 test("recursive dicts with borders full") :-
-   dict_pp_lines_padded(
+   dict_pp(
       _{w1: 10, w2: 200, w3: 3000, w4: _{w1: 10, w2: 20, w3: _{ a: 12, b: 13}}},
       _{border:true},
       Lines),
@@ -176,7 +215,7 @@ test("recursive dicts with borders full") :-
        "+--------------------+"]).
 
 test("recursive dicts with borders, justify right") :-
-   dict_pp_lines(_{w1: 10, w2: 200, w3: 3000, w4: _{w1: 10, w2: 20, w3: _{ a: 12, b: 13}}},
+   dict_pp(_{w1: 10, w2: 200, w3: 3000, w4: _{w1: 10, w2: 20, w3: _{ a: 12, b: 13}}},
       _{border:true,justify:right},
       Lines),
    assertion(Lines =
@@ -191,6 +230,6 @@ test("recursive dicts with borders, justify right") :-
        "     |     |b : 13||",
        "     |     +------+|",
        "     +-------------+"]).
-
+*/
 :- end_tests(dict_prettyprint).
 
