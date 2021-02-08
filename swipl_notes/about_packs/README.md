@@ -54,7 +54,7 @@ Howtos:
 
 Specification:
 
-- [Spec: The contents of `pack.pl](https://eu.swi-prolog.org/howto/PackInfo.txt) (the package MANIFEST file, basically)
+- [Spec: The contents of `pack.pl`](https://eu.swi-prolog.org/howto/PackInfo.txt) (the package MANIFEST file, basically)
 
 Some specific modules of the distribution (not sure what these are, they show up in the search drop-down):
 
