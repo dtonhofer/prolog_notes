@@ -66,3 +66,10 @@ List
 
 - [List of submitted packs](https://eu.swi-prolog.org/pack/list)
 
+*Next up*: How to build a pack from a github repository.
+
+- It should be possible to have multiple versions of the pack (that sounds like scripting)
+- How do I generate the SWI-Prolog equivalent of JavaDoc? One can inspect the doc with a running "document web server" but can it be just HTML pages?
+- How do I subvert security? (Ha HA!)
+- What tools do I need?
+- Oh man.
