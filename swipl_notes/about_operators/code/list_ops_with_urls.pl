@@ -92,7 +92,8 @@ op_info('*->'  , xfy , "Soft-cut","doc_for?object=(*->)/2").
 op_info('->'   , xfy , "If-Then (and maybe Else)","doc_for?object=(->)/2").
 op_info(','    , xfy , "Meta-predicate to combine goals into a conjunction","doc_for?object=(%27,%27)/2").
 op_info('\\+'  , fy  , "Negation-as-failure operator","doc_for?object=(%5C%2B)/1").
-op_info(':='   , xfx , "","").
+op_info(':='   , xfx , "",""). % what is this?
+op_info(':'    , xfy , "Module qualification","man?section=metapred").
 
 op_info('discontiguous'         , fx , "Declares a predicate as discontinguous", "doc_for?object=(discontiguous)/1").
 op_info('dynamic'               , fx , "Declares a predicate as dynamic", "doc_for?object=(dynamic)/1").
