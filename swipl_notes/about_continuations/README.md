@@ -4,8 +4,8 @@ This is additional material for the page [Delimited Continuations](https://eu.sw
 
 ## TOC
 
-   - [Errata](#errata" />
-   - [Reading](#reading" />
+   - [Errata](#errata)
+   - [Reading](#reading)
       - [Some Wikipedia entries](#some_wikipedia_entries)
       - ["Delimited continuations for Prolog" (2013)](#delimited_continuations_for_prolog)
       - ["Delimited continuations in Prolog: semantics, use, and implementation in the WAM" (2013)](#delimited_continuations_for_prolog_2)
