@@ -501,7 +501,7 @@ multer(X,FromLeft,ToRight) :- ToRight is X*FromLeft.
 or with a yall expression:
 
 ```
-list_to_product(L,Product) :- foldl([X,FL,TR]>>(TR is X*FL),L,0,Product).
+list_to_product(L,Product) :- foldl([X,FL,TR]>>(TR is X*FL),L,1,Product).
 ```
 
 And so:
