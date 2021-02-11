@@ -2,7 +2,36 @@
 
 This is additional material for the page [Delimited Continuations](https://eu.swi-prolog.org/pldoc/man?section=delcont) of the SWI-Prolog manual.
 
-## Errata
+## TOC
+
+   - Errata<a name="errata" />
+   - Reading<a name="reading" />
+      - Some Wikipedia entries<a name="some_wikipedia_entries" />
+      - "Delimited continuations for Prolog" (2013)<a name="delimited_continuations_for_prolog" />
+      - "Delimited continuations in Prolog: semantics, use, and implementation in the WAM" (2013)<a name="delimited_continuations_for_prolog_2" />
+      - "Call with current continuation patterns" (2001)<a name="call_with_current_continuation_patterns" />
+      - "Abstracting Control" (1990)<a name="abstractin_control" />
+      - "Capturing the Future by Replaying the Past - Functional Pearl" (2018)<a name="capturing_the_future_by_replaying_the_past" />
+   - Similar ideas<a name="similar ideas" />
+      - Similarity of `reset`/`shift` to `catch`/`throw`<a name="reset_shift_vs_catch_throw" />
+      - Relationship between `call/cc` and `reset/3`<a name="call_cc_vs_reset" />
+   - Empirical research<a name="empirical_research" />
+      - The "continuation" term is a compound term<a name="the_continuation_term_is_a_compound_term" />
+      - Calling `shift/1` is not like backtracking<a name="calling_shift_is_not_like_backtracking" />
+      - There is proper backtracking over the goal called by `reset/3`<a name="there_is_proper_backtracking_over_the_goal_called_by_reset" />
+      - The `reset` point behaves as a resource on the call stack<a name="the_reset_point_behaves_as_a_resource_on_the_call_stack" />
+      - Correct switching using (tail) recursion to generate new reset points<a name="correct_switching_using_recursion-to_generate_new_reset_points" />
+      - Correct switching using a "failure-driven loop" in the "lower" predicate<a name="correct_switching_using_failure_driven_loop" />
+      - Weirdness: Using a failure-driven loop in the "upper" predicate<a name="using_failure_driven_loop_in_the_upper_predicate" />
+      - Edge cases<a name="edge_cases" />
+   - Examples<a name="examples" />
+      - Hands-on testing<a name="hands_on_testing" />
+      - Simple patterns<a name="simple_patterns" />
+      - Iterator inspired by _Schrijvers et al., 2013_<a name="iterator_from_schrijvers_et_al" />
+      - Effect handler inspired by _Schrijvers et al., 2013_<a name="effect_handler_from_schrijvers_et_al" />
+   - Adapting the patterns from "Call with current continuation patterns"<a name="adapting_the_patterns_from_call_cc_patterns" />
+
+## Errata<a name="errata" />
 
 The manual says:
 
@@ -19,9 +48,9 @@ The PDF says it has been written in 2003, but it has really been written in 2013
 
 It has been [published](https://www.cambridge.org/core/journals/theory-and-practice-of-logic-programming/article/delimited-continuations-for-prolog/DD08147828169E26212DFAF743C8A9EB) in _Theory and Practice of Logic Programming_ in 2013.
 
-## Reading
+## Reading<a name="reading" />
 
-### Some Wikipedia entries
+### Some Wikipedia entries<a name="some_wikipedia_entries" />
 
    - [Call-with-current-continuation](https://en.wikipedia.org/wiki/Call-with-current-continuation)
    - [Coroutine](https://en.wikipedia.org/wiki/Coroutine)
@@ -30,7 +59,7 @@ It has been [published](https://www.cambridge.org/core/journals/theory-and-pract
    - [COMEFROM instruction](https://en.wikipedia.org/wiki/COMEFROM) ( a `reset/3` is like a special label on the call stack which captures all `shift/1`
      calls under that match the `Ball` term - it resembles a `COMEFROM`, the opposite of a `GOTO`)
    
-### "Delimited continuations for Prolog"
+### "Delimited continuations for Prolog" (2013)<a name="delimited_continuations_for_prolog" />
 
 As given in the SWI-Prolog manual.
 
@@ -47,9 +76,9 @@ From that paper:
 
 The [publication page of that paper](https://www.cambridge.org/core/journals/theory-and-practice-of-logic-programming/article/delimited-continuations-for-prolog/DD08147828169E26212DFAF743C8A9EB) has a lot of live links to the the references.
 
-### "Delimited continuations in Prolog: semantics, use, and implementation in the WAM"
+### "Delimited continuations in Prolog: semantics, use, and implementation in the WAM" (2013)<a name="delimited_continuations_for_prolog_2" />
 
-Technical Report. This is an excellent resource, IMHO better than the first one!
+Technical Report. This is an excellent resource, IMHO better than the one above.
 
    - https://biblio.ugent.be/publication/5646080
    - Tom Schrijvers, Bart Demoen, Benoit Desouter
@@ -76,7 +105,7 @@ Section 7.6:
 > Dubaet al. added first-class continuations to the statically typed ML language [Typing first-class continuations in ML, POPL '91].  
 > Flattet al.implementeda production version in Scheme [Adding delimited and composable control to a production programming environment, 2007]
 
-### "Call with current continuation patterns"
+### "Call with current continuation patterns" (2001)<a name="call_with_current_continuation_patterns" />
 
    - https://www.researchgate.net/publication/228576802_Call_with_current_continuation_patterns
    - Darrell Ferguson, Dwight Deugo
@@ -132,7 +161,7 @@ point of `reset` via the term shifted by `shift`.
 > paper we decide to go back to reading the remaining references and other material. This is
 > equivalent to invoking an angel.
 
-### "Abstracting Control"
+### "Abstracting Control" (1990)<a name="abstractin_control" />
 
    - http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.43.8753
    - Olivier Danvy, Andrzej Filinski
@@ -158,7 +187,7 @@ We read:
 
 Ok, this needs more study.
 
-### "Capturing the Future by Replaying the Past - Functional Pearl"
+### "Capturing the Future by Replaying the Past - Functional Pearl" (2018)<a name="capturing_the_future_by_replaying_the_past" />
 
    - https://hal.inria.fr/hal-01929178/document
    - https://arxiv.org/abs/1710.10385
@@ -177,9 +206,9 @@ Ok, this needs more study.
 > nondeterminism, and discuss why our construction is not prevented by theoretical results that exceptions and state cannot
 > macro-express continuations.
 
-## Concept linking
+## Similar ideas<a name="similar ideas" />
 
-### Similarity of `reset`/`shift` to `catch`/`throw`
+### Similarity of `reset`/`shift` to `catch`/`throw`<a name="reset_shift_vs_catch_throw" />
 
 Note the similarity between exception handling and delimited continuations. This is not an accident:
 
@@ -199,7 +228,7 @@ and the currently executing procedure calls ` shift/1` with a term `T`, then exe
 call point that has a unifying `Ball` - in the same way as as execution flow goes to the nearest `catch/3` that 
 unifies `Catcher` with `E`, where `E` is the term thrown by `throw/1`.
 
-### Relationship between `call/cc` and `reset/3`
+### Relationship between `call/cc` and `reset/3`<a name="call_cc_vs_reset" />
 
 The Scheme function `call/cc` is called with a "receiver" function that takes one continuation argument.
 `call/cc` invokes the receiver with the continuation which continues after `call/cc`. The receiver function
@@ -211,9 +240,9 @@ to retrieve the appropriate continuation somewhere on the call stack). So unlike
 at the `call/cc` point stays invisible. However, you get the continuation for the `shift/1` point for free. With
 `call/cc` you have to pass through some hoops to obtain it.
 
-## Empirical research
+## Empirical research<a name="empirical_research" />
 
-### The "continuation" term is a compound term
+### The "continuation" term is a compound term<a name="the_continuation_term_is_a_compound_term" />
 
 At least in the current implementation. If you run the following on a continuation `Cont`:
 
@@ -235,7 +264,7 @@ it evidently calls the continuation.
 
 This is also why `reset/3` can take both an atomic goal on the first round and a continuation returned by a previous `reset/3`.
 
-### Calling `shift/1` is not like backtracking
+### Calling `shift/1` is not like backtracking<a name="calling_shift_is_not_like_backtracking" />
 
 It's just continuing with the "instruction stream" at another place.
 Variables that have been bound during the procedure called by `reset/3` _stay_ bound after a `shift/1`:
@@ -262,7 +291,7 @@ And so:
 true.
 ```
 
-### There is proper backtracking over the goal called by `reset/3`
+### There is proper backtracking over the goal called by `reset/3`<a name="there_is_proper_backtracking_over_the_goal_called_by_reset" />
 
 See further below for more on this.
 
@@ -294,7 +323,7 @@ true ;
 true.
 ```
 
-### The `reset` point behaves as a resource on the call stack
+### The `reset` point behaves as a resource on the call stack<a name="the_reset_point_behaves_as_a_resource_on_the_call_stack" />
 
 The `reset` point behaves as a resource: You can only emerge from it (via `shift/1`) once.
 
@@ -377,7 +406,7 @@ true.
 
 ![limited application](pics/limited_application.svg)
 
-### Correct switching using (tail) recursion to generate new reset points
+### Correct switching using (tail) recursion to generate new reset points<a name="correct_switching_using_recursion-to_generate_new_reset_points" />
 
 To switch continually between two branches of the call stack (created at the first `reset/3` call),
 you need to use recursion to perform new `reset/3` calls:
@@ -412,7 +441,7 @@ false.
 
 ![Successfully switching between 2 branches on the stack](pics/successfully_switching_between_2_branches_on_the_stack.svg)
 
-### Correct switching using a "failure-driven loop" in the "lower" predicate
+### Correct switching using a "failure-driven loop" in the "lower" predicate<a name="correct_switching_using_failure_driven_loop" />
 
 Alternatively, using backtracking (failure-driven loop) in `lower/1`.
 Note that backtracking into `shift/1` means that we backtrack out of the 
@@ -452,7 +481,7 @@ B/T out of reset with Count = 0
 false.
 ```
 
-### Weirdness: Using a failure-driven loop in the "upper" predicate
+### Weirdness: Using a failure-driven loop in the "upper" predicate<a name="using_failure_driven_loop_in_the_upper_predicate" />
 
 This one just backtracks over the goal called by `reset/3`. Here, 
 we still emerge only once from a `reset/3` - it's just that backtracking into 
@@ -490,7 +519,7 @@ B/T out of shift(b)
 false.
 ```
 
-### Edge cases
+### Edge cases<a name="edge_cases" />
 
 **There is nothing to do for the continuation of `shift/1` itself:**
 
@@ -526,9 +555,9 @@ C = call_continuation(['$cont$'(<clause>(0x23a5510), 15, '<inactive>', user, 125
 false.
 ```
 
-## Examples
+## Examples<a name="examples" />
 
-**Hands-on testing**
+### Hands-on testing<a name="hands_on_testing" />
 
    - [`jumping_around.pl`](/swipl_notes/about_continuations/code/exercise/jumping_around.pl): jumping around between `reset/3` points
      on the call stack by emitting the appropriate `shift/1` calls. 
@@ -536,7 +565,7 @@ false.
      which are then "generated" (i.e. emitted) one-by-one by an "iterator" and printed to stdout by the `with_write/1` "master".
      However, certain elements make the from_list/1 goal behave in unruly ways. Basically tests what happens at the `reset/3` point.
 
-**Simple patterns**
+### Simple patterns<a name="simple_patterns" />
 
    - [`looping.pl`](/swipl_notes/about_continuations/code/exercise/looping.pl): in an unexiting development, we can build a
      loop that calls `reset/3` to activate a 
@@ -550,13 +579,16 @@ false.
      producer and consumer subroutines look symmetric using `reset`/`shift` and not having a "master" makes the code
      and unholy mess, so ... we have a "master"!
 
-**Inspired _Schrijvers et al., 2013_**
+### Iterator inspired by _Schrijvers et al., 2013_<a name="iterator_from_schrijvers_et_al" />
 
    - [iterator](/swipl_notes/about_continuations/code/iterator): An implementation of "iterators" (which are apparently
      "generators", which are "semi-coroutines") that generate output on behalf of a "master predicate".
      The "master predicate" sends the output to a user-selectable destination (in this case, stdout).
       - [`iterator.pl`](/swipl_notes/about_continuations/code/iterator/iterator.pl)
       - [Illustration](/swipl_notes/about_continuations/code/iterator/pics/iterator_and_master_coroutine.svg)
+      
+### Effect handler inspired by _Schrijvers et al., 2013_<a name="effect_handler_from_schrijvers_et_al" />
+      
    - [effect handler](/swipl_notes/about_continuations/code/effect_handler): An implementation of an "effect handler" (state handler?)
      keeping track of state on behalf of client code. State (now behind the curtain) is accessed by get/set commands
      which are terms passed to `shift/1`. This comes with two examples: a Markov Network visitor and a counter-to-zero.
@@ -564,7 +596,7 @@ false.
      the same state, the "get" no longer works and you need to use [global variables](https://eu.swi-prolog.org/pldoc/man?section=gvar)
      or something similar.
 
-## Adapting the patterns from "Call with current continuation patterns"
+## Adapting the patterns from "Call with current continuation patterns"<a name="adapting_the_patterns_from_call_cc_patterns" />
 
 As said earlier, the paper 
 
