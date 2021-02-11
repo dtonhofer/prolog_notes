@@ -13,10 +13,11 @@ This is a companion README for the SWI-Prolog manual page [`fold/4`](https://eu.
    - [Example 1: Simple atom concatenation](#simple_atom_concatenation)
    - [Example 2: Creating a list of monotonically increasing integers](#monotonically_increasing_integers)
    - [Example 3: Logical operations over a list](#logical_operations_over_a_list)
-   - [Example 4: Filtering by occurence count](#filtering_by_occurence_count)
-   - [Example 5: A pipeline of operations (edgy usage)](#pipeline_of_operations)
-   - [Example 6: maplist emulation](#maplist_emulation)
-   - [Example 7: An infinite list of random numbers](#infinite_list_of_random_numbers)
+   - [Example 4: Arithmetic operations over a list](#arithmetic_operations_over_a_list)
+   - [Example 5: Filtering by occurence count](#filtering_by_occurence_count)
+   - [Example 6: A pipeline of operations (edgy usage)](#pipeline_of_operations)
+   - [Example 7: maplist emulation](#maplist_emulation)
+   - [Example 8: An infinite list of random numbers](#infinite_list_of_random_numbers)
 
 ## Intro<a name="intro" />
 
@@ -462,46 +463,91 @@ true.
 
 ### Example 4: Arithmetic operations over a list<a name="arithmetic_operations_over_a_list" />
 
-Summing:
+**Summing:**
 
 ```none
-sum_list(L,Sum) :- foldl(summer,L,0,Sum).
+list_to_sum(L,Sum) :- foldl(summer,L,0,Sum).
 
 summer(X,FromLeft,ToRight) :- ToRight is X+FromLeft.
 ```
 
+or with a yall expression:
+
+```
+list_to_sum(L,Sum) :- foldl([X,FL,TR]>>(TR is X+FL),L,0,Sum).
+```
+
 And so:
 
 ```
-?- sum_list([],Sum).
+?- list_to_sum([],Sum).
 Sum = 0.
 
-?- sum_list([1,2,4,5,6,7,8,9,10],Sum).
+?- list_to_sum([1,2,4,5,6,7,8,9,10],Sum).
 Sum = 52.
 ```
 
-Multiplying:
+Note that there is actually a [`sum_list/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=sum_list/2) which performs the above 
+but according to the source code, using direct recursion.
+
+**Multiplying:**
 
 ```none
-mult_list(L,Product) :- foldl(multer,L,1,Product).
+list_to_product(L,Product) :- foldl(multer,L,1,Product).
 
 multer(X,FromLeft,ToRight) :- ToRight is X*FromLeft.
 ```
 
+or with a yall expression:
+
+```
+list_to_product(L,Product) :- foldl([X,FL,TR]>>(TR is X*FL),L,0,Product).
+```
+
 And so:
 
 ```
-?- mult_list([],Poduct).
+?- list_to_product([],Poduct).
 Poduct = 1.
 
-?- mult_list([1],Poduct).
+?- list_to_product([1],Poduct).
 Poduct = 1.
 
-?- mult_list([1,2,3,4,5],Poduct).
+?- list_to_product([1,2,3,4,5],Poduct).
 Poduct = 120.
 ```
 
-### Example 4: Filtering by occurence count<a name="filtering_by_occurence_count" />
+**Exponentiating**
+
+```none
+list_to_exponentiation(L,Exp) :- foldl(exper,L,1,Exp).
+
+exper(X,FromLeft,ToRight) :- ToRight is X**FromLeft.
+```
+
+And so:
+
+```
+?- list_to_exponentiation([],E).
+E = 1.
+
+?- list_to_exponentiation([1,2],E).
+E = 2.
+
+?- list_to_exponentiation([1,2,3],E).
+E = 9.
+
+?- list_to_exponentiation([1,2,3,4],E).
+E = 262144.
+
+?- list_to_exponentiation([1,2,3,4,5],E),format(string(Buf),"~d",[E]),string_length(Buf,Length).
+...
+Length = 183231.
+```
+
+Ok, thats a LARGE number.
+
+### Example 5: Filtering by occurence count<a name="filtering_by_occurence_count" />
 
 Filtering the elements in a list that occur more than _limit_ times. This is effortlessly done using SWI-Prolog _dicts_.
 
@@ -547,7 +593,7 @@ And so:
 true.
 ```
 
-### Example 5: A pipeline of operations (edgy usage)<a name="pipeline_of_operations" />
+### Example 6: A pipeline of operations (edgy usage)<a name="pipeline_of_operations" />
 
 First, a common base:
 
@@ -628,7 +674,7 @@ Out = sqrt(14*12-4),
 Sought = 12.806248474865697.
 ```
 
-### Example 6: maplist emulation<a name="maplist_emulation" />
+### Example 7: maplist emulation<a name="maplist_emulation" />
 
 As nothing holds us back from passing "rightwards" complex values, we can emulate `maplist/3`, passing 
 an ever-growing result list to append to.
@@ -690,7 +736,7 @@ Lout = [].
 Lout = [0, 1, 4, 9, 16, 25].
 ```
 
-### Example 7: An infinite list of random numbers<a name="infinite_list_of_random_numbers">
+### Example 8: An infinite list of random numbers<a name="infinite_list_of_random_numbers">
 
 `foldl/4` can work with an open list. 
 
