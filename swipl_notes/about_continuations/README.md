@@ -12,7 +12,7 @@ This is additional material for the page [Delimited Continuations](https://eu.sw
       - ["Call with current continuation patterns" (2001)](#call_with_current_continuation_patterns)
       - ["Abstracting Control" (1990)](#abstractin_control)
       - ["Capturing the Future by Replaying the Past - Functional Pearl" (2018)](#capturing_the_future_by_replaying_the_past)
-   - [Similar ideas](#similar ideas)
+   - [Similar ideas](#similar_ideas)
       - [Similarity of `reset`/`shift` to `catch`/`throw`](#reset_shift_vs_catch_throw)
       - [Relationship between `call/cc` and `reset/3`](#call_cc_vs_reset)
    - [Empirical research](#empirical_research)
@@ -206,7 +206,7 @@ Ok, this needs more study.
 > nondeterminism, and discuss why our construction is not prevented by theoretical results that exceptions and state cannot
 > macro-express continuations.
 
-## Similar ideas<a name="similar ideas" />
+## Similar ideas<a name="similar_ideas" />
 
 ### Similarity of `reset`/`shift` to `catch`/`throw`<a name="reset_shift_vs_catch_throw" />
 
