@@ -4,32 +4,32 @@ This is additional material for the page [Delimited Continuations](https://eu.sw
 
 ## TOC
 
-   - Errata<a name="errata" />
-   - Reading<a name="reading" />
-      - Some Wikipedia entries<a name="some_wikipedia_entries" />
-      - "Delimited continuations for Prolog" (2013)<a name="delimited_continuations_for_prolog" />
-      - "Delimited continuations in Prolog: semantics, use, and implementation in the WAM" (2013)<a name="delimited_continuations_for_prolog_2" />
-      - "Call with current continuation patterns" (2001)<a name="call_with_current_continuation_patterns" />
-      - "Abstracting Control" (1990)<a name="abstractin_control" />
-      - "Capturing the Future by Replaying the Past - Functional Pearl" (2018)<a name="capturing_the_future_by_replaying_the_past" />
-   - Similar ideas<a name="similar ideas" />
-      - Similarity of `reset`/`shift` to `catch`/`throw`<a name="reset_shift_vs_catch_throw" />
-      - Relationship between `call/cc` and `reset/3`<a name="call_cc_vs_reset" />
-   - Empirical research<a name="empirical_research" />
-      - The "continuation" term is a compound term<a name="the_continuation_term_is_a_compound_term" />
-      - Calling `shift/1` is not like backtracking<a name="calling_shift_is_not_like_backtracking" />
-      - There is proper backtracking over the goal called by `reset/3`<a name="there_is_proper_backtracking_over_the_goal_called_by_reset" />
-      - The `reset` point behaves as a resource on the call stack<a name="the_reset_point_behaves_as_a_resource_on_the_call_stack" />
-      - Correct switching using (tail) recursion to generate new reset points<a name="correct_switching_using_recursion-to_generate_new_reset_points" />
-      - Correct switching using a "failure-driven loop" in the "lower" predicate<a name="correct_switching_using_failure_driven_loop" />
-      - Weirdness: Using a failure-driven loop in the "upper" predicate<a name="using_failure_driven_loop_in_the_upper_predicate" />
-      - Edge cases<a name="edge_cases" />
-   - Examples<a name="examples" />
-      - Hands-on testing<a name="hands_on_testing" />
-      - Simple patterns<a name="simple_patterns" />
-      - Iterator inspired by _Schrijvers et al., 2013_<a name="iterator_from_schrijvers_et_al" />
-      - Effect handler inspired by _Schrijvers et al., 2013_<a name="effect_handler_from_schrijvers_et_al" />
-   - Adapting the patterns from "Call with current continuation patterns"<a name="adapting_the_patterns_from_call_cc_patterns" />
+   - [Errata](#errata" />
+   - [Reading](#reading" />
+      - [Some Wikipedia entries](#some_wikipedia_entries)
+      - ["Delimited continuations for Prolog" (2013)](#delimited_continuations_for_prolog)
+      - ["Delimited continuations in Prolog: semantics, use, and implementation in the WAM" (2013)](#delimited_continuations_for_prolog_2)
+      - ["Call with current continuation patterns" (2001)](#call_with_current_continuation_patterns)
+      - ["Abstracting Control" (1990)](#abstractin_control)
+      - ["Capturing the Future by Replaying the Past - Functional Pearl" (2018)](#capturing_the_future_by_replaying_the_past)
+   - [Similar ideas](#similar ideas)
+      - [Similarity of `reset`/`shift` to `catch`/`throw`](#reset_shift_vs_catch_throw)
+      - [Relationship between `call/cc` and `reset/3`](#call_cc_vs_reset)
+   - [Empirical research](#empirical_research)
+      - [The "continuation" term is a compound term](#the_continuation_term_is_a_compound_term)
+      - [Calling `shift/1` is not like backtracking](#calling_shift_is_not_like_backtracking)
+      - [There is proper backtracking over the goal called by `reset/3`](#there_is_proper_backtracking_over_the_goal_called_by_reset)
+      - [The `reset` point behaves as a resource on the call stack](#the_reset_point_behaves_as_a_resource_on_the_call_stack)
+      - [Correct switching using (tail) recursion to generate new reset points](#correct_switching_using_recursion-to_generate_new_reset_points)
+      - [Correct switching using a "failure-driven loop" in the "lower" predicate](#correct_switching_using_failure_driven_loop)
+      - [Weirdness: Using a failure-driven loop in the "upper" predicate](#using_failure_driven_loop_in_the_upper_predicate)
+      - [Edge cases](#edge_cases)
+   - [Examples](#examples)
+      - [Hands-on testing](#hands_on_testing)
+      - [Simple patterns](#simple_patterns)
+      - [Iterator inspired by _Schrijvers et al., 2013_](#iterator_from_schrijvers_et_al)
+      - [Effect handler inspired by _Schrijvers et al., 2013_](#effect_handler_from_schrijvers_et_al)
+   - [Adapting the patterns from "Call with current continuation patterns"](#adapting_the_patterns_from_call_cc_patterns)
 
 ## Errata<a name="errata" />
 
