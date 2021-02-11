@@ -460,6 +460,47 @@ all_false([]).
 true.
 ```
 
+### Example 4: Arithmetic operations over a list<a name="arithmetic_operations_over_a_list" />
+
+Summing:
+
+```none
+sum_list(L,Sum) :- foldl(summer,L,0,Sum).
+
+summer(X,FromLeft,ToRight) :- ToRight is X+FromLeft.
+```
+
+And so:
+
+```
+?- sum_list([],Sum).
+Sum = 0.
+
+?- sum_list([1,2,4,5,6,7,8,9,10],Sum).
+Sum = 52.
+```
+
+Multiplying:
+
+```none
+mult_list(L,Product) :- foldl(multer,L,1,Product).
+
+multer(X,FromLeft,ToRight) :- ToRight is X*FromLeft.
+```
+
+And so:
+
+```
+?- mult_list([],Poduct).
+Poduct = 1.
+
+?- mult_list([1],Poduct).
+Poduct = 1.
+
+?- mult_list([1,2,3,4,5],Poduct).
+Poduct = 120.
+```
+
 ### Example 4: Filtering by occurence count<a name="filtering_by_occurence_count" />
 
 Filtering the elements in a list that occur more than _limit_ times. This is effortlessly done using SWI-Prolog _dicts_.
