@@ -488,7 +488,7 @@ Sum = 52.
 ```
 
 Note that there is actually a [`sum_list/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=sum_list/2) which performs the above 
-but according to the source code, using direct recursion.
+but according to [the source code](https://eu.swi-prolog.org/pldoc/doc/_SWI_/library/lists.pl?show=src#sum_list/2), using direct recursion.
 
 **Multiplying:**
 
