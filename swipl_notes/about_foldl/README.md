@@ -1,6 +1,6 @@
 # Fun with _foldl_
 
-This is a companion README for the SWI-Prolog manual page [`fold/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=foldl/4).
+## TOC
 
 - [Intro](#intro)
 - [Implementation caveats](#implementation_caveats)
@@ -20,6 +20,8 @@ This is a companion README for the SWI-Prolog manual page [`fold/4`](https://eu.
    - [Example 8: An infinite list of random numbers](#infinite_list_of_random_numbers)
 
 ## Intro<a name="intro" />
+
+This is a companion README for the SWI-Prolog manual page [`fold/4`](https://eu.swi-prolog.org/pldoc/doc_for?object=foldl/4).
 
 `foldl(Goal,List,Starter,Out)`
 
