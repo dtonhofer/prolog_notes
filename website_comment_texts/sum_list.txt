@@ -1,0 +1,27 @@
+%
+% https://eu.swi-prolog.org/pldoc/doc_for?object=sum_list/2
+%
+ 
+As per a remark made on stack overflow, this predicate's name 
+
+   - expresses what it does "sum the list" 
+   - but does not express the order of its parameters, otherwise it would be called `list_sum/2`.
+
+The predicate exhibits a bruti dataflow :
+
+```
+?- sum_list([1,2,X],6).
+ERROR: Arguments are not sufficiently instantiated
+```
+
+This is also the same as
+
+```
+list_to_sum(L,Sum) :- foldl([X,FL,TR]>>(TR is X+FL),L,0,Sum).
+```
+
+There is no `mult_list/2` but one can easily add it:
+
+```
+list_to_product(L,Product) :- foldl([X,FL,TR]>>(TR is X*FL),L,1,Product).
+```

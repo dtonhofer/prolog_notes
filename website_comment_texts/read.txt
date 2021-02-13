@@ -1,0 +1,47 @@
+This corresponds to "serialization/deserialization" in Java and other languages.
+
+You CAN but shouldn't use this for reading input typed in by the user.
+
+Example:
+
+```
+?- 
+TermOut = a(b,c,[1,2,3],var(ZZ)),
+with_output_to(
+   string(Buf),
+   write_term(TermOut,[])),             % serialize "TermOut" out to "Buf"
+read_term_from_atom(Buf, TermIn, []).   % unserialize "TermIn" from "Buf"
+```
+
+Result:
+
+```
+TermOut = a(b,c,[1,2,3],var(ZZ)),
+Buf = "a(b,c,[1,2,3],var(_8700))",
+TermIn = a(b,c,[1,2,3],var(_9646)).
+```
+
+Use [`library(readutil)`](https://www.swi-prolog.org/pldoc/man?section=readutil) for more freewheeling I/O like user querying:
+
+Example:
+
+```
+?-
+format("Answer me, Domon!!!!\n"), 
+read_line_to_string(user_input,S1), 
+string_lower(S1,S2), 
+(member(S2,["yes","1","ok","y","ja","oui"])
+   -> format("OK!")
+   ; (format("NOK"), fail)).
+```
+
+Then:
+
+```
+Answer me, Domon!!!!
+|: YES
+OK!
+S1 = "YES",
+S2 = "yes".
+```
+ 

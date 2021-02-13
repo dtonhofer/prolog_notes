@@ -1,0 +1,91 @@
+#
+# https://eu.swi-prolog.org/pldoc/doc_for?object=predicate_property/2
+# 
+
+This may not be directly clear from the description:
+
+## Calling predicate_property correctly
+
+Perhaps surprisingly, the term denoting the predicate is not given in functor/arity style:
+
+**Wrong**
+
+```
+?- 
+predicate_property(member/2,imported_from(M)).
+M = yall.
+```
+
+(the answer `yall` is actually meaningless, some artefact?)
+
+...but in the form of a "callable term":
+
+**Correct**
+
+```
+?- 
+predicate_property(member(_,_),imported_from(M)).
+M = lists.
+```
+
+## Examples
+
+Which **module** does the predicate is_ordset/1 come from:
+
+```
+?- 
+predicate_property(is_ordset(_),imported_from(M)).
+M = ordsets.
+```
+
+Which **file** does the predicate is_ordset/1 come from (Are there any guarantees regarding the returned filename?)
+
+```
+?- 
+predicate_property(is_ordset(_),file(F)).
+F = '/usr/local/logic/swipl/lib/swipl/library/ordsets.pl'.
+```
+
+Maybe more unsual:
+
+```
+?- 
+predicate_property(#=(_,_),imported_from(M)).
+M = clpfd.
+```
+
+##
+
+As said in the description predicate_property/2 fails (silently, i.e. does not print errors) if the predicate does not exist:
+
+```
+?- predicate_property(is_fooset(_),dynamic).
+false.
+```
+
+Unfortunately this means one cannot distinguish between the case where `is_fooset/1` is not dynamic and where it does not exist.
+
+The `defined` atom seems appropriate to check for existence.
+
+```
+?- 
+predicate_property(is_fooset(_),defined).
+false.
+```
+
+Note that calling a missing predicate causes an exception (unless the prolog flag [unknown](https://eu.swi-prolog.org/pldoc/man?section=flags#flag:unknown) has been set to something other than the default):
+
+```
+?- is_fooset(X).
+ERROR: Unknown procedure: is_fooset/1 (DWIM could not correct goal)
+```
+
+## Count asserted facts
+
+To count all asserted item/1 facts, do:
+
+```
+predicate_property(item(_), number_of_clauses(N))
+```
+
+ 

@@ -1,0 +1,15 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=(multifile)/1
+ 
+Also see this Logtalk blogpost:
+
+[Multifile predicates: dos and don'ts](https://logtalk.org/2019/06/25/multifile-predicates-dos-donts.html)
+
+(via Stack Overflow question [A cross-module “interface” call in SWI-Prolog](https://stackoverflow.com/questions/66146716/a-cross-module-interface-call-in-swi-prolog))
+
+   - never rely on the order of the multifile predicate clauses
+   - avoid cuts in multifile predicate definitions. I.e. avoid making assumptions about the predicate calling the multifile predicate and about other multifile predicate definitions.
+   - the body of a multifile predicate clause is compiled in the context of the entity containing the clause.
+   - In the presence of Prolog modules or when using Logtalk objects, multifile predicates can be declared and defined in modules and objects. In this case, there’s an entity that holds the multifile predicate **primary declaration** and other entities defining clauses for the predicate. Other entities defining clauses for the multifile predicate, will need to prefix the predicate functor with the name of the entity containing its primary declaration (i.e. in SWI Prolog, qualify it with the module name; but SWI-Prolog seems relaxed about this, a bit too much maybe).
+
+
+

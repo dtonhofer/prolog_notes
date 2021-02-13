@@ -1,0 +1,113 @@
+https://eu.swi-prolog.org/pldoc/man?section=ctxmodule
+
+## Doc needs help 1
+
+The maplist example is typoed ("G" vs "Goal" and calls module/2 with the second arg not a list)
+
+Here is one which can also be loaded without conflicting with the existing predicate maplist/3, in `maplist.pl`:
+
+```
+:- module(maplist, [ maplist_mt/3 ]).
+
+:- module_transparent
+        maplist_mt/3,
+        maplist_mt_inner/3.
+
+maplist_mt(Goal, L1, L2) :-
+        maplist_mt_inner(L1, L2, Goal).
+
+maplist_mt_inner([], [], _).
+maplist_mt_inner([H0|T0], [H|T], Goal) :-
+        call(Goal, H0, H),
+        maplist_mt_inner(T0, T, Goal).
+```
+
+With some test code in `exp2.pl`:
+
+```
+:- module(exp, [exp2/2, test_entry/1]).
+
+test_entry(L) :- maplist_mt(exp2,[1,2,3],L).
+
+exp2(X,Y) :- Y is X**2.
+```
+
+Then:
+
+```
+?- [maplist,exp2].
+true.
+
+?- test_entry(L).
+L = [1,4,9].
+```
+
+But:
+
+```
+?- [maplist].
+true.
+
+?- [user].
+|: exp2(X,Y) :- Y is X**2.
+|: ^D% user://1 compiled 0.01 sec, 1 clauses
+true.
+
+?- maplist_mt(exp2,[1,2,3],L).
+ERROR: Unknown procedure: '$toplevel':exp2/2
+```
+
+I guess because exp2/2 is in module `user` not in module `$toplevel`...
+
+## Doc needs help 2
+
+> Each active goal in the Prolog system has a context module assigned to it. 
+
+It is unclear what "each active goal" exactly means. Goals are terms, maybe atomic, which are given to the Prolog Processor, which then resolves them to subgoals etc. But when are they "active"?
+
+It seems to mean "an active process" (thread or coroutine). 
+
+Could one look at it this way: A process has stack of references to "current context modules" and it looks up predicates in the module referenced by the top-of-stack if it encounters a "dynamic call" whereby it elevates a unqualified term to predicate position
+
+Disregarding possible optimizations, when a predicate is called, the Prolog processor
+
+   - normally pushes the called predicates' "definition module" onto the stack and pops it on success or failure
+   - but for transparent predicates it does not change the stack
+
+Take the maplist example, and let:
+
+```
+module_a:   pred_x     :- pred_xx(pred_y).
+            pred_xx(G) :- call(G).
+
+module_b:   pred_y      :- maplist(pred_z,L1,L2).
+            pred_z(A,B) :- ...
+
+maplist:    maplist/3    :- ...   TRANSPARENT
+            maplist_/3   :- ...   TRANSPARENT
+```
+
+Then, calling goal `pred_x`:
+
+```
+process executes    | current context module stack
+====================|=============================
+module_a:pred_x     | module_a
+module_a:pred_xx    | module_a module_a 
+                    | we look for prey_y in module_a or in modules imported from module_a
+module_b:pred_y     | module_b module_a module_a
+maplist:maplist/3   | module_b module_a module_a (module transparent, so no change)
+maplist:maplist_/3  | module_b module_a module_a (module transparent, so no change)
+                    | we look for pred_z in module_b, "the context module of the goal" (pred_z) 
+                    | "inherited from the parent goal" (more like valid when the chain
+                    | of calls to transparent predicates began)
+module_b:pred_z     | module_b module_b module_a module_a
+return predz        | after retrun; module_b module_a module_a
+return maplist_/3   | after return: module_b module_a module_a (nothing changes)
+return maplist/3    | after return: module_b module_a module_a (nothing changes)
+return pred_y       | after return: module_a module_a
+return pred_xx      | after return: module_a
+return pred_x       | after return: probably $toplevel
+```
+
+Does that make sense?

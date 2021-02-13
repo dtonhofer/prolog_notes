@@ -1,0 +1,201 @@
+%
+% https://eu.swi-prolog.org/pldoc/man?section=defmodule
+%
+
+## For those looking for the "module qualification mechanism"
+
+It's here: [defining a meta-predicate](https://eu.swi-prolog.org/pldoc/man?section=metapred)
+
+TL;DR: `Module:Predicate`
+
+## Do not export predicates if you just want to access them from test code
+
+It seems you can just access non-exported predicates from the test code (or other code?) by just qualifying the predicate with the module name. 
+
+Instead of
+
+==
+some_nonexported_predicate(X)
+==
+
+just use
+
+==
+my_module:some_nonexported_predicate(X)
+==
+
+(No "friend" declarations needed? Sounds radical.)
+
+## A nice feature would be...
+
+Have the module declaration _explicitly_ list the name of the Unit Test files with plunit code, instead of relying on the convention that there be a single file name the same as the module file, albeit wih a ".plt" suffix. 
+
+## Another nice feature would be...
+
+Not having to actually declare exported predicates separately in a header. There should be special markup on the predicate itself to make them "public". If documentation about the module is desired, there should be a little tool for that.
+
+The header declarations also carry too little information. Predicate name/arity isn't enough. 
+
+For now I just add `%EXPORT` at any clause of a predicate-to-exported and grep them by hand later. Time to write a tool...
+
+## Beginner's Primer: Loading a Module (the lynx library module)
+
+[Prolog module loading example: Loading the "lynx" library](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/various/loading_lynx_library.md)
+
+and
+
+[HOWTO Notes on modularizing the code](https://github.com/dtonhofer/prolog_notes/blob/master/code/load_and_test_script.pl) done while modularizing
+
+## Module naming
+
+_Modules are organised in a single and flat namespace and therefore module names must be chosen with some care to avoid conflicts._
+
+One _could_ use the convention adopted by Java which names packages according to the reversed domain name of the issuing organization, for example =com.example.megacorp=, which arbitary extensions. 
+
+In the Java world, this does not indicate a hierarchy, the dot-path is just a name and package organization is "flat". However, the *files* of package must be organized hierarchically on-disk, mirroring the package's dot-path.
+
+The Module name can be any atom, so this should work, but one needs to enclose the Module name into single quotes or the dot will be interpreted as a dict =.= operator 
+
+==
+:-module('com.example.megacorp.hq.upperfloor', [make_money/2]).
+
+make_money("Make more money!", "Yes, sir").
+==
+
+Or to be more Prolog-like, use underscores:
+
+==
+:-module('com_example_megacorp_hq_upperfloor', [make_money/2]).
+
+make_money("Make more money!", "Yes, sir").
+==
+
+Moreover hierarchical namespaces, even in the same source file, seem to be of some importance. Think of classes, inner classes, methods, and brace blocks forming a hierarchical namespace in the same file. 
+
+## Setting the "current module" at the Prolog toplevel
+
+There is also the predicate [module/1](https://eu.swi-prolog.org/pldoc/doc_for?object=module/1) which is used to **set** (but not query...) the "current module" at the Prolog toplevel:
+
+==
+?- module(tex).
+Warning: tex is not a current module (created)
+true.
+
+tex:  ?- module(X).
+
+tex:  ?- module(tex).
+true.
+==
+
+The notation for referencing a specific predicate in a specific module is:
+
+==
+module_name:predicate
+==
+
+There is no requirement to give the module file the same name as that of the module name. For example file =html_style.pl= can define module =format_style=.
+
+The use_module/2 instruction will then reference the _file_ =html_style.pl=
+
+## Handling name clashes
+
+You **cannot** load two files defining the same module:
+
+=file1.pl= with:
+
+==
+:-module('com_example_megacorp', [make_money/2]).
+
+make_money("Make more money!", "Yes, sir").
+==
+
+and
+
+=file2.pl= with:
+
+==
+:-module('com_example_megacorp', [make_money_2/2]).
+
+make_money_2("Make more money!", "Yes, sir").
+==
+
+Trying to load both:
+
+==
+?- [file1].
+true.
+
+?- [file2].
+ERROR: /home/aycaramba/file2.pl:1:
+ERROR:    No permission to redefine module `'com_example_megacorp'' (Already loaded from /home/aycaramba/file1.pl)
+==
+
+You **cannot** import a predicate _with the same name_ from _two different modules_, at least not at the Prolog Toplevel:
+
+=file1.pl= 
+
+==
+:-module('com_example_megacorp', [make_money/2]).
+
+make_money("Make more money!", "Yes, sir").
+==
+
+=file2.pl= defining different module but declaring same predicate export list:
+
+==
+:-module('com_example_megacorp_hq', [make_money/2]).
+
+make_money("Make even more money!", "As you wish!").
+==
+
+Load them:
+
+==
+?- [file1].
+true.
+
+?- [file2].
+ERROR: import/1: No permission to import 'com_example_megacorp_hq':make_money/2 into user (already imported from 'com_example_megacorp')
+true.
+==
+
+The Prolog Toplevel loads the predicates with their given names into the default module `user`, leading to name clashes.
+
+Outside of the Prolog toplevel, you **can** use the identically named predicates from two different module.
+
+If you have =file3.pl=:
+
+==
+:- module('com_example_megacorp_hq_boardroom', [make/2,make2/2]).
+  
+:- use_module('file1',[ make_money/2 ]). % use_module takes filename, not module name
+:- use_module('file2',[ make_money/2 as hq_make_money ]). % avoid clash by aliasing
+
+% Method 1: Qualify predicates by qualifying them with their module name:
+
+make2([C1,C2],[A1,A2]) :-
+    'com_example_megacorp':make_money(C1,A1),
+    'com_example_megacorp_hq':make_money(C2,A2).
+
+% Method 2: Call predicates with same name by using the discriminating alias:
+
+make([C1,C2],[A1,A2]) :-
+    make_money(C1,A1),
+    hq_make_money(C2,A2).
+==
+
+That works fine, you just must avoid name clashes by aliasing with =as=.
+
+==
+?- [file3].
+true.
+
+?- make(X,Y).
+X = ["Make more money!", "Make even more money!"],
+Y = ["Yes, sir", "As you wish!"].
+
+?- make2(X,Y).
+X = ["Make more money!", "Make even more money!"],
+Y = ["Yes, sir", "As you wish!"].
+==
+ 

@@ -1,0 +1,29 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=current_module/1
+
+## Example
+
+```
+?- setof(M,current_module(M),Modules).
+Modules = [ansi_term,apply,apply_macros,base32,dcg_basics,editline,error|...].
+```
+
+## Sadly!
+
+Sadly, this is **not at all** about getting the module of the currently executing code.
+
+That's something that is just missing. Something like
+
+=|this_module(M)|=
+
+would be useful to get at the qualifier which may have to be passed to predicates in other modules.
+
+## Do not be confused
+
+Note that there is also a
+
+[`current_module/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=backward_compatibility%3Acurrent_module/2)
+
+=|current_module(?Module, ?File)|= : True if Module is a module loaded from File.
+
+which is a deprecated version of `module_property(Module, file(File))`
+

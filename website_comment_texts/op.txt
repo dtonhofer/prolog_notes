@@ -1,0 +1,216 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=op/3
+
+## Some examples and an explainer
+
+[**About Operators**](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_operators/)
+
+## Doc needs some help
+
+This text is difficult to disentangle:
+
+> Type is one of: xf, yf, xfx, xfy, yfx, fy or fx. The‘f’indicates the position of
+> the functor 
+
+this should be "functor name"
+
+> while x and y indicate the position of the arguments.‘y’should be interpreted as
+> “on this position a term with precedence lower or equal to the precedence of the
+> functor should occur''. For‘x’the precedence of the argument must be strictly lower.
+
+This is correct but hard to translate into something concrete. Here is mine. Just reduce it to _a question of associativity_:
+
+[**op types explained**](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_operators/README.md#op_types_explained)
+
+Finally:
+
+> The precedence of a term is 0, unless its principal functor is an operator, in which
+> case the precedence is the precedence of this operator. A term enclosed in
+> parentheses ( ... ) has precedence 0. 
+
+I am not sure this is pertinent. Once the "principal functor" has been identified, the term (or parse tree) has been constructed and the precedence of the operator is no longer relevant for further parsing. All ambiguities involving that operator and its arguments have been resolved, the precedence value of the respective term can be considered 0, the same as if the subexpression with said principal functor had been parenthesized from the start.
+
+## If there is a predicate that corresponds to an operator, Prolog calls it
+
+Take precedence 420 which is above the arithemtic operators and make the operator non-associative (it makes no sense to chain it)
+
+```
+?- op(420,xfx,weirdop).
+true.
+```
+
+Now you can write terms but there is no meaning associated to them (nothing callable exists):
+
+```
+?- pi weirdop 0.
+ERROR: Unknown procedure: (weirdop)/2 (DWIM could not correct goal)
+```
+
+But the **syntax** is good:
+
+```
+?- T = pi weirdop 0, write_canonical(T).
+weirdop(pi,0)
+T = pi weirdop 0.
+```
+
+However, if we define predicate `weirdop/2`:
+
+```
+?- [user].
+|: weirdop(X,Y) :- format("Is sin(~q) > sin(~q)?",[X,Y]), sin(X) > sin(Y).
+true.
+```
+
+We can call it "directly":
+
+```
+?- pi/2 weirdop 3/4*pi.
+Is sin(pi/2) > sin(3/4*pi)? 
+true.
+
+?- 5/3*pi weirdop 3/4*pi.
+Is sin(5/3*pi) > sin(3/4*pi)? 
+false.
+```
+
+Lopsidedly, this evidently doesn't work if you want to have an operator that maps to a function that returns something other than a boolean (i.e. not a predicate). Then you need an interpreter of the term created from the operator.
+
+## Programming fun!
+
+A silly little program to print your current operators can be found here (there should be something like that in the distribution):
+
+[`list_ops.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_operators/code/list_ops.pl)
+
+And one which output the pldoc with URLs below is here:
+
+[`list_ops_with_urls.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_operators/code/list_ops_with_urls.pl)
+
+### The result
+
+On a freshly started SWIPL instance it output these, with their possible meanings (depending on whether what has been read is evaluated or not, and by whom):
+
+```
+?- list_ops_with_urls.
+```
+
+**Precedence value 1200** : weakest precedence, most 'rootlike'
+   - =| --> xfx  |= [DCG head-body separator](https://eu.swi-prolog.org/pldoc/man?section=DCG)
+   - =| :-  fx   |= Directive prefix as used in source code
+   - =| :-  xfx  |= Clause head-body separator (left-pointing material implication of constructive logic or positive classical logic)
+   - =| ?-  fx   |= Query prefix as used on the command line
+**Precedence value 1150**
+   - =| discontiguous         fx   |= [Declares a predicate as discontinguous](https://eu.swi-prolog.org/pldoc/doc_for?object=%28discontiguous%29/1)
+   - =| dynamic               fx   |= [Declares a predicate as dynamic](https://eu.swi-prolog.org/pldoc/doc_for?object=%28dynamic%29/1)
+   - =| initialization        fx   |= [Marks goal to be called after source file has been loaded](https://eu.swi-prolog.org/pldoc/doc_for?object=%28initialization%29/1)
+   - =| meta_predicate        fx   |= [Declares a meta-predicate for module export](https://eu.swi-prolog.org/pldoc/doc_for?object=%28meta_predicate%29/1)
+   - =| module_transparent    fx   |= [Declares a predicate as meta-predicate. Deprecated.](https://eu.swi-prolog.org/pldoc/doc_for?object=%28module_transparent%29/1)
+   - =| multifile             fx   |= [Informs the system that the specified predicate(s) may be defined over more than one file.](https://eu.swi-prolog.org/pldoc/doc_for?object=%28multifile%29/1)
+   - =| public                fx   |= [Instructs the cross-referencer that the predicate can be called](https://eu.swi-prolog.org/pldoc/doc_for?object=%28public%29/1)
+   - =| table                 fx   |= [Declares a predicate as subject to tabling](https://eu.swi-prolog.org/pldoc/doc_for?object=%28table%29/1)
+   - =| thread_initialization fx   |= [Marks goal to be called when thread is started](https://eu.swi-prolog.org/pldoc/doc_for?object=%28thread_initialization%29/1)
+   - =| thread_local          fx   |= [Declares a predicate as dynamic, but local to the thread](https://eu.swi-prolog.org/pldoc/doc_for?object=%28thread_local%29/1)
+   - =| volatile              fx   |= [Declares a predicate as not to be saved into a state file](https://eu.swi-prolog.org/pldoc/doc_for?object=%28volatile%29/1)
+**Precedence value 1105**
+   - =| | xfy  |= [Old-school disjunction meta-predicate](https://eu.swi-prolog.org/pldoc/doc_for?object=%28'|'%29/2)
+**Precedence value 1100**
+   - =| ; xfy  |= [Meta-predicate to combine goals into a (constructive) disjunction. Also 'else' part of 'if-then-else'](https://eu.swi-prolog.org/pldoc/doc_for?object=%28%3B%29/2)
+**Precedence value 1050**
+   - =| *-> xfy  |= [Soft-cut](https://eu.swi-prolog.org/pldoc/doc_for?object=%28*->%29/2)
+   - =| ->  xfy  |= [If-Then (and maybe Else)](https://eu.swi-prolog.org/pldoc/doc_for?object=%28->%29/2)
+**Precedence value 1000**
+   - =| , xfy  |= [Meta-predicate to combine goals into a conjunction](https://eu.swi-prolog.org/pldoc/doc_for?object=%28%27,%27%29/2)
+**Precedence value 900**
+   - =| \+ fy   |= [Negation-as-failure operator](https://eu.swi-prolog.org/pldoc/doc_for?object=%28%5C%2B%29/1)
+**Precedence value 800**
+   - =| := xfx  |= 
+**Precedence value 700**
+   - =| :<   xfx  |= [Dict pair selection](https://eu.swi-prolog.org/pldoc/doc_for?object=%28%3A%3C%29/2)
+   - =| <    xfx  |= [Arithmetic evaluation followed by less-than test](https://eu.swi-prolog.org/pldoc/doc_for?object=%28<%29/2)
+   - =| =    xfx  |= [Unification](https://eu.swi-prolog.org/pldoc/doc_for?object=%28%3D%29/2)
+   - =| =..  xfx  |= [Univ operator to assemble/disassemble a compound term](https://eu.swi-prolog.org/pldoc/doc_for?object=%28%3D..%29/2)
+   - =| =:=  xfx  |= [Arithmetic evaluation followed by equality test](https://eu.swi-prolog.org/pldoc/doc_for?object=%28%3D%3A%3D%29/2)
+   - =| =<   xfx  |= [Arithmetic evaluation followed by less-or-equal-than test](https://eu.swi-prolog.org/pldoc/doc_for?object=%28%3D<%29/2)
+   - =| ==   xfx  |= [Term equivalence; also standard order of term equality test](https://eu.swi-prolog.org/pldoc/doc_for?object=%28%3D%3D%29/2)
+   - =| =@=  xfx  |= [Term structural equivalence](https://eu.swi-prolog.org/pldoc/doc_for?object=%28%3D@%3D%29/2)
+   - =| =\=  xfx  |= [Arithmetic evaluation followed by disequality test](https://eu.swi-prolog.org/pldoc/doc_for?object=%28%3D%5C%3D%29/2)
+   - =| >    xfx  |= [Arithmetic evaluation followed by greater-than test](https://eu.swi-prolog.org/pldoc/doc_for?object=%28>%29/2)
+   - =| >:<  xfx  |= [Dict partial unification](https://eu.swi-prolog.org/pldoc/doc_for?object=%28>%3A<%29/2)
+   - =| >=   xfx  |= [Arithmetic evaluation followed by greater-or-equal-than test](https://eu.swi-prolog.org/pldoc/doc_for?object=%28>%3D%29/2)
+   - =| @<   xfx  |= [Standard order of terms less-than test](https://eu.swi-prolog.org/pldoc/doc_for?object=%28@<%29/2)
+   - =| @=<  xfx  |= [Standard order of terms less-than-or-equal test](https://eu.swi-prolog.org/pldoc/doc_for?object=%28@%3D<%29/2)
+   - =| @>   xfx  |= [Standard order of terms greater-than test](https://eu.swi-prolog.org/pldoc/doc_for?object=%28@>%29/2)
+   - =| @>=  xfx  |= [Standard order of terms greater-than-or-equal test](https://eu.swi-prolog.org/pldoc/doc_for?object=%28@>%3D%29/2)
+   - =| \=   xfx  |= [Unification failure](https://eu.swi-prolog.org/pldoc/doc_for?object=%28%5C%3D%29/2)
+   - =| \==  xfx  |= [Term non-equivalence](https://eu.swi-prolog.org/pldoc/doc_for?object=%28%5C%3D%3D%29/2)
+   - =| \=@= xfx  |= [Term structural non-equivalence](https://eu.swi-prolog.org/pldoc/doc_for?object=%28%5C%3D@%3D%29/2)
+   - =| as   xfx  |= [Particle used to add tabling options after table/1](https://eu.swi-prolog.org/pldoc/doc_for?object=%28table%29/1)
+   - =| is   xfx  |= [Arithmetic evaluation of RHS followed by unification with LHS](https://eu.swi-prolog.org/pldoc/doc_for?object=%28is%29/2)
+**Precedence value 600**
+   - =| : xfy  |= [Module qualification](https://eu.swi-prolog.org/pldoc/man?section=metapred)
+**Precedence value 500**
+   - =| +  yfx  |= [Arithmetic addition](https://eu.swi-prolog.org/pldoc/doc_for?object=f%28%28%2B%29/2%29)
+   - =| -  yfx  |= [Arithmetic subtraction](https://eu.swi-prolog.org/pldoc/doc_for?object=f%28%28-%29/2%29)
+   - =| /\ yfx  |= [Bitwise AND](https://eu.swi-prolog.org/pldoc/doc_for?object=f%28%28/%5C%29/2%29)
+   - =| \/ yfx  |= [Bitwise OR](https://eu.swi-prolog.org/pldoc/doc_for?object=f%28%28%5C/%29/2%29)
+**Precedence value 400**
+   - =| *    yfx  |= [Arithmetic multiplication](https://eu.swi-prolog.org/pldoc/doc_for?object=f%28%28*%29/2%29)
+   - =| /    yfx  |= [Arithmetic division](https://eu.swi-prolog.org/pldoc/doc_for?object=f%28%28/%29/2%29)
+   - =| //   yfx  |= [Arithmetic default-rounded integer division](https://eu.swi-prolog.org/pldoc/doc_for?object=f%28%28//%29/2%29)
+   - =| <<   yfx  |= [Bitwise shift left](https://eu.swi-prolog.org/pldoc/doc_for?object=f%28%28<<%29/2%29)
+   - =| >>   yfx  |= [Bitwise shift right](https://eu.swi-prolog.org/pldoc/doc_for?object=f%28%28>>%29/2%29)
+   - =| div  yfx  |= [Arithmetic integer division](https://eu.swi-prolog.org/pldoc/doc_for?object=f%28%28div%29/2%29)
+   - =| mod  yfx  |= [Arithmetic modulo (remainder of floored division)](https://eu.swi-prolog.org/pldoc/doc_for?object=f%28%28mod%29/2%29)
+   - =| rdiv yfx  |= [Arithmetic rational number division](https://eu.swi-prolog.org/pldoc/doc_for?object=f%28%28rdiv%29/2%29)
+   - =| rem  yfx  |= [Arithmetic remainder of integer division](https://eu.swi-prolog.org/pldoc/doc_for?object=f%28%28rem%29/2%29)
+   - =| xor  yfx  |= [Bitwise XOR](https://eu.swi-prolog.org/pldoc/doc_for?object=f%28%28xor%29/2%29)
+**Precedence value 200**
+   - =| ** xfx  |= [Arithmetic exponentiation (float or integer) ('power' in ISO standard)](https://eu.swi-prolog.org/pldoc/doc_for?object=f%28%28**%29/2%29)
+   - =| +  fy   |= [Arithmetic unary '+' sign](https://eu.swi-prolog.org/pldoc/doc_for?object=f%28%28%2B%29/1%29)
+   - =| -  fy   |= [Arithmetic unary '-' sign](https://eu.swi-prolog.org/pldoc/doc_for?object=f%28%28-%29/1%29)
+   - =| \  fy   |= [Bitwise negation (one complement)](https://eu.swi-prolog.org/pldoc/doc_for?object=f%28%28%5C%29/1%29)
+   - =| ^  xfy  |= [Arithmetic exponentiation (float or integer), also existential quantifier for bagof/3, setof/3](https://eu.swi-prolog.org/pldoc/doc_for?object=f%28%28^%29/2%29)
+**Precedence value 100**
+   - =| . yfx  |= [Dict entry dereferencing and dict function call (also char-to-charcode conversion in arithmetic expressions)](https://eu.swi-prolog.org/pldoc/man?section=bidicts)
+**Precedence value 1** : strongest precedence, most 'leaflike'
+   - =| $ fx   |= [At the toplevel, reuse of bindings created by previous goals, as in '$Var'](https://eu.swi-prolog.org/pldoc/man?section=topvars)
+
+## Listing the operators exported by modules
+
+Very raw:
+
+```
+?- 
+use_module(library(clpfd)).
+bagof(M-Operators,
+      module_property(M, exported_operators(Operators)),Bag), 
+      maplist([A-B]>>format("~q : ~q~n",[A,B]),Bag).
+```
+
+module_property/2 called with exported_operators/1 instantiates `Operators` with a list of all operators exported  all exported operators from a given module. It also enumerates the modules if the first argument is unbound. `use_module(library(clpfd)).` loads a module which actually exports operators, to get some output.
+
+## What's missing?
+
+A predicate to find out which module a certain operator comes from.
+
+Se also: https://stackoverflow.com/questions/66143527/how-do-i-find-out-which-module-a-prolog-operator-comes-from
+
+Paulo Moura proposes this solution:
+
+   - Enumerate all modules using current_module/1 (that predicate does not give you the "current module" of the clause that's executing, it checks wether a module is currently loaded or enumerates the loaded modules)
+   - Use property `exported_operators(Operators)` to get a list of the operators exported by that module.
+   - Select those entries matching the atom of the operator
+
+```
+?- 
+use_module(library(clpfd)).  % Load a library which actually exports operators
+true.
+
+?- 
+current_module(M),
+module_property(M, exported_operators(Operators)),
+member(op(Priority, Type, '#>'), Operators).
+
+M = clpfd,
+Priority = 700,
+Type = xfx .
+```
