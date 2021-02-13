@@ -18,6 +18,7 @@
    - [Example 6: A pipeline of operations (edgy usage)](#pipeline_of_operations)
    - [Example 7: maplist emulation](#maplist_emulation)
    - [Example 8: An infinite list of random numbers](#infinite_list_of_random_numbers)
+   - [Example 9: Getting the indexes of positive elements found in a list of integers](#indexes_of_positive_elements)
 
 ## Intro<a name="intro" />
 
