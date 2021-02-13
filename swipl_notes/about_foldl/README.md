@@ -775,3 +775,44 @@ L2 = [5, 6, 4, 4],
 L3 = [5, 1, 3, 5] ;
 ```
 
+### Example 9: Getting the indexes of positive elements found in a list of integers<a name="indexes_of_positive_elements">
+   
+Here the "rider" / "accumulator" thing is a composite of 
+
+- The current index, increasing by 1 on each step
+- A list to which we "reverse-prefix": we are prefixing to what is coming from the "left", and the final list is unified with `[]`.
+  Thus, when `foldl/4` is done, the result list that we want is the list that is _given as initial value_ (feels like time reversal,
+  but is not. It is just that we construct a list that is rooted in the (presumably initially unbound) variable `Indexes`
+  
+```  
+gimme_positives_foldl(List,Indexes) :-
+   foldl(
+      selector,
+      List,               % the list of integers        
+      [0,Indexes],        % the initial value: index 0 as first, and the RESULT list as second element 
+      [_FinalIndex,[]]).  % the final value: an index we don't care about and the termination of the result list: []
+
+selector(L,[Idx,[Idx|More]],[IdxPlus,More]) :-
+   L >= 0,
+   IdxPlus is Idx+1.
+
+selector(L,[Idx,More],[IdxPlus,More]) :-
+   L < 0,
+   IdxPlus is Idx+1.
+```
+
+And so:
+
+```
+?- gimme_positives_foldl([],X).
+X = [].
+
+?- gimme_positives_foldl([-1,2,-5],X).
+X = [1] ;
+false.
+
+?- gimme_positives_foldl([1,2,-5],X).
+X = [0,1] ;
+false
+```
+
