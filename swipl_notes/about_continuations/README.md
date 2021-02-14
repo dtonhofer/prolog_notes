@@ -19,6 +19,7 @@ This is additional material for the page [Delimited Continuations](https://eu.sw
       - [The "continuation" term is a compound term](#the_continuation_term_is_a_compound_term)
       - [Calling `shift/1` is not like backtracking](#calling_shift_is_not_like_backtracking)
       - [There is proper backtracking over the goal called by `reset/3`](#there_is_proper_backtracking_over_the_goal_called_by_reset)
+      - [Bidirectional wormholes and the Byrd Box](#wormholes_and_the_byrd_box)
       - [The `reset` point behaves as a resource on the call stack](#the_reset_point_behaves_as_a_resource_on_the_call_stack)
       - [Correct switching using (tail) recursion to generate new reset points](#correct_switching_using_recursion-to_generate_new_reset_points)
       - [Correct switching using a "failure-driven loop" in the "lower" predicate](#correct_switching_using_failure_driven_loop)
@@ -321,6 +322,116 @@ true ;
 % In alternate 'possible'
 % Back in 'multi'
 true.
+```
+
+### Bidirectional wormholes and the Byrd Box<a name="wormholes_and_the_byrd_box" />
+
+For more on the Byrd Box model, see: [About Byrd Box Model](/other_notes/about_byrd_box_model)
+
+If you align the Byrd Boxes of the predicate activation in the "master" (the coroutine that calls "reset/3") and the
+"slave" (the coroutine that calls "shift/1"), then you see that their ports are connected like this:
+
+![back and forth](pics/back_and_forth.png)
+
+- If execution stream is at the "master" side, and it enters the _call_  port of a `reset/3` activation (with the latest
+  continuation obtained), it will exit at the _succ_ port of the of `shift/1` at the "slave" side, but a "back
+  connection" is established so that a backtracking execution stream at the "slave" side, entering the _redo_  port at
+  `shift/1` will exit at the _fail_ port **of the `reset/3` activation that called it**  at the "master" side.
+
+- If execution stream is at the "slave" side, and it enters the _call_  port of a `shift/1` activation, it will
+  exit at the _succ_ port of the of `reset/3` activation that called it at the "master" side, but a "back
+  connection" is established so that a backtracking execution stream at the "master" side, entering the _redo_  port at
+  `reset/3` will exit at the _fail_ port **of the `shift/1` activation that called it**  at the "slave" side.
+  
+This also means both master and slave will "advance" and "backtrack" at the same time. If the "slave" starts to backtrack,
+the execution stream will emerge from the _fail_ port on "old reset calls" in the master. If the "master" starts to backtrack, the
+execution stream will emerge from the _fail_ port on "old shift calls" in the slave. You cannot have an architecture where
+the "master" advances whereas the "slave" backtracks (I tried to write a failure-driven loop for the "slave", emitting 
+results to the "master" via `shift/1` at various points but that just didn't work - the backtracking "slave" would cause the execution 
+stream to emerge from `reset/3` calls left long behind in the "master" ... disconcerting!)
+
+Here is code to test this behaviour. It ends badly!
+
+```text
+start :-
+   master(generator,'*').
+   
+% ---
+% Master "loop". As it proceeds, its old activations with "short LocId"
+% will be reactivated and appear in the output.
+% ---
+
+master(Cont,LocId) :-
+   reset_surround(LocId,Cont,ContNext),
+   (Cont==0 
+    -> true                               % success w/o choicepoints of the generator; we are done
+    ;  (atom_concat(LocId,'*',LocIdNext), % recursive call with new LocId, which is used for indentation
+        master(ContNext,LocIdNext))).
+
+% ---
+% Failure-driven loop generating lists of length 3.
+% It reactivates old master activations when backtracking into shift/1.
+% ---
+
+generator :-
+   member(X0,[a0,a1]),   
+   shift_surround([X0]),   
+   member(X1,[b0,b1]),   
+   shift_surround([X0,X1]),   
+   member(X2,[c0,c1]),
+   shift_surround([X0,X1,X2]),      
+   format("generator is at the end~n",[]),
+   fail.
+
+% The second clause always succeeds!
+
+generator :-   
+   format("generator is in the second close, which always succeeds~n").
+   
+% ---   
+% Helper surrounding master's reset/3, printing about what's going on
+% ---
+
+reset_surround(LocId,Cont,ContNext) :-
+   format("~q master calls reset/3~n",[LocId]),
+   (true;(format("~q master backtracks out of reset/3 (fail port)~n",[LocId]),fail)),
+   reset(Cont,Shifted,ContNext),
+   (true;(format("~q master backtracks into reset/3 (redo port)~n",[LocId]),fail)),
+   format("~q master exits from reset/3, received ~q~n",[LocId,Shifted]).
+
+% ---   
+% Helper surrounding generators' shift/1, printing about what's going on
+% ---
+
+shift_surround(Solution) :-
+   format("generator calls shift/1 with ~q~n",[Solution]),   
+   (true;(format("generator backtracks of shift/1 (fail port) with ~q~n",[Solution]),fail)),
+   shift(data(Solution)),
+   (true;(format("generator backtracks into shift/1 (redo port) with ~q~n",[Solution]),fail)),   
+   format("generator exits from shift/1 with ~q~n",[Solution]).
+```
+
+Running this, we see things like:
+
+```text
+?- start.
+* master calls reset/3
+generator calls shift/1 with [a0]
+* master exits from reset/3, received data([a0])
+** master calls reset/3
+generator exits from shift/1 with [a0]
+generator calls shift/1 with [a0,b0]
+** master exits from reset/3, received data([a0,b0])
+*** master calls reset/3
+generator exits from shift/1 with [a0,b0]
+generator calls shift/1 with [a0,b0,c0]
+*** master exits from reset/3, received data([a0,b0,c0])
+**** master calls reset/3
+generator exits from shift/1 with [a0,b0,c0]
+generator is at the end
+generator backtracks into shift/1 (redo port) with [a0,b0,c0]
+**** master backtracks out of reset/3 (fail port)
+*** master backtracks into reset/3 (redo port)     <--- 4 stars become 3!! back at an old activation!
 ```
 
 ### The `reset` point behaves as a resource on the call stack<a name="the_reset_point_behaves_as_a_resource_on_the_call_stack" />
