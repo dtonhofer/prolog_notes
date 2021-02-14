@@ -4,6 +4,7 @@
 
 - [General reading](#general_reading)
 - [Why have exceptions in Prolog?](#why_have_exceptions)
+- [Excerpt from "Coding Guidelines for Prolog](#coding_guidelines_for_prolog_excerpt)
 - [Throwing exceptions](#throwing_exceptions)
 - ["It actually works](#it_actually_works)
 - [Throwing ISO standard exceptions](#throwing_iso_standard_exception)
@@ -13,7 +14,6 @@
 - [Good idea: Selecting whether to "throw or fail" at runtime](#selecting_throw_or_fail_at_runtime)
 - [Good idea: Using SWI-Prolog dict in a (non-ISO) exception term](#using_dict_in_an_exception_term)
 - [More Reading](#name="more_reading)
-   - [Coding guidelines say nothing](#coding_guidlelines_say_nothing)
    - [An alternative to Exceptions: Conditions](#alternative_to_exceptions_conditions)
    - [**Pages of interest in the SWI-Prolog manual**](#pages_of_interest_in_the_manual)
    - [Even more reading](#even_more_reading)
@@ -46,6 +46,12 @@ Information-carrying out-of-band errors, i.e. exceptions are especially importan
 - Lack of static and even dynamic type checking. A lot of potential problems won't be discovered by either the compiler or even at runtime. As a expedient fix, there will be `assertion/1` calls sprinkled throughout the code to make sure the process is still "on track". Not being "on track" (bad type, bad domain etc.) should mean that one bails out to a point in the program where the situation the problem can be handled, however crudely (generally by dumping intermediate results, reinitializing or getting more information from the user or other information source, and trying again). The alternative, whereby the assertion does not throw but just fails, would mean that the program starts failing with no clear indication as to why. Worse it might even continue to apparently work but actually compute result that don't make any sense. Not a great outcome.
 - Impossibility to get any good information concerning "failure". A predicate that fails becomes un-history (all the variable bindings are rolled back to the state they were in before the call). Failure tells the "upstream predicate" (the one to the left in a conjunction) only that "there was a problem with the current search path, please propose something else, a new domain to search through" (IMHO, this lack of information from the failing predicate actually a problem with Prolog and one sometimes has to awkwardly "reify the outcome", i.e. succeed the predicate but set a flag saying that the predicate actually failed instead to get any information about what went wrong). If an exceptional situation occurs, you really want to _know_ what happened and "failure" is just not fit for purpose here. 
 - Finally, finding out why a Prolog program emits "fail" when one expects it to yield an answer can be frustrating at the best of times. Co-mingling error conditions into this will not help.
+
+## Excerpt from "Coding Guidelines for Prolog"<a name="coding_guidelines_for_prolog_excerpt" />
+
+The [Coding Guidelines for Prolog](https://arxiv.org/abs/0911.2899) (Covington et al.) offer a bit of commentary on _when_ to throw, but do not go further:
+
+![prolog coding guidelines: exceptions](pics/prolog_coding_guidelines_exceptions.png)
 
 ## Throwing exceptions<a name="throwing_exceptions" /> 
 
@@ -252,10 +258,6 @@ goal_of_recovery_2(error(Dict,Context)) :-
 ```
 
 ## More Reading<a name="more_reading" />
-
-### Coding guidelines say nothing<a name="coding_guidlelines_say_nothing" />
-
-[Coding Guidelines for Prolog](https://arxiv.org/abs/0911.2899) offers a bit of commentary on _when_ to throw, but does not go further.
 
 ### An alternative to Exceptions: Conditions<a name="alternative_to_exceptions_conditions" />
 
