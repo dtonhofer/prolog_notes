@@ -19,7 +19,7 @@ This is additional material for the page [Delimited Continuations](https://eu.sw
       - [The "continuation" term is a compound term](#the_continuation_term_is_a_compound_term)
       - [Calling `shift/1` is not like backtracking](#calling_shift_is_not_like_backtracking)
       - [There is proper backtracking over the goal called by `reset/3`](#there_is_proper_backtracking_over_the_goal_called_by_reset)
-      - [Nidirectional wormholes and the Byrd Box](#wormholes_and_the_byrd_box)
+      - [Bidirectional wormholes and the Byrd Box](#wormholes_and_the_byrd_box)
       - [The `reset` point behaves as a resource on the call stack](#the_reset_point_behaves_as_a_resource_on_the_call_stack)
       - [Correct switching using (tail) recursion to generate new reset points](#correct_switching_using_recursion-to_generate_new_reset_points)
       - [Correct switching using a "failure-driven loop" in the "lower" predicate](#correct_switching_using_failure_driven_loop)
