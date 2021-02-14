@@ -6,7 +6,7 @@
 - [Why have exceptions in Prolog?](#why_have_exceptions)
 - [Excerpt from "Coding Guidelines for Prolog](#coding_guidelines_for_prolog_excerpt)
 - [Throwing exceptions](#throwing_exceptions)
-- ["It actually works](#it_actually_works)
+- [It actually works](#it_actually_works)
 - [Throwing ISO standard exceptions](#throwing_iso_standard_exception)
 - [Catch with backtrace](#catch_with_backtrace)
 - [Problems with the ISO standard exception terms](#problems_with_iso_standard_exception_term)
@@ -76,7 +76,7 @@ Another non-ISO standard exception term is thrown by [`dict_pairs/3`](https://eu
 Note that the above exceptions terms use a non-standard formal term but retain the structure of the ISO standard exception term,
 `error(Formal,Context)`.
 
-## "It actually works"<a name="it_actually_works" />
+## It actually works<a name="it_actually_works" />
 
 As the page for [`throw/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=throw/1) says:
 
