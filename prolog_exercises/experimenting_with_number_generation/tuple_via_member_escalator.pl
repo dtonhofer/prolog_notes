@@ -18,13 +18,12 @@
 %
 % On backtracking, this generates all possibilities. 
 %
-% Generate all 3125 entries of the default set (Values range 1..5, 
-% dimensionalty is 5):
+% Generate all 3125 entries of the set with value range 1..5, 
+% dimensionalty 5:
 %
-% ?-
-%   bagof(T,tuple_via_member_escalator(T,1,5,5),AllStatesUnsorted),
-%   sort(AllStatesUnsorted,AllStates),
-%   length(AllStates,L).
+% ?- bagof(T,tuple_via_member_escalator(T,1,5,5),AllStatesUnsorted),
+%    sort(AllStatesUnsorted,AllStates),
+%    length(AllStates,L).
 % L = 3125
 %
 % Speed testing by demanding it generate something impossible:
