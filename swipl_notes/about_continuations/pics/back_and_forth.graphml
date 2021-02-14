@@ -226,24 +226,6 @@ the failure driven loop<y:LabelModel>
                     </y:GenericNode>
                   </data>
                 </node>
-                <node id="n1::n0::n2::n4">
-                  <data key="d6">
-                    <y:GenericNode configuration="com.yworks.flowchart.process">
-                      <y:Geometry height="63.0" width="160.0" x="-61.0372314453125" y="283.72233072916674"/>
-                      <y:Fill color="#B7B69E" color2="#B7C9E3" transparent="false"/>
-                      <y:BorderStyle color="#000000" type="line" width="1.0"/>
-                      <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="10" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="38.921875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="101.44140625" x="29.279296875" y="12.0390625">"interleaved stuff
-happens in another
-context"<y:LabelModel>
-                          <y:SmartNodeLabelModel distance="4.0"/>
-                        </y:LabelModel>
-                        <y:ModelParameter>
-                          <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
-                        </y:ModelParameter>
-                      </y:NodeLabel>
-                    </y:GenericNode>
-                  </data>
-                </node>
               </graph>
             </node>
             <node id="n1::n0::n3" yfiles.foldertype="group">
@@ -260,7 +242,7 @@ context"<y:LabelModel>
                       <y:DropShadow color="#D2D2D2" offsetX="4" offsetY="4"/>
                       <y:State closed="false" closedHeight="50.0" closedWidth="50.0" innerGraphDisplayEnabled="false"/>
                       <y:Insets bottom="15" bottomF="15.0" left="15" leftF="15.0" right="15" rightF="15.0" top="15" topF="15.0"/>
-                      <y:BorderInsets bottom="0" bottomF="0.0" left="0" leftF="0.0" right="0" rightF="0.0" top="0" topF="0.0"/>
+                      <y:BorderInsets bottom="0" bottomF="0.0" left="0" leftF="0.0" right="0" rightF="0.328125" top="0" topF="0.0"/>
                     </y:GroupNode>
                     <y:GroupNode>
                       <y:Geometry height="50.0" width="50.0" x="60.75" y="824.5"/>
@@ -332,24 +314,6 @@ context"<y:LabelModel>
                       <y:Fill color="#99CCFF" color2="#99CCFF" transparent="false"/>
                       <y:BorderStyle color="#000000" type="line" width="1.0"/>
                       <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="22.24609375" x="28.876953125" y="4.140625">fail<y:LabelModel>
-                          <y:SmartNodeLabelModel distance="4.0"/>
-                        </y:LabelModel>
-                        <y:ModelParameter>
-                          <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
-                        </y:ModelParameter>
-                      </y:NodeLabel>
-                    </y:GenericNode>
-                  </data>
-                </node>
-                <node id="n1::n0::n3::n4">
-                  <data key="d6">
-                    <y:GenericNode configuration="com.yworks.flowchart.process">
-                      <y:Geometry height="63.0" width="160.328125" x="-61.2559814453125" y="664.9062499999999"/>
-                      <y:Fill color="#B7B69E" color2="#B7C9E3" transparent="false"/>
-                      <y:BorderStyle color="#000000" type="line" width="1.0"/>
-                      <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="10" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="38.921875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="101.44140625" x="29.443359375" y="12.0390625">"interleaved stuff
-happens in another
-context"<y:LabelModel>
                           <y:SmartNodeLabelModel distance="4.0"/>
                         </y:LabelModel>
                         <y:ModelParameter>
@@ -520,7 +484,7 @@ in the local context<y:LabelModel>
                       <y:DropShadow color="#D2D2D2" offsetX="4" offsetY="4"/>
                       <y:State closed="false" closedHeight="50.0" closedWidth="50.0" innerGraphDisplayEnabled="false"/>
                       <y:Insets bottom="15" bottomF="15.0" left="15" leftF="15.0" right="15" rightF="15.0" top="15" topF="15.0"/>
-                      <y:BorderInsets bottom="21" bottomF="20.649999999999864" left="0" leftF="0.0" right="0" rightF="0.0" top="0" topF="0.0"/>
+                      <y:BorderInsets bottom="21" bottomF="20.649999999999864" left="0" leftF="0.0" right="0" rightF="0.21875" top="0" topF="0.0"/>
                     </y:GroupNode>
                     <y:GroupNode>
                       <y:Geometry height="50.0" width="50.0" x="148.75000000000006" y="1213.7942708333337"/>
@@ -592,24 +556,6 @@ in the local context<y:LabelModel>
                       <y:Fill color="#99CCFF" color2="#99CCFF" transparent="false"/>
                       <y:BorderStyle color="#000000" type="line" width="1.0"/>
                       <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="22.24609375" x="28.876953125" y="4.140625000000114">fail<y:LabelModel>
-                          <y:SmartNodeLabelModel distance="4.0"/>
-                        </y:LabelModel>
-                        <y:ModelParameter>
-                          <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
-                        </y:ModelParameter>
-                      </y:NodeLabel>
-                    </y:GenericNode>
-                  </data>
-                </node>
-                <node id="n1::n0::n13::n4">
-                  <data key="d6">
-                    <y:GenericNode configuration="com.yworks.flowchart.process">
-                      <y:Geometry height="63.0" width="160.21875" x="-61.1466064453125" y="1039.1446614583338"/>
-                      <y:Fill color="#B7B69E" color2="#B7C9E3" transparent="false"/>
-                      <y:BorderStyle color="#000000" type="line" width="1.0"/>
-                      <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="10" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="38.921875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="101.44140625" x="29.388671875" y="12.0390625">"interleaved stuff
-happens in another
-context"<y:LabelModel>
                           <y:SmartNodeLabelModel distance="4.0"/>
                         </y:LabelModel>
                         <y:ModelParameter>
@@ -941,8 +887,8 @@ port wiring<y:LabelModel>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.process">
           <y:Geometry height="26.25" width="80.0" x="315.925537109375" y="-83.79557291666677"/>
-          <y:Fill color="#99CCFF" color2="#99CCFF" transparent="false"/>
-          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:Fill hasColor="false" transparent="false"/>
+          <y:BorderStyle color="#000000" type="dashed" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="22.24609375" x="28.876953125" y="4.140625">fail<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
@@ -957,8 +903,8 @@ port wiring<y:LabelModel>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.process">
           <y:Geometry height="26.25" width="80.0" x="457.175537109375" y="257.47233072916674"/>
-          <y:Fill color="#99CCFF" color2="#99CCFF" transparent="false"/>
-          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:Fill hasColor="false" transparent="false"/>
+          <y:BorderStyle color="#000000" type="dashed" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="31.275390625" x="24.3623046875" y="4.140625">redo<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
@@ -1095,24 +1041,6 @@ port wiring<y:LabelModel>
               <y:Fill color="#99CCFF" color2="#99CCFF" transparent="false"/>
               <y:BorderStyle color="#000000" type="line" width="1.0"/>
               <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="22.24609375" x="28.876953125" y="4.140625">fail<y:LabelModel>
-                  <y:SmartNodeLabelModel distance="4.0"/>
-                </y:LabelModel>
-                <y:ModelParameter>
-                  <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
-                </y:ModelParameter>
-              </y:NodeLabel>
-            </y:GenericNode>
-          </data>
-        </node>
-        <node id="n8::n4">
-          <data key="d6">
-            <y:GenericNode configuration="com.yworks.flowchart.process">
-              <y:Geometry height="63.0" width="160.0" x="-735.699462890625" y="-1.6463216145835418"/>
-              <y:Fill color="#B7B69E" color2="#B7C9E3" transparent="false"/>
-              <y:BorderStyle color="#000000" type="line" width="1.0"/>
-              <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="10" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="38.921875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="101.44140625" x="29.279296875" y="12.0390625">"interleaved stuff
-happens in another
-context"<y:LabelModel>
                   <y:SmartNodeLabelModel distance="4.0"/>
                 </y:LabelModel>
                 <y:ModelParameter>
@@ -1356,24 +1284,6 @@ port wiring<y:LabelModel>
               <y:Fill color="#99CCFF" color2="#99CCFF" transparent="false"/>
               <y:BorderStyle color="#000000" type="line" width="1.0"/>
               <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="22.24609375" x="28.876953125" y="4.140625">fail<y:LabelModel>
-                  <y:SmartNodeLabelModel distance="4.0"/>
-                </y:LabelModel>
-                <y:ModelParameter>
-                  <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
-                </y:ModelParameter>
-              </y:NodeLabel>
-            </y:GenericNode>
-          </data>
-        </node>
-        <node id="n15::n4">
-          <data key="d6">
-            <y:GenericNode configuration="com.yworks.flowchart.process">
-              <y:Geometry height="63.0" width="160.0" x="-735.590087890625" y="539.1953124999999"/>
-              <y:Fill color="#B7B69E" color2="#B7C9E3" transparent="false"/>
-              <y:BorderStyle color="#000000" type="line" width="1.0"/>
-              <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="10" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="38.921875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="101.44140625" x="29.279296875" y="12.0390625">"interleaved stuff
-happens in another
-context"<y:LabelModel>
                   <y:SmartNodeLabelModel distance="4.0"/>
                 </y:LabelModel>
                 <y:ModelParameter>
@@ -1772,24 +1682,6 @@ port wiring<y:LabelModel>
             </y:GenericNode>
           </data>
         </node>
-        <node id="n28::n4">
-          <data key="d6">
-            <y:GenericNode configuration="com.yworks.flowchart.process">
-              <y:Geometry height="63.0" width="160.0" x="-735.590087890625" y="1049.8751302083338"/>
-              <y:Fill color="#B7B69E" color2="#B7C9E3" transparent="false"/>
-              <y:BorderStyle color="#000000" type="line" width="1.0"/>
-              <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="10" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="38.921875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="101.44140625" x="29.279296875" y="12.0390625">"interleaved stuff
-happens in another
-context"<y:LabelModel>
-                  <y:SmartNodeLabelModel distance="4.0"/>
-                </y:LabelModel>
-                <y:ModelParameter>
-                  <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
-                </y:ModelParameter>
-              </y:NodeLabel>
-            </y:GenericNode>
-          </data>
-        </node>
       </graph>
     </node>
     <node id="n29" yfiles.foldertype="group">
@@ -2164,24 +2056,6 @@ in the local context<y:LabelModel>
             </y:GenericNode>
           </data>
         </node>
-        <node id="n39::n4">
-          <data key="d6">
-            <y:GenericNode configuration="com.yworks.flowchart.process">
-              <y:Geometry height="63.0" width="160.0" x="-735.590087890625" y="1570.380989583334"/>
-              <y:Fill color="#B7B69E" color2="#B7C9E3" transparent="false"/>
-              <y:BorderStyle color="#000000" type="line" width="1.0"/>
-              <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="10" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="38.921875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="101.44140625" x="29.279296875" y="12.0390625">"interleaved stuff
-happens in another
-context"<y:LabelModel>
-                  <y:SmartNodeLabelModel distance="4.0"/>
-                </y:LabelModel>
-                <y:ModelParameter>
-                  <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
-                </y:ModelParameter>
-              </y:NodeLabel>
-            </y:GenericNode>
-          </data>
-        </node>
       </graph>
     </node>
     <node id="n40" yfiles.foldertype="group">
@@ -2499,7 +2373,7 @@ transferred between activations<y:LabelModel>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>
@@ -2511,7 +2385,7 @@ transferred between activations<y:LabelModel>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
             <y:Point x="355.925537109375" y="270.59733072916674"/>
           </y:Path>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>
@@ -2646,7 +2520,7 @@ transferred between activations<y:LabelModel>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
         </y:BezierEdge>
       </data>
