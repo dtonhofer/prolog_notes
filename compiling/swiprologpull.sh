@@ -56,19 +56,52 @@
 # This script passes https://www.shellcheck.net/
 # ===========================================================================
 
-# ---
-# TODO: automatically get the latest hamcrest and junit jars (used by JPL)
-# from:
+# ===========================================================================
+# TODO/BUGS
+#
+# - automatically get the latest hamcrest and junit jars (used by JPL, the
+#   Java-Prolog bridge) from:
 #
 #   https://mvnrepository.com/artifact/org.hamcrest/hamcrest/ (currently 2.2; BSD 3 clause)
 #   https://mvnrepository.com/artifact/junit/junit/           (currently 4.13.1; EPL 1.0)
 #
 # (On a longer timeframe, move JPL to Junit Jupiter)
 #
-# TODO: Disentangle building manual PDF
+# - Disentangle building manual PDF
 #
-# TODO: Copying of modified files for rebuilding documentation is messy
-# ---
+# - Copying of modified files for rebuilding documentation is messy. Improve!
+#
+# - When building: Do not stop if /usr/local/logic does not exist. Instead,
+#   just warn and proceed with building. One can always add it at 
+#   ninja install time.
+#
+# - When building: Immediately check whether cmake and ninja exist and
+#   exit if not. Same for the compiler
+#
+# - Need to install some stuff manually first. On Fedora with dnf:
+#   dnf install cmake          #(make system)
+#   dnf install ninja-build    #(build system)
+#   dnf install gcc            #(C+ compiler)
+#   dnf install gcc-c++        #(C++ compiler)
+#   dnf install zlib-devel     #(compression)
+#   dnf install openssl-devel  #(crypto)
+#   dnf install readline-devel #(handling of command line)
+#   dnf install libedit-devel  #(not sure whether both readline and libedit are needed)
+#   dnf install pcre-devel     #(Perl regex support, optional)
+#   dnf install libyaml-devel  #(YAML files support, optional)
+#   dnf install uuid-devel     #(UUID support, optional - NOT libuuid-devel)
+#   dnf install gmp-devel      #(GNU multiprecision library, long number support, recommended!)
+#
+# Not in the above:
+#
+# Google multi-threaded malloc                (tcmalloc)
+# Berkeley Database Support                   (bdb)
+# Java bridge support                         (jpl)
+# ODBC support                                (odbc)
+# Graphical interface support                 (pce)  - Needs X11, Qt5 (I think)
+#
+# - Properly exit if configuration fails!
+# ===========================================================================
 
 # set -x # Uncomment for tracing information
 set -o nounset # No unset bash variables allowed
