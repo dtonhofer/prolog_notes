@@ -1,0 +1,118 @@
+https://eu.swi-prolog.org/howto/Pack.html
+
+## Example
+
+Suppose you want to create pack `onepointfour_basics`.
+
+Set up a file tree as follows:
+
+```
+onepointfour_basics             toplevel dir named after your pack (must be unique, maybe named after your domain, as for Java?)
+├── pack.pl                     the pack meta-information file, a Prolog program
+└── prolog                      Prolog source code in here
+    ├── exception_helpers.pl    ...content #1
+    ├── meta_helpers.pl         ...content #2
+    ├── README.md               ...content #3
+    ├── safe_format.pl          ...content #4
+    ├── throwme_example.pl      ...content #5
+    └── throwme.pl              ...content #6
+```
+
+The directory `prolog` will be put on swipl's library search path, so you probably do not want to have subdirectories underneath that.
+
+Now create the tar file, named after the pack and with the version string as it appears in pack.pl:
+
+```
+$ tar czf onepointfour_basics-1.0.0.tgz onepointfour_basics/
+```
+
+Everything in the tar file is nicely under `onepointfour_basics` as you can see by listing the tar file contents:
+
+```
+$ tar tf onepointfour_basics-1.0.0.tgz
+onepointfour_basics/
+onepointfour_basics/prolog/
+onepointfour_basics/prolog/README.md
+onepointfour_basics/prolog/throwme_example.pl
+onepointfour_basics/prolog/meta_helpers.pl
+onepointfour_basics/prolog/safe_format.pl
+onepointfour_basics/prolog/throwme.pl
+onepointfour_basics/prolog/exception_helpers.pl
+onepointfour_basics/pack.pl
+```
+
+You can now put the pack file where it is needed and install the pack from swipl with pack_install/1:
+
+```
+?- pack_install('onepointfour_basics-1.0.0.tgz').
+true.
+```
+
+(which works under condition that file is in swipl's current directory or given as qualified filename; otherwise `pack_install/1` tries to interprete the filename as an URL and a confusing error results)
+
+After this, the file tree of the pack appears (on Linux) in 
+
+```
+$HOME/.local/share/swi-prolog/pack/onepointfour_basics/
+```
+
+with the expected tree structure:
+
+```
+$ tree .local/share/swi-prolog/pack/onepointfour_basics/
+.local/share/swi-prolog/pack/onepointfour_basics/
+├── pack.pl
+└── prolog
+    ├── exception_helpers.pl
+    ├── meta_helpers.pl
+    ├── README.md
+    ├── safe_format.pl
+    ├── throwme_example.pl
+    └── throwme.pl
+```
+
+Additionally, the `prolog` directory is on the library search path:
+
+```
+?- file_search_path(library,X),atom(X),re_match("onepointfour",X).
+X = '/home/calvin/.local/share/swi-prolog/pack/onepointfour_basics/prolog' ;
+false.
+```
+
+So, assuming all of those files under `prolog` are module files (they should be), just do:
+
+```
+?- 
+use_module(library('meta_helpers.pl')),
+use_module(library('safe_format.pl')),
+use_module(library('throwme.pl')).
+```
+
+to make their predicates accessible. This also works without the quotes and the `.pl` but I like to be clear that a file is being loaded. If there is a subtree under `prolog`, the paths given to use_module/1 have to be changed accordingly.
+
+If the files contain proper [pldoc](https://eu.swi-prolog.org/pldoc/doc_for?object=section%28%27packages/pldoc.html%27%29) documentation text, then starting the pldoc web server in swipl:
+
+```
+?- doc_server(4000).
+% Started server at http://localhost:4000/pldoc/
+true.
+```
+
+and pointing the browser to 
+
+http://localhost:4000/pldoc/doc/_CWD_/index.html
+
+will show the pack in the drop-list at the top of the page.
+
+(but help/1 doesn't work for the packs).
+
+You can "remove the pack" by issuing a pack_remove/1 call:
+
+```
+?- pack_remove(onepointfour)
+```
+
+this physically removes the pack directory from disk.
+
+
+

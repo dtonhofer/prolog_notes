@@ -1,0 +1,31 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=(%3B)/2
+
+From Covington et al., [Coding Guidelines for Prolog](https://arxiv.org/abs/0911.2899), page 10 and 11: _Decide how to format disjunctions and if-then-elses_
+
+```
+All but the simplest disjunctions should be displayed prominently using layouts such as
+
+(
+   disjunct_1
+;
+   disjunct_2
+;
+   disjunct_3
+)
+
+or the more compact
+
+( disjunct_1
+; disjunct_2
+; disjunct_3
+)
+
+In both styles, parentheses are always present, the closing parenthesis is exactly
+below the opening one, and the semicolons stick out in a way that makes misunderstanding much more difficult. 
+```
+
+## A question on Stack Overflow
+
+[Is there any difference between using the “or” operator and using several clauses?](https://stackoverflow.com/questions/66224432/is-there-any-difference-between-the-or-operator-and-using-several-predicate)
+
+Answer: No, although it depends!

@@ -1,0 +1,49 @@
+https://eu.swi-prolog.org/pldoc/man?section=string-predicates
+
+## Organization of the concept of "anytext" as special case of the concept of "texty term"
+
+So I was thinking about what the type of a "text thing" could be and this seems
+appropriate:
+
+Categorization always categorizes a term as not belonging to this tree or else as 
+belonging to exactly one of the leaf types. Types nearer the root type just regroup
+sutypes in a meaningful way (for the programmer).
+
+```
+           +--- var?: an unbound variable; can become anything
+           |
+           |
+           |                   +--- openvarlist?: nonempty open list of > 0 vars
+           |                   |
+           +--- openlist? -----+--- opencharylist?: nonempty open list of > 0 char, may contain vars
+           |                   |
+           |                   +--- opencodeylist?: nonempty open list of > 0 unicode code points, may contain vars
+           |
+           |                   +--- varlist?: list of N > 0 vars; edge case
+           |                   |
+           +--- changylist? ---+--- charylist?: list of C > 0 chars and V > 0 vars
+           |                   |
+           |                   +--- codeylist?: list of C> 0 unicode code points and V > 0 vars
+           |
+           |                                               +--- emptylist!: empty list; edge case as not sure whether charlist or codelist
+           |                                               |
+           |                             +--- textlist! ---+--- charlist!: nonempty list of chars (atoms of length 1)
+           |                             |                 |
+           |                             |                 +--- codelist!: nonempty list of unicode code points (integers between 0 and 0x10FFFF)
+           |                             |
+ texty* ---+               +--- text! ---+
+           |               |             |
+           |               |             |                +--- atom!: Prolog atoms including the empty atom '' (but not the empty list [])
+           |               |             |                |
+           +---anytext! ---+             +--- stringy! ---+
+                           |                              |
+                           |                              +--- string!: SWI-Prolog strings including the empty string ""
+                           |
+                           +--- number!  acceptable because a number can be
+                                         transformed into text (according to some
+                                         unspecified convention...)
+```
+
+Show me the code you say?
+
+An implementation of the above type tree can be found as [pre-release here](https://github.com/dtonhofer/prolog_code/tree/main/tmp)

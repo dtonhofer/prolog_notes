@@ -1,0 +1,54 @@
+https://eu.swi-prolog.org/pldoc/man?predicate=write_length/3
+
+Nonground arguments will give arbitrary length:
+
+```
+?- X=foo(bar(baz(_))),write_length(X,L,[]).
+X = foo(bar(baz(_2500))),
+L = 20.
+
+?- X=foo(bar(baz(_))),write_length(X,L,[]).
+X = foo(bar(baz(_12000))),
+L = 21.
+```
+
+Note that this does NOT "stringify" codelists or charlists before giving the length, unlike what atom_length/2 or string_length/2 do
+
+```
+?- X=tee,write_length(X,L,[]).
+X = tee,
+L = 3.
+
+?- X=`tee`,write_length(X,L,[]).
+X = [116,101,101],
+L = 13.
+
+?- atom_chars(tee,X),write_length(X,L,[]).
+X = [t,e,e],
+L = 7.
+
+?- X is pi,write_length(X,L,[]).
+X = 3.141592653589793,
+L = 17.
+```
+
+Whereas:
+
+```
+?- X=tee,atom_length(X,L).
+X = tee,
+L = 3.
+
+?- X=`tee`,atom_length(X,L).
+X = [116,101,101],
+L = 3.
+
+?- atom_chars(tee,X),atom_length(X,L).
+X = [t,e,e],
+L = 3.
+
+?- X is pi,atom_length(X,L).
+X = 3.141592653589793,
+L = 17.
+```
+

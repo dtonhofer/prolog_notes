@@ -1,28 +1,82 @@
-## Something for the toolbox: What is a character?
+https://eu.swi-prolog.org/pldoc/doc_for?object=atom_length/2
 
-==
-character(A) :- atom(A),atom_length(A,1).
-==
+## Doc and Design needs help or surgery
 
-## Note this little inconsistency
+In fact, atom_length/2 takes "anytext" (see [Predicates that operate on strings](https://eu.swi-prolog.org/pldoc/man?section=string-predicates)) as first argument:
 
-==
-?- atom_length(a,-1).
-false.
-==
+```
+                                          +--- emptylist: the empty list, and edge case (is it charlist or codelist? we don't know!)
+                                          |
+                         +--- textlist ---+--- charlist : nonempty list of chars ("characters", atoms of length 1)
+                         |                |
+                         |                +--- codelist : nonempty list of unicode code points (integers between 0 and 0x10FFFF)
+                         |
+            +--- text ---+
+            |            |
+            |            |               +--- atom : Prolog atoms, including the empty atom
+            |            |               |
+anytext  ---+            +--- stringy ---+
+            |                            |
+            |                            +--- string : SWI-Prolog strings, including the empty string
+            |
+            +--- number  acceptable because a number can be
+                         transformed into text (according to some
+                         unspecified convention...)
+```
 
-So `atom_length/2` is lenient, but `length/2` is not:
+We read:
 
-==
-?- length([1],-1).
-ERROR: Domain error: `not_less_than_zero' expected, found `-1'
-==
+> The SWI-Prolog version accepts all atomic types, as well as code-lists and character-lists. New code should avoid this feature and use write_length/3 to get the number of characters that would be written if the argument was handed to write_term/3.
 
-In fact, the ISO standard says that `atom_length/2` should throw on negative length.
+This is not really right or a replacement, as write_length/3 works with "terms" not with "texty things" ([anytext](https://eu.swi-prolog.org/pldoc/man?section=string-predicates)), and so writes out a list [a,b,c] as "[a,b,c]", yielding length 7 as opposed to atom_length/2 which serializes it as 'abc', yielding length 3.
 
-## atom_length goes semantic
+The fact that there is a string_length/2 and atom_length/2 that also take arbitrary "texty things" as first arguments is relatively confusing.
 
-The ISO standard says that the first parameter must be an atom. SWI-Prolog accepts other things here, clearly "printing them" them, then counting the characters. This may be practical but seems odd, because it's no longer a purely syntactic operation:
+How it should be done:
+
+   - atom_length/2 should accept atoms or string (because of migration issues when strings were introduced)
+   - string_length/2 shouldn't exist, it's just atom_length/2 pretending to care about strings
+   - stringy_length/2 should exist as an alias to atom_length/2 with a conceptually clearer name as it accepts strings and atoms
+   - texty_length/2 also accepts text lists
+   - anytext_length/2 also accepts numbers and that is probably a step too far already. You cannot really pretend to sweep the formatting issue under the rag:
+
+```
+?- format(string(S),"~g",[pi]),atom_length(S,L).
+S = "3.14159",
+L = 7.
+
+?- format(string(S),"~f",[pi]),atom_length(S,L).
+S = "3.141593",
+L = 8.
+
+?- PI is pi, atom_length(PI,L).
+PI = 3.141592653589793,
+L = 17.
+```
+
+In all cases, the question of whether to throw or fail on out-of-type or out-of-domain values on first or second position stays open.
+
+My instinct would be to
+
+   - put as little cognitive load on the developer (no special cases) and 
+   - to make the program "brittle by default" (any fishy thing leads to an announcement by exception unless it has been explicity okayed by developer). 
+
+So always **throw as default** (throws can be caught & suppressed while fails leave you none the wiser and can never be transformed into meaningful errors), 
+and add a "lenient version" that fails instead: atom_length_lenient/2.
+
+Or better yet, add a Prolog extension similar to with_output_to/2. Something like with_lenient_length(SubGoal) that suppresses all exceptions thrown by length predicates in the prooftree for SubGoal. 
+
+That sounds suitably radical! I love it.
+
+## atom_length has tunable behaviour
+
+[current_prolog_flag](https://eu.swi-prolog.org/pldoc/doc_for?object=current_prolog_flag/2) says:
+
+... if the system.wide flag `iso` is set then ...
+
+> atom_length/2 yields a type error if the first argument is a number.
+
+Otherwise it serializes the number into a atom (according to some unspecified convention) and reports the length of _that_. This may be practical but seems odd, because it's no longer a purely syntactic operation:
 
 ```
 ?-  atom_length(1,N).
@@ -34,6 +88,54 @@ N = 5.
 ?- atom_length(1r3,N).
 N = 3.
 ```
+
+However, as the manual says: "New code should avoid this feature and use write_length/3 to get the number of characters that would be written if the argument was handed to write_term/3."
+
+## What is a 'character' aka. 'char'?
+
+```
+char(A) :- atom(A),atom_length(A,1).
+```
+
+## Note this little inconsistency
+
+```
+?- atom_length(a,-1).
+false.
+```
+
+So `atom_length/2` is lenient regarding the presence of a negative length.
+
+But `length/2` (i.e. list length) is not:
+
+```
+?- length([1],-1).
+ERROR: Domain error: `not_less_than_zero' expected, found `-1'
+```
+
+In fact, the ISO standard says that `atom_length/2` should throw on negative length.
+
+On the other hand, atom_length/2 is demanding on the first argument:
+
+```
+?- atom_length(fg(h),-1).
+ERROR: Type error: `text' expected, found `fg(h)' (a compound)
+
+?- atom_length([g,7],-1).
+ERROR: Type error: `character' expected, found `7' (an integer)
+
+?- atom_length([7,g],-1).
+ERROR: Type error: `character_code' expected, found `g' (an atom)
+```
+
+And otherwise on the second argument:
+
+```
+?- atom_length([7],foo).
+ERROR: Type error: `integer' expected, found `foo' (an atom)
+```
+
+**Prolog is full of subtleties** but this makes it hard to think about.
 
 ## A list is fine too
 
@@ -65,6 +167,15 @@ X = [104, 101, 108, 108, 111].
 ?- atom_length(`hello`,N).
 N = 5.
 ```
+
+However it refuses to work if the list isn't ground (although in principle it _could_ say 3 in the following case, it would be at least tentatively right):
+
+```
+?- atom_length([a,Y,c],X).
+ERROR: Arguments are not sufficiently instantiated
+```
+
+Did I mention that Prolog is **full of subtleties**
 
 ## Unit test code
 

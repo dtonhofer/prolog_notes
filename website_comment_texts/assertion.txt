@@ -1,140 +1,86 @@
-## When to use this?
+https://eu.swi-prolog.org/pldoc/man?predicate=assertion/1
 
-Jan Wielemaker writes:
+## Not an ISO Standard exception
 
-> Public APIs should not use assertion/1 to validate argument types. must_be/2
-> is intended for this. assertion/1 is intended to trap stuff that should not
-> happen unless there is a bug in the library.
+assertion/1 throws a non-ISO Standard error term
 
-OTOH, in my opinion must_be/2 is too rigid (i.e. very C-like). It is able to perform a selected number of relatively basic type check, whereas you can give a whole goal to assertion/1 and go wild while staying readable.
+because 
 
-**WISH**: The ideal way would be to have a must_be/3 that doesn't throw but just fails with a proper error message on third place. Then you could call that through `assertionx(Key,Goal,Txt)` where `Key` is an atom by which the assertionx/3 can be switched on or off (by consulting the Prolog database, naturally) and `Txt` is the text to be put into a dedicated assertion error to throw on assertion violation. That would a non-ISO error because [there is no ISO standard assertion error](https://github.com/dtonhofer/prolog_notes/tree/master/swipl_notes/about_exceptions#list-of-the-iso-standard-exception-term) ... hard to believe!)
+[there is no ISO standard assertion error](https://github.com/dtonhofer/prolog_notes/tree/master/swipl_notes/about_exceptions#list-of-the-iso-standard-exception-term) ... hard to believe!
 
-## Example
+## An assertion exception is special
 
-Running `assertion(false)` on the Prolog toplevel directly gives:
+Interactively, it doesn't seem to be "catchable" with catch/3:
 
-==
-?- assertion(false).
+A domain error is not a problem:
+
+```
+?- catch(domain_error(_,_),Caught,format("Caught: ~q~n",[Caught])).
+Caught: error(domain_error(_96,_98),_92)
+Caught = error(domain_error(_96,_98),_92).
+```
+
+But an assertion error goes right through and starts the tracer:
+
+```
+?- catch(assertion(false),Caught,format("Caught: ~q~n",[Caught])).
 ERROR: Assertion failed: user:false
-  [12] backtrace(10) at /usr/local/logic/swipl/lib/swipl/library/prolog_stack.pl:487
-  [11] prolog_debug:assertion_failed(fail,user:false) at /usr/local/logic/swipl/lib/swipl/library/debug.pl:328
-  [10] prolog_debug:assertion(user:false) at /usr/local/logic/swipl/lib/swipl/library/debug.pl:316
-   [9] <user>
+  [13] prolog_stack:backtrace(10) at /usr/local/logic/swipl/lib/swipl/library/prolog_stack.pl:487
+  [12] prolog_debug:assertion_failed(fail,user:false) at /usr/local/logic/swipl/lib/swipl/library/debug.pl:330
+  [11] prolog_debug:assertion(user:false) at /usr/local/logic/swipl/lib/swipl/library/debug.pl:318
+  [10] catch(user:assertion(false),_2174,user:format("Caught: ~q~n",...)) at /usr/local/logic/swipl/lib/swipl/boot/init.pl:537
+   [9] toplevel_call(user:user: ...) at /usr/local/logic/swipl/lib/swipl/boot/toplevel.pl:1113
 true.
+```
 
-[trace]  ?- nodebug.
-true.
-?-
-==
+Even non-interactively:
 
-Running the following code non-interactively (i.e. from a loaded file), using catch_with_backtrace/3 instead of just catch/3
+If you have this program:
 
-==
+```
 main :-
-   catch_with_backtrace(assertion(false),H,writeln(H)).
-
+   catch(domain_error(_,_),Caught,format("Caught: ~q~n",[Caught])),
+   format("Next...~n",[]),
+   catch(assertion(false),Caught,format("Caught: ~q~n",[Caught])),
+   format("There is no next...~n",[]).
+ 
 :- main.
-==
+```
 
-gives
+and run it:
 
-==
-ERROR: /home/user/test.pl:6:
+```
+$ swipl test.pl 
+Caught: error(domain_error(_41980,_41982),_41976)
+Next...
+ERROR: /home/user/test.pl:7:
 ERROR:    Assertion failed: user:false
-  [42] backtrace(10) at ...
-  [41] prolog_debug:assertion_failed(fail,user:false) at ...
-  [40] prolog_debug:assertion(user:false) at ...
-  [39] catch(user:assertion(false),_13924,user:writeln(_13954)) at ...
-  [38] catch_with_backtrace(user:assertion(false),_14008,user:writeln(_14038)) at ...
-  [37] main at ...
-  [36] catch(user:main,error(_14148,_14150),system:'$exception_in_directive'(...)) at ...
-  [35] '$execute_directive_3'(main) at ...
-  [30] '$load_file'('/home/calvin/ass2.pl','/home/calvin/ass2.pl',_14270,[expand(false),...]) at ...
-  [29] setup_call_catcher_cleanup(...
-==
-
-## See also
-
-  - See also must_be/2
-  - Here's how CIAO Prolog does it: https://ciao-lang.org/ciao/build/doc/ciao.html/assertions_doc.html
-     - ... and there is a corresponding package for SWI-Prolog: https://eu.swi-prolog.org/pack/list?p=assertions
-  - How assertion/1 works together with plunit: [One body with multiple tests using assertions](https://eu.swi-prolog.org/pldoc/man?section=testassertion)
-
-## No message text
-
-It **might** be nice if this predicate also took a second argument (possibly a goal) to generate a text for the exception so as to inform the user in a more detailed fashion concerning the failure. Similar for Java: [14.10. The assert Statement](https://docs.oracle.com/javase/specs/jls/se14/html/jls-14.html#jls-14.10).
-
-However, this is not planned to be added for now.
-
-## Disabling assertions
-
-You need to rewrite them using goal_expansion/2.
-
-For example, load and execute:
-
-==
-:- debug(assertion_info).
-
-% ---
-% plunit test code
-% ---
-
-foo(X) :- bar(X).
-bar(X) :- baz(X).
-baz(X) :- quux(X).
-
-quux(X) :-
-   assertion(X > 0),
-   debug(assertion_info,"Now past assertion",[]).
-==
-
-On the command line:
-
-==
-?- [ass].
-true.
-
-?- quux(1).
-% Now past assertion
-true.
-
-?- quux(-1).
-ERROR: Assertion failed: user:(-1>0)
-==
-
-Now add this to `[user]`:
-
-```
-goal_expansion(assertion(G),true) :- format("Replaced assertion: ~q\n",[assertion(G)]).
+  [34] prolog_stack:backtrace(10) at /usr/local/logic/swipl/lib/swipl/library/prolog_stack.pl:487
+  [33] prolog_debug:assertion_failed(fail,user:false) at /usr/local/logic/swipl/lib/swipl/library/debug.pl:330
+...
 ```
 
-then loading the above program again:
+## assertion does not backtrack and has no effects
+
+Sounds like it deploys a "double negation" firewall. Good:
 
 ```
-?- [ass].
-Replaced assertion: assertion(_20756>0)
-true.
+?- 
+assertion(member(X,[1,2,3])),  % this passes
+format("~q",[X]).              % but X is still uninstantiated
 
-?- quux(-1).
-% Now past assertion
-true.
-
-?- quux(1).
-% Now past assertion
+_84182
 true.
 ```
-
-More complex body to goal_expansion/2 will also allow you to disable assertions on a per-module basis for example.
 
 ## Source
 
-- The assertion-handling source is in lib/swipl/library/debug.pl`
+- The assertion-handling source is in `lib/swipl/library/debug.pl`
 - The message printing source is in `lib/swipl/boot/messages.pl`
 
-The assertion-handling source is a bit esoteric:
+The assertion-handling source is a bit esoteric but we see the double negation here:
 
-==
+```
 assertion(G) :-
     \+ \+ catch(G,
                 Error,
@@ -164,6 +110,118 @@ assertion_failed.
 
 assertion_rethrow(time_limit_exceeded).
 assertion_rethrow('$aborted').
-==
+```
 
+## When to use this?
 
+Answer: **All the time**.
+
+Jan Wielemaker writes:
+
+> Public APIs should not use assertion/1 to validate argument types. must_be/2
+> is intended for this. assertion/1 is intended to trap stuff that should not
+> happen unless there is a bug in the library.
+
+On the other hand, in my opinion must_be/2 is **much** too rigid (i.e. the approach
+is very C-like). It is able to perform a selected number of relatively basic type checks, 
+whereas you can give an arbitrary goal to assertion/1 and go wild with the conditions 
+while staying readable.
+
+My decision: Kick must_be/2 to the curb, and use assertion/1 instead. IMMV.
+
+**WISH**:
+
+   - An ability to disable assertion/1 for a subgoals, similarl to the way
+     you redirect current output for subgolas with with_output_to/2.
+   - Assertions should be categorized by a term, similar to logging, so that
+     one can switch them off or on in groups. Of course, this could be
+     done writing the assertion/1 subgoal adequately but that is icky. 
+   - There should be an optional error message. If Java accepts an error 
+     message in its [assert statement](https://docs.oracle.com/javase/specs/jls/se14/html/jls-14.html#jls-14.10)
+     there must be a reason for that. However, after querying, this is not
+     planned to be added.
+ 
+## Disabling assertions
+
+You need to rewrite them using goal_expansion/2. 
+
+For example, load and execute:
+
+```
+:- debug(assertion_info).
+
+% ---
+% plunit test code
+% ---
+
+foo(X) :- bar(X).
+bar(X) :- baz(X).
+baz(X) :- quux(X).
+
+quux(X) :-
+   assertion(X > 0),
+   debug(assertion_info,"Now past assertion",[]).
+```
+
+On the command line:
+
+```
+?- [ass].
+true.
+
+?- quux(1).
+% Now past assertion
+true.
+
+?- quux(-1).
+ERROR: Assertion failed: user:(-1>0)
+```
+
+Now add this to `[user]`:
+
+```
+goal_expansion(assertion(G),true) :- format("Replaced assertion: ~q\n",[assertion(G)]).
+```
+
+then loading the above program again:
+
+```
+?- [ass].
+Replaced assertion: assertion(_20756>0)
+true.
+
+?- quux(-1).
+% Now past assertion
+true.
+
+?- quux(1).
+% Now past assertion
+true.
+```
+
+More complex body to goal_expansion/2 will also allow you to disable assertions on a per-module basis for example.
+
+## A statistic of interest
+
+Gerard J. Holzmann writes in IEEE Software, January/February 2021 in "Right Code".
+
+"For the mission code that is developed  at  NASA/Jet  Propulsion  Laboratory,  we
+require  that  the  average  assertion  density  for  each  module  is  2%  or  more.
+This  means  that  2%  of  the  code  performs  self-checks  at  key  steps  in
+the  computations  performed  to  make  sure  that  integrity  is  maintained,  
+even  in  anomalous  execution  scenarios.  The  use  of  assertions  thus  provides
+a  form  of  software  redundancy that can indeed make a system more reliable."
+
+Prolog is worse off with is arbitrary dataflow and lack of static and strong 
+typing. Deploy assertions to keep it in line.
+
+## Non-Prolog related reading
+
+[A historical perspective on runtime assertion checking in software development ](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.456.8976), Lori A. Clarke, David S. Rosenblum, 2006.  
+
+## See also
+
+  - must_be/2
+  - Here's how CIAO Prolog does it: https://ciao-lang.org/ciao/build/doc/ciao.html/assertions_doc.html
+     - ... and there is a corresponding package for SWI-Prolog: https://eu.swi-prolog.org/pack/list?p=assertions
+  - How assertion/1 works together with plunit: Very well. [One body with multiple tests using assertions](https://eu.swi-prolog.org/pldoc/man?section=testassertion). In fact, I prefer to use assertion/1 calls in plunit tests rather than plunit-style tests in the header, they are much more readable & flexible.

@@ -1,17 +1,75 @@
 https://eu.swi-prolog.org/pldoc/doc_for?object=load_test_files/1
 
-## Note 
+## Note about the manual
 
 There are two entries for `load_test_files`
 
    - Under "packages" (this page): https://eu.swi-prolog.org/pldoc/doc_for?object=load_test_files/1  
-      - It's the one you find when poerforming "search documentation"
+      - It's the one you find when performing "search documentation"
    - Under "libraries": https://eu.swi-prolog.org/pldoc/doc_for?object=plunit%3Aload_test_files/1
       - It's the one linked to when you add a dynamic link here, like so: load_test_files/1
 
+## Deterministic
+
+   - load_test_files/1 always succeeds, even if there are no files to load.
+   - it does not reload already-loaded files! use make/0 for that
+
+## With output!
+
+Here is a modified load_test_files/2 which builds the list of skipped or loaded test files. 
+
+That's much more informative than the "silent" load_test_files/1. 
+
+Otherwise it has the exact same functionality. You can run it however you want.
+
+```
+load_test_files(_Options,Which) :-
+   (nonvar(Which) ->                             % "Which" will be set
+   '$uninstantiation_error'(Which)               % and thus must be uninstantiated
+   ; true),
+   findall(Pair,test_file(Pair),Pairs),          % collect File-TestFile pairs (load order probably unimportant)
+   load_test_files_2(Pairs,Which).               % load and side-effect the Prolog database
+   
+test_file(File-TestFile) :-
+   source_file(File),                            % File is a previously loaded source file
+   file_name_extension(Base, Old, File),         % and which can be decomposed into Base (maybe with path) and suffix Old
+   Old \== plt,                                  % and which does not have a .plt extension
+   file_name_extension(Base, plt, TestFile),     % and which can be recomposed into TestFile
+   exists_file(TestFile).                        % and for which TestFile exists on-disk
+
+% ---
+% Loading loop
+% ---
+
+load_test_files_2([],[]).
+
+load_test_files_2([File-TestFile|Pairs],[skipped(TestFile)|Which]) :-
+   plunit:test_file_for(TestFile, File),         % do nothing if already loaded
+   !,
+   load_test_files_2(Pairs,Which).
+   
+load_test_files_2([File-TestFile|Pairs],[loaded(TestFile)|Which]) :-
+   load_files(TestFile,
+              [ if(changed),                     % "loads the file if not loaded modified since last load"
+                imports([])                      % "import nothing"?
+              ]),
+   asserta(plunit:test_file_for(TestFile, File)),
+   load_test_files_2(Pairs,Which).
+```   
+
+So for example:
+
+```
+?- load_test_files([],Which).
+Which = [loaded('/home/user/Development/PACKING/prolog_code/tmp/texty_typetests.plt')].
+
+?- load_test_files([],Which).
+Which = [skipped('/home/user/Development/PACKING/prolog_code/tmp/texty_typetests.plt')].
+```
+
 ## Doc needs help
 
-What are the options? They are probably the same as load_files/2.
+What are the options? They are probably the same as load_files/2. (But see below)
 
 ## What does it do?
 
@@ -35,24 +93,24 @@ Example:
 
 In file `foo.pl`
 
-==
+```
 a(X) :- 0 =:= X mod 3.
-==
+```
 
 In file `foo.plt`
 
-==
+```
 :- begin_tests(footest).
 
 test("3 is ok")          :- a(3).
 test("2 is not ok",fail) :- a(2).
 
 :- end_tests(footest).
-==
+```
 
 Then:
 
-==
+```
 ?- [foo].
 true.
 
@@ -69,21 +127,21 @@ ERROR: foo.plt:4:
 % 2 tests failed
 % 0 tests passed
 false.
-==
+```
 
 **BUT**
 
 In file `foo.pl`
 
-==
+```
 :- module(foo,[a/1]).
 
 a(X) :- 0 =:= X mod 3.
-==
+```
 
 In file `foo.plt`:
 
-==
+```
 :- use_module(['foo.pl']).
 
 :- begin_tests(footest).
@@ -92,11 +150,11 @@ test("3 is ok")          :- a(3).
 test("2 is not ok",fail) :- a(2).
 
 :- end_tests(footest).
-==
+```
 
 then
 
-==
+```
 ?- [foo].
 true.
 
@@ -107,7 +165,4 @@ true.
 % PL-Unit: footest .. done
 % All 2 tests passed
 true.
-==
-
-
-
+```
