@@ -63,7 +63,7 @@
 #   Java-Prolog bridge) from:
 #
 #   https://mvnrepository.com/artifact/org.hamcrest/hamcrest/ (currently 2.2; BSD 3 clause)
-#   https://mvnrepository.com/artifact/junit/junit/           (currently 4.13.1; EPL 1.0)
+#   https://mvnrepository.com/artifact/junit/junit/           (currently 4.13.2; EPL 1.0)
 #
 # (On a longer timeframe, move JPL to Junit Jupiter)
 #
@@ -72,7 +72,7 @@
 # - Copying of modified files for rebuilding documentation is messy. Improve!
 #
 # - When building: Do not stop if /usr/local/logic does not exist. Instead,
-#   just warn and proceed with building. One can always add it at 
+#   just warn and proceed with building. One can always add it at
 #   ninja install time.
 #
 # - When building: Immediately check whether cmake and ninja exist and
@@ -118,7 +118,10 @@ set -o nounset # No unset bash variables allowed
 perso_github_account=https://github.com/dtonhofer        # Probably want to change that!!
 swipl_github_account=https://github.com/SWI-Prolog       # Well-known and respected
 system_install_dir=/usr/local/logic                      # This looks like a good place to me
-toplevel_dir_fq="$HOME/Development/2021_02"              # Where to put stuff locally
+toplevel_dir_fq="$HOME/Development/2021_04"              # Where to put stuff locally
+hamcrest_jar="hamcrest-2.2.jar"                          # the version number has to updated sometimes
+junit_jar="junit-4.13.2.jar"                             # the version number has to updated sometimes
+
 
 giturl_and_subdir() {
    local finality=${1:-}                  # "jpl" or "docs" or "system"
@@ -265,16 +268,15 @@ look_for_version_file() {
 
 clone() {
 
-   local toplevel_dir_fq=${1:-}   # the directory we will be working in
-   local finality=${2:-}          # "jpl" or "docs" or "system"
-   local element=${3:-}           # "forked" or "infra" repo, possibly unset if not needed
+   local finality=${1:-}          # "jpl" or "docs" or "system"
+   local element=${2:-}           # "forked" or "infra" repo, possibly unset if not needed
    local here="clone"             # the name of this routine
 
    # The following exits in case of problems, otherwise cd-s to the directory
    # immediately above the repodir with an initial "pushd" (so we can "popd" later).
    # It also sets global variables with info about URL and subdir,
 
-   dirchange_prepare "$here" "$toplevel_dir_fq" clone "$finality" "$element"
+   dirchange_prepare "$here" clone "$finality" "$element"
 
    local giturl="$global_giturl"
    local element_dir="$global_element_dir"
@@ -349,10 +351,15 @@ clone() {
    # In case this is about documentation, create symlinks to certain files
 
    if [[ "${finality},${element}" == docs,forked ]]; then
+      ## TODO make this a loop
       if [[ ! -e builtin.doc ]]; then
          ln -s "${element_dir}/man/builtin.doc" "builtin.doc"
+      fi
+      if [[ ! -e overview.doc ]]; then
          ln -s "${element_dir}/man/overview.doc" "overview.doc"
-         # Add more here
+      fi
+      if [[ ! -e extensions.doc ]]; then
+         ln -s "${element_dir}/man/extensions.doc" "extensions.doc"
       fi
    fi
 
@@ -366,14 +373,13 @@ clone() {
 
 copy() {
 
-   local toplevel_dir_fq=${1:-}        # the directory we will be working in
-   local finality=${2:-}               # "jpl" or "docs" or "system"
+   local finality=${1:-}               # "jpl" or "docs" or "system"
    local here="copy"
 
    # Exits in case of problems otherwise cds to the directory above the repodirs
    # with an initial push (so we can popd later)
 
-   dirchange_prepare "$here" "$toplevel_dir_fq" copy "$finality"
+   dirchange_prepare "$here" copy "$finality"
 
    # Two directories are involed: the one with the SWI-Prolog distro that can be compiled
    # and the one with modified files. We need to copy modified files from the second to the first.
@@ -443,8 +449,8 @@ copy() {
          # Make this configurable
          # from_files=( "man/builtin.doc" "man/extensions.doc" "man/pl.bib" "man/runtex" "man/gen/swipl.bbl" "library/apply.pl" "src/Tests/library/test_apply.pl" )
          # to_files=(   "man/builtin.doc" "man/extensions.doc" "man/pl.bib" "man/runtex" "man/gen/swipl.bbl" "library/apply.pl" "src/Tests/library/test_apply.pl" )
-         from_files=( "man/builtin.doc" "man/extensions.doc" "man/overview.doc" )
-         to_files=(   "man/builtin.doc" "man/extensions.doc" "man/overview.doc" )
+         from_files=( "man/builtin.doc" "man/extensions.doc" "man/overview.doc" "man/bidicts.doc" )
+         to_files=(   "man/builtin.doc" "man/extensions.doc" "man/overview.doc" "man/bidicts.doc" )
       ;;
       *)
          echo "Unknown finality '$finality'" >&2
@@ -469,12 +475,16 @@ copy() {
    while [[ $i < ${#from_files[@]} ]]; do
       local from_file_fq="${origin_dir}/${from_files[$i]}"
       local to_file_fq="${target_dir}/${to_files[$i]}"
-      echo "Copying '${from_file_fq}' --> '${to_file_fq}" >&2
-      /bin/cp "${from_file_fq}" "${to_file_fq}" || {
-         echo "Could not copy -- exiting" >&2
-         exit 1
-      }
-     ((i++))
+      if [[ -f $from_file_fq ]]; then
+         echo "Copying '${from_file_fq}' --> '${to_file_fq}" >&2
+         /bin/cp "${from_file_fq}" "${to_file_fq}" || {
+            echo "Could not copy -- exiting" >&2
+            exit 1
+         }
+      else
+         echo "File '${from_file_fq}' does not exist; not copying" >&2
+      fi
+      ((i++))
    done
 
    popd >/dev/null || exit 1
@@ -487,16 +497,15 @@ copy() {
 
 look() {
 
-   local toplevel_dir_fq=${1:-}  # the directory we will be working in
-   local finality=${2:-}         # "jpl" or "docs" or "system"
-   local element=${3:-}          # "infra" or "forked" or unset
+   local finality=${1:-}         # "jpl" or "docs" or "system"
+   local element=${2:-}          # "infra" or "forked" or unset
    local here="look"             # The name of this routine
 
    # The following exits in case of problems, otherwise cd-s to the directory
    # immediately above the repodir with an initial "pushd" (so we can "popd" later).
    # It also sets global variables with info about URL and subdir,
 
-   dirchange_prepare "$here" "$toplevel_dir_fq" look "$finality" "$element"
+   dirchange_prepare "$here" look "$finality" "$element"
 
    echo "Currently in this directory: $(pwd)"
    echo
@@ -546,12 +555,11 @@ look() {
 
 build() {
 
-   local toplevel_dir_fq=${1:-}  # the directory we will be working in
-   local finality=${2:-}         # "jpl" or "docs" or "system"
-   local rebuild=${3:-}          # if set to "rebuild", then just rebuild (if possible), otherwise build
-   local arg1=${4:-}             # may be "withpdf" or "notest" or "mono"
-   local arg2=${5:-}             # idem
-   local arg3=${6:-}             # idem
+   local finality=${1:-}         # "jpl" or "docs" or "system"
+   local rebuild=${2:-}          # if set to "rebuild", then just rebuild (if possible), otherwise build
+   local arg1=${3:-}             # may be "withpdf" or "notest" or "mono"
+   local arg2=${4:-}             # idem
+   local arg3=${5:-}             # idem
    local here="build"            # the name of this routine
 
    local withpdf=
@@ -578,7 +586,7 @@ build() {
    # immediately above the repodir with an initial "pushd" (so we can "popd" later).
    # It also sets global variables with info about URL and subdir,
 
-   dirchange_prepare "$here" "$toplevel_dir_fq" build "$finality"
+   dirchange_prepare "$here" build "$finality"
 
    local install_location="$global_install_location"
 
@@ -632,8 +640,8 @@ build() {
    # the Java bridge "jpl" can be tested
 
    local jar_dir_fq="${toplevel_dir_fq}/jars"
-   local hamcrest_jar_fq="${jar_dir_fq}/hamcrest-2.2.jar"  # the version number has to updated sometimes
-   local junit_jar_fq="${jar_dir_fq}/junit-4.13.1.jar"     # the version number has to updated sometimes
+   local hamcrest_jar_fq="${jar_dir_fq}/${hamcrest_jar}"
+   local junit_jar_fq="${jar_dir_fq}/${junit_jar}"
 
    # Re-confirm with user (actually a bit late as we have already removed the build dir)
 
@@ -770,7 +778,7 @@ build() {
          echo "There is no CMake logfile '$(pwd)/$cmake_logfile' ... weird!"
       fi
    done
- 
+
    # back to the directory immediately above the repodir
 
    popd >/dev/null || exit 1
@@ -794,33 +802,35 @@ create_symlinks_to_built_docs() {
    local build_dir_fq=${3}    # the fully qualified build dir (TODO: relativize relative to "where")
    local version=${4}         # the version string; needed to find the manual's PDF
    pushd "$where" || {
-      echo "Could not cd to '$where' -- exiting" >&2 
+      echo "Could not cd to '$where' -- exiting" >&2
       exit 1
    }
-   if [[ -s builtin.html ]]; then
-      /bin/rm builtin.html
-   fi
-   if [[ -s overview.html ]]; then
-      /bin/rm overview.html
-   fi
-   if [[ -s manual.pdf ]]; then
-      /bin/rm manual.pdf
-   fi
-   create_symlink_or_skip "${install_dir_fq}/lib/swipl/doc/Manual/overview.html" "overview.html"
-   create_symlink_or_skip "${install_dir_fq}/lib/swipl/doc/Manual/builtin.html"  "builtin.html"
-   # manual PDF only exists if PDF has been requested
-   create_symlink_or_skip "${build_dir_fq}/man/SWI-Prolog-${version}.pdf"        "manual.pdf"
+   local filearray
+   declare -A filearray
+   local symlinkfile
+   local symlinktarget
+   filearray[builtin.html]="${install_dir_fq}/lib/swipl/doc/Manual/builtin.html"
+   filearray[overview.html]="${install_dir_fq}/lib/swipl/doc/Manual/overview.html"
+   filearray[extensions.html]="${install_dir_fq}/lib/swipl/doc/Manual/extensions.html"
+   filearray[manual.pdf]="${build_dir_fq}/man/SWI-Prolog-${version}.pdf" # manual PDF only exists if PDF has been requested
+   for symlinkfile in "${!filearray[@]}"; do
+      symlinktarget="${filearray[$symlinkfile]}"
+      create_symlink_or_skip "$symlinktarget" "$symlinkfile"
+   done
 }
 
 create_symlink_or_skip() {
-   local target=${1}
-   local name=${2}
-   if [[ -f $target ]]; then
-      ln -s "$target" "$name" || {
-         echo "Could not create symlink to '$target' in '$(pwd)'" >&2
+   local symlinktarget=${1}
+   local symlinkfile=${2}
+   if [[ -s $symlinkfile ]]; then
+      /bin/rm "$symlinkfile"
+   fi
+   if [[ -f $symlinktarget ]]; then
+      ln -s "$symlinktarget" "$symlinkfile" || {
+         echo "Could not create symlink to '$symlinktarget' in '$(pwd)'" >&2
       }
    else
-      echo "File '$target' does not exist -- skipping symlink creation in '$(pwd)'" >&2
+      echo "File '$symlinktarget' does not exist -- skipping symlink creation in '$(pwd)'" >&2
    fi
 }
 
@@ -894,16 +904,9 @@ run_post_build_tests() {
 dirchange_prepare() {
 
    local caller=${1:-}            # Name of the caller, for messages
-   local toplevel_dir_fq=${2:-}   # The directory containing the finality-named subdirectories containing the repo directories
-   local action_full=${3:-}       # What do you want to do? "clone", "copy", "build"/"rebuild", "look"
-   local finality=${4:-}          # What's it for? "docs", "jpl", "system"
-   local element=${5:-}           # What repository to deal with? "forked", "infra". May also be unset
-
-   if [[ -z "$toplevel_dir_fq" || ! -d "$toplevel_dir_fq" ]]; then
-      echo "You must pass an existing toplevel directory to '$caller'." >&2
-      echo "Apparently '$toplevel_dir_fq' either doesn't exist or is not a directory -- exiting!" >&2
-      exit 1
-   fi
+   local action_full=${2:-}       # What do you want to do? "clone", "copy", "build"/"rebuild", "look"
+   local finality=${3:-}          # What's it for? "docs", "jpl", "system"
+   local element=${4:-}           # What repository to deal with? "forked", "infra". May also be unset
 
    # Reduce a "rebuild" action to a "build" action
 
@@ -1067,6 +1070,16 @@ finality_match() {
    fi
 }
 
+# ===
+# main 
+# ===
+
+if [[ -z "$toplevel_dir_fq" || ! -d "$toplevel_dir_fq" ]]; then
+   echo "You must set the toplevel directory correctly in script $0!" >&2
+   echo "Apparently the currently set '$toplevel_dir_fq' either doesn't exist or is not a directory -- exiting!" >&2
+   exit 1
+fi
+
 cmd=
 finality=
 arg3=${3:-}
@@ -1081,23 +1094,23 @@ cmd_match      "${2:-}"   # maybe sets variable cmd, which must still be unset
 finality_match "${2:-}"   # maybe sets variable finality, which must still be unset
 
 if [[ $cmd == clone ]]; then
-   clone "$toplevel_dir_fq" "$finality" "$arg3"
+   clone "$finality" "$arg3"
    exit 0
 fi
 
 if [[ $cmd == copy ]]; then
-   copy "$toplevel_dir_fq" "$finality"
+   copy "$finality"
    exit 0
 fi
 
 if [[ $cmd == look ]]; then
-   look "$toplevel_dir_fq" "$finality" "$arg3"
+   look "$finality" "$arg3"
    exit 0
 fi
 
 if [[ $cmd == build ||
       $cmd == rebuild ]]; then
-   build "$toplevel_dir_fq" "$finality" "$cmd" "$arg3" "$arg4" "$arg5"
+   build "$finality" "$cmd" "$arg3" "$arg4" "$arg5"
    if [[ $finality == system ]]; then
       echo "You have to run 'ninja install' as root in '$global_build_dir_fq' to install the compilate into '$global_install_dir_fq'" >&2
    fi
