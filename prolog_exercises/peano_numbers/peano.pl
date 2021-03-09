@@ -35,6 +35,10 @@
 % Find X,Y such that X*Y=78
 %
 % ?- pm(PN,78),pmult(PNX,PNY,PN),pm(PNX,X),pm(PNY,Y). 
+% 
+% Find PQ,PR such that PA=PQ*PB+PR
+%
+% ?- pm(PA,66),pm(PB,7),pquotrem(PA,PB,PQ,PR),pm(PQ,Q),pm(PR,R).
 % ============================================================================
 %
 %
