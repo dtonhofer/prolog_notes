@@ -1,5 +1,22 @@
 https://eu.swi-prolog.org/pldoc/doc_for?object=load_test_files/1
 
+## Doc needs help
+
+What are the options? It turns out they don't do anything, at least for now (see below).
+
+The source code (click on the ':-' symbol at the top right of the page) reveals that for every Prolog source file loaded, it looks for a file named the same, in the same location, with a `.plt` suffix, and if so it calls:
+
+```
+   load_files(TestFile,
+              [ if(changed),        % "loads the file if not loaded modified since last load"
+                imports([])         % It think this means "import nothing"?
+              ]),
+```
+
+The passed `Options` is not used for anything!
+
+See load_files/2
+
 ## Note about the manual
 
 There are two entries for `load_test_files`
@@ -9,18 +26,24 @@ There are two entries for `load_test_files`
    - Under "libraries": https://eu.swi-prolog.org/pldoc/doc_for?object=plunit%3Aload_test_files/1
       - It's the one linked to when you add a dynamic link here, like so: load_test_files/1
 
+Relatively confusing. 
+
 ## Deterministic
 
    - load_test_files/1 always succeeds, even if there are no files to load.
    - it does not reload already-loaded files! use make/0 for that
 
-## With output!
+## .plt file must be right next to the .pl file
 
-Here is a modified load_test_files/2 which builds the list of skipped or loaded test files. 
+load_test_files/1 looks for files that have the same name as a loaded file, but with the suffix changed from `.pl` to `.plt`. It does not content analysis (i.e. look for plunit module declarations) in the file content. Nor does it look in subdirectories i.e. you cannot put the .plt files into  a `test/` subdirectory.
+
+## Modified to provide some output
+
+Here is a modified load_test_files/2 which builds a list of skipped or loaded test files. 
 
 That's much more informative than the "silent" load_test_files/1. 
 
-Otherwise it has the exact same functionality. You can run it however you want.
+Otherwise it has the exact same functionality. 
 
 ```
 load_test_files(_Options,Which) :-
@@ -66,22 +89,6 @@ Which = [loaded('/home/user/Development/PACKING/prolog_code/tmp/texty_typetests.
 ?- load_test_files([],Which).
 Which = [skipped('/home/user/Development/PACKING/prolog_code/tmp/texty_typetests.plt')].
 ```
-
-## Doc needs help
-
-What are the options? They are probably the same as load_files/2. (But see below)
-
-## What does it do?
-
-The source code (click on the ':-' symbol) reveals that it checks for every source file loaded that does not have a `.plt` suffix whether there is a file named the same, in the same location, with a `.plt` suffix, and if so it calls
-
-==
-load_files(TestFile, [ if(changed), imports([]) ]),
-==
-
-The passed `Options` is not used for anything!
-
-See load_files/2
 
 ## Some module magic problem
 

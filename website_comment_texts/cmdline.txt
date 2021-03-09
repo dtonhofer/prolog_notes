@@ -1,0 +1,175 @@
+https://eu.swi-prolog.org/pldoc/man?section=cmdline
+
+## Doc needs help
+
+**What is "home directory"?**
+
+It is the directory on which =|swipl|= looks for file =|boot.prc|=, which is a zip file, and probably a [Saved State File](https://eu.swi-prolog.org/pldoc/man?section=saved-states). 
+
+**See also the [prolog flag "home"](https://eu.swi-prolog.org/pldoc/doc_for?object=current_prolog_flag/2#flag:home)** where we read:
+
+> SWI-Prolog's notion of the home directory. SWI-Prolog uses its home directory to find its startup file as <home>/boot.prc and to find its library as <home>/library. Some installations may put architecture independent files in a shared home and also define [shared_home](https://eu.swi-prolog.org/pldoc/man?section=flags#flag:shared_home). System files can be found using absolute_file_name/3 as swi(file). See file_search_path/2.
+
+It is not the user's home! It should maybe be called =|swipl_home|= analogously to =|JAVA_HOME|=.
+
+By default, it seems to be the =|lib/swipl|= subdirectory of the =|swipl|= installation. So for example, if the installation top directory is =|/usr/local/logic/swipl/|=, then by default =|swipl|= will issue this system call (easy to check using =|strace|=):
+
+```
+openat(AT_FDCWD, "/usr/local/logic/swipl/lib/swipl/ boot.prc", O_RDONLY) = 3
+```
+
+Whereas if you start =|swipl|= as
+
+```
+swipl --home=/home/foo
+```
+
+this happens:
+
+```
+openat(AT_FDCWD, "/home/foo/boot.prc", O_RDONLY) = -1 ENOENT (No such file or directory)
+```
+
+And you see:
+
+```
+$  swipl --home=/home/foo 
+[FATAL ERROR: at Fri Feb 26 10:53:59 2021
+        Could not find system resources]
+Aborted (core dumped)
+```
+
+Conversely
+
+```
+$ swipl --home=/usr/local/logic/swipl/lib/swipl/
+```
+
+works nicely!
+
+## How do you pass command line arguments to swipl?
+
+Here are two ways:
+
+### Conventional
+
+When =|swipl|= is invoked from the command line, everything beyond the command line argument 
+
+```
+--
+```
+
+is put into a list of atoms, which can be retrieved using [the "current prolog flag" =|argv|=](https://eu.swi-prolog.org/pldoc/doc_for?object=current_prolog_flag/2#flag:argv).
+
+This is actually explained at the top of the =|swipl|= man page but it took me some time to find it. 
+
+The "double dash" is the conventional indication to a program to "stop processing options after this "double dash" and use anything that comes to the right as-is". As =|swipl|= likely calls =|getopt(3)|= for command-line processing, it inherits the conforming behaviour. As it is a way to explicitly mark command line arguments as non-options (e.g. to be able to pass strings like  `--help` as argument) rather than mark a block of arguments as "arguments meant for the program", `--` can be left out if it is not actually needed.
+
+From [POSIX Utility Syntax Guidelines](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap12.html#tag_12_02):
+
+> The first -- argument that is not an option-argument should be accepted as a delimiter indicating the end of options. Any following arguments should be treated as operands, even if they begin with the '-' character.
+
+**Example:**
+
+Set this up in =|print_argv.pl|= where we print all results of current_prolog_flag/2 for flag =|argv|= using forall/2 (there is only one result though):
+
+```
+print_argv :-
+   format("Printing argv for great justice~n",[]),
+   forall(current_prolog_flag(argv, X),format("~q~n",[X])).
+```
+
+Then execute this on the command line:
+
+```
+swipl -g print_argv -t halt print_argv.pl -- foo 'baz(1)' 'hello world' --help
+```
+
+In detail:
+
+```
+$ swipl -g print_argv            # goal to run immediately
+        -t halt                  # halt instead of starting toplevel REPL
+        print_argv.pl            # file to load
+        --                       # anything past this is definitely not an option
+        foo 'baz(1)' 'hello world' '--help'
+```
+
+And so you see this, as all the args are put into a list assigned to the `argv` prolog flag:
+
+```
+$ swipl -g print_argv -t halt print_argv.pl -- foo 'baz(1)' 'hello world' --help
+Printing argv for great justice
+[foo,'baz(1)','hello world','--help']
+```
+
+This also works if you leave out the `--` (a bit surprisingly, even if some of the argument suspiciously look like options):
+
+```
+$ swipl -g print_argv -t halt print_argv.pl  foo 'baz(1)' 'hello world'
+Printing argv for great justice
+[foo,'baz(1)','hello world']
+
+$ swipl -g print_argv -t halt print_argv.pl -foo 'baz(1)' 'hello world'
+Printing argv for great justice
+['-foo','baz(1)','hello world']
+
+$ swipl -g print_argv -t halt print_argv.pl --foo 'baz(1)' 'hello world'
+Printing argv for great justice
+['--foo','baz(1)','hello world']
+```
+
+Okay!
+
+### Unconventional: Use the Prolog database
+
+Define file =|print_argv_2|=
+
+```
+print_argv_2 :-
+   format("Printing argv for great justice~n",[]),
+   forall(user:arg(X),format("~q~n",[X])). % Module "user:" qualification can be left out
+```
+
+Then start =|swipl|= by giving it goals which assert facts for =|arg/1|= into the database. The facts are asserted into module =|user|=. The first use of =|assertz/1|= implicitly declares =|arg/1|= as "dynamic" so we don't have to do that explicitly:
+
+```
+$ swipl \
+  -g 'assertz(arg(foo))' \
+  -g 'assertz(arg(bar))' \
+  -g print_argv_2 \
+  -t halt \
+  print_argv_2.pl
+```
+
+And we get:
+
+```
+Printing argv for great justice
+foo
+bar
+```
+
+## Comment note
+
+> The entry for -f says that the default initialization file is init.pl (searched for, according to another section of the manual, in various places); in practice, it appears to be .swiplrc (searched for in the user's home directory).
+
+Not true, both files are looked for.
+
+Using 
+
+```
+$ strace swipl 2> OUT
+```
+
+on the command line to get the process's system calls, we find these actions (in this case, none of the files are found).
+
+```
+newfstatat(AT_FDCWD, "init.pl", 0xfffff6db95f0, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/swipl/.config", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+newfstatat(AT_FDCWD, "/home/swipl/.config/swi-prolog", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+faccessat(AT_FDCWD, "/home/swipl/.config/swi-prolog/init.pl", R_OK) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/swipl/.swiplrc", 0xfffff6db95f0, 0) = -1 ENOENT (No such file or directory)
+write(2, "Welcome to SWI-Prolog (threaded,"..., 256Welcome to SWI-Prolog (threaded, 64 bits, version 8.3.19-12-g9a371f586)
+```
+

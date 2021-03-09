@@ -1,0 +1,139 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=current_prolog_flag/2
+
+## Doc needs help
+
+From the DCG page:
+
+The flags
+
+   - [`back_quotes`](https://eu.swi-prolog.org/pldoc/doc_for?object=current_prolog_flag/2#flag:back_quotes)
+   - [`double_quotes`](https://eu.swi-prolog.org/pldoc/doc_for?object=current_prolog_flag/2#flag:double_quotes)
+
+influence interpretation of =|"string"|= and =|`string`|= in "standard text".
+
+In DCGs, both =|"string"|= and =|`string`|= are interpreted as "codes" by default.
+
+Without any settings changed, consider this DCG:
+
+```
+representation(double_quotes)    --> "bar".            % SWI-Prolog decomposes this into CODES 
+representation(back_quotes)      --> `bar`.            % SWI-Prolog decomposes this into CODES
+representation(explicit_codes_1) --> [98,97,114].      % explicit CODES (as obtained via atom_codes(bar,Codes))
+representation(explicit_codes_2) --> [0'b,0'a,0'r].    % explicit CODES 
+representation(explicit_chars)   --> ['b','a','r'].    % explicit CHARS
+```
+
+Which of the above matches codes?
+
+```
+?- 
+findall(X,
+   (atom_codes(bar,Codes),
+    phrase(representation(X),Codes,[])),
+   Reps).
+
+Reps = [double_quotes,back_quotes,explicit_codes_1,explicit_codes_2].
+```
+
+Which of the above matches chars?
+
+```
+?- findall(X,
+   (atom_chars(bar,Chars),phrase(representation(X),Chars,[])),
+   Reps).
+Reps = [explicit_chars].
+```
+
+## This page is difficult to search
+
+   - "answer_write_options" is somehow lost in between "toplevel_print_factorized" and "toplevel_prompt".
+   - also, the option names are **not found** when searching and/or have no links that can  be used to refer to them: "answer_write_options" -> no matches.
+   - for the next iteration of the website, the flags listed really need their individually addressable URLs.
+
+## Make toplevel printer print lists fully (instead of redacted using `...` )
+
+Instead of:
+
+==
+OutColl = [0xE3,0x82,0xA2,0xE3,0x82,0xA4,0xE3,0x82,0xA6|...].
+==
+
+I want
+
+==
+OutColl = [0xE3,0x82,0xA2,0xE3,0x82,0xA4,0xE3,0x82,0xA6,0xE3,0x82,0xA8,0xE3,0x82,0xAA].
+==
+
+And the command is:
+
+(note that you have to set **all** the options, if you just set `max_depth` for example you will **scratch** `portray(true)` for example, leading to output like 
+
+```
+'$VAR'('Suffix')
+```
+
+..this took me some time to find out.
+
+Anyway:
+
+```
+?-
+Depth=100,
+Options=[quoted(true), portray(true), max_depth(Depth), attributes(portray)],
+set_prolog_flag(answer_write_options,Options),
+set_prolog_flag(debugger_write_options,Options).
+```
+
+or even unset any depth limit completely by setting `Depth` to 0 above.
+
+TODO: Write a predicate to create a new options list with `max_depth(Depth)` only changed. 
+
+Actually, if this follows "options list semantics", just prepending `max_depth(100)` to the existing list should upgrade the depth. Try it:
+
+```
+?- current_prolog_flag(answer_write_options,Options),NewOptions=[max_depth(200)|Options],set_prolog_flag(answer_write_options,NewOptions).
+Options = [quoted(true),portray(true),max_depth(100),attributes(portray)],
+NewOptions = [max_depth(200),quoted(true),portray(true),max_depth(100),attributes(portray)].
+
+?- current_prolog_flag(answer_write_options,Options).
+Options = [max_depth(200),quoted(true),portray(true),max_depth(100),attributes(portray)].
+```
+
+The multiple values are retained... Not sure whether this is a bug.
+
+Consider adding the instructions to your `init.pl` ($HOME/.config/swi-prolog/init.pl) file so that it is run at startup. 
+
+## `home` is Prolog's "home", not the user's "home"
+
+This is not the user's home directory:
+
+```
+?- current_prolog_flag(home, X).
+X = '/usr/local/logic/swipl/lib/swipl'.
+```
+
+Use this instead:
+
+```
+?- expand_file_name("~", Home).
+Home = ['/home/paquette'].
+```
+
+Use `file_search_path/2` for others: 
+
+```
+bagof(X,file_search_path(user_app_data,X),UAD),
+bagof(X,file_search_path(common_app_data,X),CAD),
+bagof(X,file_search_path(user_app_config,X),UAC),
+(file_search_path(common_app_config,_) -> bagof(X,file_search_path(common_app_config,X),CAC); CAC = []), 
+bagof(X,file_search_path(app_data,X),AD),
+bagof(X,file_search_path(app_config,X),AC).
+
+UAD = ['/home/paquette/.local/share/swi-prolog'],
+CAD = ['/usr/local/share/swi-prolog', '/usr/share/swi-prolog', '/etc/xdg/swi-prolog'],
+UAC = ['/home/paquette/.config/swi-prolog'],
+CAC = [],
+AD = [user_app_data('.'), common_app_data('.')],
+AC = [user_app_config('.'), common_app_config('.')].
+```
+

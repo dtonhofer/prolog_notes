@@ -1,0 +1,93 @@
+https://eu.swi-prolog.org/pldoc/man?predicate=nth0/3
+
+## Doc needs help
+
+> type_error(integer, Index) if Index is not an integer or unbound.
+
+Evidently the integer *can* be unbound in "searching mode"
+
+```
+?- nth0(X,[a,b,c],b).
+X = 1 ;
+false.
+```
+
+But indeed:
+
+```
+?- nth0(foo,[a,b,c],b).
+ERROR: Type error: `integer' expected, found `foo' (an atom)
+```
+
+## Note that
+
+This is basically member/2, but with additional index information.
+
+## Tips & Tricks
+
+This can also be used for *searching in a list* (and thus for checking whether an element is in a list):
+
+```
+?- nth0(I,[a,b,c,d],b).
+I = 1 ;
+false.
+```
+
+Note that (similar to member/2), nth0/3 provides "well-behaved determinism on the last element":
+
+No determinism:
+
+```
+?- nth0(I,[a,foo,c,d,e,foo,f],foo).
+I = 1 ;  % "There may be more"
+I = 5 ;  % "There may be more"
+false.   % "Actually there are not"
+```
+
+But if the last element matches:
+
+```
+?- nth0(I,[a,foo,c,d,e,foo,f,foo],foo).
+I = 1 ;  % "There may be more"
+I = 5 ;  % "There may be more"
+I = 7.   % "Found a last one and I'm sure there are no more"
+```
+
+## nth0∕3 is lenient
+
+A bit unexpectedly perhaps, out-of-bound errors cause failure, as opposed to throwing:
+
+```
+?- nth0(2,[0,1,2],X).
+X = 2.
+
+?- nth0(3,[0,1,2],X).
+false.
+
+?- nth0(-1,[0,1,2],X).
+false.
+```
+
+Similarly, non-lists lead to failure, or even success if the element is found before a broken end-of-list is hit:
+
+```
+?- nth0(X,foo,foo).
+false.
+
+?- nth0(X,[foo|bar],foo).
+X = 0.
+
+?- nth0(X,[foo|bar],baz).
+false.
+```
+
+## Maybe an extension?
+
+Sometimes (rarely?) one might want the sublist "element n ... element m". One can use append but this means creating new lists to take up a prefix, which is then immediately discarded, maybe a sublist_based_at_nth0(+List,+N,+SublistLength,-Sublist) might help.
+
+## An extension for several (non-contiguous) elements
+
+A "vector nth0" vector_nth0/3, based on nth0/3 and which retrieves several entries in one call can be found here: 
+
+   - [Code](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/vector_nth0.pl)
+   - [Unit tests](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/vector_nth0.plt)

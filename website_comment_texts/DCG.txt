@@ -1,0 +1,485 @@
+https://eu.swi-prolog.org/pldoc/man?section=DCG
+
+## Introduction and tutorials
+
+   - [DCG Primer](https://www.metalevel.at/prolog/dcg) by Markus Triska
+   - [DCG Tutorial](http://www.pathwayslms.com/swipltuts/dcg) by Anne Ogborn
+   - Wikipedia: [Definite Clause Grammar](https://en.wikipedia.org/wiki/Definite_clause_grammar) (has more references but otherwise needs work. Also demands "citations" on places that are inappropriate, but that's another problem.)
+
+Also take a look at
+
+   - Wikipedia: [Attribute Grammar](https://en.wikipedia.org/wiki/Attribute_grammar) 
+
+Markus Triska writes in his DCG primer:
+
+> Consider using DCGs if you are 
+
+> 1) describing a list 
+
+> 2) reading from a file 
+
+> 3) passing around a state representation that only a few predicates actually use or modify.
+
+> In every serious Prolog program, you will find many opportunities to use DCGs due to some subset of the above reasons.
+
+## Libraries
+
+   - Library for [DCG basic utilities](https://eu.swi-prolog.org/pldoc/man?section=basics) (the link to the less well-formatted library page is: [here](https://eu.swi-prolog.org/pldoc/doc/_SWI_/library/dcg/basics.pl)). It provides:
+      - string_without//2
+      - string//1
+      - blanks//0
+      - blank//0
+      - nonblanks//1
+      - nonblank//1
+      - blanks_to_nl//0
+      - whites//0
+      - white//0
+      - alpha_to_lower//1
+      - digits//1
+      - digit//1
+      - integer//1
+      - float//1
+      - number//1
+      - xinteger//1
+      - xdigit//1
+      - xdigits//1
+      - eos//0
+      - remainder//1
+      - prolog_var_name//1
+      - atom//1
+   - Library for [high-order grammar operations](https://eu.swi-prolog.org/pldoc/man?section=highorder)
+   - Library to [portray text](https://eu.swi-prolog.org/pldoc/man?section=portraytext), useful when debugging SWI-Prolog's preferred way of processing text through DCGs, namely as "list of Unicode code points" (see below for more).
+
+There is a third-party pack
+
+   - [Package EDCG](https://www.swi-prolog.org/pack/list?p=edcg) 
+
+for Peter Lodewijk Van Roy's "extended DCGs" as described in 
+
+   - "A useful extension to Prolog’s Definite Clause Grammar notation.", SIGPLAN notices, 24(11):132–134, November 1989 and 
+   - ["Extended DCG Notation: A Tool for Applicative Programming in Prolog"](https://www2.eecs.berkeley.edu/Pubs/TechRpts/1990/5471.html), 1990, University of California, Berkeley, Technical Report No. UCB/CSD-90-583
+
+## Chars or Codes for to process text via DCGs?
+
+A lot of good commentary in this StackOverflow question:
+
+   - [Should text-processing DCGs be written to handle codes or chars? Or both?](https://stackoverflow.com/questions/66301190/should-text-processing-dcgs-be-written-to-handle-codes-or-chars-or-both)
+
+SWI-Prolog by default **prefers codes** (i.e. Unicode code points) and you can use double-quoted strings on the right-hand-side as a compact representation of "list of codes". Try this:
+
+In DCG rules, both
+
+=|"string"|=
+
+and
+
+=|`string`|= 
+
+are interpreted as "codes" by default. Without any settings changed, consider this DCG:
+
+```
+representation(double_quotes)    --> "bar".            % SWI-Prolog decomposes this into CODES 
+representation(back_quotes)      --> `bar`.            % SWI-Prolog decomposes this into CODES
+representation(explicit_codes_1) --> [98,97,114].      % explicit CODES (as obtained via atom_codes(bar,Codes))
+representation(explicit_codes_2) --> [0'b,0'a,0'r].    % explicit CODES 
+representation(explicit_chars)   --> ['b','a','r'].    % explicit CHARS
+```
+
+Which of the above matches codes?
+
+```
+?- 
+findall(X,
+   (atom_codes(bar,Codes),
+    phrase(representation(X),Codes,[])),
+   Reps).
+
+Reps = [double_quotes,back_quotes,explicit_codes_1,explicit_codes_2].
+```
+
+Which of the above matches chars?
+
+```
+?- findall(X,
+   (atom_chars(bar,Chars),phrase(representation(X),Chars,[])),
+   Reps).
+Reps = [explicit_chars].
+```
+
+When starting swipl with =|swipl --traditional|= the backquoted representation is rejected, but otherwise nothing changes!
+
+See also: 
+
+[Adapting code for double quoted strings](https://www.swi-prolog.org/pldoc/man?section=ext-dquotes-port)
+
+Where we read:
+
+> **A DCG literal**: Although represented as a list of codes is the correct representation for handling in DCGs, the DCG translator can recognise the literal and convert it to the proper representation. Such code need not be modified.
+
+Good.
+
+Further along, flags
+
+   - [`back_quotes`](https://eu.swi-prolog.org/pldoc/doc_for?object=current_prolog_flag/2#flag:back_quotes)
+   - [`double_quotes`](https://eu.swi-prolog.org/pldoc/doc_for?object=current_prolog_flag/2#flag:double_quotes)
+
+influence interpretation of =|"string"|= and =|`string`|= in "standard text".
+
+## Vocabulary: "DCG nonterminals"
+
+The concept of a "grammar nonterminal symbol" and "grammar terminal symbol" evidently comes from the domain of formal grammars: [Terminal and nonterminal symbols](https://en.wikipedia.org/wiki/Terminal_and_nonterminal_symbols)
+
+The nonterminal symbols are the grammar symbols that can be "transformed into something else" by grammar rules or alternatively live at non-leaf positions in the parse tree:
+
+```
+A --> a,B.
+B --> A.
+B --> b.
+```
+
+Here, `A` and `B` are nonterminals. and `a` and `b` are terminals (tokens, in this case apparently letters in string that is generated or parsed).
+
+By analogy, the DCG ruleset having the same name and arity on the left side of `-->` (and which is mapped to a predicate) is called a nonterminal and written as `name//arity`.
+
+```
+a --> "a",b.
+b --> a.
+b --> "b".
+```
+
+In the above, we have nonterminals `a//0` and `b//0`. If we add counting of `a` using `library(clpfd)` expressions, we get nonterminals `a//1` and `b//1` 
+(meta problem: the markup processor of the comment section transforms `a//1` into a link to `a∕3`, which is not the right thing to do)
+
+```
+?- use_module(library(clpfd)).
+```
+
+```
+a(Y) --> "a",b(X),{Y #= X+1}.
+b(X) --> a(X).
+b(0) --> "b".
+```
+
+Note the use back quotes to represent a list-of-codes corresponding to `aaaaaaaaaab` directly:
+
+```
+?- phrase(a(Z),`aaaaaaaaaab`).  
+Z = 10 ;
+false.
+```
+
+## Always pass through phrase∕2 or phrase∕3!
+
+Although currently the implementation is based on the principle that a "DCG nonterminal" is mapped
+to a predicate with two additional arguments coming after the arguments specified in the DCG terminal,
+(i.e. `foo//4` is transformed into `foo/6` for example), one should not rely on this and attempt
+to call those generated predicates directly.
+
+Markus Triska writes:
+
+> In principle though, it would be possible to compile DCGs completely
+> differently to Prolog code, or not compile them at all, and for this
+> reason you should always use `phrase/[2,3]` to invoke a DCG: It keeps
+> your code completely portable, no matter how DCGs are actually
+> implemented in your system.
+
+## Make text visible in the tracer/debugger (i.e. use `library(portray)`) 
+
+If you handle lists-of-codes, then direct output and debugger output are not the best:
+
+```
+?- atom_codes("Hello, World!",X).
+X = [72,101,108,108,111,44,32,87,111,114,108,100,33].
+```
+
+In the debugger, you see things like
+
+```
+   Call: (15) semver:major(_4268,[49,46,50,46,51,45,48,48,120,54,55,43,97,108,112,104,97|...],_4370) ? creep
+   Call: (16) semver:numeric_id(_4268,[49,46,50,46,51,45,48,48,120,54,55,43,97,108,112,104,97|...],_4370) ? creep
+```
+
+As the documentation says use library [`portray_text`](https://eu.swi-prolog.org/pldoc/doc/_SWI_/library/portray_text.pl).
+
+You must load it explicitly:
+
+```
+?- use_module(library(portray_text)).
+true.
+
+?- set_portray_text(enabled, X, X).
+X = true.
+```
+
+Ok, it's on. List of codes should now be printed as text enclosed in backquotes:
+
+```
+?- atom_codes("Hello, World!",X).
+X = `Hello, World!`.
+```
+
+In the debugger:
+
+```
+   Call: (15) semver:major(_13484,`1.2.3-00x67+alpha.foo-bar.0099`,_13586) ? creep
+   Call: (16) semver:numeric_id(_13484,`1.2.3-00x67+alpha.foo-bar.0099`,_13586) ? creep
+```
+
+In the GUI debugger, go to _settings_ and enable _Portray codes_.
+
+## Why is the hidden dual argument of a nonterminal called a "difference list"?
+
+It's not unreasonable to call it a "difference list" (or rather a "list difference") if you consider phrase/3.
+
+Here is a DCG that filters the even =|X|= out of a list of =|t(X:integer)|=.
+
+```
+frule([X|Rs]) --> [t(X)], { (X mod 2)  =:= 0 }, frule(Rs).
+frule(Rs)     --> [t(X)], { (X mod 2)  =\= 0 }, frule(Rs).
+frule([])     --> [].
+```
+
+Running this through phrase/3 gives:
+
+```
+?- 
+List=[t(0),t(1),t(2),t(3),t(4),t(5),c(1),c(2)], 
+phrase(frule(Result),List,Rest).
+
+Result = [0,2,4],   Rest = [c(1),c(2)] ;
+Result = [0,2,4],   Rest = [t(5),c(1),c(2)] ;
+Result = [0,2],     Rest = [t(4),t(5),c(1),c(2)] ;
+Result = [0,2],     Rest = [t(3),t(4),t(5),c(1),c(2)] ;
+Result = [0],       Rest = [t(2),t(3),t(4),t(5),c(1),c(2)] ;
+Result = [0],       Rest = [t(1),t(2),t(3),t(4),t(5),c(1),c(2)] ;
+Result = [],        Rest = [t(0),t(1),t(2),t(3),t(4),t(5),c(1),c(2)].
+```
+
+For each success, what has been consumed by =|phrase(frule(Result),List,Rest)|= is the "list difference" List-Rest.
+
+In the case of phrase/2, it is additionally demanded that =|Rest=[]|=, i.e the =|Rest|= shall be the far end of the list.
+
+Let's take a look at the code generated from the DCGs. With some renaming of variables for legibility:
+
+```
+?- listing(frule//1).
+
+frule([X|Rs], [t(X)|Ts], Rest) :- X mod 2=:=0, List=Ts, frule(Rs, List, Rest).
+frule(Rs,     [t(X)|Ts], Rest) :- X mod 2=\=0, List=Ts, frule(Rs, List, Rest).
+frule([],     Rest, Rest).
+```
+
+Although the "list difference" may or may not actualized on call (because =|Rest|= may or may not be instantiated to a list),
+on success second and third argument always represent a list difference. The first argument, the only one visible in the
+DCG form, is an open list to which one appends by instantiating the "fin" of the open list, an unbound variable, to a new listbox
+`[t(X)|Ts]` with `Ts` uninstantiated.
+
+This brings up the possibility to creating a DCG that generates an **open list** as =|Result|= 
+and give us the unbound variable of that list's "fin" in a second "visible argument", called `Fin`:
+
+```
+frule([X|Rs],Fin) --> [t(X)], { (X mod 2)  =:= 0 }, frule(Rs,Fin).
+frule(Rs,Fin)     --> [t(X)], { (X mod 2)  =\= 0 }, frule(Rs,Fin).
+frule(Fin,Fin)    --> [].
+```
+
+Then:
+
+```
+?- 
+phrase(frule(Result,Fin),[t(0),t(1),t(2),t(3),t(4),t(5),c(1),c(2)],Rest).
+Result = [0,2,4|Fin],   Rest = [c(1),c(2)] ;
+Result = [0,2,4|Fin],   Rest = [t(5),c(1),c(2)] ;
+Result = [0,2|Fin],     Rest = [t(4),t(5),c(1),c(2)] ;
+Result = [0,2|Fin],     Rest = [t(3),t(4),t(5),c(1),c(2)] ;
+Result = [0|Fin],       Rest = [t(2),t(3),t(4),t(5),c(1),c(2)] ;
+Result = [0|Fin],       Rest = [t(1),t(2),t(3),t(4),t(5),c(1),c(2)] ;
+Result = Fin,           Rest = [t(0),t(1),t(2),t(3),t(4),t(5),c(1),c(2)].
+```
+
+In particular, we can close the list on success, for example, by appending something:
+
+```
+?- phrase(frule(Result,Fin),[t(0),t(1),t(2),t(3),t(4),t(5),c(1),c(2)],Rest),Fin=[a,b,c].
+Result = [0,2,4,a,b,c], Fin = [a,b,c], Rest = [c(1),c(2)] ;
+Result = [0,2,4,a,b,c], Fin = [a,b,c], Rest = [t(5),c(1),c(2)] ;
+Result = [0,2,a,b,c],   Fin = [a,b,c], Rest = [t(4),t(5),c(1),c(2)] ;
+Result = [0,2,a,b,c],   Fin = [a,b,c], Rest = [t(3),t(4),t(5),c(1),c(2)] ;
+Result = [0,a,b,c],     Fin = [a,b,c], Rest = [t(2),t(3),t(4),t(5),c(1),c(2)] ;
+Result = [0,a,b,c],     Fin = [a,b,c], Rest = [t(1),t(2),t(3),t(4),t(5),c(1),c(2)] ;
+Result = Fin,           Fin = [a,b,c], Rest = [t(0),t(1),t(2),t(3),t(4),t(5),c(1),c(2)].
+```
+
+Note that in _"Extended DCG Notation: A Tool for Applicative Programming in Prolog"_ (link above), the
+"argument pair" is called an **accumulator** instead of a **list difference**:
+
+```
+An important Prolog programming technique is the accumulator [Sterling & Shapiro 1986].
+The DCG notation implements a single implicit accumulator. For example, the DCG clause:
+
+term(S) --> factor(A), [+], factor(B), {S is A+B}.
+
+is translated internally into the Prolog clause:
+
+term(S,X1,X4) :- factor(A,X1,X2), X2=[+|X3], factor(B,X3,X4), S is A+B.
+
+Each predicate is given two additional arguments. Chaining together these arguments 
+implements the accumulator.
+```
+
+This also makes sense: One can look at the "argument pair" as a value that
+is "threaded through" the predicate calls. In case of list processing, the first argument
+is the list to be processed, and the second argument is the (resulting) rest of that
+list, which is then given to the next predicate etc. The existence of call_dcg/3 is
+then explained as just the entry point of accumulator-based processing, where the
+accumulator may well be something other than a (position in a) list.
+
+Here is an example that computes the square root, with the processing
+kicked off by call_dcg/3. 
+
+But there is no way to translate sqrt/3 into sqrt//1, which I really would like to see:
+
+```
+sqrt(S,Current,Result) :- Next is (0.5 * (Current + (S/Current))), Next \== Current, !, sqrt(S,Next,Result).
+sqrt(S,Result,Result)  :- true.
+
+sqrt(S,Result) :-
+   Start is S/2.0,
+   call_dcg(sqrt(S),Start,Result),  
+   Back is Result*Result,
+   format("sqrt(~f): obtained ~f; ~f^2 = ~f~n",[S,Result,Result,Back]).
+```
+
+And so:
+
+```
+?- sqrt(100,Result).
+sqrt(100.000000): obtained 10.000000; 10.000000^2 = 100.000000
+Result = 10.0.
+
+?- sqrt(27,Result).
+sqrt(27.000000): obtained 5.196152; 5.196152^2 = 27.000000
+Result = 5.196152422706632.
+
+?- sqrt(2,Result).
+sqrt(2.000000): obtained 1.414214; 1.414214^2 = 2.000000
+Result = 1.414213562373095.
+```
+
+## A simple, arbitrary example
+
+Generate or test strings obeying the Perl Regex `(ab)*`
+
+   - Code: [`ab_dcg.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/prolog_exercises/ab_dcg/ab_dcg.pl)
+   - Test: [`test_ab_dcg.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/prolog_exercises/ab_dcg/test_ab_dcg.pl)
+  
+**Generate**
+
+```
+?- phrase_acceptable(T,6).
+T = abababababab ;
+false.
+```
+
+**Check/Recognize**
+
+```
+?- phrase_acceptable("ababab",N).
+N = 3 ;
+false.
+```
+
+**Enumerate**
+
+```
+?- phrase_acceptable(T,N).
+T = '',
+N = 0 ;
+T = ab,
+N = 1 ;
+T = abab,
+N = 2 ;
+T = ababab,
+N = 3 ;
+T = abababab,
+N = 4 
+...
+```
+
+## Another example
+
+Pick a prefix of a nonempty sequence of digits out of an atom:
+
+   - Code: [`digits_dcg.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/prolog_exercises/digits_dcg/digits_dcg.pl)
+   - Test: [`test_digits_dcg.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/prolog_exercises/digits_dcg/test_digits_dcg.pl)
+
+## Comparing three approaches to counting characters in a list: DCG, foldl and recursion
+
+```
+% ===
+% Morph DictIn to DictOut so that:
+% Only for Keys [a,b,c]:
+% If Key exists in DictIn, DictOut is DictIn with the count for Key incremented
+% If Key notexists in DictIn, DictOut is DictIn with a new entry Key with count 1
+% ===
+
+inc_for_key(Key,DictIn,DictOut) :-
+   memberchk(Key,[a,b,c]),
+   !,
+   add_it(Key,DictIn,DictOut).
+   
+inc_for_key(Key,DictIn,DictOut) :-
+   \+memberchk(Key,[a,b,c]),
+   add_it(dropped,DictIn,DictOut).
+
+add_it(Key,DictIn,DictOut) :-
+   (get_dict(Key,DictIn,Count) -> succ(Count,CountNew) ; CountNew=1),
+   put_dict(Key,DictIn,CountNew,DictOut).
+
+% ===
+% Using foldl to count
+% ===
+
+count_with_foldl(Atom,DictWithCounts) :-
+   atom_chars(Atom,Chars),
+   foldl(inc_for_key,Chars,counts{},DictWithCounts).
+
+% ===
+% Using a DCG to count
+% ===
+
+dcg_count(Dict,Dict)      --> [].
+dcg_count(DictIn,DictOut) --> [C], { inc_for_key(C,DictIn,Dict2) }, dcg_count(Dict2,DictOut).
+
+count_with_phrase(Atom,DictWithCounts) :-
+   atom_chars(Atom,Chars),
+   phrase(dcg_count(counts{},DictWithCounts),Chars).
+
+% ===
+% Using standard Prolog to count
+% ===
+
+count_with_recursion(Atom,DictWithCounts) :-
+   atom_chars(Atom,Chars),
+   count_rec(Chars,counts{},DictWithCounts).
+   
+count_rec([],Dict,Dict).
+count_rec([C|Cs],DictIn,DictOut) :- inc_for_key(C,DictIn,Dict2), count_rec(Cs,Dict2,DictOut).
+
+% ===
+% Tests
+% ===
+
+:- begin_tests(counting).
+
+test("count using foldl/4, #1", true(DictWithCounts == counts{a:3,b:4,dropped:2})) :-
+   count_with_foldl(abgdbabba,DictWithCounts).
+   
+test("count whith phrase/2, #1", [true(DictWithCounts == counts{a:3,b:4,dropped:2}),nondet]) :- 
+   count_with_phrase(abgdbabba,DictWithCounts).
+
+test("count whith recursion, #1", [true(DictWithCounts == counts{a:3,b:4,dropped:2})]) :- 
+   count_with_recursion(abgdbabba,DictWithCounts).
+   
+:- end_tests(counting).
+```

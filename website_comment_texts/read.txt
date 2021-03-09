@@ -1,3 +1,7 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=read/1
+
+## Note
+
 This corresponds to "serialization/deserialization" in Java and other languages.
 
 You CAN but shouldn't use this for reading input typed in by the user.
@@ -20,6 +24,8 @@ TermOut = a(b,c,[1,2,3],var(ZZ)),
 Buf = "a(b,c,[1,2,3],var(_8700))",
 TermIn = a(b,c,[1,2,3],var(_9646)).
 ```
+
+## When asking the user
 
 Use [`library(readutil)`](https://www.swi-prolog.org/pldoc/man?section=readutil) for more freewheeling I/O like user querying:
 
@@ -44,4 +50,62 @@ OK!
 S1 = "YES",
 S2 = "yes".
 ```
- 
+
+## Here is example code for reading terms from a file 
+
+```
+:- use_module(library(filesex)).
+
+% I'm using strings wherever there is supposed to be "text whose only meaning is itself"
+
+perform_catch(Terms,Encoding) :-
+   catch(perform(Terms,Encoding),ExceptionTerm,(format(user_error,"~q",[ExceptionTerm]),fail)).
+   
+perform(Terms,Encoding) :-
+   WhereDir = "/home/user/",
+   directory_file_path(WhereDir,"prepacked",PrepackedDir),
+   directory_file_path(PrepackedDir,"onepointfour",D1), % directory_file_path has bugs so go step by step here
+   directory_file_path(D1,"basics",D2), % directory_file_path has bugs so go step by step here
+   directory_file_path(D2,"pack.pl",File),
+   exists_file_or_throw(File),
+   open_or_throw(File,Stream,Encoding),
+   assertion(is_stream(Stream)), 
+   % Exceptions due to syntax problems are left to bubble "up".
+   % If this happens in an interactive sessions, the tracer is triggered
+   % (unless you did "set_prolog_flag(debug_on_error,false)") and stops
+   % right before the cleanup goal
+   setup_call_cleanup(
+      true,
+      slurp_terms(Stream,Terms), 
+      (format(user_error,"Closing ~q~n",[File]),close(Stream))), 
+   assertion(\+is_stream(Stream)).
+   
+% ---   
+
+slurp_terms(Stream,Terms) :-
+   read_term(Stream,Term,[]),  % will throw on syntax error; unifies Term with "end_of_file" at EOF
+   slurp_terms_again(Term,Stream,Terms).
+
+% ---
+
+slurp_terms_again(end_of_file,_Stream,[]) :- !.
+slurp_terms_again(Term,Stream,[Term|Terms]) :-
+   slurp_terms(Stream,Terms).
+
+% ---
+
+open_or_throw(File,Stream,Encoding) :- 
+   open(File,read,Stream,[encoding(Encoding)]),
+   !.
+   
+open_or_throw(File,_Stream,_Encoding) :-
+   domain_error("Opening file for reading failed",File). % but how do I know WHY it failed?
+
+% ---
+
+exists_file_or_throw(File) :- 
+   exists_file(File),!.
+   
+exists_file_or_throw(File) :- 
+   domain_error("No such file",File). % domain error is as good as any
+```

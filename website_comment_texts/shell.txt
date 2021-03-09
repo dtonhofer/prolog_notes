@@ -1,0 +1,51 @@
+https://eu.swi-prolog.org/pldoc/man?predicate=shell/2
+
+## Doc needs help
+
+> Please note that the CreateProcess() API does not imply the Windows command interpreter (cmd.exe and therefore commands that are built in the command interpreter can only be activated using the command interpreter. 
+
+Should be "does not involve the Windows command interpreter =|cmd.exe|="
+
+## See also
+
+Wikipedia: [child process](https://en.wikipedia.org/wiki/Child_process)
+
+## See also
+
+   - CreateProcess is a macro. It selects between calling between CreateProcessA and CreateProcessW, which take strings in [Windows-1251](https://en.wikipedia.org/wiki/Windows-1252) or UCS-2 (maybe?), respectively.
+      - [CreateProcessA function (processthreadsapi.h)](https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessa)
+      - [CreateProcessW function (processthreadsapi.h)](https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessw)
+
+## Note 
+
+You may want to use process_create/3 because:
+
+The command is passed as a string to the Bourne shell and is thus subject to the vagaries of the interpreter breaking it apart into command + args etc, i.e. the programmer has to perform quoting and escaping prior to invoking, an error-prone undertaking. 
+
+## Compare with
+
+Perl's `system`:
+
+https://perldoc.perl.org/functions/system.html#exec-LIST
+
+Java's `Runtime.exec()`:
+
+https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/lang/Runtime.html
+
+## Package "by_unix"
+
+There is package "by_unix" ("an elegance layer to calling unix commands") to call unix commands more directly (I haven't tried it but it looks very promising)
+
+   - [Package page](https://eu.swi-prolog.org/pack/list?p=by_unix)
+   - [Project page](http://stoics.org.uk/~nicos/sware/by_unix/)
+
+## See also
+
+   - shell/0 - Execute interactive shell, from library(shell)
+   - shell/1 - SWI Prolog's way of "shelling"
+   - shell/2 - SWI Prolog's way of "shelling" (**this page**)
+   - [system∕1](https://eu.swi-prolog.org/pldoc/doc_for?object=yap%3Asystem/1) - YAP's way of "shelling" from `library(yap)`, calls shell/1
+   - [system∕0](https://eu.swi-prolog.org/pldoc/doc_for?object=sicstus_system%3Asystem/0) - SICStus' way of "shelling" `library(system)`, calls shell/0
+   - [system∕1](https://eu.swi-prolog.org/pldoc/doc_for?object=sicstus_system%3Asystem/1) - SICStus' way of "shelling" `library(system)`, calls shell/1
+   - [system∕2](https://eu.swi-prolog.org/pldoc/doc_for?object=sicstus_system%3Asystem/2) - SICStus' way of "shelling" from `library(system)`, calls shell/2
+   - process_create/3

@@ -1,0 +1,365 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=member/2
+
+## Some text vagueness
+
+"provides determinism on the last element" 
+
+should be 
+
+"provides well-behaved determinism on the last element" 
+
+to make the text consistent with the definitions of [SWI-Prolog: Deterministic/Semi-deterministic/Non-deterministic predicates](https://www.swi-prolog.org/pldoc/man?section=testbody), where 
+
+"deterministic" 
+
+means that the predicate succeeds exactly once (but may leave a choicepoint that, however, yields no further solution on backtracking) whereas 
+
+"well-behaved deterministic" 
+
+means that the predicate succeeds exactly once and leaves no choicepoint.
+
+## See also nth0∕3
+
+nth0/3 performs the same task, put also uses/outputs out the index:
+
+Access by index:
+
+```
+?- nth0(3,[a,b,c,third],X).
+X = third.
+```
+
+Find the index of an entry:
+
+```
+?- nth0(Index,[a,b,c,d],b).
+Index = 1 ;
+false.
+
+?- nth0(Index,[a,b,c,b,d],b).
+Index = 1 ;
+Index = 3 ;
+false.
+
+?- nth0(Index,[a,b,c,b,d,b],b). 
+Index = 1 ;
+Index = 3 ;
+Index = 5.   % Deterministic on last element
+```
+
+Backtracking over solutions:
+
+```
+?- findall(I-V,nth0(I,[a,b,c,d],V),Bag).
+Bag = [0-a, 1-b, 2-c, 3-d].
+```
+
+## Compare with memberchk∕2
+
+Use memberchk/2 if you are hunting for efficiency and a _single solution_ is sufficient (but watch out for unexpected failures with memberchk/2)
+
+memberchk/2 should be the same as once/1 around member/2:
+
+```
+?- once(member(a,[b,b,a,b,a,b])).
+true.
+
+?- member(a,[b,b,a,b,a,b]).
+true ;
+true ;
+false.
+
+?- memberchk(a,[b,b,a,b,a,b]).
+true.
+```
+
+### Some examples and differences with memberchk∕2
+
+Obtain successive members; member/2 retrieves successive members on backtracking
+
+```
+?- member(A,[1,2,3]).
+A = 1 ;
+A = 2 ;
+A = 3.
+```
+
+memberchk/2 does not backtrack
+
+```
+?- memberchk(A,[1,2,3]).
+A = 1.
+```
+
+Check whether an element is present in List
+
+member/2 backtracks; a retry can be attempted after the second success even though there is no further `1` down the list:
+
+```
+?- member(1,[1,2,1,3]).
+true ;
+true ;
+false.
+```
+
+More deterministic:
+
+```
+?- member(1,[1,2,1]).
+true ;
+true.
+```
+
+memberchk/2 does not backtrack
+
+```
+?- memberchk(1,[1,2,1,3]).
+true.
+```
+
+## member∕2 behaves well for non-lists
+
+Finding an element in a non-list:
+
+```
+?- member(1,stop).
+false.
+
+?- member(1,[3,4,2,1,6|stop]).
+true ;
+false.
+```
+
+Note that memberchk/2 is more picky:
+
+```
+?- memberchk(1,stop).
+ERROR: Type error: `list' expected, found `stop' (an atom)
+
+?- memberchk(1,[3,4,2,1,6|stop]).
+true.
+
+?- memberchk(7,[3,4,2,1,6|stop]).
+ERROR: Type error: `list' expected, found `stop' (an atom)
+```
+
+## Variables in the list? No problem
+
+As the `Elem` is unified with list elements one after the other, at some
+point the `Elem` will "be the same" as any unbound variable in the list:
+
+```
+?- member(X,[A,foo,B,bar,C]).
+X = A ;
+X = foo ;
+X = B ;
+X = bar ;
+X = C.
+```
+
+Once can perform a "term equality" test using assertion/1 for this:
+
+```
+?- member(X,[A,foo,B,bar,C]),
+   assertion((var(X) -> (X==A;X==B;X==C) ; true)).
+X = A ;
+X = foo ;
+X = B ;
+X = bar ;
+X = C.
+```
+
+## member∕2 grows open lists and keeps them open
+
+Finding an element in an open list (aka partial list) results in an infinite stream of
+longer and longer lists containing unbound variables where the element being looked for 
+is the last entry of the suffix:
+
+```
+?- member(1,[3,4,2,1,6|More]).
+true ;
+More = [1|_140008] ;
+More = [_140006,1|_140744] ;
+More = [_140006,_140742,1|_141480] ;
+More = [_140006,_140742,_141478,1|_142216] ;
+...
+```
+
+This applies in particular to the "maximally unspecified list", the unbound variable, which is an open list:
+
+```
+?- member(1,List).
+List = [1|_29654] ;
+List = [_29652,1|_30390] ;
+List = [_29652,_30388,1|_31126] ;
+List = [_29652,_30388,_31124,1|_31862] ;
+...
+```
+
+Is that what one would expect? Difficult to say! It makes sense: `List` is now a list whereby the only thing that is certain is that there is an `1` at position 0, or 1, or 2, .... Not even the length's list is certain.
+
+nth0/3 behaves likewise:
+
+```
+?- nth0(Index,List,1).
+Index = 0, List = [1|_131392] ;
+Index = 1, List = [_131390,1|_132520] ;
+Index = 2, List = [_131390,_132518,1|_133650] ;
+Index = 3, List = [_131390,_132518,_133648,1|_134780]
+...
+```
+
+## A (more general?) variation
+
+This predicate is meant to work with open lists in the following way: It has a third argument which
+
+   - is set to =|found|= if the element was found in the prefix of the open list (or in a closed list)
+   - is set to =|appended(Fin)|= (=|Fin|= is unified with the unbound variable at the second position of 
+     the last listbox) if the element was not found in the prefix or the prefix was exhausted and the element was added to the open end
+
+Backtracking generates longer and longer open lists, same as for member/2.
+
+Standard behaviour on proper lists:
+
+```
+?- member_openlist(x,[a,b,x],What).
+What = found.
+
+?- member_openlist(x,[a,b,x,c],What).
+What = found ;
+false.
+```
+
+Only append to open list:
+
+```
+?- List=[a,b,x|_], member_openlist(x,List,appended(W)).
+List = [a,b,x,x|W] ;
+List = [a,b,x,_11742,x|W] ;
+List = [a,b,x,_11742,_12570,x|W] ;
+List = [a,b,x,_11742,_12570,_13398,x|W] ;
+List = [a,b,x,_11742,_12570,_13398,_14226,x|W] ;
+List = [a,b,x,_11742,_12570,_13398,_14226,_15054,x|W] ;
+...
+```
+
+Only find in opn list:
+
+```
+?- List=[a,b,x|_], member_openlist(x,List,found).
+List = [a,b,x|_16558] ; 
+false.
+```
+
+Find in or append to open list:
+
+```
+?- List=[a,b,x|_], member_openlist(x,List,What).
+List = [a,b,x|_18420], What = found ;
+List = [a,b,x,x|_20178], What = appended(_20178) ;
+List = [a,b,x,_21314,x|_21310], What = appended(_21310) ;
+List = [a,b,x,_21314,_22452,x|_21310], What = appended(_21310) 
+...
+```
+
+Append to and close open list (like last/2):
+
+```
+?- List=[a,b,x|_], member_openlist(x,List,appended([])).
+List = [a,b,x,x] ;
+List = [a,b,x,_26164,x] ;
+List = [a,b,x,_26164,_26910,x] ;
+List = [a,b,x,_26164,_26910,_27656,x] ;
+List = [a,b,x,_26164,_26910,_27656,_28402,x] 
+...
+```
+
+Here it is:
+
+```
+member_openlist(Element,List,appended(Fin)) :-            % In this case, we are appending, so make sure "found" has not been requested.
+   var(List),                                             % We found the the "fin" of an open list (an unbound variable).
+   List=[Element|Fin].                                    % Append by instantiating "fin" to a new listbox and succeed.
+
+member_openlist(Element,List,appended(FinalFin)) :-       % In this case, we are appending, so make sure "found" has not been requested.
+   var(List),                                             % We found the the "fin" of an open list (an unbound variable).
+   List=[_|NewFin],                                       % Append by instantiating "fin" to a new listbox ...
+   member_openlist(Element,NewFin,appended(FinalFin)).    % ... and perform recursive call
+
+member_openlist(Element,List,What) :-
+   nonvar(List),                                          % List is instantiated to something, presumably a listbox [_|_]
+   assertion((List == [] ; List = [_|_])),                % List should be a listbox or an empty list!
+   member_openlist_2(Element,List,What).                  % Handle various cases
+
+
+member_openlist_2(Element,[Element|B],found) :-           % Unified at end of proper list. Cut to be deterministic.
+   B==[],                                                 % We can't put [Element] in the head lest we unify an open end with []
+   !.
+
+member_openlist_2(Element,[Element|_],found).             % Unified anywhere except at the end of a proper list. Do not cut!
+
+member_openlist_2(Element,[_|B],What) :-                  % Keep on looking
+   member_openlist(Element,B,What).
+```
+
+With testcases
+
+```
+:- begin_tests(member_openlist).
+
+test("nothing in an empty list",fail) :-
+   member_openlist(x,[],_).
+
+test("not found in a closed list",fail) :-
+   member_openlist(x,[a,b,c],_).
+
+test("found in the middle of a closed list") :-
+   once(member_openlist(x,[a,x,c],What)),
+   assertion(What==found).
+
+test("found as last element of a closed list") :-
+   member_openlist(x,[a,b,x],What),
+   assertion(What==found).
+
+test("instantiate them all over a closed list") :-
+   findall(
+      X-What,
+      member_openlist(X,[a,b,c],What),
+      Events),
+   assertion(Events == [a-found,b-found,c-found]).
+
+test("found in the middle of an open list") :-
+   List=[a,x,c|_],
+   once(member_openlist(x,List,What)),
+   assertion(What==found),
+   assertion((List=[a,x,c|Fin],var(Fin))).
+
+test("found as last element of an open list") :-
+   List=[a,b,x|_],
+   once(member_openlist(x,List,What)),
+   assertion(What==found),
+   assertion((List=[a,b,x|Fin],var(Fin))).
+
+test("not found in an open list leads to append") :-
+   List=[a,b,c|_],
+   once(member_openlist(d,List,What)),
+   assertion((List = [a,b,c,d|Fin1],What=appended(Fin2),Fin1==Fin2,var(Fin1))).
+
+test("found as element then appended using limit/2 inside findall/2") :-
+   List=[a,b,x|_],
+   findall(List-What, limit(2,member_openlist(x,List,What)), All),
+   % Note the list collected by findall is not physically the same list as "List"
+   assertion(
+      All = [[a,b,x|_]-found,
+             [a,b,x,x|Fin2]-appended(Fin2)]).
+
+test("force appending and then close list") :-
+   List=[a,b,x|_],
+   once(member_openlist(x,List,appended(_))),
+   once(member_openlist(x,List,appended(_))),
+   once(member_openlist(a,List,appended([]))),
+   assertion(List==[a,b,x,x,x,a]).
+
+:- end_tests(member_openlist).
+```
+ 

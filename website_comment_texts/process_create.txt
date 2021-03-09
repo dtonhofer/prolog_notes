@@ -1,0 +1,96 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=process_create/3
+
+
+## See also:
+
+Take a look at this pack:
+
+https://www.swi-prolog.org/pack/list?p=by_unix
+
+## So what's with the return value?
+
+Consider a process whih exits with the value that was passed to it, in other words:
+
+```
+#include<stdio.h>
+#include<stdlib.h>
+
+int main(int argc,char *argv[]) {
+  if (argc==1) {
+     exit(0);
+  }
+  else {
+     int x = atoi(argv[1]);
+     exit(x);
+  }
+}
+```
+
+Then:
+
+```
+?- process_create('/home/paquette/returnit',[0],[]).
+true.
+
+?- process_create('/home/paquette/returnit',[-1],[]).
+ERROR: Process "/home/paquette/returnit": exit status: 255
+
+?- process_create('/home/calvin/returnit',[12],[]).
+ERROR: Process "/home/paquette/returnit": exit status: 12
+```
+
+Okay, but maybe too radical.
+
+What about returning the exit status in an option instead? We have Prolog, we don't necessarily want to get an exception, just fail if the an unification fails
+
+See also: [exit status documented in the GNU C library](https://www.gnu.org/software/libc/manual/html_node/Exit-Status.html)
+
+## Some sleuthing
+
+process_create/3' source code is available by clicking on the top righ ':-' orange marker in this page.
+
+That Prolog predicate calls =|process_create(Term, Options3)|= which is a foreign code function in =|packages/clib/process.c|=
+
+That function calls =|static int do_create_process(p_options *info)|= which comes in a Windows and POSIX version.
+
+It is not foreseen to get the child process exit code out of there with the current code....
+
+Here is a little temporary replacement for process_create/3 which does the same thing but:
+
+   - deterministically succeeds
+   - unifies the Term and Options used in the call to the 4th and 5th argument
+   - if an exception is thrown by process_create/2 it is caught, unified with the 6th argument, and then ignored
+
+```
+:- module(extra,[ my_process_create/6 ]).     
+
+:- use_module(library(process)).
+
+my_process_create(Exe, Args, Options, TermOnCall, OptionsOnCall, ExceptionTerm) :-
+   must_be(var,TermOnCall),
+   must_be(var,OptionsOnCall),
+   must_be(var,ExceptionTerm),
+   process:exe_options(ExeOptions),
+   absolute_file_name(Exe, PlProg, ExeOptions),
+   must_be(list, Args),
+   maplist(process:map_arg, Args, Av),
+   prolog_to_os_filename(PlProg, Prog),
+   TermOnCall =.. [Prog|Av],
+   process:expand_cwd_option(Options, Options1),
+   process:expand_env_option(env, Options1, Options2),
+   process:expand_env_option(environment, Options2, OptionsOnCall),
+   catch(
+      process:process_create(TermOnCall, OptionsOnCall),
+      ExceptionTerm,
+      true).
+```
+
+So you can have:
+
+```
+?- my_process_create(returnit, [12], [], Term, Options, ExeTerm).
+Term = '/home/paquette/returnit'(12),
+Options = [],
+ExeTerm = error(process_error('/home/paquette/returnit',exit(12)),_116).
+```
+ 

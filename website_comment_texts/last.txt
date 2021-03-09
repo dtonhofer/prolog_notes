@@ -1,0 +1,189 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=last/2
+
+## Unsurprising behaviour for proper lists
+
+The behaviour is "semidet": The predicate may fail or succeed. 
+
+It fails for the empty list:
+
+```
+?- last([],Last).
+false.
+```
+
+Otherwise is succeeds or not depending on the arguments:
+
+Picking out the last element from the list:
+
+```
+?- last([a,b,c],Last),assertion(Last == c).
+Last = c.
+```
+
+Instantiating the list's last element:
+
+```
+?- last([a,b,X],foo),assertion(X == foo).
+X = foo.
+```
+
+Accepting a proposed last element or not:
+
+```
+?- last([a,b,foo],foo).
+true.
+
+
+?- last([a,b,foo],bar).
+false.
+```
+
+## Behaviour for partial lists
+
+In case of a "partial list" (also known as an "open list"), last/2 will extend the list and close it, generating a stream of closed lists (which is logically correct). Thus the behaviour is _multi_.
+
+Starting with the most unspecified open list, which is an unbound variable:
+
+```
+?- last(X,Last).
+X = [Last] ;
+X = [_9502,Last] ;
+X = [_9502,_10320,Last] ;
+X = [_9502,_10320,_11138,Last] ;
+...
+```
+
+or with an open list that already contains three elements:
+
+```
+?- last([a,b,c|X],Last).
+X = [], Last = c ;
+X = [Last] ;
+X = [_7814,Last] ;
+X = [_7814,_8632,Last] ;
+...
+```
+
+If a "last" is proposed and it doesn't match the last element of the prefix:
+
+```
+?- last([a,b,c|X],foo).
+X = [foo] ;
+X = [_3852,foo] ;
+X = [_3852,_4588,foo] ;
+X = [_3852,_4588,_5324,foo] 
+```
+
+If a last is proposed and it does match the last element of the prefix:
+
+```
+?- last([a,b,c|X],c).
+X = [] ;
+X = [c] ;
+X = [_8546,c] ;
+X = [_8546,_9282,c] 
+```
+
+Use once/1 to get the first solution only:
+
+```
+?- once(last(List,foo)).
+List = [foo].
+
+?- once(last(List,X)).
+List = [X].
+
+?- once(last([a,b,c|X],foo)).
+X = [foo].
+
+?- List=[a,b,c|X],once(last(List,foo)).
+List = [a,b,c,foo], X = [foo].
+```
+
+## Something different: What if you want to to grab the "fin" of an open list?
+
+Suppose you have an open list and want to unify its "fin" (which is whatever is
+referenced by the second argument of the last listbox) with the variable `Fin` for analysis and manipulation (for a proper list, the "fin" is always `[]`):
+
+```
+                ↙"tip"
+List1 ------>[|]
+            /   \
+           1    [|]
+               /   \
+              2    [|]
+                  /   \  ↙"fin"
+                 3   <empty> <---------- Fin
+```
+
+Then:
+
+```
+fin(X,Fin) :-
+   var(X),
+   !,
+   Fin=X.            
+
+fin(X,Fin) :-
+   nonvar(X),
+   X=[_|B],
+   (
+      B==[] -> Fin=[]
+      ;
+      fin(B,Fin)
+   ).
+```   
+
+```
+:- begin_tests(fin).
+
+test("picking out fin of empty list",fail) :-
+   fin([],_Fin).
+
+test("picking out fin of atom instead of list",fail) :-
+   fin(foo,_Fin).
+   
+test("picking out fin of not-a-list",fail) :-
+   fin([a,b,c|foo],_Fin).
+   
+test("picking out fin of proper list yields [], not last") :-
+   fin([1,2,3],Fin),   
+   assertion(Fin == []).
+
+test("picking out fin of open list") :-
+   fin([1,2|X],Fin),   
+   assertion(Fin == X).
+   
+test("picking out fin of maximally unspecified open list") :-
+   fin(X,Fin),   
+   assertion(Fin == X).
+   
+test("open list with one specified element, reverse picking out a list") :-
+   List=[a|_],
+   fin(List,[1,2,3]),
+   assertion(List == [a,1,2,3]).
+   
+test("closing an open list") :-
+   List=[1,2,3|_],
+   fin(List,[]),
+   assertion(List==[1,2,3]).
+
+test("closing a maximally unspecified open list") :-
+   fin(List,[]),
+   assertion(List==[]).
+   
+test("closing an already closed list trivially succeeds") :-
+   List=[1,2,3],
+   fin(List,[]).
+
+:- end_tests(fin).
+```
+
+And so:
+
+```
+?- run_tests.
+% PL-Unit: fin .......... done
+% All 10 tests passed
+true.
+```

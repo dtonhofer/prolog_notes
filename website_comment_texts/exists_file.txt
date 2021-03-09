@@ -1,0 +1,62 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=exists_file/1
+
+An example:
+
+We have a directory, an actual file, and a symlink to a file and to a directory:
+
+```
+.
+├── actual_directory/
+├── actual_file
+├── symlink_to_directory -> actual_directory
+└── symlink_to_file -> actual_file
+```
+
+Then:
+
+```
+?- exists_file(actual_directory).
+false.
+
+?- exists_file(actual_file).
+true.
+
+?- exists_file(symlink_to_directory).
+false.
+
+?- exists_file(symlink_to_file).
+true.
+
+?- exists_file(yappadappadoowilmaaa).
+false.
+```
+
+This seems to behave like the Perl `-f` file test flag, see:
+
+https://perldoc.perl.org/functions/-X
+
+```
+$ perl -e 'if (-f "actual_directory") { print "YES\n" } else { print "NO\n" }'
+NO
+
+$ perl -e 'if (-f "symlink_to_directory") { print "YES\n" } else { print "NO\n" }'
+NO
+
+$ perl -e 'if (-f "symlink_to_file") { print "YES\n" } else { print "NO\n" }'
+YES
+
+$ perl -e 'if (-f "actual_file") { print "YES\n" } else { print "NO\n" }'
+YES
+
+$ perl -e 'if (-f "yappadappadoowilmaaa") { print "YES\n" } else { print "NO\n" }'
+NO
+```
+
+Here is a radical idea: why not dump the C straightjacket and become more Perlish:
+
+```
+filetest(+Flag,+File)
+```
+
+would succeed or fail depending on whether the Perl flag `Flag` applies. That sounds like a powerful addition. 
+

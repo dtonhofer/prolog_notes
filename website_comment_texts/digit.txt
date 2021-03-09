@@ -1,0 +1,188 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=digit//1
+
+## "digits" is greedy and does not backtrack
+
+Consider this grammar to preferably get a suffix of three "0" out separately:
+
+```
+digits_then_zeros(Ds) --> digits(Ds), [ '0','0','0' ].
+digits_then_zeros(Ds) --> digits(Ds).
+```
+
+Well, digits//1 gobbles it all:
+
+```
+?- atom_chars('1233000',Cs),
+   phrase(digits_then_zeros(Out),Cs,Rest).
+
+Cs = Out, Out = ['1','2','3','3','0','0','0'],
+Rest = [].
+```
+
+Similarly:
+
+```
+int_then_zeros(I) --> integer(I), [ '0','0','0' ].
+int_then_zeros(I) --> integer(I).
+```
+
+```
+?- atom_chars('1233000',Cs),
+   phrase(int_then_zeros(Out),Cs,Rest).
+Cs = ['1','2','3','3','0','0','0'],
+Out = 1233000,
+Rest = [].
+```
+
+## Works in reverse
+
+Trivially:
+
+```
+?- phrase(digits(['1','2','3']),Cs).
+Cs = ['1','2','3'].
+```
+
+integer//1 is more interesting. No leading zeros of course. And output is always codes, not chars:
+
+```
+?- phrase(integer(123),Cs).
+Cs = [49,50,51].
+```
+
+## But can't generate
+
+```
+?- phrase(digits_then_zeros(Ds),Cs).
+ERROR: Stack limit (1.0Gb) exceeded
+```
+
+## Keep to using "codes" (not "chars") if you expect a "minus sign"
+
+Codes work:
+
+```
+?- atom_codes('-1233',Cs),phrase(integer(Out),Cs,Rest).
+Cs = [45,49,50,51,51],
+Out = -1233,
+Rest = [].
+```
+
+But list-of-chars for signed integers doesn't work because the DCG is not programmed-out to handle them:
+
+```
+?- atom_chars('-1233',Cs),phrase(integer(Out),Cs,Rest).
+false.
+```
+
+Signed integer and codes work otherwise well and in parsing and generating directions (same as number_codes/2, really):
+
+```
+?- number_codes(-123,Cs),phrase(integer(X),Cs).
+Cs = [45,49,50,51],
+X = -123.
+
+?- number_codes(+123,Cs),phrase(integer(X),Cs).
+Cs = [49,50,51],
+X = 123.
+
+?- phrase(integer(-123),Cs),number_codes(X,Cs).
+Cs = [45,49,50,51],
+X = -123.
+
+?- phrase(integer(+123),Cs),number_codes(X,Cs).
+Cs = [49,50,51],
+X = 123.
+```
+
+## digits processing is transparent to the char/code duality
+
+Feed it chars, get back chars:
+
+```
+?- atom_chars('0123',Cs),phrase(digits(Out),Cs).
+Cs = Out, Out = ['0','1','2','3'].
+```
+
+Feed it codes, get back codes:
+
+```
+?- atom_codes('0123',Cs),phrase(digits(Out),Cs).
+Cs = Out, Out = [48,49,50,51].
+```
+
+## Leading zeros are gobbled up
+
+Digit processing:
+
+```
+?- atom_codes('00012',Cs),phrase(digits(Out),Cs).
+Cs = Out, Out = [48,48,48,49,50].
+```
+
+Integer processing:
+
+```
+?- atom_chars('00012',Cs),phrase(integer(Out),Cs).
+Cs = ['0','0','0','1','2'],
+Out = 12.
+```
+
+## But sometimes one demands that leading zeros are not allowed.
+
+Then what!
+
+Here's a replacement parsing hamster (I will move it to a proper pack later):
+
+   - [digits_ng.pl](https://github.com/dtonhofer/prolog_code/blob/main/tmp/digits_ng.pl)
+   - [digits_ng.plt](https://github.com/dtonhofer/prolog_code/blob/main/tmp/digits_ng.plt)
+
+Example:
+
+```
+accept_digits_ng(Atom,Sign,Plus,Minus,Zeros,ValueDigits,Rest) :-
+   atom_chars(Atom,List),
+   phrase(digits_ng(Sign,Plus,Minus,Zeros,ValueDigits),List,Rest).
+```
+
+Then you can pick out the sign integer, the sign character, leading zeros and the value digits:
+
+```
+?- accept_digits_ng('18889',Sign,Plus,Minus,Zeros,ValueDigits,_).
+Sign = 1,
+Plus = Minus, Minus = x,
+Zeros = [],
+ValueDigits = ['1','8','8','8','9'].
+```
+
+With a '-' and leading zeros:
+
+```
+?- accept_digits_ng('-000018889',Sign,Plus,Minus,Zeros,ValueDigits,_).
+Sign = -1,
+Plus = x,
+Minus =  (-),
+Zeros = ['0','0','0','0'],
+ValueDigits = ['1','8','8','8','9'].
+```
+
+Or you can demand 'no leading digits, no plus sign':
+
+```
+?- accept_digits_ng('-000018889',Sign,x,Minus,[],ValueDigits,_).
+false.
+
+?- accept_digits_ng('-18889',Sign,x,Minus,[],ValueDigits,_).
+Sign = -1,
+Minus =  (-),
+ValueDigits = ['1','8','8','8','9'].
+
+?- accept_digits_ng('+18889',Sign,x,Minus,[],ValueDigits,_).
+false.
+
+?- accept_digits_ng('18889',Sign,x,Minus,[],ValueDigits,_).
+Sign = 1,
+Minus = x,
+ValueDigits = ['1','8','8','8','9'].
+```
+ 

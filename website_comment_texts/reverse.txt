@@ -1,0 +1,110 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=reverse/2
+
+## The implementation
+
+(Click on the :- button in the doc)
+
+==
+reverse(Xs, Ys) :-
+  reverse(Xs, [], Ys, Ys).
+  
+reverse([], Ys, Ys, []).
+
+reverse([X|Xs], Rs, Ys, [_|Bound]) :-
+  reverse(Xs, [X|Rs], Ys, Bound).
+==
+
+It is tail-recursive, thus can be optimized into a loop by the compiler. Instead of keeping the elements on a stack with the depth of the list, to be collected and prepended to result list when coming back from the recursion, it constructs the result as a structure on the heap: `[X|Rs]` to be unified with the result variable `Ys` in the base case.
+
+The `Bound` is there to make the call symmetric, and make sure the call fails early when both lists are of unequal length or makes sure the list are of equal length when there is one open list among the arguments. But I can't get my head around all of the special cases covered by it. Alien technology!
+
+## Consider
+
+Instead of reverse/2 after a successful recursion, consider using the correct [**list processing idiom**](https://github.com/dtonhofer/prolog_notes/blob/master/other_notes/about_list_processing/) 
+
+... so that your list comes out right without you having to invoke reverse/2 after processing.
+
+## Open lists
+
+reverse/2 works for "open lists", i.e. lists for which the second entry of the last listcell (the fin) is an unbound variable (i.e. an empty cell):
+
+```
+   List ---->[|]  
+            /   \ 
+  Head --> a    [|] <----Tail
+               /   \
+              b    [|]
+                  /   \
+                 c   ~empty cell~ <--- Fin
+```
+
+A successful reverse/2 will not leave the list open (that wouldn't make sense, how would a 'reversed instance' of such a thing look like?). You just get longer and longer lists on backtracking:
+
+```
+?- reverse([1,2,3|X],B).
+X = [],                    B = [3, 2, 1] ;
+X = [_3934],               B = [_3934, 3, 2, 1] ;
+X = [_3946, _3934],        B = [_3934, _3946, 3, 2, 1] ;
+X = [_3958, _3946, _3934], B = [_3934, _3946, _3958, 3, 2, 1] .
+
+?- reverse(F,[1,2,3|X]).
+F = [3, 2, 1],                      X = [] ;
+F = [_9572, 3, 2, 1],               X = [_9572] ;
+F = [_9572, _9584, 3, 2, 1],        X = [_9584, _9572] ;
+F = [_9572, _9584, _9596, 3, 2, 1], X = [_9596, _9584, _9572] ;
+```
+
+Additionally, reverse generates lists with unbound variables at the correct places (giving you a most general solution of two lists that are the reverse of each other) when given unbound variables as lists. This is a special case of the above if "unbound variables" itself are considered open lists (which is a bit a of an edge case).
+
+```
+?- reverse(F,B).
+F = B,                        B = [] ;
+F = B,                        B = [_17142] ;
+F = [_17142, _17148],         B = [_17148, _17142] ;
+F = [_17142, _18018, _17148], B = [_17148, _18018, _17142] 
+```
+
+But I don't know whether that behaviour is specified or an accidental side-effect or the implementation (i.e. "specification via implementation")
+
+It's rather interesting to think about what happens here. After a successful `reverse(F,B)` call, we know that `F` and `B` must be lists, of the same length and with reversed elements. How do we express that constraint, which is just another way of saying _reverse(F,B)_ concretely and usefully for upcoming predicates? By having reverse/2 generate an infinite stream (an enumeration) of the most general templates for two lists that obey that constraint, where their inner structure is given by sharing fresh unbound variables at the required positions.
+
+## Reverse can ruin your day
+
+By infinite loop on a cyclic structure:
+
+```
+?- reverse([1,2,3|X],X).
+ERROR: Stack limit (1.0Gb) exceeded
+```
+
+## A thought
+
+This predicate could perform length determination/verification at the same time:
+
+```
+reversel(List1,List2,Length).
+```
+
+```
+reversel(Xs, Ys, L) :-
+  reversel(Xs, [], Ys, Ys, 0, L).
+  
+reversel([], Ys, Ys, [], L, L).
+
+reversel([X|Xs], Rs, Ys, [_|Bound], Lc, Lf) :-
+  succ(Lc,Ln),
+  (nonvar(Lf) -> Ln=<Lf ; true),
+  reversel(Xs, [X|Rs], Ys, Bound, Ln, Lf).
+```
+
+It can also fail early or order up reversed lists of a desired length if both lists are open. 
+
+But this is actually slower than reverse/2 + length/2
+
+```
+?- Len=10000000,numlist(1,Len,L1),time(reversel(L1,L2,Length)).                                 
+% 20,000,002 inferences, 4.820 CPU in 4.841 seconds (100% CPU, 4149503 Lips)
+
+?- Len=10000000,numlist(1,Len,L1),time((reverse(L1,L2),length(L1,Length))).
+% 10,000,004 inferences, 3.530 CPU in 3.549 seconds (99% CPU, 2832708 Lips)
+```

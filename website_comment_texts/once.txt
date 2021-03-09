@@ -1,0 +1,64 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=once/1
+ 
+## Personal opinion
+
+Definitely prefer once/1 over ->/2. 
+
+It makes the intent clear and, unlike ->/2, is actually readable.
+
+## Don't get confused
+
+Note that this is absolutely not the same as using "cut":
+
+With
+
+```
+foo(A,B) :- member(A-B,[a-1,b-2,c-3,a-4]).
+foo(A,B) :- member(A-B,[d-5,e-6,a-7,f-8]).
+```
+
+we have:
+
+```
+?- foo(a,B).
+B = 1 ;
+B = 4 ;
+B = 7 ;
+false.
+```
+
+Once-ify the first clause:
+
+```
+foo(A,B) :- once(member(A-B,[a-1,b-2,c-3,a-4])).
+foo(A,B) :- member(A-B,[d-5,e-6,a-7,f-8]).
+```
+
+Then:
+
+```
+?- foo(a,B).
+B = 1 ;
+B = 7 ;
+false.
+```
+
+But if you cut at the end of the first clause:
+
+```
+foo(A,B) :- member(A-B,[a-1,b-2,c-3,a-4]),!.
+foo(A,B) :- member(A-B,[d-5,e-6,a-7,f-8]).
+```
+
+You get:
+
+```
+?- foo(a,B).
+B = 1.
+```
+
+## Where is twice/1 ?
+
+If there is a =once/1=, there should probably be a =twice/1= etc.
+
+And there is: limit/2 from [library(solution_sequences)](https://eu.swi-prolog.org/pldoc/doc/_SWI_/library/solution_sequences.pl)

@@ -1,33 +1,34 @@
 https://eu.swi-prolog.org/pldoc/doc_for?object=memberchk/2
 
+This predicate **does not backtrack** (which is why it exists).
 
-This predicate does not backtrack, which is the idea. Use this predicate instead of member/2 if you know you need it (to wring efficiency out of a program) and you know enough about _Elem_ and _List_ to be sure this predicate is appropriate.
+Use this predicate instead of member/2 if you know you need it (to wring efficiency out of a program) and you know enough about _Elem_ and _List_ to be sure this predicate is appropriate.
 
-==
+```
 ?- findall(X, memberchk(X, [one,two,three]), Bag).
 
 Bag = [one].
-==
+```
 
 but:
 
-==
+``` 
 ?- findall(X, member(X, [one,two,three]), Bag).
 
 Bag = [one, two, three].
-==
+```
 
 In fact, memberchk/2 may well be implemented as
 
-==
-memberchk(X, Es) :- once(member(X, Es)).
-==
+```
+memberchk(Elem, List) :- once(member(Elem, List)).
+```
 
-and maybe it's clearer to actually write `once(member(X, Es))` in your code.
+and maybe it's clearer to actually write `once(member(Elem, List))` in your code.
 
 Watch out for unexpected failure (from the paper [Indexing dif/2](https://arxiv.org/abs/1607.01590))
 
-==
+```
 ?- X=2, memberchk(X, [1,2]), X=2
 X=2.    % expected solution
 
@@ -36,7 +37,7 @@ false.  % unexpected failure
 
 ?-      member(X, [1,2]), X=2.
 X = 2.
-==
+```
 
 ## Going one further: considering unbound variables as list elements
 
@@ -44,24 +45,26 @@ This may not be the appropriate place for this note but what if you want to cons
 
 For example:
 
-Is `foo` a member of `[1,2,X,Y]` according to member/2? There are two solutions (which partially overlap for `X=Y=foo`) and two answers:
+Is =|foo|= a member of =|[1,2,X,Y]|= according to member/2? 
 
-==
+There are two solutions (which partially overlap for =|X=Y=foo|=):
+
+```
 ?- member(foo,[1,2,X,Y]).
 X = foo ;
 Y = foo.
-==
+```
 
-Is `foo` a member of `[1,2,X,Y]` according to `memberchk/2`? There is one answer:
+Is =|foo|= a member of =|[1,2,X,Y]|= according to memberchk/2? There is one answer: 
 
-==
+```
 ?- memberchk(foo,[1,2,X,Y]).
 X = foo.
-==
+```
 
 But what if you do not want to unify and consider variables as "objects" to be worked on (in fact, your are reasoning about the "list program object" itself, not what it stands for):
 
-==
+```
 ?- in_prefix(foo,[1,2,X,Y]).
 false.
 
@@ -73,12 +76,9 @@ true.
 
 ?- Y=4,in_prefix(Y,[1,2,Y]).
 Y = 4.
-==
+```
 
 It can be done:
 
    - [`in_prefix.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/in_prefix.pl)
    - [`in_prefix.plt`](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/in_prefix.plt)
-
-
-
