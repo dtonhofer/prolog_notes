@@ -26,6 +26,16 @@
 % 2020-06-XX Version 1.0
 % 2021-03-09 Style updated with a lot of things I have learned.
 % ============================================================================
+% Examples
+%
+% Add 5 and 10 in "Peano Space":
+%
+% ?- pm(PA,5),pm(PB,10),padd(PA,PB,PC),pm(PC,R).
+%
+% Find X,Y such that X*Y=78
+%
+% ?- pm(PN,78),pmult(PNX,PNY,PN),pm(PNX,X),pm(PNY,Y). 
+% ============================================================================
 %
 %
 %     (computer                                         (computer
