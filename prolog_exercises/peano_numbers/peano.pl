@@ -32,13 +32,17 @@
 %
 % ?- pm(PA,5),pm(PB,10),padd(PA,PB,PC),pm(PC,R).
 %
-% Find X,Y such that X*Y=78
+% Find X,Y such that X*Y=78 in "Peano Space":
 %
 % ?- pm(PN,78),pmult(PNX,PNY,PN),pm(PNX,X),pm(PNY,Y). 
 % 
-% Find PQ,PR such that PA=PQ*PB+PR
+% Find Q,R such that 66=Q*7+R in "Peano Space":
 %
 % ?- pm(PA,66),pm(PB,7),pquotrem(PA,PB,PQ,PR),pm(PQ,Q),pm(PR,R).
+%
+% Enumerate the A,B such that A*B=34 in "Peano Space":
+%
+% ?- pm(PM,34),pmult(PA,PB,PM),pm(PA,A),pm(PB,B).
 % ============================================================================
 %
 %
