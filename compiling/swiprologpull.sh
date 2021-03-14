@@ -78,29 +78,10 @@
 # - When building: Immediately check whether cmake and ninja exist and
 #   exit if not. Same for the compiler
 #
-# - Need to install some stuff manually first. On Fedora with dnf:
-#   dnf install cmake          #(make system)
-#   dnf install ninja-build    #(build system)
-#   dnf install gcc            #(C+ compiler)
-#   dnf install gcc-c++        #(C++ compiler)
-#   dnf install zlib-devel     #(compression)
-#   dnf install openssl-devel  #(crypto)
-#   dnf install readline-devel #(handling of command line)
-#   dnf install libedit-devel  #(not sure whether both readline and libedit are needed)
-#   dnf install pcre-devel     #(Perl regex support, optional)
-#   dnf install libyaml-devel  #(YAML files support, optional)
-#   dnf install uuid-devel     #(UUID support, optional - NOT libuuid-devel)
-#   dnf install gmp-devel      #(GNU multiprecision library, long number support, recommended!)
-#
-# Not in the above:
-#
-# Google multi-threaded malloc                (tcmalloc)
-# Berkeley Database Support                   (bdb)
-# Java bridge support                         (jpl)
-# ODBC support                                (odbc)
-# Graphical interface support                 (pce)  - Needs X11, Qt5 (I think)
-#
 # - Properly exit if configuration fails!
+#
+# - What happens if Java is NOT installed? On this system, I have
+#   Adopt OpenJDK 11 ...
 # ===========================================================================
 
 # set -x # Uncomment for tracing information
@@ -117,8 +98,8 @@ set -o nounset # No unset bash variables allowed
 
 perso_github_account=https://github.com/dtonhofer        # Probably want to change that!!
 swipl_github_account=https://github.com/SWI-Prolog       # Well-known and respected
-system_install_dir=/usr/local/logic                      # This looks like a good place to me
-toplevel_dir_fq="$HOME/Development/2021_04"              # Where to put stuff locally
+system_install_dir=/usr/local/logic                      # This looks like a good place for swipl, which will be in /usr/local/logic/swipl-<version>
+toplevel_dir_fq="$HOME/Development/swiplbuild"           # Where to put stuff "locally", i.e. in your home directory
 hamcrest_jar="hamcrest-2.2.jar"                          # the version number has to updated sometimes
 junit_jar="junit-4.13.2.jar"                             # the version number has to updated sometimes
 
@@ -549,8 +530,142 @@ look() {
 }
 
 # ===========================================================================
+# Check whether the packages needed for a build exist.
+# This is adapted to Fedora, which uses "dnf" and "rpm".
+# Modification for other system welcome!
+# ===========================================================================
+
+do_packages_exist() {
+
+   local missing=no
+   local os_release_file=/etc/os-release
+   local system=unknown
+
+   # Does the os-release file exist? If not, ask the user whether to proceed blinfly.
+   # See https://stackoverflow.com/questions/47838800/etc-lsb-release-vs-etc-os-release
+   # for a comment on the "/etc/os-release" file.
+
+   if [[ ! -f $os_release_file ]]; then
+      echo "The file '$os_release_file' does not exist." >&2
+      echo "NOT checking whether needed packages exist on this system." >&2
+      echo "Might still work out though." >&2
+      if confirm_with_user "Proceed"; then
+         return 0 # get out of this procedure with "true"
+      else
+         echo "Exiting!" >&2
+         exit 1
+      fi
+   fi
+
+   # os-release file exists!
+   # The standard way would be to "execute the os-release file" in order to set the variable
+   # definitions. I don't like that!
+
+   if grep --quiet --perl-regexp 'NAME=Fedora' "$os_release_file"; then
+      system=fedora
+   fi
+
+   if [[ $system == unknown ]]; then
+      if /bin/which rpm 2>/dev/null && /bin/which dnf 2>/dev/null; then
+         echo "Unknown system, but 'rpm' and 'dnf' exist -- going on" >&2
+         system=rpm_and_dnf
+      else
+         echo "Unknown system and 'rpm' and 'dnf' do not exist here." >&2
+         echo "NOT checking whether needed packages exist on this system." >&2
+         echo "Might still work out though." >&2
+         if confirm_with_user "Proceed"; then
+            return 0 # get out of this procedure with "true"
+         else
+            echo "Exiting!" >&2
+            exit 1
+         fi
+      fi
+   fi
+
+   # not an unknown system; check individual packages
+
+   # - One need BOTH of libedit-devel and readline-devel.
+   # - If libarchive-devel is missing, one gets crazy error messages from ninja 
+   #   about missing directories. So weird. Here is the text:
+   #   ninja: error: 'man/archive', needed by 'man/lib/prologpack.tex', missing and no known rule to make it
+   #   'ninja' command failed -- exiting
+   # - GMP is need. If it is missing, at least the thread tests will
+   #   fail because "^/2" generates floats not integers. 
+   #   And the JPL (Java-Prolog Bridge) tests will fail, too.
+
+   # Not in the list below; using these depends on taste & goals
+   #
+   #  Google multi-threaded malloc   (tcmalloc)
+   #  Berkeley Database Support      (bdb)
+   #  ODBC support                   (odbc)
+   #  Graphical interface support    (pce)  - Needs X11, Qt5 (I think)
+
+   echo "This system is: '$system'" >&2
+
+   if [[ $system == fedora || $system == rpm_and_dnf ]]; then
+     for package in \
+         cmake \
+         ninja-build \
+         gcc \
+         gcc-c++ \
+         zlib-devel \
+         openssl-devel \
+         readline-devel \
+         libedit-devel \
+         pcre-devel \
+         libyaml-devel \
+         libarchive-devel \
+         gmp-devel \
+         uuid-devel; do
+         if rpm --query --quiet "$package"; then
+            echo "Found: package '$package'" >&2
+         else
+            echo "MISSING: package '$package' -- install it with \"dnf install '$package'\" first." >&2
+            missing=yes
+         fi
+      done
+      if [[ $missing == yes ]]; then
+         echo "Missing packages -- exiting" >&2
+         exit 1
+      fi
+   else
+      echo "Can't happen" >&2
+      exit 2
+   fi
+
+}
+
+# ===========================================================================
+# Write about a message about the CMake logfiles, which may or may
+# not contain information of interest if you are tracking down a problem.
+# This function is run during build.
+# The CMakeError.log file contains a lot of errors due to failed cmake tests
+# and that's ok.
+# ===========================================================================
+
+message_about_cmake_logfiles() {
+
+   local build_dir=$1
+   local cmake_logfile
+   local file_length
+
+   for cmake_logfile in "CMakeFiles/CMakeOutput.log" "CMakeFiles/CMakeError.log"; do
+      if [[ -f "$build_dir/$cmake_logfile" ]]; then
+         echo -n "You may want to inspect CMake logfile '$build_dir/$cmake_logfile' ... "
+         file_length=$(wc -l "$build_dir/$cmake_logfile" | sed 's/\s.*$//g')
+         echo "it has $file_length lines"
+      else
+         echo "There is no CMake logfile '$build_dir/$cmake_logfile' ... weird!"
+      fi
+   done
+
+}
+
+# ===========================================================================
 # Build or rebuild an SWI-Prolog distribution that has already been
 # downloaded from github.
+#
+# If a problem occurs this command is supposed to exit with an error.
 # ===========================================================================
 
 build() {
@@ -582,6 +697,12 @@ build() {
       exit 1
    fi
 
+   # Before building, check that packages are there (this needs adaptation for
+   # other systems). The called function calls exit on problem (possibly after
+   # interacting with the user)
+
+   do_packages_exist
+
    # The following exits in case of problems, otherwise cd-s to the directory
    # immediately above the repodir with an initial "pushd" (so we can "popd" later).
    # It also sets global variables with info about URL and subdir,
@@ -600,6 +721,9 @@ build() {
       # (should we also base it on the git log hash? maybe as an option?)
       install_dir_fq="$global_work_dir_fq/swiplexe_${version}"
    else
+      #
+      # TODO: This should not be a problem , it can always be created later
+      #	   
       if [[ ! -d $global_install_location ]]; then
          echo "The installation location '$global_install_location' does not exist -- exiting!" >&2
          exit 1
@@ -683,6 +807,7 @@ build() {
       local hamcrest_line=
       local junit_jar_line=
       local pdf_line=
+
       if [[ -d "$jar_dir_fq" ]]; then
          echo "Building with jars in '$jar_dir_fq'" >&2
          hamcrest_line="-DHAMCREST=$hamcrest_jar_fq"
@@ -690,6 +815,7 @@ build() {
       else
          echo "Building without jars as '$jar_dir_fq' does not exist" >&2
       fi
+
       if [[ $withpdf == yes ]]; then
          pdf_line="-DBUILD_PDF_DOCUMENTATION=ON"
          #
@@ -706,7 +832,9 @@ build() {
          # Extra: pdflatex is not "unicode aware"; any "ASCII images" cannot contain unicode. How to fix?
          #
       fi
+
       # cmake can handle "empty arguments" so no special handling of "" - excellent!
+
       cmake \
          "-DCMAKE_INSTALL_PREFIX=$install_dir_fq" \
          "$hamcrest_line" \
@@ -716,9 +844,19 @@ build() {
          "-DLIBEDIT_LIBRARIES=/usr/lib64/libedit.so" \
          "-DLIBEDIT_INCLUDE_DIR=/usr/include/editline" \
          -G Ninja ..
+
+      local res=$?
+
+      message_about_cmake_logfiles "$(pwd)"
+
+      if [[ $res != 0 ]]; then
+         echo "cmake failed -- exiting" >&2
+         exit 1
+      fi
+
    fi
 
-   # compile
+   # From this point onwards, the ninja build file is key: ./system/master_swipldevel/build/build.ninja
 
    ninja || {
       echo "'ninja' command failed -- exiting" >&2
@@ -739,7 +877,8 @@ build() {
    ./src/swipl -g "check_installation,halt."
 
    echo
-   echo "Note that:"
+   echo "Final notes from $0:"
+   echo
    echo "1) A missing tcmalloc is not necessarily a problem. SWI-Prolog works"
    echo "   perfectly well without it."
    echo "   http://www.swi-prolog.org/build/issues/tcmalloc.html"
@@ -758,26 +897,16 @@ build() {
    # (What happens if the installation directory exists? Is it replaced?)
 
    if [[ $finality != system ]]; then
-      ninja install
+      ninja install || {
+         echo "Problem with 'ninja install' -- exiting" >&2
+         exit 1
+      }
    fi
 
    # retain the build directory for the caller
 
    global_build_dir_fq=$(pwd)
    global_install_dir_fq="$install_dir_fq"
-
-   local cmake_logfile
-   local file_length
-
-   for cmake_logfile in "CMakeFiles/CMakeOutput.log" "CMakeFiles/CMakeError.log"; do
-      if [[ -f "$cmake_logfile" ]]; then
-         echo -n "You may want to inspect CMake logfile '$(pwd)/$cmake_logfile' ... "
-         file_length=$(wc -l "$cmake_logfile" | sed 's/\s.*$//g')
-         echo "it has $file_length lines"
-      else
-         echo "There is no CMake logfile '$(pwd)/$cmake_logfile' ... weird!"
-      fi
-   done
 
    # back to the directory immediately above the repodir
 
@@ -1108,13 +1237,15 @@ if [[ $cmd == look ]]; then
    exit 0
 fi
 
-if [[ $cmd == build ||
-      $cmd == rebuild ]]; then
-   build "$finality" "$cmd" "$arg3" "$arg4" "$arg5"
+if [[ $cmd == build || $cmd == rebuild ]]; then
+   build "$finality" "$cmd" "$arg3" "$arg4" "$arg5" # will not return on error
    if [[ $finality == system ]]; then
       echo "You have to run 'ninja install' as root in '$global_build_dir_fq' to install the compilate into '$global_install_dir_fq'" >&2
+      echo "And afterwards probably create a symlink:" >&2
+      the_top=$(dirname "$global_install_dir_fq")
+      the_btm=$(basename "$global_install_dir_fq")
+      echo "cd \"$the_top\"; ln -s \"$the_btm\" swipl" >&2
    fi
-   exit 0
 fi
 
 if [[ -n "$cmd" ]]; then
