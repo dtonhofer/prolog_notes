@@ -1,3 +1,5 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=format/2
+
 ## Cheatsheet
 
 A cheatsheet for format/2 can be grabbed here:
@@ -6,12 +8,88 @@ A cheatsheet for format/2 can be grabbed here:
    - [ODS](https://github.com/dtonhofer/prolog_notes/tree/master/swipl_notes/about_output_formatting/format_2_cheatsheet/format_2_cheatsheet.ods)
    - [PNG](https://github.com/dtonhofer/prolog_notes/tree/master/swipl_notes/about_output_formatting/format_2_cheatsheet/format_2_cheatsheet.png)
 
+## Maybe missing
+
+An option which takes two elements from the _Arguments_ list, the format string and the value.
+
+Supposing we use `&`, one could then do:
+
+```
+?- format("This is a float: ~&~n",[f,0.12]).
+This is a float: 0.120000
+true.
+
+?- format("This is a float: ~&~n",[g,0.12]).
+This is a float: 0.12
+true.
+```
+
+etc. Seems reasonable for a dynamically typed language.
+
+## Note the quoting
+
+String, with or without spaces, formatted using `~q` or `~s`:
+
+```
+?- format("~s",["a b"]).
+a b
+true.
+
+?- format("~q",["a b"]).
+"a b"
+true.
+
+?- format("~s",["ab"]).
+ab
+true.
+
+?- format("~q",["ab"]).
+"ab"
+true.
+```
+
+Similar to atom:
+
+
+```
+?- format("~a",['a b']).
+a b
+true.
+
+?- format("~q",['a b']).
+'a b'
+true.
+
+?- format("~a",[ab]).
+ab
+true.
+
+?- format("~q",[ab]).
+ab
+true.
+```
+
+## Where exactly does the output go?
+
+I guess it goes to whatever is "currently" denoted by `current_ouput`.
+That would generally be the same as `user_output`, i.e. _stdout_.
+
+See [Predefined stream aliases](https://eu.swi-prolog.org/pldoc/man?section=streamalias)
+
+To direct the output elsewhere, you will have to change the `current_output` with with_output_to/2 or use format/3. The latter is more practical.
+
 ## More on various printing predicates
 
 For those looking for the correct predicate to use:
 
    - [Relevant predicates for generating output in Prolog](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_output_formatting/README.md) - Notes (this is getting large)
    - [Relevant predicates for generating output in Prolog](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_output_formatting/output_formatting_pics/tldr.svg) - SVG overview diagram
+
+## Check the format string
+
+This pack provides (I haven't tested it yet):
+
+https://www.swi-prolog.org/pack/list?p=format_spec
 
 ## From the toolbox: Defensive programming around format calls
 
@@ -22,11 +100,36 @@ If you want to make sure a call to format/2 won't generate further exceptions in
 [`safe_format.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/support/safe_format.pl)
 
 ```
-?- safe_format("Everything is going extremely ~s. We have ~s complaints",["well","no"],Text).
-Text = "Everything is going extremely well. We have no complaints".
+?- safe_format("Hello ~d",[7889],Result).
+Result = "Hello 7889".
 
-?- safe_format("Open the ~s.",["pod bay doors","HAL"],Text).
-Text = "Exception in format/2. Args: <Open the ~s.> & <pod bay doors> & <HAL>".
+?- safe_format("Hello ~d",[hello],Result).
+Result = "Exception in format/3 with format string <Hello ~d> and args <hello>".
+
+?- safe_format("Open the ~s.",["pod bay doors","HAL"],Result).
+Result = "Exception in format/3 with format string <Open the ~s.> and args <\"pod bay doors\">,<\"HAL\">".
+```
+
+Actually, there is a non-exported `'$messages':safe_format/3` in file `messages.pl` already. Good stuff:
+
+```
+safe_format(S, Fmt, Args) :-
+    E = error(_,_),                     % avoid repeating error(X,Y)
+    catch(format(S,Fmt,Args), E,
+          format_failed(S,Fmt,Args,E)).
+
+format_failed(S, _Fmt, _Args, E) :-
+    E = error(io_error(_,S),_),         % if it's I/O error, rethrow!
+    !,
+    throw(E).
+format_failed(S, Fmt, Args, error(E,_)) :-
+    format(S, '~N    [[ EXCEPTION while printing message ~q~n\c
+                        ~7|with arguments ~W:~n\c
+                        ~7|raised: ~W~n~4|]]~n',
+           [ Fmt,
+             Args, [quoted(true), max_depth(10)],  % emitted with write_term/2
+             E, [quoted(true), max_depth(10)]      % emitted with write_term/2
+           ]).
 ```
 
 ## Justify text left, right or centered
@@ -184,8 +287,59 @@ Prints things like these based on a table description made with a dict:
 +------+--------+------------+--------------+------------+------+
 ```
 
-## Related: Simple code to prettyprint a dict
+There are packs offering this functionality:
 
-If the values hold on one line...
+   - https://eu.swi-prolog.org/pack/list?p=print_table
+   - https://eu.swi-prolog.org/pack/list?p=clitable
 
-[`prettyprint_dict.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/code/snippets/prettyprint_dict.pl)
+## How to prettyprint a dict
+
+   - [`dict_prettyprint.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/dict_prettyprint.pl)
+   - [`dict_prettyprint.plt`](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/dict_prettyprint.plt)
+
+```
+?- dict_pp(various{w: 0.25984759, ww: 1.4587598, www: 643764856, wwww: 400},
+           _{pad_left:5,pad_right:4,pad:true}).
+         various         
+     w    : 0.259848     
+     ww   : 1.458760     
+     www  : 643764856    
+     wwww : 400        
+true.
+
+?- dict_pp(various{w: 0.25984759, ww: 1.4587598, www: 643764856, wwww: 400},
+           _{pad:true,pad_left:2,pad_top:1,pad_bottom:1,pad_right:2,
+             border:true,justify_tag:left,justify_tag_full:false}).
++--------------------+
+|  various           |
++--------------------+
+|                    |
+|  w    : 0.259848   |
+|  ww   : 1.458760   |
+|  www  : 643764856  |
+|  wwww : 400        |
+|                    |
++--------------------+
+true.
+
+?- dict_pp(alpha{w1: 10, w2: 200, w3: 3000,
+                   w4: bravo{w1: 10, w2: 20,
+                      w3: charlie{ a: 12, b: 13}}},
+           _{border:true,tag:false}).
++--------------------+
+|w1 : 10             |
+|w2 : 200            |
+|w3 : 3000           |
+|w4 : +-------------+|
+|     |w1 : 10      ||
+|     |w2 : 20      ||
+|     |w3 : +------+||
+|     |     |a : 12|||
+|     |     |b : 13|||
+|     |     +------+||
+|     +-------------+|
++--------------------+
+true.
+```
+
+Just gotta put this into a pack.
