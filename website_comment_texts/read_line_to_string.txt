@@ -1,0 +1,26 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=read_line_to_string/2
+
+## Can be used to ask the user
+
+Example:
+
+```
+?-
+format("Answer me, Domon!!!!\n"), 
+read_line_to_string(user_input,S1), 
+string_lower(S1,S2), 
+(member(S2,["yes","1","ok","y","ja","oui"])
+   -> format("OK!")
+   ; (format("NOK"), fail)).
+```
+
+Then:
+
+```
+Answer me, Domon!!!!
+|: YES
+OK!
+S1 = "YES",
+S2 = "yes".
+```
+ 

@@ -1,0 +1,77 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=get_single_char/1
+
+## Blocking read
+
+This predicate blocks waiting for input and returns -1 on EOF (if you enter CTRL-D on the terminal). 
+
+Thus, in a failure-driven loop:
+
+```
+?- repeat,get_single_char(C),format("~d~n",[C]),((C < 0) -> (!,true) ; fail).
+100
+102
+13
+101
+114    <-- here type CTRL-D
+-1
+C = -1.
+```
+
+Note that if you leave out the cut, you can restart the loop:
+
+```
+?- repeat,get_single_char(C),format("~d~n",[C]),((C < 0) -> true ; fail).
+102
+103
+-1
+C = -1 ;
+100
+100
+102
+-1
+C = -1 ;
+...
+```
+
+## Example: Getting confirmation from the user
+
+As an example from file =|prolog_pack.pl|=, where we ask for confirmation from the user (but don't hit "y" too fast as the next question will just proceed on any "y" waiting in the input buffer, which is why I would recommend read_line_to_string/2 instead). This example has been modified to use format/2 instead of print_message/2.
+
+```
+%!  confirm(+Question, +Default, +Options) is semidet.
+%
+%   Ask for confirmation.
+%
+%   @param Default is one of =yes=, =no= or =none=.
+
+confirm(_Question, Default, Options) :-
+    Default \== none,
+    option(interactive(false), Options, true),
+    !,
+    Default == yes.
+confirm(Question, Default, _) :-
+    between(1, 5, _),
+       format("~s [y/n] (default ~q)?",[Question,Default]),
+       read_yes_no(YesNo, Default),
+    !,
+    format(user_error, '~N', []),
+    YesNo == yes.
+
+read_yes_no(YesNo, Default) :-
+    get_single_char(Code),
+    code_yes_no(Code, Default, YesNo),
+    !.
+
+code_yes_no(0'y, _, yes).
+code_yes_no(0'Y, _, yes).
+code_yes_no(0'n, _, no).
+code_yes_no(0'N, _, no).
+code_yes_no(_, none, _) :- !, fail.
+code_yes_no(C, Default, Default) :-
+    answered_default(C).
+
+answered_default(0'\r).
+answered_default(0'\n).
+answered_default(0'\s).
+```
+

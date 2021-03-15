@@ -1,0 +1,98 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=file_name_extension/3
+
+## Arg naming
+
+"Base" should be called "Core"
+
+As in: "Name = CoreName . Extension", and "Name" is probably the "Basename" of a "Path"
+
+## Examples
+
+Standard usage: the extension is the tailing substring up to the rightmost dot
+
+```
+?- file_name_extension(Base,Extension,"random.html").
+Base = random,
+Extension = html.
+```
+
+```
+?- file_name_extension(Base,Extension,"random.html.html").
+Base = 'random.html',
+Extension = html.
+```
+
+```
+?- file_name_extension(Base,Extension,"random.1.3.4..html").
+Base = 'random.1.3.4.', % second dot belongs to base
+Extension = html.
+```
+
+```
+?- file_name_extension(Base,Extension,"random").
+Base = "random",
+Extension = ''.
+```
+
+Not a predicate because:
+
+Ambiguity here:
+
+```
+?- file_name_extension(Base,Extension,"random").
+Base = "random", % no dot
+Extension = ''.
+```
+
+```
+?- file_name_extension(Base,Extension,"random.").
+Base = random, % still no
+Extension = ''.
+```
+
+But only one solution going the other way (it's an atom btw):
+
+```
+?- file_name_extension(random,'',Name).
+Name = random.
+```
+
+Doesn't care about preceding path:
+
+```
+?- file_name_extension(Base,Extension,"/usr/local/foo.bar").
+Base = '/usr/local/foo',
+Extension = bar.
+```
+
+```
+?- file_name_extension(Base,Extension,"/usr/local/foo").
+Base = "/usr/local/foo",
+Extension = ''.
+```
+
+Should probably throw a domain error here:
+
+```
+?- file_name_extension(Base,Extension,"/usr/local/foo.bar/").
+Base = "/usr/local/foo.bar/",
+Extension = ''.
+```
+
+Edgy:
+
+```
+?- file_name_extension(Base,Extension,".bar").
+Base = '',
+Extension = bar.
+```
+
+## Correct use with file_base_name
+
+```
+?- file_base_name("/foo/bar/baz.gz",Basename),
+   file_name_extension(Corename,Extension,Basename).
+Basename = 'baz.gz',
+Corename = baz,
+Extension = gz.
+```

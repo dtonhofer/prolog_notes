@@ -1,0 +1,32 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=read_stream_to_codes/3
+
+"creates a difference-list" implies:
+
+   - creates an open list `Codes` ending in `Tail` if `Tail` can an unbound variable
+   - creates a closed list if `Tail` is the empty list
+   - prefixes a list `Tail` with the elements read if `Tail` is a (proper or open) list
+
+```
+attempt(File,Codes,X) :-
+    set_prolog_flag(answer_write_options,[max_depth(0)]),
+    setup_call_cleanup(
+       open(File,read,Stream,[type(text),encoding(utf8)]),
+       read_stream_to_codes(Stream,Codes,X),
+       (format("Closing",[]),close(Stream))). % N.B: cleanup goal is called only once "call" goal is "done"
+```
+
+```
+?- attempt('small.txt',Codes,X).
+Codes = [73,116,39,115,32,115,109,97,108,108,33,10|$VAR(X)].
+
+?- attempt('small.txt',Codes,X),X=[].
+Codes = [73,116,39,115,32,115,109,97,108,108,33,10],
+X = [].
+
+?- attempt('small.txt',Codes,a).
+Codes = [73,116,39,115,32,115,109,97,108,108,33,10|a].
+
+?- attempt('small.txt',Codes,[]).
+Codes = [73,116,39,115,32,115,109,97,108,108,33,10].
+```
+ 

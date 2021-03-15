@@ -1,0 +1,203 @@
+https://github.com/dtonhofer/prolog_code/tree/main/tmp/path_list
+
+## Doc needs help
+
+The second arg should be named BaseName analogous to 
+
+   - file_directory_name(..., -Directory)
+
+Hence:
+
+   - file_base_name(+Path, -BaseName)
+
+We read:
+
+> The behaviour is consistent with the POSIX basename program.
+
+Verified against the _utility_ :
+
+https://pubs.opengroup.org/onlinepubs/9699919799/utilities/basename.html
+
+Interestingly, the _function_ is slightly different : 
+
+https://pubs.opengroup.org/onlinepubs/9699919799/functions/basename.html
+
+## See also
+
+file_directory_name/2
+
+## Watch out
+
+A bit unexpected, a "path without" file is acceptable. This is dubious but is what the `basename` on the command line and in the C library does
+
+```
+?- file_base_name('/foo/bar/baz/',File).
+File = baz.
+```
+
+```
+?- file_base_name('/',File).
+File =  (/).
+```
+
+In particular, the document for the `basename` and `dirname` C library functions (`man 3 basename`) say:
+
+```
+The following list of examples (taken from SUSv2) shows the strings returned by dirname() and basename() for different paths:
+
+              path       dirname   basename
+              /usr/lib   /usr      lib
+              /usr/      /         usr
+              usr        .         usr
+              /          /         /
+              .          .         .
+              ..         .         ..
+```
+
+Is it time for a sane_base_name/2 ?
+
+## Playing around
+
+Do not reconstitute the path with atomic_list_concat/2, use directory_file_path/3:
+
+```
+necronomicon(Path,DirectoryName,BaseName) :-
+   file_directory_name(Path, DirectoryName),
+   file_base_name(Path, BaseName),
+   format("Decomposed path '~a' into '~a' and '~a'~n",[Path,DirectoryName,BaseName]),   
+   atomic_list_concat([DirectoryName,'/',BaseName],ReconstitutedPath),
+   directory_file_path(DirectoryName,BaseName,ReconstitutedPath2),   
+   ((Path==ReconstitutedPath) 
+   -> format("Match: atomic_list_concat reconstituted path is indeed '~a'~n",[ReconstitutedPath])
+   ;  format("MISMATCH: atomic_list_concat reconstituted path is '~a', not '~a'~n",[ReconstitutedPath,Path])),
+   ((Path==ReconstitutedPath2) 
+   -> format("Match: directory_file_path reconstituted path is indeed '~a'~n",[ReconstitutedPath2])
+   ;  format("MISMATCH: directory_file_path reconstituted path is '~a', not '~a'~n",[ReconstitutedPath2,Path])).
+```
+
+We find:
+
+```
+?- necronomicon('/',_,_).
+Decomposed path '/' into '/' and '/'
+MISMATCH: atomic_list_concat reconstituted path is '///', not '/'
+Match: directory_file_path reconstituted path is indeed '/'
+true.
+
+?- necronomicon('',_,_).
+Decomposed path '' into '.' and ''
+MISMATCH: atomic_list_concat reconstituted path is './', not ''
+Match: directory_file_path reconstituted path is indeed ''
+true.
+
+?- necronomicon('.',_,_).
+Decomposed path '.' into '.' and '.'
+MISMATCH: atomic_list_concat reconstituted path is './.', not '.'
+Match: directory_file_path reconstituted path is indeed '.'
+true.
+
+?- necronomicon('a/b/',_,_).
+Decomposed path 'a/b/' into 'a' and 'b'
+MISMATCH: atomic_list_concat reconstituted path is 'a/b', not 'a/b/'
+MISMATCH: directory_file_path reconstituted path is 'a/b', not 'a/b/'
+true.
+
+?- necronomicon('a/b',_,_).
+Decomposed path 'a/b' into 'a' and 'b'
+Match: atomic_list_concat reconstituted path is indeed 'a/b'
+Match: directory_file_path reconstituted path is indeed 'a/b'
+true.
+
+?- necronomicon('/b',_,_).
+Decomposed path '/b' into '/' and 'b'
+MISMATCH: atomic_list_concat reconstituted path is '//b', not '/b'
+Match: directory_file_path reconstituted path is indeed '/b'
+true.
+
+?- necronomicon('b',_,_).
+Decomposed path 'b' into '.' and 'b'
+MISMATCH: atomic_list_concat reconstituted path is './b', not 'b'
+Match: directory_file_path reconstituted path is indeed 'b'
+true.
+```
+
+## Examples 
+
+Normal usage:
+
+```
+?- file_base_name("/foo/bar/baz.gz",File).
+File = 'baz.gz'.
+```
+
+Trailing slash doesn't faze file_base_name/2
+
+```
+?- file_base_name("/foo/bar/",File).
+File = bar.
+```
+
+Weird but documented:
+
+```
+?- file_base_name("/",File).
+File =  (/).
+```
+
+```
+?- file_base_name("",File).
+File = ''.
+```
+
+REALLY weird because neither '/' nor '' can ever be a valid filename. In fact, a filename cannot contain '/'.
+
+## Potential replacement
+
+This predicate confused me enough that I have written one to cut up a string by its slashes into a list from where one can pick up the basename, the path, and a terminal slash, if any:
+
+   - [`path_list.pl` and `path_list.plt`](https://github.com/dtonhofer/prolog_code/tree/main/tmp/path_list)
+
+Examples:
+
+A path that is a string:
+
+```
+?- path_text_list("a/b/c",List).
+List = [frag("a"),slashes(1),frag("b"),slashes(1),frag("c")].
+```
+
+A path that is an atom:
+
+```
+?- path_text_list('a/b/c',List).
+List = [frag(a),slashes(1),frag(b),slashes(1),frag(c)].
+```
+
+With final slash:
+
+```
+?- path_text_list('a/b/c/',List).
+List = [frag(a),slashes(1),frag(b),slashes(1),frag(c),slashes(1)].
+```
+
+With starter slash:
+
+```
+?- path_text_list('/a/b/c/',List).
+List = [slashes(1),frag(a),slashes(1),frag(b),slashes(1),frag(c),slashes(1)].
+```
+
+With unnecessarily repeated slashes:
+
+```
+?- path_text_list('/a/////b/////c/',List).
+List = [slashes(1),frag(a),slashes(5),frag(b),slashes(5),frag(c),slashes(1)].
+```
+
+Works generatively:
+
+```
+?- path_text_list(Text,[slashes(1),frag(foo),slashes(1),frag(bar)]).
+Text = '/foo/bar'.
+```
+ 

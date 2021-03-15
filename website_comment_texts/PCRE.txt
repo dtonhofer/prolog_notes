@@ -1,0 +1,86 @@
+
+https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/pcre.html%27)
+
+## Some references
+
+Note that this is based on: 
+
+   - Wikipedia: [PCRE: Perl Compatible Regular Expressions Library](https://en.wikipedia.org/wiki/Perl_Compatible_Regular_Expressions)
+
+which is described thus at Wikipedia:
+
+> Perl Compatible Regular Expressions (PCRE) is a library written in C, which implements a regular expression engine, inspired by the capabilities of the Perl programming language. Philip Hazel started writing PCRE in summer 1997. PCRE's syntax is much more powerful and flexible than either of the POSIX regular expression flavors (BRE, ERE) and than that of many other regular-expression libraries. 
+
+Details at
+
+   - https://pcre.org/
+      - Complete doc: https://pcre.org/current/doc/html/
+      - ...or "man pcre" on Linux/Unix
+      - Syntax reference: https://pcre.org/current/doc/html/pcre2syntax.html
+      - Pattern reference: https://pcre.org/current/doc/html/pcre2pattern.html
+
+## Options, flags, modifiers ...
+
+This is a bit confusing.
+
+The manner of adding flags at the end of a regex: `regex/f` is a syntactic convention that seems to come from Perl (certainly via sed). They are called modifiers there. Doc: [modifiers](https://perldoc.perl.org/perlre#Modifiers)
+ 
+   - =|m|= : string is multiline
+   - =|s|= : string is single line
+   - =|i|= : do case-insensitive matching
+   - =|x|= , xx: permit whitespace and comments
+   - =|P|= : preserve string matched
+   - =|a,d,l,u|= : characters set modifiers
+   - =|n|= : prevent group metacharacters from capturing
+   - =|c|= : keep the current position during repeated matching
+   - =|g|= : globally match the pattern repeatedly in the string
+   - =|e|= : evaluate the right-hand side as an expression
+   - =|ee|= : evaluate the right side as a string then eval the result
+   - =|o|= : pretend to optimize your code, but actually introduce bugs
+   - =|r|= : perform non-destructive substitution and return the new value
+
+The PCRE documentation list [options](https://pcre.org/current/doc/html/pcre2syntax.html#SEC16) which can be used in groups
+
+   - =|(?i)|= : caseless
+   - =|(?J)|= : allow duplicate named groups
+   - =|(?m)|= : multiline
+   - =|(?n)|= : no auto capture
+   - =|(?s)|= : single line (dotall)
+   - =|(?U)|= : default ungreedy (lazy)
+   - =|(?x)|= : extended: ignore white space except in classes
+   - =|(?xx)|= : as (?x) but also ignore space and tab in classes
+   - =|(?-...)|= : unset option(s)
+   - =|(?^)|= : unset imnsx options
+
+The SWIPL package lists these as allowed after a "/" ("compilation options")
+
+   - =|x|= : extended(true)
+   - =|i|= : caseless(true)
+   - =|m|= : multiline(true)
+   - =|s|= : dotall(true)
+   - =|a|= : capture_type(atom)
+   - =|r|= : capture_type(range)
+   - =|t|= : capture_type(term)
+
+Further compilation options can be given in the "options" list of re_compile/3.
+
+   - anchored/1
+   - bsr/1
+   - dollar_endonly/1
+   - dupnames/1
+   - extra/1
+   - firstline/1
+   - compat/1
+   - newline/1
+   - ucp/1
+   - ungreedy/1
+   - optimize/1
+
+Further processing options can be given in the "options" list of re_match/3 and re_matchsub/4 and re_split/4.
+
+And also
+
+   - [Perl Regular Expressions](https://perldoc.perl.org/perlre)
+   - [Cheatsheet for Perl Regular Expressions](https://perlmaven.com/regex-cheat-sheet)
+   - Wikipedia: [Regular Expressions](https://en.wikipedia.org/wiki/Regular_expression)
+
