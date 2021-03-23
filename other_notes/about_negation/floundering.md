@@ -23,7 +23,7 @@ From [_The Art of Prolog_ 1st ed.](https://mitpress.mit.edu/books/art-prolog), 1
 > that negated goals are grounded before they are solved. This can be done either by a static analysis of the
 > program, or by a runtime heck, using the predicate _ground_ (...)
 
-In [A basis for deductive database systems II]((https://www.sciencedirect.com/science/article/pii/074310668690004X) (J.W. Lloyd, R.W. Topor, 1986)
+In [_A basis for deductive database systems II_](https://www.sciencedirect.com/science/article/pii/074310668690004X) (J.W. Lloyd, R.W. Topor, 1986)
 
 > Definition: Let _P_ be a general program (i.e. a program of clauses admitting negative literals in bodies),
 > _G_ a general goal (i.e. a conjunction of positive and negative literals), and _R_ a safe computation rule (?). 
