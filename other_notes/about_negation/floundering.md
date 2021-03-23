@@ -9,17 +9,80 @@ From [The Free Dictionary](https://www.thefreedictionary.com/floundering), _to f
    2. To act or function in a confused or directionless manner; struggle:
       _"Some ... floundered professionally, never quite deciding what they wanted to do"_ (Steve Olson).
      
-In fact, "floundering" is all about the breakdown of the `\+` operator.   
+In fact, "floundering" is all about the breakdown of the `\+` operator, which transforms finitely failed goals into success,
+thus implementing "default negation" and approximating classical negation via an approach described as "negation as failure".
+Note that the FOL operator/grapheme `¬` expresses that the formula that tagged by `¬` is "objectively" or "platonically"
+labeled "known false", whereas `\+` has the operational meaning that the interpreter can proceed successfully 
+if the formula tagged by `\+` fails to be proven true (finitely, otherwise the proof mechanism won't return and we are in
+trouble). These things are not the same!
 
-From _The Art of Prolog_ 1st ed. p. 166:
+From [_The Art of Prolog_ 1st ed.](https://mitpress.mit.edu/books/art-prolog), 1986, p. 166:
 
 > The implementation of negation as failure using the cut-fail combination does not work correctly for nonground
 > goals (...). In most standard implementations of Prolog, it is the responsibility of the programmer to ensure
 > that negated goals are grounded before they are solved. This can be done either by a static analysis of the
 > program, or by a runtime heck, using the predicate _ground_ (...)
 
-In [Logic programming and negation: A survey](https://www.sciencedirect.com/science/article/pii/0743106694900248),
-(Krzysztof R.Apt, Roland N.Bol, 1994), we read:
+In [A basis for deductive database systems II]((https://www.sciencedirect.com/science/article/pii/074310668690004X) (J.W. Lloyd, R.W. Topor, 1986)
+
+> Definition: Let _P_ be a general program (i.e. a program of clauses admitting negative literals in bodies),
+> _G_ a general goal (i.e. a conjunction of positive and negative literals), and _R_ a safe computation rule (?). 
+> We say the evaluation of _P ⋃ {G}_ via R **flounders** if at 
+> some point in the evaluation a goal is reached which contains only nonground negative literals.
+
+(Does this cover the case where there may be useless, because not-helping-with-the-grounding positive literals in the goal?)
+
+The above also has these definitions:
+
+> _Definition_. Let _P_ be a general program and _G_ a general goal _<- L1 ⋀ ... ⋀ Ln_.
+> We say a general program clause _A <- L1 ⋀ ... ⋀ Ln_, in _P_ is **admissible** if every
+> variable that occurs in the clause occurs either in the head _A_ or in a positive
+> literal of the body _ L1 ⋀ ... ⋀ Ln_.
+> 
+> We say a general program clause _A <- L1 ⋀ ... ⋀ Ln_, in _P_ is **allowed** if every
+> variable that occurs in the clause occurs in a positive literal of the body _L1 ⋀ ... ⋀ Ln_.
+>
+> We say _G_ is **allowed** if every variable that occurs in _G_ occurs in a positive literal of
+> the body _L1 ⋀ ... ⋀ Ln_.
+>
+> We say _P ⋃ {G}_ is **allowed** if the following conditions are satisfied:
+> (a) Every clause in _P_ is admissible.
+> (b) Every clause in the definition of a predicate occurring in a positive literal in the body of _G_ or the body of a clause in _P_ is allowed.
+> (c) _G_ is allowed.
+
+In [Recognizing Non-Floundering Logic Programs and Goals](https://www.researchgate.net/publication/220180268_Recognizing_Non-Floundering_Logic_Programs_and_Goals) (Roberto Barbuti, Maurizio Martelli, 1990):
+
+(with edited program syntax; note that the original text uses `¬`, the sign for classical negation, in Prolog code,
+instead of `\+`, the Prolog operator for negation-as-failure. I'm using `\+` instead below.)
+
+> The second aspect is related to a specific peculiarity of the proof procedure, i.e. the need to
+> restrict the evaluation of negative literals to the ground ones, thus avoiding the floundering. (sic)
+> Let us consider the following program P:
+> 
+> ```
+> p(X).
+> q(a).
+> r(b).
+> ```
+> 
+> and the goal `?- p(X), \+q(X).`.
+> 
+> Resolving with the first clause, the goal becomes `?- \+q(X).`. The attempt to prove the
+> finite failure of `\+q(X)` does not succeed. The formula has not been proved, while
+> 
+> ∃X.p(X),¬q(X)
+> 
+> Is a logical consequence of _comp(P)_ (the Clarke completion of the program) since
+> _p(b),¬q(b)_ is a logical consequence. This problem has not been widely investigated. It has been
+> addressed in "A Basis of Deductive Database System II" (J.W. Lloyd, R.W. Topor) by
+> introducing a special class of programs and goals called _allowed_ which satisfy
+> a syntactic condition guaranteeing non-floundering. This condition is very strong, and this paper
+> extends the concept of _allowedness_ using concepts and techniques used in abstract 
+> interpretations. The idea is to have an algorithm that is able to check (sufficient condition)
+> if a goal and a program will never flounder.
+
+From [Logic programming and negation: A survey](https://www.sciencedirect.com/science/article/pii/0743106694900248),
+(Krzysztof R.Apt, Roland N.Bol, 1994):
 
 > One of the complications concerning SLDNF resolution (i.e. the Prolog proof search: SLD resolution with Negation as Failure)
 > is so-called _floundering_ - a generation of a node which consists exclusively of nonground negative literals,
@@ -32,6 +95,10 @@ In [Efficiently Iplementing SLG Resolution](http://citeseerx.ist.psu.edu/viewdoc
 
 > A program _flounders_ if there is an atom \[an "atom" in the logical sense, i.e. a positive literal, i.e. a non-negated atomic Prolog goal\] 
 > whose truth cannot be proven without making a call to a non-gound negative literal.
+
+Some of the Prolog community say that **floundering** is the situation whereby a query cannot resolve its residual goals
+(residual goals as used in constraint logic programming, `dif/2`, `when/2`, `freeze/2` etc.). I find this usage extremely
+confusing and oblivious of Prolog history. Do not use it this way! (Via the Stack Overflow question [What is the approach for dealing with “residual goals” in Prolog?](https://stackoverflow.com/questions/66466729/what-is-the-approach-for-dealing-with-residual-goals-in-prolog/))
 
 This all seems to be about the following problem:
 
@@ -292,7 +359,7 @@ Sadly the two last cases are indistinguishable in Prolog. Failure of establishin
 
 ![domains of negation](pics/domains_of_negation.png)
 
-## Mitigatons
+## Mitigations
 
 In [The execution algorithm of Mercury, an efficient purely declarative logic programming language](https://www.sciencedirect.com/science/article/pii/S0743106696000684) (Zoltan Somogyi, Fergus Henderson, and Thomas Conway, The Journal of Logic Programming, Volume 29, Issues 1–3, October–December 1996, Pages 17-64), we read:
 
@@ -321,6 +388,10 @@ In [The execution algorithm of Mercury, an efficient purely declarative logic pr
 > its bindings to the then part of the if-then-else, but not to the else part or to the
 > rest of the computation.
 
+"Not exporting the bindings of a negated goal to the rest of the computation" is
+what today's Prolog's do. Thus the usage of `\+ \+` to perform a keep-no-bindings
+proof. But what about floundering queries?
+
 In [What is failure? An approach to constructive negation](https://link.springer.com/article/10.1007/BF01185404) (paywalled),
 (Wlodzimierz Drabent, Acta Informatica 32, 27–59, January 1995)
 
@@ -334,3 +405,27 @@ In [What is failure? An approach to constructive negation](https://link.springer
 > its semantics is given by Clark completion in 3-valued logic (and our approach is a proper extension
 > of SLDNF-resolution). If infinite failed trees are allowed then we obtain a method for the
 > well-founded semantics. In both cases soundness and completeness are proved.
+
+[A basis for deductive database systems II](https://www.sciencedirect.com/science/article/pii/074310668690004X) 
+(J.W.Lloyd, R.W.Topor, The Journal of Logic Programming Volume 3, Issue 1, April 1986, Pages 55-67)
+
+> _Abstract:_ This paper is the third in a series providing a theoretical basis for deductive database systems.
+> >A deductive database consists of closed typed first order logic formulas of the form _A <- W_, where _A_ is
+> an atom and _W_ is a typed first order formula. A typed first order formula can be used as a query, and a closed
+> typed first order formula can be used as an integrity constraint. Functions are allowed to appear in formulas.
+> Such a deductive database system can be implemented using a PROLOG system. The main results of this paper 
+> are concerned with the nonfloundering and completeness of query evaluation. We also introduce an alternative query
+> evaluation process and show that corresponding versions of the earlier results can be obtained. Finally, we summarize
+> the results of the three papers and discuss the attractive properties of the deductive database system approach
+> based on first order logic.
+
+[Recognizing Non-Floundering Logic Programs and Goals](https://www.researchgate.net/publication/220180268_Recognizing_Non-Floundering_Logic_Programs_and_Goals)
+(Roberto Barbuti, Maurizio Martelli, International Journal of Foundations of Computer Science Vol. 1 No. 2: 151-163, 1990)
+
+> _Abstract:_ The introduction of negation in Logic Programmin using the Negation as Failure Rule (K.L. Clark,
+> "Negation as Failure", 1978) causes some problems regarding the completeness of the SLDNF-Resolution proof procedure.
+> One of the causes of incompleteness arises when evaluating a non-ground negative literal. This is solved by
+> forbidding these evaluations. Obviously, there is the possibility of having only non-ground negative literals in the goal
+> (the floundering of the goal). There is a class of programs and goals (allowed) that has been pvoed to have the non-floundering 
+> property. In this paper an algorithm is proposed which recognizes a wider class of programs with this property and which
+> is based on abstract interpretation techniques.
