@@ -410,7 +410,7 @@ In [What is failure? An approach to constructive negation](https://link.springer
 (J.W.Lloyd, R.W.Topor, The Journal of Logic Programming Volume 3, Issue 1, April 1986, Pages 55-67)
 
 > _Abstract:_ This paper is the third in a series providing a theoretical basis for deductive database systems.
-> >A deductive database consists of closed typed first order logic formulas of the form _A <- W_, where _A_ is
+> A deductive database consists of closed typed first order logic formulas of the form _A <- W_, where _A_ is
 > an atom and _W_ is a typed first order formula. A typed first order formula can be used as a query, and a closed
 > typed first order formula can be used as an integrity constraint. Functions are allowed to appear in formulas.
 > Such a deductive database system can be implemented using a PROLOG system. The main results of this paper 
