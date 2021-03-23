@@ -16,7 +16,7 @@ labeled "known false", whereas `\+` has the operational meaning that the interpr
 if the formula tagged by `\+` fails to be proven true (finitely, otherwise the proof mechanism won't return and we are in
 trouble). These things are not the same!
 
-From [_The Art of Prolog_ 1st ed.](https://mitpress.mit.edu/books/art-prolog), 1986, p. 166:
+From [_The Art of Prolog_ 1st ed.](https://mitpress.mit.edu/books/art-prolog) (Leon S. Sterling, Ehud Y. Shapiro, 1986), p. 166:
 
 > The implementation of negation as failure using the cut-fail combination does not work correctly for nonground
 > goals (...). In most standard implementations of Prolog, it is the responsibility of the programmer to ensure
