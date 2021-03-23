@@ -11,7 +11,7 @@ From [The Free Dictionary](https://www.thefreedictionary.com/floundering), _to f
      
 In fact, "floundering" is all about the breakdown of the `\+` operator, which transforms finitely failed goals into success,
 thus implementing "default negation" and approximating classical negation via an approach described as "negation as failure".
-Note that the FOL operator/grapheme `¬` expresses that the formula that tagged by `¬` is "objectively" or "platonically"
+Note that the FOL operator/grapheme `¬` expresses that the formula that is tagged by `¬` is "objectively" or "platonically"
 labeled "known false", whereas `\+` has the operational meaning that the interpreter can proceed successfully 
 if the formula tagged by `\+` fails to be proven true (finitely, otherwise the proof mechanism won't return and we are in
 trouble). These things are not the same!
