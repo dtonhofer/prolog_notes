@@ -25,8 +25,10 @@ From [_The Art of Prolog_ 1st ed.](https://mitpress.mit.edu/books/art-prolog) (L
 
 In [_A basis for deductive database systems II_](https://www.sciencedirect.com/science/article/pii/074310668690004X) (J.W. Lloyd, R.W. Topor, 1986)
 
-> Definition: Let _P_ be a general program (i.e. a program of clauses admitting negative literals in bodies),
-> _G_ a general goal (i.e. a conjunction of positive and negative literals), and _R_ a safe computation rule (?). 
+> Definition: Let _P_ be a general program \[i.e. a program of clauses admitting negative literals in bodies\],
+> _G_ a general goal \[i.e. a conjunction of positive and negative literals\], and _R_ a safe computation rule \[i.e.
+> one that will never select a non-ground negative literal - maybe by delaying them until ground
+> using [`when/2`](https://eu.swi-prolog.org/pldoc/doc_for?object=when/2) \]. 
 > We say the evaluation of _P ⋃ {G}_ via R **flounders** if at 
 > some point in the evaluation a goal is reached which contains only nonground negative literals.
 
