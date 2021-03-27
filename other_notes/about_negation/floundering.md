@@ -1,5 +1,7 @@
 # Floundering
 
+## What is about?
+
 This is weirdly chosen vocabulary. "Floundering" might suggest that the Prolog Processor trashes around or
 performs something repeatedly without progress:
 
@@ -102,7 +104,7 @@ Some of the Prolog community say that **floundering** is the situation whereby a
 (residual goals as used in constraint logic programming, `dif/2`, `when/2`, `freeze/2` etc.). I find this usage extremely
 confusing and oblivious of Prolog history. Do not use it this way! (Via the Stack Overflow question [What is the approach for dealing with “residual goals” in Prolog?](https://stackoverflow.com/questions/66466729/what-is-the-approach-for-dealing-with-residual-goals-in-prolog/))
 
-This all seems to be about the following problem:
+## An example
 
 Consider the program:
 
@@ -171,8 +173,8 @@ And failure means no bindings will be retained.
 
 **An inconsistency arises!**
 
-This seems to happen whenever the goal wrapped by `\+` contains unbound "free variables" 
-that also occur outside the wrapped goal. So make sure that's not happening!
+This seems to happen whenever the goal wrapped by the neagtion-as-failure operator
+`\+` contains unbound variables. These may or may not occur outside the wrapped goal, too.
 
 As `\+` can be implemented using `->/2`, `->/2` is also subject to floundering.
 
@@ -194,9 +196,9 @@ true.
 false.
 ```
 
-### A less abstract example
+## A less abstract example
 
-Still looking for a good one. A try:
+Still looking for a good example. A try:
 
 ```none
 allergic_to(bart,penicillin).
@@ -230,7 +232,7 @@ true.
 true.
 ```
 
-## Mitigations
+## Mitigations 1
 
 Maybe the Prolog processor should throw an exception when it finds a body subject to floundering, but in general this would 
 only be doable at runtime.
@@ -361,7 +363,149 @@ Sadly the two last cases are indistinguishable in Prolog. Failure of establishin
 
 ![domains of negation](pics/domains_of_negation.png)
 
-## Mitigations
+## Mitigations 2
+
+Here is an example for a floundering query:
+
+```
+% Complete list of rooms
+
+room(green).
+room(blue).
+room(red).
+room(white).
+
+% Complete list of persons
+
+person(jimmy).
+person(ricky).
+person(sally).
+person(cindy).
+person(nancy).
+person(johnny).
+
+% List of room occupations. 
+% If this predicate is subject to a "closed world assumption", then
+% a room is unoccupied exactly if it doesn't appear in the location/2
+% fact list. If our knowledge can be considered incomplete, other rooms
+% than those listed below may be occupied.
+
+location(jimmy,red).
+location(ricky,blue).
+location(cindy,green).
+
+% ---
+% Goal based on positive logic
+% ---
+
+% If "Room" is nonvar: Is the room "Room" provably occupied?
+% If "Room" is var: Is there any room "Room" such that "Room" is provably occupied? 
+
+occupied(Room) :- 
+   assertion((var(Room);room(Room))),
+   location(_Person,Room). 
+
+% ---
+% Goal based on negation as failure.
+% The second argument gives the "approach"
+% ---
+
+% If "Room" is nonvar, the question is:
+%   "Is Room unoccupied (as far as we know)?"
+%   or "Is there no evidence that the Room is occupied?"
+   
+not_occupied(Room,_) :-
+   nonvar(Room),
+   assertion(room(Room)),
+   \+ location(_Person,Room).
+
+% If "Room" is var, the question is:
+%    "Is there any Room such that the room is unoccupied?"
+%    or "Is there any Room such that there is no info that the room is occupied?"
+
+% Approach 'x': Doesn't work, as the proof procedure answers the question "is there
+% no room that is occupied?"
+
+not_occupied(Room,x) :-
+   var(Room),
+   !,
+   \+ location(_Person,Room).
+
+% Approach 'a': You can only ask about a *specific* room. If no specific "Room"
+%               has been given, the negated goal is delayed until the "Room" has
+%               been instantiated.
+
+not_occupied(Room,a) :-
+   var(Room), % this test applies only "now", "Room" can be instantiated later 
+   !,
+   when(
+      ground(Room),
+      (format("Querying with ~q~n",[Room]), \+ location(_Person,Room))
+   ).
+  
+% Approach 'b': We will enumerate them all. This works nicely for a small number
+%               of rooms, less well for infinitely large domain.
+
+not_occupied(Room,b) :-
+   var(Room),
+   !,
+   room(Room),
+   \+ location(_Person,Room).
+```
+
+Then:
+
+Approach `x` "flounders" and erroneously fails:
+
+```
+?- not_occupied(R,x).
+false.
+```
+
+Approach `a` optimistically succeeds and spits out a residual constraint. 
+This actually means that the answer hasn't been fully computed yet and the success is dubious:
+
+```
+?- not_occupied(R,a).
+when(ground(R),(format("Querying with ~q~n",[R]),\+location(_108418,R))).
+```
+
+Approach `a` where `R` is instantiated "later" (presumably, when more is known) succeeds properly:
+
+```
+?- not_occupied(R,a),R=white.
+Querying with white
+R = white.
+```
+
+Or fails properly:
+
+```
+?- not_occupied(R,a),R=red.
+Querying with red
+false.
+```
+
+Note that the unfrozen goal is refrozen on backtracking (in fact, the situation before the unfreezing is restored, very cool)
+
+```
+?- not_occupied(R,a),format("=>~n"),member(R,[white,red,green]).
+=>
+Querying with white
+R = white ;
+Querying with red
+Querying with green
+false.
+```
+
+Enumerating the "room" domain and testing each element also works:
+
+```
+?- not_occupied(R,b).
+R = white.
+```
+
+## Mitigations 3
 
 In [The execution algorithm of Mercury, an efficient purely declarative logic programming language](https://www.sciencedirect.com/science/article/pii/S0743106696000684) (Zoltan Somogyi, Fergus Henderson, and Thomas Conway, The Journal of Logic Programming, Volume 29, Issues 1–3, October–December 1996, Pages 17-64), we read:
 
