@@ -1,0 +1,154 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=max_member/2
+
+## Unify, maybe?
+
+Confusingly, the argument order is
+
+```
+max_member(Max,List)
+```
+
+whereas for max_list/2 it is reversed:
+
+```
+max_list(List,Max)
+```
+
+This hurts my head. Why not have a unified =|max_in_list/3|= ?
+
+```
+% max_in_list(+How,+List,-Max) where How is one of "num", "sot"
+
+max_in_list(num,List,Max) :- max_list(List,Max).
+max_in_list(sot,List,Max) :- max_member(Max,List).
+min_in_list(num,List,Min) :- min_list(List,Min).
+min_in_list(sot,List,Min) :- min_member(Min,List).
+```
+
+Then:
+
+```
+?- max_in_list(num,[1,4,2,1],Max).
+Max = 4.
+
+?- max_in_list(sot,[1,4,2,1],Max).
+Max = 4.
+
+?- max_in_list(sot,[1,4,foo,1],Max).
+Max = foo.
+
+?- max_in_list(num,[1,4,foo,1],Max).
+ERROR: Arithmetic: `foo/0' is not a function
+```
+
+## This is the same as..
+
+using sort/2 (which sorts according to the "standard order of terms"), then getting the last entry:
+
+```
+inefficient_max_member(Max,List) :- sort(List,Sorted),last(Sorted,Max).
+inefficient_min_member(Min,List) :- sort(List,[Min|_]).
+```
+
+For example:
+
+```
+?- inefficient_max_member(Max,[1,2,3]).
+Max = 3.
+
+?- inefficient_max_member(Max,[bravo,charlie,delta]).
+Max = delta.
+```
+
+## Beware the meaning of "standard order of terms"
+
+As usual, "sorting by standard order of terms" means that unbound variables (as per their addresses) are considered as **objects of the discourse**, not as **unknowns that need to be determined**, mixing levels of meaning and leading to potential errors. sort/2 is affected by the same problem.
+
+In fact, one has to make sure that the List is "sufficiently instantiated" to make sense. Having elements that are the same terms "modulo" unbound variables do not.
+
+This is correct but does it make sense?
+
+```
+?- min_member(Y,[4,A,B,C,2]).   
+Y = A.
+
+?- min_member(Y,[4,C,B,A,2]).
+Y = C.
+```
+
+min_member/2 is the same as
+
+   - sorting by the standard order of terms, then
+   - unifying with the first element of the list
+
+so sort/2 explains the above:
+
+```
+?- sort([4,A,B,C,2],L).
+L = [A, B, C, 2, 4].
+
+?- sort([4,C,B,A,2],L).
+L = [C, B, A, 2, 4].
+```
+
+Similarly for max_member/2
+
+```
+?- max_member(Y,[4,A,B,C,2]).
+Y = 4.
+
+?- max_member(Y,[4,C,B,A,2]).
+Y = 4.
+```
+
+Actually max_member/2 is still reasonable:
+
+4 is largest (at least by the standard order of terms) here and thus we succeed:
+
+```
+?- max_member(4,[4,A,B,C,2]),sort([4,A,B,C,2],L).
+L = [A, B, C, 2, 4].
+```
+
+5 is evidently not the largest by the standard order of terms:
+
+```
+?- max_member(5,[4,A,B,C,2]),sort([4,A,B,C,2],L).
+false.
+```
+
+But min_member/2 really is a trap:
+
+```
+?- min_member(4,[4,A,B,C,2]),sort([4,A,B,C,2],L).
+A = 4,
+L = [B, C, 2, 4].
+```
+
+`A` is smallest (at least by the standard order of terms) and is unified with 4, so after success we are in the situation where 4 is the smallest (even according to the standard order of terms) element in a list that contains 2 (and we don't even backtrack)! This is "procedurally correct" but logically makes no sense at all.
+
+Same problem for our inefficient replacement of course:
+
+```
+?- inefficient_min_member(4,[4,A,B,C,2]).
+A = 4.
+```
+
+## If the list is composed of pairs
+
+Sorting pairs `X-Y` by the standard order of terms means sorting them by the standard order of terms by `X` first, and by `Y` second. So you can directly ask things like:
+
+```
+?- max_member(Key-Value, [5-alpha,8-bravo,0-charlie,3-delta,2-echo,0-foxtrott]).
+Key = 8,
+Value = bravo.
+```
+
+And you will also get the entry which sports the "max value" (according to the "standard order of terms"):
+
+```
+?- max_member(Key-Value, [5-bravo,5-foxtrott,5-delta]).
+Key = 5,
+Value = foxtrott.
+```
+

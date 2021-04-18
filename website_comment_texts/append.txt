@@ -1,0 +1,191 @@
+## Bad naming! Bad, bad naming!
+
+Instead of `append` (such imperative! much C!), this predicate should have been called `concatenated/3` and the parameters called
+
+==
+concatenated(PrefixList,SuffixList,PrefixSuffixList)
+==
+
+because _PrefixSuffixList_ is the result of concatenating _PrefixList_ and _SuffixList_, not of appending _SuffixList_ to _PrefixList_ (which would of course yield for example `[a,b,c,d,SuffixList]` if _PrefixList_ were `[a,b,c,d]`).
+
+Additionally, the active verb form implies a function, whereas the predicate expresses a relation between the three arguments, it is not (only) a function.
+
+## Don't use append excessively
+
+From the description of flatten/2 :
+
+"Ending up needing flatten/2 often indicates, like append/3 for appending two lists, a bad design."
+
+...because one would generally _append_ elements one-by-one to a "difference list of an open list", or _prepend_ elements one-by-one to a (proper) list instead of _concatenating_ possibly large lists, which is expensive.
+
+## append does nothing surprising 
+
+It's not optimized in any way.
+
+Clicking on the "source code" button on the top right (see above) reveals that it does exactly what you would do when coding append by hand: 
+
+   - recurse down the backbone of =List1= until [] has been reached
+   - while doing so copy =List1= element by element into a new list growing at the end
+   - until the "empty cell" that is at the end of the backbone of the copied list can be unified with =List2=, creating a concatenated list with the contents of =List1= and =List2=.
+
+## Examples
+
+An unbound variable at argument position 3: concatenation
+
+==
+?- append([1,2],[a,b],X).
+X = [1, 2, a, b].
+==
+
+An unbound variable at argument position 2: shaving off a prefix from the 3rd argument
+
+==
+?- append([1,2],X,[1,2,a,b]).
+X = [a, b].
+==
+
+An unbound variable at position 1: shaving off a suffix from the 3rd argument
+
+append/3 is unsure whether there might be a 2nd solution (this might be optimized)
+
+==
+?- append(X,[a,b],[1,2,a,b]).
+X = [1, 2] ;  <--- maybe more solutions?
+false.        <--- actually not
+==
+
+Unbound variables on position 1 and 2? Guessing a prefix and a suffix.
+
+There are multiple answers! (below, made more legible than what is actually output):
+
+```
+?- append(X,Y,[1,2,a,b]).
+X = [], Y = [1, 2, a, b] ;   <--- maybe more solutions?
+X = [1],   Y = [2, a, b] ;   <--- yes... maybe more solutions?
+X = [1, 2],   Y = [a, b] ;   <--- yes... maybe more solutions?
+X = [1, 2, a],   Y = [b] ;   <--- yes... maybe more solutions?
+X = [1, 2, a, b], Y = [] ;   <--- yes... maybe more solutions?
+false.                       <--- actually not
+```
+
+## "append" can handle other things than lists.
+
+I'm not sure whether this is intended, Maybe there should be an exception or a "strict append" as an alternative (one can always write it of course).
+
+On the other hand, flexibility in all things is an asset!
+
+Here, we append atom `foo` to a list `[a,b,c,d]` resulting in something that is not a list, as it starts with a prefix but does not end in `[]`:
+
+```
+?- append([a,b,c,d],foo,[a,b,c,d|foo]).
+true.
+```
+
+## "append" can be used to grab parts of lists
+
+The power of unification compels you!
+
+**Suffix extraction**
+
+Get me a suffix of "anything beyond (and including) `c` ":
+
+```
+?- append(_,[c|More],[a,b,c,d,e,f,g]), Suffix=[c|More].
+More = [d, e, f, g],
+Suffix = [c, d, e, f, g] ;
+false.
+
+?- append(_,[x|More],[a,b,c,d,e,f,g]), Suffix=[x|More].
+false.
+```
+
+Is it efficient? I don't know, but it works.
+
+**Prefix extraction**
+
+Get me a prefix of "anything up to (and including) `c` ". There is no way to express "a list where the last element is `c` " as a (syntactic) literal in Prolog, so we have to resort to more extensive code:
+
+```
+?- append(Shorty,[c|More],[a,b,c,d,e,f,g]), append(Shorty,[c],Prefix).
+Shorty = [a, b],
+More = [d, e, f, g],
+Prefix = [a, b, c] ;
+false.
+
+?- append(Shorty,[x|More],[a,b,c,d,e,f,g]), append(Shorty,[c],Prefix).
+false.
+```
+
+Alternatively, but generating much more CPU heat (i.e. zips down lists and backtracks a lot because last/2 is used to verify any substitution proposed by the "upstream" append/3:
+
+```
+?- append(Prefix,Suffix,[a,b,c,d,e,f,g]),last(Prefix,c).
+Prefix = [a, b, c],
+Suffix = [d, e, f, g] ;
+```
+
+**Infix extraction**
+
+You can mash up the above to get an "infix" of a list.
+
+Here we want to get everything from `c` to `f` inclusive:
+
+With this structure:
+
+```
+[  a  ,  b  ,  c  ,  d  ,  e  ,  f  ,  g  , h  , i]
+[<---------CutOff----------->] [ f  |     _       ]
+[<------->] [  c  |   More   ]
+```
+We find:
+
+```
+?- append(CutOff,[f|_],[a,b,c,d,e,f,g,h,i]), 
+   append(_,[c|More],CutOff), 
+   append([c|More],[f],Infix).
+CutOff = [a, b, c, d, e],
+More = [d, e],
+Infix = [c, d, e, f] ;
+false.
+```
+
+Alternatively:
+
+```
+?- append(_,[c|More],[a,b,c,d,e,f,g,h,i]),
+   append(ShortInfix,[f|_],[c|More]),
+   append(ShortInfix,[f],Infix).
+More = [d, e, f, g, h, i],
+ShortInfix = [c, d, e],
+Infix = [c, d, e, f] ;
+false.
+```
+
+Let's immediately pack this into a predicate:
+
+```
+infix(From,To,List,Infix) :-
+   append(_,[From|More],List),
+   append(ShortInfix,[To|_],[From|More]),
+   append(ShortInfix,[To],Infix).
+```
+
+Much more agreeable! 
+
+```
+?- infix(c,f,[a,b,c,d,e,f,g,h,i],Infix).
+Infix = [c, d, e, f] ;
+false.
+```
+
+This works perfectly well if there are multiple possibilities. We get the stream of answers: 
+
+```
+?- infix(c,f,[a,b,c,d,c,e,f,g,h,f,i,j,k,l],Infix).
+Infix = [c, d, c, e, f] ;
+Infix = [c, d, c, e, f, g, h, f] ;
+Infix = [c, e, f] ;
+Infix = [c, e, f, g, h, f] ;
+false.
+```
+

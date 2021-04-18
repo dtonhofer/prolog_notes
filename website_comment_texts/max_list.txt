@@ -1,0 +1,318 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=max_list/2
+
+## See also
+
+   - min_list/2
+   - max_member/2
+   - min_member/2
+
+## Unify, maybe?
+
+(This remark is also found at max_member/2)
+
+Confusingly, the argument order is
+
+```
+max_list(List,Max)
+```
+
+whereas for max_member/2 it is reversed:
+
+```
+max_member(Max,List)
+```
+
+This hurts my head. Why not have a unified =|max_in_list/3|= ?
+
+```
+% max_in_list(+How,+List,-Max) where How is one of "num", "sot"
+
+max_in_list(num,List,Max) :- max_list(List,Max).
+max_in_list(sot,List,Max) :- max_member(Max,List).
+min_in_list(num,List,Min) :- min_list(List,Min).
+min_in_list(sot,List,Min) :- min_member(Min,List).
+```
+
+Then:
+
+```
+?- max_in_list(num,[1,4,2,1],Max).
+Max = 4.
+
+?- max_in_list(sot,[1,4,2,1],Max).
+Max = 4.
+
+?- max_in_list(sot,[1,4,foo,1],Max).
+Max = foo.
+
+?- max_in_list(num,[1,4,foo,1],Max).
+ERROR: Arithmetic: `foo/0' is not a function
+```
+
+## Having terms other than numbers in the list
+
+The predicate throws if you have a non-numeric list, though it tries to resolve atoms to 0-arity functions according to the error message: 
+
+```
+?- max_list([1,w,3],_).
+ERROR: Arithmetic: `w/0' is not a function
+```
+
+It fails if you give an evidently non-number as Max, keeping things "logical" rather than preferring to throw (which may or may not be what the caller wants; as usual, it depends!)
+
+```
+?- max_list([1,2,3,4],foo).
+false.
+```
+
+But you can have arithmetic expressions as members of the list:
+
+```
+?- max_list([0.5,pi],X).
+X = 3.141592653589793.
+
+?- max_list([0.5,pi()],X).
+X = 3.141592653589793.
+
+?- max_list([0.5,-pi()],X).
+X = 0.5.
+
+?- max_list([0.5,random_float],X).
+X = 0.8933638922317843.
+
+?- max_list([-0.5,-random_float],X).
+X = -0.5.
+
+?- max_list([-0.5,-random_float],X).
+X = -0.24764710044780866.
+
+?- max_list([0.5,2*sqrt(8)],X).
+X = 5.656854249492381.
+```
+
+## Edge cases which throw but would make sense
+
+The list must be ground!
+
+Logically, the result from the goal max_list([1,X,3],V) would be a disjunction: =|(X < 3 & 3==V) | (X >= 3 & X=V)|= but Prolog doesn't go that far. We get an exception:
+
+```
+?- max_list([1,X,3],V).
+ERROR: Arguments are not sufficiently instantiated
+```
+
+It is eminently possible to succeed here with `X=2`, however:
+
+```
+?- max_list([1,X,1,1,1,1],2).
+ERROR: Arguments are not sufficiently instantiated
+```
+
+It is eminently possible to fail here because -1 is certainly not the max. However:
+
+```
+?- max_list([1,X,1,1,1,1],-1).
+ERROR: Arguments are not sufficiently instantiated
+```
+
+## Distinction by position
+
+If two numbers are "the same value" but of different type, you get the one which comes last (at least in this implementation):
+
+```
+?- max_list([1.0 , 1],N).
+N = 1.
+
+?- max_list([1 , 1.0],N).
+N = 1.0.
+```
+
+The above has unfortunate effects:
+
+```
+?- max_list([1.0 , 1] , 1.0).
+false.
+
+?- max_list([1.0 , 1] , 1).
+true.
+```
+
+ 😓 
+
+... which can only be fixed by "grabbing and comparing numerically":
+
+```
+?- max_list([1.0 , 1] , M), M =:= 1.0.
+M = 1.
+
+?- max_list([1 , 1.0] , M), M =:= 1.0.
+M = 1.0.
+```
+
+On the other hand, the ordering "by standard order for terms" is always the same:
+
+```
+?- max_member(N,[1.0 , 1]).
+N = 1.
+
+?- max_member(N,[1 , 1.0]).
+N = 1.
+
+?- min_member(N,[1 , 1.0]).
+N = 1.0.
+
+?- min_member(N,[1.0 , 1]).
+N = 1.0.
+```
+
+## Unit test code
+
+```
+:- begin_tests(max_list).
+
+test("passing unbound variable as list",fail) :-
+   max_list(1,_List). % actually throws currently with "No rule matches lists:max_list(_126,_128,[])"
+
+test("passing non-list as list",fail) :-
+   max_list(1,foo). 
+   
+test("get max of empty list",fail) :-
+   max_list(_,[]).
+
+test("verifying max of empty list",fail) :-
+   max_list(1,[]).
+   
+test("get max of one-element list") :-
+   max_list([1],Max),
+   assertion(Max == 1).
+   
+test("get max of list with several times the same element") :-
+   max_list([1,1,1],Max),
+   assertion(Max == 1).
+   
+test("get max from a list with 1 max") :-
+   max_list([1,2,3],Max),
+   assertion(Max == 3).
+   
+test("get max from a list list with 2 max") :- 
+   max_list([1,2,3,2,3,1],Max),
+   assertion(Max == 3).
+
+test("get max from a list with an uninstantiated variable",[error(instantiation_error)]) :-
+   max_list([1,2,_X,2,1],_Max).
+   
+test("test known max against an incomplete list in a way that could succeed",[error(instantiation_error)]) :-
+   max_list([1,_X,3,2,3,1],10). % 10 can be the max if _X=10, so could succeed
+   
+test("test known max against an incomplete list in a way that could fail",[error(instantiation_error)]) :-
+   max_list([1,_X,3,2,3,1],-10). % -10 cannot be the max, so should fail
+  
+test("bad list with atom that doesn't resolve to a function", [error(type_error(evaluable, foo/0))]) :-
+   max_list([1,2,foo,2,3,1],_Max).
+   
+test("list with atom that resolves to a function and is acceptable") :-
+   max_list([1,2,pi,2,3,1],Max), 
+   assertion(Max =:= pi). % Pi evalues to 3.141.. up to "double" precision
+   
+test("verifying the actual max") :-
+   max_list([1,2,3,2,1],3).
+
+test("verifying a number that is a non-max",fail) :-
+   max_list([1,2,3,2,1],2).
+
+test("verifying a non-number leniently fails",fail) :-
+   max_list([1,2,3,2,1],foo).
+   
+test("arithmetic expression in list") :-
+   max_list([0.5,2*sqrt(8),6],6).
+
+test("two max values distinguishable by type: get the last one, take 1") :-
+   max_list([1.0,1],N1),
+   assertion(N1 == 1),
+   max_list([1,1.0],N2),
+   assertion(N2 == 1.0).
+
+test("two max values distinguishable by type: get the last one, take 2.1", fail) :-
+   max_list([1.0,1],1.0).
+
+test("two max values distinguishable by type: get the last one, take 2.2", fail) :-
+   max_list([1,1.0],1).
+
+test("two max values distinguishable by type: safe determination of max") :-
+   max_list([1.0 , 1] , N1),
+   assertion(N1 =:= 1),
+   assertion(N1 == 1),
+   max_list([1 , 1.0] , N2),
+   assertion(N2 =:= 1),
+   assertion(N2 == 1.0).
+   
+:- end_tests(max_list).
+```
+
+## An extension
+
+A max_list_all/2 which collects *all* the maxes as they appear:
+
+```
+max_list_all([], []) :- !.
+
+max_list_all([X|Xs], Result) :-
+   max_list_all_2(Xs, X, [X|Fin], Fin, Result).   
+
+% max_list_all_2(Xs, MaxSoFar, OpenListOfMax, OpenListOfMaxFin, Result).
+
+max_list_all_2([], _, Result, [], Result). % at the end, close the open list which is the Result
+
+max_list_all_2([X|Xs], MaxSoFar, OpenListOfMax, OpenListOfMaxFin, Result) :-
+   X < MaxSoFar, !,
+   max_list_all_2(Xs, MaxSoFar, OpenListOfMax, OpenListOfMaxFin, Result).
+   
+max_list_all_2([X|Xs], MaxSoFar, _, _, Result) :-
+   X > MaxSoFar, !,
+   max_list_all_2(Xs, X, [X|Fin], Fin, Result).
+
+max_list_all_2([X|Xs], MaxSoFar, OpenListOfMax, OpenListOfMaxFin, Result) :-
+   X =:= MaxSoFar, !,
+   OpenListOfMaxFin = [X|NewFin],
+   max_list_all_2(Xs, MaxSoFar, OpenListOfMax, NewFin, Result).
+   
+
+:- begin_tests(max_list_all).
+
+test(1) :- 
+   max_list_all([],[]).
+   
+test(2) :- 
+   max_list_all([1,2,3],R),
+   assertion(R == [3]).
+   
+test(3) :- 
+   max_list_all([3,2,1],R),
+   assertion(R == [3]).
+   
+test(4) :- 
+   max_list_all([3,2,3],R),
+   assertion(R == [3,3]).
+   
+test(5) :- 
+   max_list_all([3.0,2,3],R),
+   assertion(R == [3.0,3]).
+   
+test(6) :- 
+   max_list_all([3,2,3.0],R),
+   assertion(R == [3,3.0]).
+   
+test(7) :- 
+   max_list_all([1,2,3,4,4,4],R),
+   assertion(R == [4,4,4]).
+   
+test(8) :- 
+   max_list_all([4,4,4,3,2,1],R),
+   assertion(R == [4,4,4]).
+   
+test(9) :- 
+   max_list_all([1,2,4,4,4,2,1],R),
+   assertion(R == [4,4,4]).
+   
+:- end_tests(max_list_all).
+```
