@@ -8,6 +8,33 @@ Not that if you search for C procedures in the SWI Manual web interface you get 
 "The Foreign Include File", but if you click on any embedded text in the link, you get an entry under
 [Analysing Terms via the Foreign Interface](https://eu.swi-prolog.org/pldoc/man?section=foreign-term-analysis).
 
+## Allocating a new "term reference"
+
+`term_t` is the reference to an empty cell, i.e. the reference to an unbound variable. 
+
+```
+PL_EXPORT(term_t) PL_new_term_refs(int n);
+PL_EXPORT(term_t) PL_new_term_ref(void);
+PL_EXPORT(term_t) PL_copy_term_ref(term_t from);
+PL_EXPORT(void) PL_reset_term_refs(term_t r);
+```
+
+- [PL_new_term_ref](https://eu.swi-prolog.org/pldoc/doc_for?object=c%28%27PL_new_term_ref%27%29):
+  Return a fresh reference to a term. The reference is allocated on the local stack.
+  Allocating a term reference may trigger a stack-shift on machines that cannot use sparse
+  memory management for allocation of the Prolog stacks. The returned reference describes a variable.
+- [PL_new_term_refs](https://eu.swi-prolog.org/pldoc/doc_for?object=c%28%27PL_new_term_refs%27%29):
+  Return n new term references. The first term reference is returned. The others are t+1, t+2, etc. 
+- [PL_copy_term_ref](https://eu.swi-prolog.org/pldoc/doc_for?object=c%28%27PL_copy_term_ref%27%29):
+  Create a new term reference and make it point initially to the same term as from. This function 
+  is commonly used to copy a predicate argument to a term reference that may be written.
+- [PL_reset_term_refs](https://eu.swi-prolog.org/pldoc/doc_for?object=c%28%27PL_reset_term_refs%27%29)
+
+
+`PL_reset_term_refs` says:  Note that returning from the foreign context to Prolog will reclaim all 
+references used in the foreign context. This call is only necessary if references are created inside
+a loop that never exits back to Prolog. 
+
 ## Allocating a new atom
 
 ```
