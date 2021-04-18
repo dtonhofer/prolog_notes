@@ -8,6 +8,8 @@ Not that if you search for C procedures in the SWI Manual web interface you get 
 "The Foreign Include File", but if you click on any embedded text in the link, you get an entry under
 [Analysing Terms via the Foreign Interface](https://eu.swi-prolog.org/pldoc/man?section=foreign-term-analysis).
 
+[Interaction with the garbage collector and stack-shifter](https://eu.swi-prolog.org/pldoc/man?section=foreign-gc)
+
 ## Allocating a new "term reference"
 
 `term_t` is the reference to an empty cell, i.e. the reference to an unbound variable. 
