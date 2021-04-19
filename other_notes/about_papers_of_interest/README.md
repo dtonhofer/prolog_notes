@@ -74,6 +74,18 @@ If the paper is directly downloadable, a link is given.
    - In [Stratified Logic Program](https://www.doc.ic.ac.uk/~mjs/teaching/KnowledgeRep491/Stratified_491-2x1.pdf) (PDF) Marke Sergot, writes:
      > Several groups of people — Apt, Blair, and Walker, Przymusinski, van Gelder, Naqui, Topor (and others) — came up with the same
      > idea at about the same time. Some of them were working in logic programming, some of them were working in databases.
+- 1988-05 [**An inquiry into computer understanding**](https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1467-8640.1988.tb00091.x) (paywalled)
+   - Peter Cheeseman
+   - In _Computational Intelligence_ Volume 4, Issue 2 (May 1988)
+     > Explains why logic is not suited for Artificial Intelligence applications as it is too "crisp" to work adequately in
+     > situations of uncertain and nonmonotonic reasoning. The author proposes Bayesian Probabilistic Reasoning instead, with
+     > (classical, binary) logic being the "crisp" limit. (Fuzzy logic is seens as inadequate as crisp logic, being unable 
+     > to express the fact that a "fuzzy value" should change if "more information" about a situation is acquired.) 
+- 1988-09 [**Probabilistic Reasoning in Intelligent Systems: Networks of Plausible Inference**](https://www.elsevier.com/books/probabilistic-reasoning-in-intelligent-systems/pearl/978-0-08-051489-5) (book)
+   - Judea Pearl
+   - Morgan Kaufmann Publishers, 552 pages.
+   - _Chapter 10: Logic and Probability: The Strange Connection_ (pp. 467-521) 
+     > explains schemes of default logic, their shortcomings and how these are fixed by probabilistic reasoning.
 - 1989 [**What you always wanted to know about Datalog (and never dared to ask)**](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.210.1118) 
    - Stefan Ceri, Georg Gottlob, Letizia Tanca
    - [IEEE Transactions on Knowledge and Data Engineering](https://ieeexplore.ieee.org/document/43410), March 1989
@@ -164,6 +176,18 @@ If the paper is directly downloadable, a link is given.
 - 2017-09 [**plspec – A Specification Language for Prolog Data**](https://www.krin.gs/publication/koerner-plspec-declare17/koerner-plspec-declare17.pdf)
    - Philipp Körner, Sebastian Krings
    - DECLARE 2017
+- 2018-09 [**Declarative Logic Programming: Theory, Systems, and Applications**](https://dl.acm.org/doi/book/10.1145/3191315) (book)
+   - Michael Kifer, Yanhong Annie Liu
+   - Association for Computing Machinery and Morgan & Claypool
+   - From the book: 
+     > Several books cover the basics of LP but focus mostly on the Prolog language with its incomplete
+     > control strategy and non-logical features. At the same time, there is generally a lack of accessible 
+     > yet comprehensive collections of articles covering the key aspects in declarative LP. 
+     > These aspects include, among others, well-founded vs. stable model semantics for negation, 
+     > constraints, object-oriented LP, updates, probabilistic LP, and evaluation methods, including top-down vs. bottom-up, and tabling.
+     > The goal of this book is to help fill in the previously mentioned void in the LP literature. It offers 
+     > a number of overviews on key aspects of LP that are suitable for researchers and practitioners as well as 
+     > graduate students.
 - 2019-09 [**Prolog Coding Guidelines: Status and Tool Support**](https://arxiv.org/abs/1909.08230v1) 
    - Falco Nogatz, Philipp Körner, Seastuan Krings
    - ICLP 2019
