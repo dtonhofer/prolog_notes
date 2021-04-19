@@ -1246,6 +1246,7 @@ if [[ $cmd == build || $cmd == rebuild ]]; then
       the_btm=$(basename "$global_install_dir_fq")
       echo "cd \"$the_top\"; ln -s \"$the_btm\" swipl" >&2
    fi
+   exit 0
 fi
 
 if [[ -n "$cmd" ]]; then
