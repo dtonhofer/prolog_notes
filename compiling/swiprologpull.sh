@@ -330,9 +330,11 @@ clone() {
    }
 
    # In case this is about documentation, create symlinks to certain files
+   # in the current directory so that editing those files can be done
+   # through the symlinks instead of through a hard-to-remember path
 
    if [[ "${finality},${element}" == docs,forked ]]; then
-      ## TODO make this a loop
+      ## TODO make this a loop, look at create_symlinks_to_built_docs
       if [[ ! -e builtin.doc ]]; then
          ln -s "${element_dir}/man/builtin.doc" "builtin.doc"
       fi
@@ -585,12 +587,12 @@ do_packages_exist() {
    # not an unknown system; check individual packages
 
    # - One need BOTH of libedit-devel and readline-devel.
-   # - If libarchive-devel is missing, one gets crazy error messages from ninja 
+   # - If libarchive-devel is missing, one gets crazy error messages from ninja
    #   about missing directories. So weird. Here is the text:
    #   ninja: error: 'man/archive', needed by 'man/lib/prologpack.tex', missing and no known rule to make it
    #   'ninja' command failed -- exiting
    # - GMP is need. If it is missing, at least the thread tests will
-   #   fail because "^/2" generates floats not integers. 
+   #   fail because "^/2" generates floats not integers.
    #   And the JPL (Java-Prolog Bridge) tests will fail, too.
 
    # Not in the list below; using these depends on taste & goals
@@ -723,7 +725,7 @@ build() {
    else
       #
       # TODO: This should not be a problem , it can always be created later
-      #	   
+      #
       if [[ ! -d $global_install_location ]]; then
          echo "The installation location '$global_install_location' does not exist -- exiting!" >&2
          exit 1
@@ -908,15 +910,15 @@ build() {
    global_build_dir_fq=$(pwd)
    global_install_dir_fq="$install_dir_fq"
 
-   # back to the directory immediately above the repodir
-
-   popd >/dev/null || exit 1
-
    # if this is about documentation, create certain symlinks (TODO: move out to a separate command)
 
    if [[ "${finality}" == docs ]]; then
       create_symlinks_to_built_docs "$(pwd)" "$install_dir_fq" "$build_dir_fq" "$version"
    fi
+
+   # cd back to wherever we were earlier
+
+   popd >/dev/null || exit 1
 
 }
 
@@ -1200,7 +1202,7 @@ finality_match() {
 }
 
 # ===
-# main 
+# main
 # ===
 
 if [[ -z "$toplevel_dir_fq" || ! -d "$toplevel_dir_fq" ]]; then
