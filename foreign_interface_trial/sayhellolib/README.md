@@ -32,8 +32,8 @@ refers to the foreign library `sayhellolib.so` via the directive
 
 **References:**
 
-[`use_foreign_library/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=use_foreign_library/1)
-[library(shlib): Utility library for loading foreign objects (DLLs, shared objects)](https://eu.swi-prolog.org/pldoc/man?section=shlib)
+- [`use_foreign_library/1`](https://eu.swi-prolog.org/pldoc/doc_for?object=use_foreign_library/1)
+- [library(shlib): Utility library for loading foreign objects (DLLs, shared objects)](https://eu.swi-prolog.org/pldoc/man?section=shlib)
 
 **We organize everything as follows:**
 
