@@ -1,0 +1,54 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=nb_setarg/3
+
+A problem from Stack Overflow:
+
+[Unexpected result for predicate nb_setarg/3](https://stackoverflow.com/questions/65158752/unexpected-result-for-predicate-nb-setarg-3)
+
+Consider this forall/2
+
+```
+?- 
+functor(A, array, 5),              % Build A=array(_,_,_,_,_)
+forall(
+   arg(Index, A, foo),             % forall generator instantiates A[Index] to 'foo'
+   nb_setarg(Index, A, bar)).      % forall test nb-sets the same place to 'bar'
+A = array(_16050, _16052, _16054, _16056, _16058).
+```
+
+The above is expected as backtracking occurs to before the position where `array` at position `Index` is set to `foo`, rolling back the `nb_setarg/3` effect by rolling back the `arg/3` effect.
+
+However, the equivalent code below behaves differently (SWI-Prolog 8.2.23):
+
+```
+?- 
+A=array(_,_,_,_,_), 
+forall(
+   arg(Index, A, foo), 
+   nb_setarg(Index, A, bar)).
+A = array(bar, bar, bar, bar, bar).
+```
+
+This is probably unexpected.
+
+This one doesn't do "instantiation + nb-set" and so comes out right:
+
+```
+?- 
+functor(A, array, 5), 
+  forall(
+     between(1,5,Index),   
+     nb_setarg(Index, A, bar)).
+A = array(bar, bar, bar, bar, bar).
+```
+
+```
+?-
+A=array(_,_,_,_,_), 
+forall(
+   between(1,5,Index),   
+   nb_setarg(Index, A, bar)).
+A = array(bar, bar, bar, bar, bar).
+```
+
+Basically, do not backtrack to before where you started using `nb_*` and only use the `nb_*` predicates on the same location.
+

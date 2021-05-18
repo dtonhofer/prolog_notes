@@ -1,0 +1,177 @@
+https://eu.swi-prolog.org/pldoc/man?predicate=setup_call_cleanup/3
+
+## If you come from other programming languages
+
+If you come from other programming languages, seeing
+
+```
+setup_call_cleanup(:Setup, :Goal, :Cleanup)
+```
+
+will make you think that "setup" and the "cleanup" are _around_ the "goal", so that when the "goal" returns, "cleanup" is called. But this is not actually how to think about it. "cleanup" does not get called until "goal" has run out of substitutions, i.e. goals "to the right" of setup_call_cleanup will run with "cleanup" not called. 
+
+In fact, it is as if the "cleanup" goal had been _injected on the left_ of Goal after a successful setup:
+
+Written as
+
+```
+setup_call_cleanup(Setup, Goal, Cleanup), AnotherGoal.
+```
+
+This runs as:
+
+```
+Setup, Goal, AnotherGoal.
+```
+
+and after a successful `Setup` it actually becomes:
+
+```
+Cleanup, Goal, AnotherGoal.
+```
+
+## Note
+
+When an exception is thrown from =|Goal|= in interactive mode, the tracer is triggered (unless you have set =|set_prolog_flag(debug_on_error,false)|=) and that just before the =|Cleanup|= goal and you will notice that setup_call_cleanup/3 is actually setup_call_catcher_cleanup/4.
+
+## Another example:
+
+The example given in the text is hard to understand. Here is another one:
+
+```
+alty :- format("1st clause of alty/0 called\n").
+alty :- format("2nd clause of alty/0 called\n").
+alty :- format("3rd clause of alty/0 called\n").
+
+outro(yes) :- format("In outro/1: called!\n").
+
+check_outro(D) :-
+   (D==yes
+    -> format("outro/1 has been called")
+    ;  format("outro/1 has not yet been called")).
+
+testy_nocut :-
+   setup_call_cleanup(true,alty,outro(D)),
+   format("After setup_call_cleanup/3\n"),
+   check_outro(D).
+
+testy_withcut :-
+   setup_call_cleanup(true,alty,outro(D)),
+   format("After setup_call_cleanup/3, prior to cut\n"),
+   !,
+   check_outro(D).
+```
+
+Running `testy_nocut/0`. `outro` is invoked once `alty` returns without open choicepoints.
+
+```
+?- testy_nocut.
+1st clause of alty/0 called
+After setup_call_cleanup/3
+outro/1 has not yet been called
+true ;
+2nd clause of alty/0 called
+After setup_call_cleanup/3
+outro/1 has not yet been called
+true ;
+3rd clause of alty/0 called
+In outro/1: called!
+After setup_call_cleanup/3
+outro/1 has been called
+true.
+```
+
+Running =testy_withcut/0=. =outro= is (somewhat magically) invoked once the cut has been traversed. Just by scanning the code one would not expect this to happen.
+
+This is akin to installing a handler on the OR-node of the search tree, which is run once there are no more choices left or choices have been cut off.
+
+```
+?- testy_withcut.
+1st clause of alty/0 called
+After setup_call_cleanup/3, prior to cut
+In outro/1: called!
+outro/1 has been called
+true.
+```
+
+## Example of determinism in the cleanup procedure
+
+```
+?- setup_call_cleanup(true,member(X,[1,2]),member(Y,[a,b])).
+X = 1 ;
+X = 2,    % member(X,[1,2]) has no more solutions, so the cleanup goal is called
+Y = a.    % member(Y,[a,b]) is called as with once/1
+```
+
+## Example of a goal generating an exception
+
+```
+alty_with_exception :- format("1st clause of alty/0 called\n").
+alty_with_exception :- type_error("the cake is a lie","cake").
+
+outro(yes) :- format("In outro/1: called!\n").
+
+check_outro(D) :-
+   (D==yes
+    -> format("outro/1 has been called")
+    ;  format("outro/1 has not yet been called")).
+
+testy_with_exception :-
+   setup_call_cleanup(true,alty_with_exception,outro(D)),
+   format("After setup_call_cleanup/3\n"),
+   check_outro(D).
+```
+
+Then `outro/1` is called when the exception is thrown:
+
+```
+?- catch(testy_with_exception,ExTerm,format("Exception: ~q\n",[ExTerm])).
+1st clause of alty/0 called
+After setup_call_cleanup/3
+outro/1 has not yet been called
+true ;
+In outro/1: called!
+Exception: error(type_error("the cake is a lie","cake"),_6068)
+ExTerm = error(type_error("the cake is a lie", "cake"), _6068).
+```
+
+## Compare with Java's "finally"
+
+The `cleanup` goal is basically the `finally` block of (say) Java (or other bracy languages):
+
+[The finally Block](https://docs.oracle.com/javase/tutorial/essential/exceptions/finally.html):
+
+"The finally block always executes when the try block exits. This ensures that the finally block is executed even if an unexpected exception occurs."
+
+## Example from library `prolog_pack`
+
+Great example from library `prolog_pack` (file =|./lib/swipl/library/prolog_pack.pl|=).
+
+We read the headers of an archive file (zip, tar etc.) using a failure-driven loop. Note that the cleanup operation comes **lexically before** the code that deals with the "next result" (From =|file_base_name(InfoFile, 'pack.pl')|= till clause end).
+
+=|archive_close(Handle)|= is only called at the end, when the loop is "done". This is a bit disconcerting.
+
+```
+pack_archive_info(Archive, Pack, [archive_size(Bytes)|Info], Strip) :-
+    ensure_loaded_archive,
+    size_file(Archive, Bytes),
+    setup_call_cleanup(
+        archive_open(Archive, Handle, []),
+        (   repeat,
+            (   archive_next_header(Handle, InfoFile)
+            ->  true
+            ;   !, fail
+            )
+        ),
+        archive_close(Handle)),
+    file_base_name(InfoFile, 'pack.pl'),
+    atom_concat(Prefix, 'pack.pl', InfoFile),
+    strip_option(Prefix, Pack, Strip),
+    setup_call_cleanup(
+        archive_open_entry(Handle, Stream),
+        read_stream_to_terms(Stream, Info),
+        close(Stream)),
+    !,
+    must_be(ground, Info),
+    maplist(valid_info_term, Info).
+```

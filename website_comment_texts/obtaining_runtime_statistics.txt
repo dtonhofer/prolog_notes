@@ -1,0 +1,37 @@
+https://eu.swi-prolog.org/pldoc/man?section=statistics
+
+There is some functionality for statistics which is hard to find in the manual.
+
+This chapter, [**Obtaining Runtime Statistics**](https://eu.swi-prolog.org/pldoc/man?section=statistics), lists the following predicates:
+
+   - statistics/2 - a built-in predicate
+   - statistics/0 - a predicate from =|library(statistics)|=
+   - time/1       - a predicate from =|library(statistics)|=
+
+The fact that the predicates are part of =|library(statistics)|= is shown in the header of the page, but the corresponding link directs back to [Obtaining Runtime Statistics](https://eu.swi-prolog.org/pldoc/man?section=statistics), not to =|library(statistics)|=
+
+=|library(statistics)|= does not show up in the search bar, but can be found as:
+
+[=|library(statistics)|=](https://eu.swi-prolog.org/pldoc/doc/_SWI_/library/statistics.pl). 
+
+The lead-in text says: 
+
+> The predicates of this library are for human use at the toplevel: information is _printed_. 
+
+It provides the following, two of which are listed above
+
+   - statistics/0 (as seen above) ; [alt documentation link](https://eu.swi-prolog.org/pldoc/doc_for?object=prolog_statistics%3Astatistics/0) - Printout for the user
+   - statistics/1 - Collect **all** performance values into a dict for further processing
+   - thread_statistics/3  
+   - time/1 (as seen above)  ; [alt documentation link](https://eu.swi-prolog.org/pldoc/doc_for?object=prolog_statistics%3Atime/1) - Time a goal, printout for the user
+   - call_time/2 
+   - call_time/3 
+
+The chapter, [**Execution Profiling**](https://eu.swi-prolog.org/pldoc/man?section=profile) is separate and lists further predicates provided by =|library(statistics)|=:
+
+   - profile/1
+   - profile/2
+   - show_profile/1
+   - profile_data/1
+   - profile_procedure_data/2
+

@@ -1,5 +1,3 @@
-https://eu.swi-prolog.org/pldoc/doc_for?object=(%3D)/2
-
 ## Docs neecs some help maybe?
 
 The text
@@ -36,3 +34,8 @@ After unification, Term1 and Term2 are structurally equal See ==/2. All the vari
      those goals (which are then run synchronously) and at least one goal fails. The goals ``veto the unification'';
      for example they may enforce a constraint whereby a given unbound variable may only take on
      integer values but unification would bind the variable to a float.
+
+## See also
+
+   - subsumes_term/2
+   - [Section 5.6](https://eu.swi-prolog.org/pldoc/man?section=ssu) for defining clauses whose head is unified using single sided unification.

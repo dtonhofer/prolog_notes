@@ -1,0 +1,374 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=time/1
+
+## See also
+
+The note under [Obtaining Runtime Statistics](https://eu.swi-prolog.org/pldoc/man?section=statistics) for further predicates.
+
+## For handling by machine
+
+Use call_time/2 and call_time/3 instead.
+
+For example:
+
+time/1 prints something meant for the user
+
+```
+?- time(member(X,[1,2,3])).
+% 2 inferences, 0.000 CPU in 0.000 seconds (85% CPU, 110059 Lips)
+X = 1 ;
+% 5 inferences, 0.000 CPU in 0.000 seconds (83% CPU, 313716 Lips)
+X = 2 ;
+% 5 inferences, 0.000 CPU in 0.000 seconds (85% CPU, 319448 Lips)
+X = 3.
+```
+
+call_time/2 returns data in a dict (it's up to you to compute "CPU usage"
+and "LIPS"):
+
+```
+?- call_time(member(X,[1,2,3]),Dict).
+X = 1,
+Dict = time{cpu:1.582999999999446e-5, inferences:0, wall:1.9550323486328125e-5} ;
+X = 2,
+Dict = time{cpu:1.3758000000002601e-5, inferences:3, wall:1.7404556274414062e-5} ;
+X = 3,
+Dict = time{cpu:1.7438000000008502e-5, inferences:4, wall:2.09808349609375e-5}.
+```
+
+evidently you can put everything into a bag:
+
+```
+?- bagof(X-Dict,call_time(member(X,[1,2,3]),Dict),Bag).
+Bag = 
+[1-time{cpu:1.4920000000001599e-5, inferences:0, wall:1.8596649169921875e-5},
+ 2-time{cpu:8.115000000002981e-6, inferences:3, wall:8.344650268554688e-6},
+ 3-time{cpu:8.87799999998995e-6, inferences:4, wall:8.821487426757812e-6}].
+```
+
+## Expect variant results
+
+In particular, SWI-Prolog seems to compile-away certain operations in between runs. You get off-by-a-few-inference-counts phenomena but here is a large one, going down from 24296 inferences to 0 when run a second time:
+
+```
+:- begin_tests(runtime_statistics).
+
+test("calling member(1,[1,2,3])") :-
+   bagof([Inferences,Result],Usage^(call_time(member(1,[1,2,3]),Usage,Result),Inferences = Usage.inferences),Bag),
+   assertion(
+      (Bag == [[24296, true], [7, false]] ; % first run (does it compile it away)
+       Bag == [[0, true], [6, false]])      % second run
+   ).
+
+:- end_tests(runtime_statistics).
+```
+
+The results may also depend on whether you have run 
+
+```
+use_module(library(apply)),
+use_module(library(apply_macros)).
+```
+
+beforehand.
+
+## Example 
+
+This prints something like
+
+```
+% 4,623,232 inferences, 1.223 CPU in 1.229 seconds (99% CPU, 3780625 Lips)
+```
+
+But why aren't those values returned in variables?
+
+They can't even be caught using `with_output_to/2`:
+
+```
+?- with_output_to(string(S),time(sleep(1))).
+% 1 inferences, 0.000 CPU in 1.000 seconds (0% CPU, 24841 Lips)
+S = "".
+```
+## What exactly is a "logical inference"
+
+It definitely depends on what SWI-Prolog's implementation thinks it is.
+
+From the era of the Fifth Generation Project:
+
+In ["FIFTH GENERATION COMPUTER SYSTEMS"](https://www.elsevier.com/books/fifth-generation-computer-systems/moto-oka/978-0-444-86440-6) - Proceedings of the International Conference on Fifth Generation Computer Systems, Tokyo, Japan, October 19-22, 1981.
+
+In the keynote address by Tohru MOTO-OKA, University of Tokyo, p. 27:
+
+> 1 LIPS (logical Inferences per Second) means one inference operation of syllogism per second. One inference operation on a present computer is considered to require 100 — 1,000 steps, and hence 1 LIPS is equivalent to 100 - 1,000 IPS (Instruction per sec). Machines of the present generation are of approximately 10^4 - 10^5 LIPS. The problem solving and inference function will be aimed at a maximum performance of 100 M - 1G LIPS.
+
+At any point in processing, a lot of the "logical inferences" will be "open" and correspond to the current stack depth. Also, we are backtracking, not doing syllogistic deduction. So it's all a bit ambiguous.
+
+```
+?- time(X=1).
+% 1 inferences, 0.000 CPU in 0.000 seconds (78% CPU, 67604 Lips)
+X = 1.
+```
+
+This is 3 inferences:
+
+```
+?- time((X=1,X=2)).
+% 3 inferences, 0.000 CPU in 0.000 seconds (85% CPU, 144265 Lips)
+false.
+```
+
+This is 0 and then 6 inference:
+
+```
+?- time((X=1;X=2)).
+% 0 inferences, 0.000 CPU in 0.000 seconds (85% CPU, 0 Lips)
+X = 1 ;
+% 6 inferences, 0.000 CPU in 0.000 seconds (84% CPU, 357462 Lips)
+X = 2.
+```
+
+## Example for a non-deterministic run
+
+```
+?- time(member(X,[1,2,3,6,7,8,9])).
+% 1 inferences, 0.000 CPU in 0.000 seconds (79% CPU, 62964 Lips)
+X = 1 ;
+% 4 inferences, 0.000 CPU in 0.000 seconds (80% CPU, 288351 Lips)
+X = 2 ;
+% 4 inferences, 0.000 CPU in 0.000 seconds (87% CPU, 207630 Lips)
+X = 3 ;
+% 4 inferences, 0.000 CPU in 0.000 seconds (77% CPU, 275862 Lips)
+X = 6 ;
+% 4 inferences, 0.000 CPU in 0.000 seconds (80% CPU, 283226 Lips)
+X = 7 ;
+% 4 inferences, 0.000 CPU in 0.000 seconds (81% CPU, 271555 Lips)
+X = 8 ;
+% 5 inferences, 0.000 CPU in 0.000 seconds (86% CPU, 288101 Lips)
+X = 9.
+```
+
+A more involved example:
+
+```
+% From
+% http://rosettacode.org/wiki/Primality_by_trial_division#Prolog
+
+prime(2).
+prime(N) :- 
+  between(3, inf, N),
+  1 is N mod 2,             % odd
+  M is floor(sqrt(N+1)),    % round-off paranoia 
+  Max is (M-1) // 2,        % integer division
+  forall( between(1, Max, I), N mod (2*I+1) > 0 ).
+
+% Backtrackably create a stream of primes from a list:
+
+prime_member(X,List) :-
+   member(X,List),
+   prime(X).
+```
+
+Then:
+
+```
+?- prime_member(X,[8326,8442,6969,5547,7625,7309,9023,7316,5486,6073,9090]).
+X = 7309 ;
+X = 6073 ;
+false.
+
+?- time(prime_member(X,[8326,8442,6969,5547,7625,7309,9023,7316,5486,6073,9090])).
+% 133 inferences, 0.000 CPU in 0.000 seconds (99% CPU, 1265474 Lips)
+X = 7309 ;
+% 109 inferences, 0.000 CPU in 0.000 seconds (95% CPU, 1531501 Lips)
+X = 6073 ;
+% 9 inferences, 0.000 CPU in 0.000 seconds (88% CPU, 397527 Lips)
+false.
+
+?- findall(X,prime_member(X,[8326,8442,6969,5547,7625,7309,9023,7316,5486,6073,9090]),L).
+L = [7309, 6073].
+
+?- time(findall(X,prime_member(X,[8326,8442,6969,5547,7625,7309,9023,7316,5486,6073,9090]),L)).
+% 254 inferences, 0.000 CPU in 0.000 seconds (98% CPU, 1852027 Lips)
+L = [7309, 6073].
+
+?- findall(X,time(prime_member(X,[8326,8442,6969,5547,7625,7309,9023,7316,5486,6073,9090])),L).
+% 132 inferences, 0.000 CPU in 0.000 seconds (95% CPU, 1645434 Lips)
+% 108 inferences, 0.000 CPU in 0.000 seconds (98% CPU, 1755327 Lips)
+% 9 inferences, 0.000 CPU in 0.000 seconds (94% CPU, 493367 Lips)
+L = [7309, 6073].
+```
+
+## Bonus: Transform large numbers into human-readable numbers
+
+Much adapted from SWI-Prolog's =|statistics.pl|= by yours truly:
+
+```
+human_bytes_t(0              , 20_000         , 1          , 'B').
+human_bytes_t(20_000         , 20_000_000     , 1024       , 'KiB').
+human_bytes_t(20_000_000     , 20_000_000_000 , 1048576    , 'MiB').
+human_bytes_t(20_000_000_000 , infinity       , 1073741824 , 'GiB').
+
+human_bytes(Value, Rescaled, Unit) :-
+   human_bytes_t(Low,High,Divisor,Unit),
+   Low =< Value,
+   (High == infinity -> true ; Value < High),
+   !,
+   Rescaled is (Value+(Divisor//2)) // Divisor.
+```
+
+and
+
+```
+human_decimal_t(0              , 20_000         , 1            , '').
+human_decimal_t(20_000         , 20_000_000     , 1000         , 'kilo-').
+human_decimal_t(20_000_000     , 20_000_000_000 , 1000_000     , 'mega-').
+human_decimal_t(20_000_000_000 , infinity       , 1000_000_000 , 'giga-').
+
+human_decimal(Value, Rescaled, Prefix) :-
+   human_decimal_t(Low,High,Divisor,Prefix),
+   Low =< Value,
+   (High == infinity -> true ; Value < High),
+   !,
+   Rescaled is (Value+(Divisor//2)) // Divisor.
+```
+
+## Test code
+
+```
+:- begin_tests(runtime_statistics).
+
+test("calling true, reified result already instantiated to true") :-
+   call_time(true,Usage,true),
+   assertion(between(0,1,Usage.inferences)). % This actually changes between a first and second run in the same SWI-Prolog instance
+
+test("calling true, reified result already (wrongly) instantiated to false",fail) :-
+   call_time(true,_Usage,false).
+
+test("calling false, reified result already (wrongly) instantiated to true",fail) :-
+   call_time(false,_Usage,true).
+
+test("calling false, reified result already instantiated to false") :-
+   call_time(false,Usage,false),
+   assertion(Usage.inferences == 1).
+
+test("calling false, reified result is captured") :-
+   call_time(false,Usage,Result),
+   assertion(Usage.inferences == 1),
+   assertion(Result == false).
+
+test("calling true, reified result is captured") :-
+   call_time(true,Usage,Result),
+   assertion(Usage.inferences == 0),
+   assertion(Result == true).
+
+test("calling true") :-
+   call_time(true,Usage),
+   assertion(Usage.inferences == 0).
+
+test("calling false", fail) :-
+   call_time(false,_Usage).
+
+test("calling true, result reified") :-
+   call_time(true,Usage,true),
+   assertion(Usage.inferences == 0).
+
+test("calling false, result reified") :-
+   call_time(false,Usage,false),
+   assertion(Usage.inferences == 1).
+
+test("calling a conjunction of true, result reified") :-
+   call_time((true,true,true,true,true,true),Usage,true),
+   assertion(Usage.inferences == -1). % This can't be right
+
+test("calling a conjunction of true with one false, result reified") :-
+   call_time((true,true,true,false,true,true),Usage,false),
+   assertion(Usage.inferences == 1).
+
+test("calling member(1,[1,2,3])") :-
+   bagof([Inferences,Result],Usage^(call_time(member(1,[1,2,3]),Usage,Result),Inferences = Usage.inferences),Bag),
+   assertion(
+      (Bag == [[24296, true], [7, false]] ; % first run (does it compile it away)
+       Bag == [[0, true], [6, false]])      % second run
+   ).
+
+test("calling member(3,[1,2,3])") :-
+   bagof([Inferences,Result],Usage^(call_time(member(3,[1,2,3]),Usage,Result),Inferences = Usage.inferences),Bag),
+   assertion(Bag == [[3, true]]).
+
+test("calling member(3,[3,3,3])") :-
+   bagof([Inferences,Result],Usage^(call_time(member(3,[3,3,3]),Usage,Result),Inferences = Usage.inferences),Bag),
+   assertion(Bag == [[0, true], [3, true], [4, true]]).
+
+test("calling member(4,[1,2,3])") :-
+   bagof([Inferences,Result],Usage^(call_time(member(4,[1,2,3]),Usage,Result),Inferences = Usage.inferences),Bag),
+   assertion(Bag == [[4, false]]).
+
+test("calling member(X,[1,2,3])") :-
+   bagof([Inferences,Result],X^Usage^(call_time(member(X,[1,2,3]),Usage,Result),Inferences = Usage.inferences),Bag),
+   assertion(Bag == [[0, true], [3, true], [4, true]]).
+
+% "throwing" means a report will be printed by the exception will be rethrown in any case
+% the test below will emit the text
+% % 12 inferences, 0.000 CPU in 0.000 seconds (100% CPU, 87774 Lips)
+% on stderr
+
+test("callee throws",[error(type_error(x,y))]) :-
+   call_time(type_error(x,y),_Usage,_Result).
+
+% test for collatz property
+
+collatz(1)     :- !.
+collatz(N) :- N mod 2 =:= 0, !, NN is N // 2, collatz(NN).
+collatz(N) :- N mod 2 =:= 1, !, NN is 3 * N + 1, collatz(NN).
+
+test("collatz(931386509544713451)") :-
+   call_time(collatz(931386509544713451),Usage),
+   assertion(Usage.inferences == 7709).
+
+% test for collatz property with non-tail recursive step counting
+
+collatz(1,0)     :- !.
+collatz(N,Steps) :- N mod 2 =:= 0, !, NN is N // 2, collatz(NN,StepsN), Steps is StepsN+1.
+collatz(N,Steps) :- N mod 2 =:= 1, !, NN is 3 * N + 1, collatz(NN,StepsN), Steps is StepsN+1.
+
+test("collatz_sc(931386509544713451)") :-
+   call_time(collatz(931386509544713451,Steps),Usage),
+   assertion(Usage.inferences == 9992),
+   assertion(Steps == 2283).
+
+% playing around with a weird predicate; not sure about the resulting inference counts
+
+foo([_-x|_])  :- !.
+foo([_|More]) :- foo(More).
+foo([x-_|_])  :- !.
+
+test("foo 1") :-
+   bagof(
+      [Inf,Res],
+      U^(call_time(foo([a-a,a-a,a-x]),U,Res),Inf = U.inferences),
+      Bag),
+   assertion(Bag == [[1, true], [4, false]]).
+
+test("foo 2") :-
+   bagof(
+      [Inf,Res],
+      U^(call_time(foo([a-a,a-a,a-a,a-a,a-a,a-a,a-a,a-a,a-x]),U,Res),Inf = U.inferences),
+      Bag),
+   assertion(Bag == [[7, true], [4, false]]).
+
+test("foo 3") :-
+   bagof(
+      [Inf,Res],
+      U^(call_time(foo([x-a,a-a,a-a]),U,Res),Inf = U.inferences),
+      Bag),
+   assertion(Bag == [[3, true]]).
+
+test("foo 4") :-
+   bagof(
+      [Inf,Res],
+      U^(call_time(foo([a-a,x-a,a-a]),U,Res),Inf = U.inferences),
+      Bag),
+   assertion(Bag == [[2, true], [4, false]]).
+
+:- end_tests(runtime_statistics).
+```
+

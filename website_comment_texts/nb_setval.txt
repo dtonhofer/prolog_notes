@@ -1,0 +1,88 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=nb_setval/2
+
+## For example
+
+Setting, then getting a list of fresh variables. The variables given to nb_setval/2 and subsequently retrieved with nb_getval/2 are distinct due to the application of duplicate_term/2.
+
+The "global variable" is persistent across queries, so its value can be retrieved again.
+
+```
+?- 
+length(K,3),
+nb_setval(myvar,K),
+nb_getval(myvar,P).
+K = [_12638,_12644,_12650],   % original fresh variables
+P = [_12660,_12666,_12672].   % new fresh variables due to duplicate_term/2
+
+?- 
+nb_getval(myvar,P).
+P = [_12660,_12666,_12672].   % same fresh variables in the next toplevel query
+```
+
+## An application
+
+Tracking how far a program gets in a conjunction which may fail. As failure means that no binding will be retained on backtracking, a non-backtrable binding of a global variable sounds useful.
+
+```
+defuse :- 
+   track_progress("now trying the 1st 'maybe'"),
+   maybe(2r3),                                       % fail with p=1/3
+   track_progress("now trying the 2nd 'maybe'"),
+   maybe(2r3),                                       % fail with p=1/3
+   track_progress("now trying the 3rd 'maybe'"),
+   maybe(2r3),                                       % fail with p=1/3
+   track_progress("we made it").
+
+track_progress(Message) :-
+   b_getval(track,Track),
+   nb_setval(track,[Message|Track]).
+   
+do :-   
+   nb_setval(track,[]),
+   (defuse 
+    -> nb_getval(track,Track),format("Success: ~q~n",[Track])
+    ;  nb_getval(track,Track),format("Failure report: ~q~n",[Track])).
+```
+
+```
+?- do.
+Failure report: ["now trying the 1st 'maybe'"]
+true.
+
+?- do.
+Failure report: ["now trying the 3rd 'maybe'","now trying the 2nd 'maybe'","now trying the 1st 'maybe'"]
+true.
+
+?- do.
+Failure report: ["now trying the 2nd 'maybe'","now trying the 1st 'maybe'"]
+true.
+
+?- do.
+Success: ["we made it","now trying the 3rd 'maybe'","now trying the 2nd 'maybe'","now trying the 1st 'maybe'"]
+true.
+```
+
+## An application in conjunction with "naf naf"
+
+Here we use "naf naf" to make sure any bindings are undone and computation has no effect ("pocket universe"), while using nb_setval/2, nb_getval/2 to smuggle computed information out ("wormhole"):
+
+```
+stringify_open_list_with_no_effect(Tip,Fin,String) :-
+   assertion(var(String)),
+   assertion(var(Fin)),
+   \+ \+ (Fin = [], format(string(Printed), "~q", [Tip]), nb_setval(printed, Printed)),
+   assertion(var(Fin)),
+   nb_getval(printed,String),
+   assertion(string(String)),
+   nb_delete(printed).
+```
+
+```
+?- 
+stringify_open_list_with_no_effect([a,b,c,d|Fin],Fin,String),
+format("~q",[Fin]).
+
+_17460
+String = "[a,b,c,d]"
+```
+

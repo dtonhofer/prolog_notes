@@ -1,0 +1,87 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=include/3
+
+Example:
+
+We want the _Keys_ of _Key-Value_ pairs which match a certain _Value_.
+
+Data:
+
+```
+all_pairs([winter-1, summer-2, autumn-3, spring-4, hot-2, cold-1, flowers-4, mud-3]).
+```
+
+Create the "filter predicate" for include/3.
+It will be used in the form of a "closure" in the Prolog sense: an improper goal, i.e. 
+it will be given to include/3 as a goal with the leftmost argument prefilled with "Value"
+and the rightmost argument missing.
+
+```
+my_filter(Value,_-Value).  % Succeed for the second argument "Key-Value" if it ends in "Value"
+``` 
+
+Given a "Value", and a list of "Pairs", this predicate relates the "Value"
+to a list "KeysOfInterest" whereby an element can be found in "KeysOfInterest"
+iff it is the "Key" of a "Pair" from "Pairs" which has value "Value".
+
+```
+keys_with_value(Value,Pairs,KeysOfInterest) :-
+   include(my_filter(Value),Pairs,PairsOfInterest),          % Filter Pairs, retaining only those which pass filter/2
+   maplist([K-_,K]>>true,PairsOfInterest,KeysOfInterest).    % Retain only the keys of the "PairsOfInterest"
+```
+
+Run it:
+
+```
+?- 
+all_pairs(Pairs),
+keys_with_value(2,Pairs,Keys).
+
+Pairs = [winter-1,summer-2,autumn-3,spring-4,hot-2,cold-1,flowers-4,mud-3],
+Keys = [summer,hot].
+```
+
+Alternatively one can define filter/2 inline using a library(yall) Lambda expression, just as we did for maplist/2:
+
+```
+keys_with_value_2(Value,Pairs,KeysOfInterest) :-
+   include({Value}/[K-V]>>(V=Value),Pairs,PairsOfInterest), 
+   maplist([K-_,K]>>true,PairsOfInterest,KeysOfInterest).
+```
+
+Run it:
+
+```
+?- 
+all_pairs(Pairs),
+keys_with_value_2(2,Pairs,Keys).
+
+Pairs = [winter-1,summer-2,autumn-3,spring-4,hot-2,cold-1,flowers-4,mud-3],
+Keys = [summer,hot].
+```
+
+**Beware accidental instantiation**
+
+This is wrong:
+
+```
+keys_with_value_666(Value,Pairs,KeysOfInterest) :-
+   include(=(_-Value),Pairs,PairsOfInterest), 
+   maplist([K-_,K]>>true,PairsOfInterest,KeysOfInterest).
+```
+
+and doesn't work:
+
+```
+?- all_pairs(Pairs),keys_with_value_666(2,Pairs,Keys).
+Pairs = [winter-1,summer-2,autumn-3,spring-4,hot-2,cold-1,flowers-4,mud-3],
+Keys = [summer].
+
+?- all_pairs(Pairs),keys_with_value_666(3,Pairs,Keys).
+Pairs = [winter-1,summer-2,autumn-3,spring-4,hot-2,cold-1,flowers-4,mud-3],
+Keys = [autumn].
+```
+
+This is because in spite of being the anonymous variable, the `_` in the closure is instantiated with the first argument
+of the first matching pair, `summer` in the first run above, `autumn` in the second, and then no other element `Pairs`
+will match. You get a single result.
+

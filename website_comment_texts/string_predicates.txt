@@ -1,5 +1,10 @@
 https://eu.swi-prolog.org/pldoc/man?section=string-predicates
 
+## See also
+
+   - library(strings): https://eu.swi-prolog.org/pldoc/man?section=strings
+   - library(quasi_quotations): https://eu.swi-prolog.org/pldoc/man?section=quasiquotations
+
 ## Organization of the concept of "anytext" as special case of the concept of "texty term"
 
 So I was thinking about what the type of a "text thing" could be and this seems

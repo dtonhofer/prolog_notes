@@ -18,6 +18,42 @@ means that the predicate succeeds exactly once (but may leave a choicepoint that
 
 means that the predicate succeeds exactly once and leaves no choicepoint.
 
+## A nice illustration of nondeterministic behaviour
+
+With call_cleanup/2
+
+Fail, causing no effect on =|Det|=:
+
+```
+?- call_cleanup(member(0,[1,2,3]),Det=true).
+false.
+```
+ 
+Succeed three times and then leave no choicepoint, causing =|Det|= to become true:
+
+```
+?- call_cleanup(member(X,[1,2,3]),Det=true).
+X = 1 ;
+X = 2 ;
+X = 3,
+Det = true.
+```
+
+Succeed once leaving a choicepoint and then fail on redo, causing no effect on =|Det|=:
+
+```
+?- call_cleanup(member(1,[1,2,3]),Det=true).
+true ;
+false.
+```
+
+Succeed once leaving no choicepoint because the unification succeeds on the last list item ("member/2 provides determinism on the last element"), causing =|Det|= to become true:
+
+```
+?- call_cleanup(member(3,[1,2,3]),Det=true).
+Det = true.
+```
+
 ## See also nth0∕3
 
 nth0/3 performs the same task, put also uses/outputs out the index:
@@ -362,4 +398,35 @@ test("force appending and then close list") :-
 
 :- end_tests(member_openlist).
 ```
- 
+
+With the above, you can assemble a list or disassemble a list of options with the same code. For example:
+
+```
+foo_pushpull(List,Value,What) :-
+   once(member_openlist(foo(Cs),List,What)),
+   atom_chars(Value,Cs).
+   
+bar_pushpull(List,Value,What) :-
+   once(member_openlist(bar(Cs),List,What)),
+   atom_chars(Value,Cs).
+```
+
+Assemble:
+
+```
+?- foo_pushpull(List,hello,What),
+   bar_pushpull(List,world,appended([])).
+List = [foo([h,e,l,l,o]),bar([w,o,r,l,d])],
+What = appended([bar([w,o,r,l,d])]).
+```
+
+Disassemble:
+
+```
+?- List=[foo([h,e,l,l,o]),bar([w,o,r,l,d])],
+   foo_pushpull(List,Foo,found),
+   bar_pushpull(List,Bar,found).
+List = [foo([h,e,l,l,o]),bar([w,o,r,l,d])],
+Foo = hello,
+Bar = world.
+```

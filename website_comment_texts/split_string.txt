@@ -1,0 +1,52 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=split_string/4
+
+See also atomic_list_concat/3, which is similar when run "in reverse"
+
+## Test code
+
+```
+:- begin_tests(split_string).
+
+test("Simple split") :-
+   split_string("a.b.c.d", ".", "", L),
+   assertion(L == ["a", "b", "c", "d"]).
+
+test("Split with sep-char at the extremities") :-
+   split_string(".a.b.c.d.", ".", "", L),
+   assertion(L == ["", "a", "b", "c", "d", ""]).
+
+test("Split with sep-char sequence") :-
+   split_string("a.b...c.d", ".", "", L),
+   assertion(L == ["a","b","","","c","d"]).
+   
+test("Split with sep-char sequence, but collapse sequences") :-
+   split_string("a.b...c.d", ".", ".", L),
+   assertion(L == ["a","b","c","d"]).
+
+test("Split with sep-char at the extremities, but collapse sequences") :-
+   split_string(".a.b.c.d.", ".", ".", L),
+   assertion(L == ["a","b","c","d"]).
+   
+test("Split with sep-char sequence, but collapse sequences, take 2") :-
+   split_string("/home//jan///nice/path", "/", "/", L),
+   assertion(L == ["home", "jan", "nice", "path"]).
+      
+test("Split and remove white space") :-
+   split_string("SWI-Prolog, 7.0", ",", " ", L),
+   assertion(L == ["SWI-Prolog", "7.0"]).
+   
+test("Remove leading and trailing white space, i.e.'trim' (no whitespace inside string)") :-
+   split_string("  SWI-Prolog  ", "", "\s\t\n", L),
+   assertion(L == ["SWI-Prolog"]).
+
+test("Remove leading and trailing white space, i.e.'trim' (whitespace inside string)") :-
+   split_string("  SWI Prolog  ", "", "\s\t\n", L),
+   assertion(L == ["SWI Prolog"]).
+
+test("Remove leading and trailing white space, i.e.'trim' (lots of whitespace inside string)") :-
+   split_string("  SWI    Super   Prolog  ", "", "\s\t\n", L),
+   assertion(L == ["SWI    Super   Prolog"]).
+   
+:- end_tests(split_string).
+```
+

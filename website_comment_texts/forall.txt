@@ -1,0 +1,148 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=forall/2
+
+In particular:
+
+Àny binding is rolled back on success because it happens behind the "`\+` wall":
+
+```
+?- forall(true,X=1),write(X).
+_4984
+true.
+```
+
+And binding previously extant is used of course:
+
+```
+?- X=1,forall(true,X=1),write(X).
+1
+X = 1.
+
+?- X=2,forall(true,X=1),write(X).
+false.
+```
+
+## Example
+
+Computing/Verifying prime numbers using forall/2
+
+From http://rosettacode.org/wiki/Primality_by_trial_division#Prolog
+ 
+```
+prime(2).
+prime(N) :-
+  between(3, inf, N),
+  1 is N mod 2,             % odd
+  M is floor(sqrt(N+1)),    % round-off paranoia
+  Max is (M-1) // 2,        % integer division
+  forall( between(1, Max, I), N mod (2*I+1) > 0 ).
+```
+
+## Example
+
+Using forall as looping construct to generate side-effects, here a rolling sine wave (works on ANSI terminals because we need to move the cursor to the topleft corner of the drawing N+1 after drawing N has been printed)
+
+```
+% Print a sine wave over a 2*Pi interval vertically using "Lines" lines. The amplitude is
+% "Amplitude" characters around the vertical ZERO line (which here is not written using "|"
+% but using the last digit of the function's offset, which here is the same as the drawing
+% number)
+
+sinus(Lines,Amplitude,Offset,Last) :-
+   MaxLine is Lines - 1,
+   forall(
+      between(0,MaxLine,Line),                              % loop over the lines (i.e. the x values)
+      (
+         XReal is ( Line + Offset ) * ( 2.0 * pi ) / MaxLine,
+         YReal is sin(XReal),
+         Height is round(Amplitude*YReal),                  % round to nearest, but outward from 0
+                 
+         BlankCount is min(Amplitude,Amplitude + Height),
+         string_of(' ',BlankCount,BlankString),
+         
+         StarCount is abs(Height),
+         string_of('*',StarCount,StarsString),
+   
+         format("\x1B[K",[]),   % ANSI sequence to clear current line
+         
+         write_line(Offset,Height,StarsString,BlankString),
+
+         format("~n",[]),       % End with newline (can't skip this otherwise the line isn't flushed out)
+              
+         (
+            (Last == false, Line == MaxLine)      % If last line but not last drawing, move the cursor back up
+            ->
+            MoveLeft is BlankCount + StarCount + 1,
+            MoveUp is MaxLine + 1,
+            format("\x1B[~dD",[MoveLeft]),   % ANSI sequence to move the cursor leftwards
+            format("\x1B[~dA",[MoveUp])      % ANSI sequence to move the cursor upwards
+            ;
+            true
+         )
+      )
+   ).
+   
+write_line(Offset,Height,StarsString,BlankString) :-
+   Of is Offset mod 10,                % instead of '|', write "Offset mod 10" at the X axis for visibility
+   format("~s",[BlankString]),
+   (Height < 0
+    ->
+    format("~s~d",[StarsString,Of])    % "negative sinus values"
+    ;
+    format("~d~s",[Of,StarsString])).  % "positive sinus values"
+
+string_of(Char,Length,String) :-
+   length(Chars,Length),
+   maplist(=(Char),Chars),
+   string_chars(String,Chars).
+   
+wave(Lines,Amplitude) :-
+   MaxDrawings = 10000,
+   forall(
+      between(0,MaxDrawings,DrawingNumber),                % between 0..MaxDrawings drawings
+      (
+         Offset = DrawingNumber,                           % the function offset happens to be the same as the drawing number
+         (MaxDrawings == DrawingNumber
+         -> LastDrawing = true
+         ;  LastDrawing = false),
+         sinus(Lines,Amplitude,Offset,LastDrawing),        % draw single image
+         ((LastDrawing) -> format("~n",[]) ; sleep(0.05))  % slow down a bit between drawings
+      )
+   ).
+```
+
+Try it for some old-school microcomputer era vibes:
+
+```
+?- wave(30,30).
+******************************5
+ *****************************5
+   ***************************5
+       ***********************5
+            ******************5
+                 *************5
+                        ******5
+                              5
+                              5******
+                              5*************
+                              5******************
+                              5***********************
+                              5***************************
+                              5*****************************
+                              5******************************
+                              5******************************
+                              5****************************
+                              5*************************
+                              5*********************
+                              5***************
+                              5**********
+                              5***
+                           ***5
+                    **********5
+               ***************5
+         *********************5
+     *************************5
+  ****************************5
+******************************5
+******************************5
+```
+

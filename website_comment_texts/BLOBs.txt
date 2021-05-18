@@ -1,0 +1,89 @@
+https://eu.swi-prolog.org/pldoc/man?section=blob
+
+An example from the JPL Java-Prolog bridge: extracts from file
+
+```
+packages/jpl/src/main/c/jpl.c
+```
+
+slightly rewritten, with C-style upgraded 
+
+```
+#include <SWI-Stream.h>
+#include <SWI-Prolog.h>
+#include "<java/jni.h>"
+
+// Some stuff defined in other parts of jpl.c
+
+typedef intptr_t pointer;         // for JPL 
+typedef int bool;                 // for JNI/JPL functions returning only TRUE or FALSE
+
+JNIEnv* jni_env(void);            // economically gets a JNIEnv pointer, valid for this thread
+
+static bool jni_free_iref(JNIEnv* env, pointer iref); // Called indirectly from agc hook when a possible iref is unreachable.
+
+// jref_handle encapsulates an opaque pointer
+
+typedef struct jref_handle {
+    pointer iref;
+} jref_handle;
+
+// get the jref_handle* out of the blob
+
+static jref_handle* decapsulate(atom_t jref) {
+    return PL_blob_data(jref, NULL, NULL);
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// release_jref_handle() is called from Atom Garbage Collector. As the symbol
+// is destroyed, we must clear info->symbol. That is find as AGC locks L_THREAD and the
+// competing interaction in free_jref_info() is also locked with L_THREAD
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+static int
+release_jref_handle(atom_t jref) {
+    jref_handle* ref = decapsulate(jref);
+    JNIEnv* env;
+    if ((env = jni_env())) {
+        if (!jni_free_iref(env, ref->iref))
+            DEBUG(0, Sdprintf("[JPL: garbage-collected jref<%p> is bogus (not in "
+                              "HashedRefs)]\n",
+                              ref->iref));
+    }
+    return TRUE;
+}
+
+static int
+write_jref_handle(IOSTREAM *s, atom_t jref, int flags) {
+    jref_handle* ref = decapsulate(jref);
+    (void) flags;
+    Sfprintf(s, "<jref>(%p)", ref->iref);                      // good to read in a log
+    return TRUE;
+}
+
+static int
+save_jref(atom_t jref, IOSTREAM *fd) {
+    jref_handle* ref = decapsulate(jref);
+    (void) fd;                                                     // to suppress warnings(?)
+    return PL_warning("Cannot save reference to <jref>(%p)", ref->iref); // Computer says no
+}
+
+static atom_t
+load_jref(IOSTREAM* fd) {
+    (void) fd;                                      // to suppress warnings(?)
+    return PL_new_atom("<saved-jref-handle>");   // return a dummy standard atom instead of a jref blob atom
+}
+
+
+static PL_blob_t jref_blob = {
+        .magic    =  PL_BLOB_MAGIC,            // Mandatory identifier
+        .flags    =  PL_BLOB_UNIQUE,           // Handles all reference the same blob
+        .name     =  "jref",                   // blob's type is "jref" (actually contains a jref_handle*)
+        .release  =  release_jref_handle,      // special handling on release
+        .compare  =  NULL,                     // default handling on compare
+        .write    =  write_jref_handle,        // special handling on write
+        .acquire  =  NULL,                     // default handling on acquire
+        .save     =  save_jref,                // special handling on save
+        .load     =  load_jref                 // special handling on load
+};
+```
