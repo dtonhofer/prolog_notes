@@ -15,7 +15,6 @@
   <graph edgedefault="directed" id="G">
     <data key="d0"/>
     <node id="n0">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.start2">
           <y:Geometry height="40.0" width="80.0" x="79.0" y="492.0"/>
@@ -32,7 +31,6 @@
       </data>
     </node>
     <node id="n1">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.start2">
           <y:Geometry height="40.0" width="80.0" x="346.0" y="492.0"/>
@@ -49,7 +47,6 @@
       </data>
     </node>
     <node id="n2">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.preparation">
           <y:Geometry height="40.0" width="80.0" x="204.0" y="411.0"/>
@@ -66,7 +63,6 @@
       </data>
     </node>
     <node id="n3">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.start2">
           <y:Geometry height="40.0" width="80.0" x="608.0" y="492.0"/>
@@ -83,7 +79,6 @@
       </data>
     </node>
     <node id="n4">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.preparation">
           <y:Geometry height="40.0" width="80.0" x="204.0" y="306.0"/>
@@ -100,7 +95,6 @@
       </data>
     </node>
     <node id="n5">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.preparation">
           <y:Geometry height="40.0" width="80.0" x="204.0" y="565.0"/>
@@ -117,7 +111,6 @@
       </data>
     </node>
     <node id="n6">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.preparation">
           <y:Geometry height="40.0" width="80.0" x="480.0" y="565.0"/>
@@ -134,7 +127,6 @@
       </data>
     </node>
     <node id="n7">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.preparation">
           <y:Geometry height="40.0" width="80.0" x="480.0" y="411.0"/>
@@ -151,7 +143,6 @@
       </data>
     </node>
     <node id="n8">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.start2">
           <y:Geometry height="40.0" width="80.0" x="934.0" y="492.0"/>
@@ -168,7 +159,6 @@
       </data>
     </node>
     <node id="n9">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.start2">
           <y:Geometry height="40.0" width="80.0" x="872.0" y="740.0"/>
@@ -185,7 +175,6 @@
       </data>
     </node>
     <node id="n10">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.preparation">
           <y:Geometry height="40.0" width="80.0" x="777.0" y="275.0"/>
@@ -202,7 +191,6 @@
       </data>
     </node>
     <node id="n11">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.preparation">
           <y:Geometry height="40.0" width="80.0" x="777.0" y="352.0"/>
@@ -219,7 +207,6 @@
       </data>
     </node>
     <node id="n12">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.preparation">
           <y:Geometry height="40.0" width="80.0" x="777.0" y="492.0"/>
@@ -236,7 +223,6 @@
       </data>
     </node>
     <node id="n13">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.preparation">
           <y:Geometry height="40.0" width="80.0" x="1114.75" y="492.0"/>
@@ -254,7 +240,6 @@ more<y:LabelModel>
       </data>
     </node>
     <node id="n14">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.start2">
           <y:Geometry height="40.0" width="80.0" x="1279.6666666666665" y="492.0"/>
@@ -271,7 +256,6 @@ more<y:LabelModel>
       </data>
     </node>
     <node id="n15">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.preparation">
           <y:Geometry height="40.0" width="80.0" x="1114.75" y="570.0"/>
@@ -288,7 +272,6 @@ more<y:LabelModel>
       </data>
     </node>
     <node id="n16">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.preparation">
           <y:Geometry height="40.0" width="80.0" x="1114.75" y="636.0"/>
@@ -305,10 +288,9 @@ more<y:LabelModel>
       </data>
     </node>
     <node id="n17">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.preparation">
-          <y:Geometry height="40.0" width="80.0" x="1004.8125" y="740.0"/>
+          <y:Geometry height="40.0" width="80.0" x="1114.75" y="740.0"/>
           <y:Fill color="#FF6600" color2="#FF6600" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="33.712890625" x="23.1435546875" y="11.015625">stop<y:LabelModel>
@@ -322,7 +304,6 @@ more<y:LabelModel>
       </data>
     </node>
     <node id="n18">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.preparation">
           <y:Geometry height="40.0" width="80.0" x="739.1875" y="740.0"/>
@@ -339,7 +320,6 @@ more<y:LabelModel>
       </data>
     </node>
     <node id="n19">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.start2">
           <y:Geometry height="40.0" width="80.0" x="1148.6666666666665" y="107.99999999999994"/>
@@ -356,10 +336,9 @@ more<y:LabelModel>
       </data>
     </node>
     <node id="n20">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.start2">
-          <y:Geometry height="40.0" width="80.0" x="1279.6666666666665" y="290.0"/>
+          <y:Geometry height="40.0" width="80.0" x="1254.8333333333333" y="241.4375"/>
           <y:Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="11.634765625" x="34.1826171875" y="11.015625">5<y:LabelModel>
@@ -373,10 +352,9 @@ more<y:LabelModel>
       </data>
     </node>
     <node id="n21">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.preparation">
-          <y:Geometry height="40.0" width="129.66666666666652" x="1154.5" y="191.99999999999997"/>
+          <y:Geometry height="40.0" width="129.66666666666652" x="1254.8333333333333" y="107.99999999999994"/>
           <y:Fill color="#FF6600" color2="#FF6600" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="97.216796875" x="16.224934895833258" y="11.015625">pull_response<y:LabelModel>
@@ -390,13 +368,12 @@ more<y:LabelModel>
       </data>
     </node>
     <node id="n22">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.preparation">
-          <y:Geometry height="40.0" width="80.0" x="1194.0" y="352.0"/>
+          <y:Geometry height="40.0" width="80.0" x="1364.8333333333333" y="241.4375"/>
           <y:Fill color="#FF6600" color2="#FF6600" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="34.158203125" x="22.9208984375" y="11.015625">next<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="59.166015625" x="10.4169921875" y="11.015625">respond<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -407,10 +384,9 @@ more<y:LabelModel>
       </data>
     </node>
     <node id="n23">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.preparation">
-          <y:Geometry height="40.0" width="80.0" x="1030.0" y="147.99999999999994"/>
+          <y:Geometry height="40.0" width="80.0" x="1030.0" y="107.99999999999994"/>
           <y:Fill color="#FFFF00" color2="#FFFF00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="47.623046875" x="16.1884765625" y="11.015625">/output<y:LabelModel>
@@ -424,10 +400,9 @@ more<y:LabelModel>
       </data>
     </node>
     <node id="n24">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.preparation">
-          <y:Geometry height="40.0" width="80.0" x="1148.6666666666665" y="275.0"/>
+          <y:Geometry height="40.0" width="80.0" x="1148.6666666666665" y="241.4375"/>
           <y:Fill color="#FFFF00" color2="#FFFF00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="51.947265625" x="14.0263671875" y="11.015625">/prompt<y:LabelModel>
@@ -441,70 +416,52 @@ more<y:LabelModel>
       </data>
     </node>
     <node id="n25">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.process">
-          <y:Geometry height="618.5" width="735.0" x="-47.0" y="-430.5"/>
+          <y:Geometry height="375.81715210355986" width="735.0" x="-34.660194174757294" y="-215.23894282632148"/>
           <y:Fill color="#C0C0C0" color2="#C0C0C0" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="548.78125" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="tl" textColor="#000000" verticalTextPosition="bottom" visible="true" width="617.8515625" x="4.0" y="4.0">This is an "alternating state machine": 
-An ORANGE transition is always followed by a YELLOW transition and vice-versa.
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="339.25" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="tl" textColor="#000000" verticalTextPosition="bottom" visible="true" width="636.091796875" x="4.0" y="4.0">Modeling a communication protocol between two (or more) processes is done by specifying a finite-state
+machine for each process, where an edge is traversed either "actively", sending a message to the other
+process or "passively" upon receipt of a message (via one or possibly more channels). Transitions are 
+done alternatingly on both sides.
+
+The diagram as shown multiplies-out the state machines for the server and client into a single "protocol
+state machine". This is called a Channel System or Global State Transition Diagram.
+
+This is an "alternating state machine": 
+
+A BOLD (ORANGE) transition is always followed by a SLASH (YELLOW) transition and vice-versa.
 
 Pengine processing or idling is done while the machine is in one of the states.
 
-Better labels for the states would be:
+More revealing labels for the states might be:
 
-0 = inexistent
-1 = creating
-2 = idling
-3 = running
-4 = outputting
-5 = prompting
-6 = waiting_for_ack
-7 = stopping
-
-ORANGE transitions are performed based on messages/requests coming from the Pengine client.
---- All the messages here are depicted as synchronous.
---- However, there are also asynchronous messages like "abort" to kick the machine out
-    of state 3 - so this diagram is missing a few elements.
-
-YELLOW transitions correspond to messages/responses going to the Pengine client.
---- Synchronously: as direct response to previous Pengine Client requests;
---- "Sort of asynchronously": all the transitions exiting state "3" are based on processing
-    conditions encountered while running the goal submitted via an "ask" message,.
-
-AFAIK, this machine is independent of the HTTP session state.
-You can close the HTTP session, and reconnect later using a previously obtained Pengine Id.
-.... But are messages in the queue delivered at that point? We need to test!
-
-Missing is the timeout event whcih tears down a Pengine after 3 minutes of idling.
-
-Note that all the messages are HTTP messages, which may have their own internal chunking for large
-data blocks. (What happens if there is an error in the HTTP protocol?)
-
-Also:
-
-- Websockets or HTTP/2 woule be more flexible for such a back-and-forth than HTTP/1.1
-- And maybe even XMPP</y:NodeLabel>
+    0 = pengine_inexistent
+    1 = pengine_creating or pengine_destroying
+    2 = pengine_idling
+    3 = pengine_running
+    4 = pengine_outputting, waiting for client to pull text
+    5 = pengine_prompting, waiting for client to push text
+    6 = pengine_waiting_for_cmd
+    7 = pengine_stopping</y:NodeLabel>
         </y:GenericNode>
       </data>
     </node>
     <node id="n26">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.process">
-          <y:Geometry height="40.0" width="735.0" x="-47.0" y="-470.5"/>
+          <y:Geometry height="40.0" width="735.0" x="-34.660194174757294" y="-255.23894282632148"/>
           <y:Fill color="#C0C0C0" color2="#C0C0C0" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="24" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="31.9375" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="l" textColor="#000000" verticalTextPosition="bottom" visible="true" width="632.62890625" x="4.0" y="4.03125">Pengine state machine ("Prolog Transport Protocol")</y:NodeLabel>
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="24" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="31.9375" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="l" textColor="#000000" verticalTextPosition="bottom" visible="true" width="534.0390625" x="4.0" y="4.03125">"Prolog Transport Protocol" Channel System</y:NodeLabel>
         </y:GenericNode>
       </data>
     </node>
     <node id="n27">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.annotation">
-          <y:Geometry height="72.25" width="236.25" x="1368.75" y="374.875"/>
+          <y:Geometry height="72.25" width="201.97276159654803" x="1268.6604638619206" y="374.875"/>
           <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="59.875" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="l" textColor="#000000" verticalTextPosition="bottom" visible="true" width="190.5625" x="4.0" y="6.1875">The "answer" in the outgoing
@@ -519,10 +476,9 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </node>
     <node id="n28">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.annotation">
-          <y:Geometry height="72.25" width="236.25" x="832.5" y="35.74999999999994"/>
+          <y:Geometry height="72.25" width="201.97276159654803" x="951.8512675296655" y="-6.753775620280521"/>
           <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="59.875" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="l" textColor="#000000" verticalTextPosition="bottom" visible="true" width="190.5625" x="4.0" y="6.1875">The "answer" in the outgoing
@@ -537,7 +493,6 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </node>
     <node id="n29">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.preparation">
           <y:Geometry height="40.0" width="80.0" x="777.0" y="206.0"/>
@@ -555,7 +510,6 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </node>
     <edge id="e0" source="n2" target="n1">
-      <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -568,7 +522,6 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </edge>
     <edge id="e1" source="n0" target="n2">
-      <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -580,7 +533,6 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </edge>
     <edge id="e2" source="n1" target="n4">
-      <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -592,7 +544,6 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </edge>
     <edge id="e3" source="n4" target="n0">
-      <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -604,7 +555,6 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </edge>
     <edge id="e4" source="n1" target="n7">
-      <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -616,7 +566,6 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </edge>
     <edge id="e5" source="n7" target="n3">
-      <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -628,7 +577,6 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </edge>
     <edge id="e6" source="n3" target="n6">
-      <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -641,7 +589,6 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </edge>
     <edge id="e7" source="n6" target="n1">
-      <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -653,7 +600,6 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </edge>
     <edge id="e8" source="n1" target="n5">
-      <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -665,7 +611,6 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </edge>
     <edge id="e9" source="n5" target="n0">
-      <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -677,7 +622,6 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </edge>
     <edge id="e10" source="n10" target="n3">
-      <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -689,7 +633,6 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </edge>
     <edge id="e11" source="n11" target="n3">
-      <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -701,7 +644,6 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </edge>
     <edge id="e12" source="n8" target="n11">
-      <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -713,7 +655,6 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </edge>
     <edge id="e13" source="n8" target="n10">
-      <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -725,7 +666,6 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </edge>
     <edge id="e14" source="n3" target="n12">
-      <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -735,7 +675,6 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </edge>
     <edge id="e15" source="n12" target="n8">
-      <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -745,7 +684,6 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </edge>
     <edge id="e16" source="n8" target="n13">
-      <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -755,7 +693,6 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </edge>
     <edge id="e17" source="n13" target="n14">
-      <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -765,7 +702,6 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </edge>
     <edge id="e18" source="n14" target="n15">
-      <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -777,7 +713,6 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </edge>
     <edge id="e19" source="n14" target="n16">
-      <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -789,7 +724,6 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </edge>
     <edge id="e20" source="n15" target="n8">
-      <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -801,7 +735,6 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </edge>
     <edge id="e21" source="n16" target="n8">
-      <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -813,7 +746,6 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </edge>
     <edge id="e22" source="n14" target="n17">
-      <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -825,7 +757,6 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </edge>
     <edge id="e23" source="n17" target="n9">
-      <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -835,7 +766,6 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </edge>
     <edge id="e24" source="n9" target="n18">
-      <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="23.333333333333258" ty="0.0"/>
@@ -845,7 +775,6 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </edge>
     <edge id="e25" source="n18" target="n3">
-      <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -858,7 +787,6 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </edge>
     <edge id="e26" source="n8" target="n23">
-      <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -870,32 +798,17 @@ chunk of a given "chunk size") </y:NodeLabel>
       </data>
     </edge>
     <edge id="e27" source="n8" target="n24">
-      <data key="d9"/>
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
-            <y:Point x="1093.3333333333333" y="329.6666666666667"/>
+            <y:Point x="1102.9309600863" y="277.5652642934196"/>
           </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
         </y:BezierEdge>
       </data>
     </edge>
-    <edge id="e28" source="n21" target="n8">
-      <data key="d9"/>
-      <data key="d10">
-        <y:BezierEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
-            <y:Point x="1033.3333333333333" y="229.66666666666666"/>
-            <y:Point x="1053.3333333333333" y="313.6666666666667"/>
-          </y:Path>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-        </y:BezierEdge>
-      </data>
-    </edge>
-    <edge id="e29" source="n23" target="n19">
-      <data key="d9"/>
+    <edge id="e28" source="n23" target="n19">
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -906,56 +819,7 @@ chunk of a given "chunk size") </y:NodeLabel>
         </y:BezierEdge>
       </data>
     </edge>
-    <edge id="e30" source="n19" target="n21">
-      <data key="d9"/>
-      <data key="d10">
-        <y:BezierEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
-            <y:Point x="1219.3333333333333" y="155.66666666666663"/>
-          </y:Path>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-        </y:BezierEdge>
-      </data>
-    </edge>
-    <edge id="e31" source="n24" target="n20">
-      <data key="d9"/>
-      <data key="d10">
-        <y:BezierEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
-            <y:Point x="1265.6458333333333" y="295.0"/>
-          </y:Path>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-        </y:BezierEdge>
-      </data>
-    </edge>
-    <edge id="e32" source="n20" target="n22">
-      <data key="d9"/>
-      <data key="d10">
-        <y:BezierEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
-            <y:Point x="1304.3333333333333" y="363.6666666666667"/>
-          </y:Path>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-        </y:BezierEdge>
-      </data>
-    </edge>
-    <edge id="e33" source="n22" target="n8">
-      <data key="d9"/>
-      <data key="d10">
-        <y:BezierEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
-            <y:Point x="1117.3333333333333" y="372.0"/>
-          </y:Path>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-        </y:BezierEdge>
-      </data>
-    </edge>
-    <edge id="e34" source="n8" target="n29">
-      <data key="d9"/>
+    <edge id="e29" source="n8" target="n29">
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -966,8 +830,7 @@ chunk of a given "chunk size") </y:NodeLabel>
         </y:BezierEdge>
       </data>
     </edge>
-    <edge id="e35" source="n29" target="n3">
-      <data key="d9"/>
+    <edge id="e30" source="n29" target="n3">
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -978,26 +841,83 @@ chunk of a given "chunk size") </y:NodeLabel>
         </y:BezierEdge>
       </data>
     </edge>
-    <edge id="e36" source="n29" target="n28">
-      <data key="d9"/>
+    <edge id="e31" source="n29" target="n28">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:Path sx="0.0" sy="0.0" tx="-85.99838187702255" ty="-16.778991370010772"/>
           <y:LineStyle color="#000000" type="dashed" width="1.0"/>
           <y:Arrows source="none" target="none"/>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e37" source="n13" target="n27">
-      <data key="d9"/>
+    <edge id="e32" source="n13" target="n27">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="0.0" tx="-94.04166666666674" ty="-7.5"/>
+          <y:Path sx="0.0" sy="0.0" tx="-80.39727035686228" ty="-7.5"/>
           <y:LineStyle color="#000000" type="dashed" width="1.0"/>
           <y:Arrows source="none" target="none"/>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e33" source="n19" target="n21">
+      <data key="d9"/>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e34" source="n24" target="n20">
+      <data key="d9"/>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e35" source="n20" target="n22">
+      <data key="d9"/>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e36" source="n21" target="n8">
+      <data key="d9"/>
+      <data key="d10">
+        <y:QuadCurveEdge straightness="0.1">
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
+            <y:Point x="1319.6666666666665" y="177.12297734627828"/>
+            <y:Point x="1095.7216828478963" y="186.72060409924484"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+        </y:QuadCurveEdge>
+      </data>
+    </edge>
+    <edge id="e37" source="n22" target="n8">
+      <data key="d9"/>
+      <data key="d10">
+        <y:QuadCurveEdge straightness="0.1">
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
+            <y:Point x="1404.8333333333333" y="303.2632146709816"/>
+            <y:Point x="1154.75" y="303.2632146709816"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+        </y:QuadCurveEdge>
       </data>
     </edge>
   </graph>
