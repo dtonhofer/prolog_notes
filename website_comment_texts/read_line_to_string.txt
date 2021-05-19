@@ -1,26 +1,27 @@
-https://eu.swi-prolog.org/pldoc/doc_for?object=read_line_to_string/2
+https://eu.swi-prolog.org/pldoc/man?predicate=read_line_to_string/2
 
-## Can be used to ask the user
+## Example
 
-Example:
+Can be used to ask the user as a proper replacement for read/1
 
 ```
-?-
-format("Answer me, Domon!!!!\n"), 
-read_line_to_string(user_input,S1), 
-string_lower(S1,S2), 
-(member(S2,["yes","1","ok","y","ja","oui"])
-   -> format("OK!")
-   ; (format("NOK"), fail)).
+ask_user :-
+   format("You must answer 'yes' to accept this offer one cannot refuse!~n"),
+   read_line_to_string(user_input,S1), 
+   string_lower(S1,S2), 
+   (
+      member(S2,["yes","1","ok","y","ja","oui"])
+      -> format("You may proceed, good citizen.~n")
+      ;  format("I am sorry to hear that.~n"), fail
+   ).   
 ```
 
 Then:
 
 ```
-Answer me, Domon!!!!
-|: YES
-OK!
-S1 = "YES",
-S2 = "yes".
+?- ask_user.
+You must answer 'yes' to accept this offer one cannot refuse!
+|: yes
+You may proceed, good citizen.
+true.
 ```
- 

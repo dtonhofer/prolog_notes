@@ -1,5 +1,9 @@
 https://eu.swi-prolog.org/pldoc/doc_for?object=must_be/2
 
+## See also
+
+"Type tests in Prolog" by Markus Triska https://youtu.be/ZIv0G4b1xBQ?t=123
+
 ## Reviewed list of keywords
 
 These expressions absolutely need to become compositional. AND, OR, NOT of boolean algebra would be of some use. Maybe one also add `must_be(successful,Goal)`.
@@ -28,7 +32,7 @@ integer                 : passes integer/1
 positive_integer        : integer > 0
 negative_integer        : integer < 0
 nonneg                  : nonneg *integer*; this should really be called "nonneg_integer"
-...correspond >=0, >0 etc for general numbers are sadly missing
+...corresponding tests >=0, >0 etc for *general* numbers are missing 
 --
 float                   : passes float/1 (in SWI-Prolog, an IEEE 64-bit float)
 --
@@ -37,7 +41,7 @@ rational                : a non-integer rational or an integer
 number                  : passes number/1
 --
 between(FloatL,FloatU)  : if FloatL is float, all other values may be float or integer (FIXME?); the limits are both INCLUSIVE; limits may be equal but NOT reversed
-between(IntL,IntU) 	    : if IntL is integer, all other values must be integer; the limits are both INCLUSIVE; limits may be equal but NOT reversed
+between(IntL,IntU)          : if IntL is integer, all other values must be integer; the limits are both INCLUSIVE; limits may be equal but NOT reversed
                           FIXME: there should be specific between_int/2 and between_float/2 if one goes that way.
 --
 acyclic                 : passes acyclic_term/1, i.e. is an acyclic term; includes unbound var (the term is a tree if one disregards "internal sharing")
@@ -45,7 +49,7 @@ cyclic                  : passes cyclic_term/1, i.e. the term contains cycles (t
 --
 char                    : atom of length 1
 chars                   : list of 1-character atoms; includes the empty list
-code	                : unicode code point (any integer between 0 and 0x10FFFF)
+code                    : unicode code point (any integer between 0 and 0x10FFFF)
 codes                   : list of integers >= 0; includes the empty list
 string                  : passes string/1, an SWI-Prolog string
 text                    : atom or string or chars or codes (but not numbers even though some predicates "textify" those)
@@ -55,20 +59,28 @@ nonvar                  : passes nonvar/1; anything except an unbound variable
 --
 list,proper_list        : passes is_list/1 and is a proper/closed list; empty list is allowed
 list(Type)              : proper list with elements of type Type (must_be/2(Type,_) is called on elements); empty list is allowed;
-                          on error the index is not indicated, sadly. A type like "list(list(integer))" is ok!
+                          on error the index is not indicated (why~~~). A type like "list(list(integer))" is ok!
 list_or_partial_list    : A partial list (one ending in a variable: [x|_]). This includes an unbound variable.
 --
 callable                : passes callable/1. Relatively usesless, as "callable" is ill-defined. Basically (atom(X);compound(X)) 
 --
-dict                    : passes is_dict/1, an SWI-prolog dict
+dict                    : passes is_dict/1, an SWI-prolog dict (which is just a compound term of a particular form)
 --
 encoding                : valid name for a character encoding; see current_encoding/1, e.g. utf8 (but not "utf8" or 'utf-8'; also fails for 'iso_8859_1')
 --
-stream	                : passes is_stream/1, is a stream name or valid stream handle
+stream                  : passes is_stream/1, is a stream name or valid stream handle
 --
 type                    : Meta: Term is a valid type specification for must_be/2. This is done by looking up whether a clause `has_type(Type,_) :- ....` exists.
                           Example: must_be(type,list(integer)). However, "must_be(type,list(grofx))": OK, but "must_be(type,grofx)": NOT OK. 
 ```
+
+Maybe missing: `
+
+   - must_be(predicate_indicator(Name/Arity),Term)
+
+Definitely missing:
+
+   - must_be(nonempty_list,Term)
 
 ## See also
 
@@ -78,11 +90,11 @@ type                    : Meta: Term is a valid type specification for must_be/2
 
 We read:
 
-> list_or_partial_list:	A list or an open list (ending in a variable); see is_list_or_partial_list/1
+> list_or_partial_list: A list or an open list (ending in a variable); see is_list_or_partial_list/1
 
 That predicate does not exist (although the doc generator directs you to error.pl; the predicate is likely not exported)
 
-## Sadly, it only throws "type error"
+## It only throws "type error"
 
 The note under "throws" says that "type_error(Type, Term)" is thrown. This means that for in-type, but out-of-domain errors, you get an inappropriate type error instead of a domain error. (That's really fine-tuning though):
 
@@ -201,9 +213,6 @@ Finally, comparing various type-testing approaches [**with a bit of test code**]
   - "Sufficiently instantiated" approach which throws if the answer is "don't know"
   - must_be/2 approach which throws unless the answer is "yes, the type matches" (can be used on predicate entry to check whether a contract regarding input arguments is being upheld)
   - can_be/2 approach which throws only if the answer is "it's never going to be that type" (can be used on predicate entry to check whether a contract regarding output arguments is being upheld: is it possible to bind a term of a certain type to that argument later on?) 
-
-See also "Type tests in Prolog" by Markus Triska
-https://youtu.be/ZIv0G4b1xBQ?t=123
 
 ## Various problems with the whole approach
 
@@ -365,5 +374,4 @@ Instead, use the more pedestrian itypes:
 http://stackoverflow.com/a/30600104/772868 
 
 ~~~~
-
-
+ 

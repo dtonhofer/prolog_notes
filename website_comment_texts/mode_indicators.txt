@@ -1,0 +1,96 @@
+https://eu.swi-prolog.org/pldoc/man?section=preddesc
+
+## Mode indicator cheat sheet / overview
+
+[Get it from here](https://github.com/dtonhofer/prolog_notes/tree/master/swipl_notes/about_mode_indicators)
+
+## Determinism illustrated with Byrd Box diagrams
+
+The determinism indicators can be illustrated using "Byrd Box" diagrams,
+slightly extended relative to the original form as it appears in Lawrence Byrd's
+1980 paper. Here, the idea of "leaving no choicepoint" is shown as _bypassing_
+the "Redo Port" when backtracking. Remember that a single Byrd Box (B-Box) represents
+a **not** a predicate but a **predicate activation**, i.e. a running predicate call, 
+conceptually congruent to a stack frame. The B-Box is understood to reside in 
+a cross-wired graph of B-Boxes that corresponds to a predicate's clause structure
+(as given by conjunctions, disjunctions, cuts, if-then-else operators etc.)
+You can envision the graph of B-Boxes being created immediately when the
+defining predicate is called, or on demand when the execution token that is
+pictured as moving across the wires is about to be passed to the next B-Box.
+
+(Below the port traditionally labeled "Exit" has been relabeled "Succ", because it's the "success" port after all.)
+
+**A predicate activation of a deterministic predicate:**
+
+```
+             +-----------------------------------+
+             |                                   |
+     >------>|Call------------>--------------Succ|------->
+  from/to    |                                   |    to/from
+a Byrd Box   |                                   |   a Byrd Box
+on the left  |                                   |  on the right
+     <---+   |Fail                           Redo|   +---<
+         |   |                                   |   |
+         |   +-----------------------------------+   |
+         |                                           |
+         +-------<----"no choicepoint left"----<-----+
+```         
+
+**A predicate activation of a semi-deterministic predicate:**
+
+```
+             +-----------------------------------+
+             |                                   |
+     >------>|Call-------+---->--------------Succ|------->
+  from/to    |           |                       |    to/from
+a Byrd Box   |           |                       |   a Byrd Box
+on the left  |           |                       |  on the right
+     <---+---+Fail---<---+                   Redo|   +---<
+         |   |                                   |   |
+         |   +-----------------------------------+   |
+         |                                           |
+         +-------<----"no choicepoint left"----<-----+
+```
+
+**A predicate activation of a multi or non-deterministic predicate:**
+
+The ``multi'' predicate succeeds at least once, whereas the
+``non-deterministic'' predicate may not succeed even once. Any
+other behaviour is left unspecified. A redo might
+re-enter the predicate activation even if there are no
+solutions left.
+
+```
+             +-----------------------------------+
+             |                                   |
+     >------>|Call--->---+---->----+---->----Succ|------->
+  from/to    |           |         |             |    to/from
+a Byrd Box   |           V         ^             |   a Byrd Box
+on the left  |           |         |             |  on the right
+     <---+---+Fail---<---+---<-----+----<----Redo|---+---<
+         |   |                                   |   |
+         |   +-----------------------------------+   |
+         |                                           |
+         +-------<----"no choicepoint left"----<-----+
+```
+
+## See also
+
+**The Mercury Language Manual on "determinism"**
+
+https://mercurylang.org/information/doc-release/mercury_ref/Determinism-categories.html#Determinism-categories
+
+**Byrd Box Model**
+
+There is a separate page in the manual where the Byrd Box model is explained in the context of the debugger: [**Byrd Box Model**](https://eu.swi-prolog.org/pldoc/man?section=byrd-box-model)
+
+See also [my page on the Byrd Box Model](https://github.com/dtonhofer/prolog_notes/blob/master/other_notes/about_byrd_box_model/README.md), in particular: [Predicate well-behavedness](https://github.com/dtonhofer/prolog_notes/blob/master/other_notes/about_byrd_box_model/README.md#well-behaved)
+
+**More vocabulary**
+
+   - [SWI-Prolog glossary](https://www.swi-prolog.org/pldoc/man?section=glossary)
+   - [Stack Overflow: Fact, Rule, Procedure, Predicate](https://stackoverflow.com/questions/49898738/is-this-prolog-terminology-correct-fact-rule-procedure-predicate)
+
+**Predicate annotations**
+
+There is also a [related page for `pldoc` document generator](https://eu.swi-prolog.org/pldoc/man?section=modes)

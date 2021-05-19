@@ -1,0 +1,304 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=section(%27packages/pengines.html%27)
+
+## A modifiable version of the "PLTP state diagram"
+
+Can be found here 
+   - [as SVG](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_pengines/Pengine%20PLTP%20diagram.svg) 
+   - [as graphml](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_pengines/Pengine%20PLTP%20diagram.svg) 
+
+The paper on "Communicating Finite-State Machines" is
+
+   - Walled at [ACM Digital Library](https://dl.acm.org/doi/abs/10.1145/322374.322380)
+   - But there is a free copy floating around, too.
+
+Modeling a communication protocol between two (or more) processes is done by specifying a finite-state machine for each process, where an edge is traversed either "actively", sending a message to the other process or "passively" upon receipt of a message (via one or possibly more channels). Transitions are done alternatingly on both sides.
+
+See: 
+
+   - Wikipedia: [Communicating Finite State Machine](https://en.wikipedia.org/wiki/Communicating_finite-state_machine)
+
+The diagram as shown multiplies-out the state machines for the server and client into a single "protocol state machine". This is called a **Channel System** or **Global State Transition Diagram**.
+
+See: 
+
+   - Wikipedia: [Channel System](https://en.wikipedia.org/wiki/Channel_system_(computer_science))
+   - Wikipedia: [Reachability Analysis](https://en.wikipedia.org/wiki/Reachability_analysis)
+
+Notes:
+
+   - This is an "alternating state machine": A BOLD transition is always followed by a SLASH transition and vice-versa.
+   - Pengine processing or idling is done while the machine is in one of the states.
+   - Better labels for the states might be:
+      - 0 = pengine_inexistent
+      - 1 = pengine_creating or pengine_destroying
+      - 2 = pengine_idling
+      - 3 = pengine_running
+      - 4 = pengine_outputting, waiting for client to pull text
+      - 5 = pengine_prompting, waiting for client to push text
+      - 6 = pengine_waiting_for_cmd
+      - 7 = pengine_stopping
+   - All the messages/events shown are synchronous but there are also asynchronous messages like "abort" to kick the pengine out of state 3 - so this diagram is missing a few elements.
+   - AFAIK, this machine is independent of the HTTP session state: You can close the HTTP session, and reconnect later using a previously obtained Pengine Id. But are messages in the queue delivered at that point? We need to test!
+   - Missing is the timeout event which tears down a Pengine after 3 minutes of idling.
+   - All the messages are HTTP messages, which may have their own internal chunking for large data blocks. (What happens if there is an error in the HTTP protocol?)
+   - Websockets or HTTP/2 woule be more flexible for such a back-and-forth than HTTP/1.1. And maybe even XMPP (but you cannot readily drive these from a web browser).
+
+## Example: Setting up *local* pengines
+
+Here we create **local** engines (but they are not cleaned up properly, once 3 have been created, no more can be created even though the 3 exited after reaching their "idle timeout").
+
+Jan recommends to not use pengines locally. Use [engines](https://eu.swi-prolog.org/pldoc/man?section=engines) instead:
+
+> Local pengines have been out of fashion for a while. In most cases where you might want to use them engines are probably a way more efficient choice. These didn’t exist when Pengines were invented …
+
+```
+:- use_module(library(pengines)).
+:- use_module(library(settings)).
+
+attempt :-
+   set_setting(pengine_sandbox:idle_limit, 3), % default is 5 mins, shorten to 3s 
+   setting(pengine_sandbox:slave_limit,Max),
+   format("One can create ~d server/slave pengines~n",Max),
+   length(PengineIds,Max),
+   maplist(
+      [PengineId]>>pengine_create(
+                         [
+                         id(PengineId)
+                         ]),
+      PengineIds
+   ),
+   maplist(      
+      [PengineId]>>format("Created Pengine: ~q~n",PengineId),
+      PengineIds),      
+   format("Current threads~n",[]),      
+   forall(  
+      thread_property(ThreadId,id(NumThreadId)),
+      format("   ~q ~q~n",[ThreadId,NumThreadId])),
+   aggregate_all(count, pengines:child(_,_), CountBefore),
+   format("There are ~d pengines~n",CountBefore),
+   sleep(5),
+   % It would be better to join the threads here.
+   % There will be 3 x "Adios" on the screen.
+   aggregate_all(count, pengines:child(_,_), CountAfter),
+   format("There are ~d pengines~n",CountAfter),
+
+   % But now it's no longer possible to start another pengine...
+
+   \+ pengine_create(./lib/swipl/library/http/web/js/pengines.js
+                      [
+                      id(PengineId),
+                      at_exit(format('Adios!~n',[]))
+                      ]).
+```
+
+## Example code in the SWI-Prolog distribution
+
+We find the following:
+
+The javascript library providong function to invoke a pengine on a remote HTTP server from a browser is in =|$SWIPL_HOME/lib/swipl/library/http/web/js/pengines.js|=. It is pulled in by the example .html pages.
+
+The default options in that file are:
+
+```
+Pengine.options = {
+  format: "json",
+  server: "/pengine"   // i.e. query the same server as the one serving the page
+};
+```
+
+Under 
+
+   - =|$SWIPL_HOME/lib/swipl/doc/packages/examples/pengines/|= where =|$SWIPL_HOME|= is the home of installed SWI-Prolog
+   - or
+   - =|$SWIPL_DISTRO/packages/pengines/examples/|= where =|$SWIPL_DISTRO|= is the location of the to-be-compiled SWI-Prolog distribution
+
+we find:
+
+```
+|
+├── client.pl   - Simple client-side demo code
+├── server.pl   - Server-side demo code
+└── web         - Various web pages to demonstrate access-from-browser
+    ├── index.html         - List them all
+    ├── simple.html        - Simple demo running a Prolog query 
+    ├── chunking.html      - As above using paginated results     
+    ├── input_output.html  - Run a dialogue with I/O
+    ├── queens.html        - The famous 8 queens (on the web!)
+    ├── debugging.html     - Debugging
+    ├── hack.html          - You can't run just *any* Prolog goal
+    ├── pengine.html       - Pengine (doesn't work with sleep/1!!)
+    ├── queen.png
+    └── update-jquery
+```
+
+## Examine server.pl
+
+The code of =|server.pl|= **which actually starts a pengine server**
+
+```
+:- module(pengine_server,
+          [ server/1                    % +Port
+          ]).
+:- use_module(library(http/thread_httpd)).
+:- use_module(library(http/http_dispatch)).
+:- use_module(library(http/http_server_files)).
+:- use_module(library(http/http_files)).
+:- use_module(library(pengines)).
+:- use_module(pengine_sandbox:library(pengines)).
+
+:- http_handler(/, http_reply_from_files(web, []), [prefix]).
+
+server(Port) :-
+    http_server(http_dispatch, [port(Port)]).
+```
+
+   - There is a directive that calls http_handler/3, registering the handler http_reply_from_files/3  with the origin-of-files directory set to =|web|=, and this for any request start with =|/|=, i.e. for any and all requests.
+      - I'm not sure how the relative path =|web|= is resolved, I had to replace it with an absolute path to the =|web|= directory. Otherwise the "internal server error" is given as response, which is just indication that a predicate is failing, in this case, an indication that the requested file cannot be found or accessed (a bit hard to judge, more logging and more fine-grained error reporting would be needed). 
+      - In any case, given the =|Path|= of an URL, the web server will try to serve a file =|web/Path|=, i.e. any of the .html files in the distribution. 
+      - It rejects requests for things like =|../../../etc/passwd|=, which is perfect.
+   - Predicate =|server(Port)|= just calls http_server/2, the web-server predicate, with the the standard http_dispatch/1  from [library(http_dispatch)](https://eu.swi-prolog.org/pldoc/doc/_SWI_/library/http/http_dispatch.pl) and the TCP/IP port to use as arguments. 
+   - When =|server(Port)|= is called, any HTTP request will be handed to http_reply_from_files/3 as previously registered. We now are running a web file server!
+
+But where do the Pengines come into the picture?
+
+It turns out that if you load =|library(pengines)|=, the following HTTP handlers are declared via directives:
+
+```
+:- http_handler(root(pengine), http_404([]), [ id(pengines) ]).
+:- http_handler(root(pengine/create), http_pengine_create, [ time_limit(infinite), spawn([]) ]).
+:- http_handler(root(pengine/send), http_pengine_send, [ time_limit(infinite), spawn([]) ]).
+:- http_handler(root(pengine/pull_response), http_pengine_pull_response, [ time_limit(infinite), spawn([]) ]).
+:- http_handler(root(pengine/abort), http_pengine_abort, []).
+:- http_handler(root(pengine/detach), http_pengine_detach, []).
+:- http_handler(root(pengine/list), http_pengine_list, []).
+:- http_handler(root(pengine/ping), http_pengine_ping, []).
+:- http_handler(root(pengine/destroy_all), http_pengine_destroy_all, []).
+:- http_handler(root(pengine/'pengines.js'), http_reply_file(library('http/web/js/pengines.js'), []), []).
+:- http_handler(root(pengine/'plterm.css'), http_reply_file(library('http/web/css/plterm.css'), []), []).
+```
+
+So an infrastructure for handling pengine requests appears underneath URL =|/pengine|= and is available to http_server/2 under the above URLs. You are immediately good to go.
+
+## Running a pengine server and listing its pengines
+
+Suppose you have the above =|server.pl|= at hand, with =|web|= replaced by the appropriate path.
+
+Then:
+
+```
+?- [server].
+true.
+
+?- server(10001).
+% Started server at http://localhost:10001/
+true.
+```
+
+Now access http://localhost:10001/chunking.html with your web browser and kick off pengine processing several times in different tabs.
+
+You can list the running pengines with this code inspired by =|pengines.pl|=:
+
+```
+- use_module(library(pengines)).
+
+% Resulting dict:
+%
+% pengine{
+%    self:Id,                   % Identifier of the pengine. This is the same as the first argument.
+%    module:Id,                 % Temporary module used for running the Pengine (always bound to the same value of the Identifier).
+%    parent:Parent,             % Message queue to which the (local) pengine reports (what if it's not local?)             
+%    application:Application,   % Pengine runs the given application (module-without-source-name).
+%    destroy:Destroy,           % Destroy is =true= if the pengine is destroyed automatically after completing the query.             
+% }
+%           
+% The following are added depending on circumstances:
+%
+%    alias:Alias,                    % Name is the alias name of the pengine, as provided through the `alias` option when creating the pengine.
+%    remote:IsRemote                 % One of true, false to indicate whether this is a remote or a local pengine
+%    url:ServerUrl                   % URL of the remote server if this is a remote pengine
+%    thread:Thread                   % Thread number of pengine (different from 0) if this is a local pengine 
+%    source:source(SourceID,Source)  % Source is the source code with the given SourceID. May be present if the setting `debug_info` is present.
+%    detached:When                   % Time when the Pengine was detached.
+
+collect_one(Id,DictOut) :-
+   Dict = pengine{ self:Id, module:Id, parent:Parent, application:Application, destroy:Destroy },
+   pengines:current_pengine(Id,_,_,_,_,_),                                     % Backtrackably enumerate Id (to make sure Id does not change on the 2nd call to current_pengine/6)
+   format("Checking  out pengine ~q~n",[Id]),
+   pengines:current_pengine(Id,Parent,Thread,ServerUrl,Application,Destroy),   % Get more info about Pengine Id (this should succeed in any case)
+   maybe_add_detached(Id,Dict,Dict1),
+   maybe_add_alias(Id,Dict1,Dict2),
+   maybe_add_remote(Thread,ServerUrl,Dict2,Dict3),
+   maybe_add_source(Id,Dict3,DictOut).
+
+maybe_add_detached(Id,DictIn,DictOut) :-
+   pengines:pengine_detached(Id, When)
+   -> put_dict(_{detached:When},DictIn,DictOut)
+   ;  DictIn = DictOut.
+
+maybe_add_alias(Id,DictIn,DictOut) :-    
+   (pengines:child(Alias,Id),Alias\==Id)
+   -> put_dict(_{alias:Alias},DictIn,DictOut)
+   ;  DictIn = DictOut.
+    
+maybe_add_remote(Thread,ServerUrl,DictIn,DictOut) :-    
+   Thread == 0                                            
+   -> put_dict(_{remote:true,url:ServerUrl},DictIn,DictOut)
+   ;  put_dict(_{remote:false,thread:Thread},DictIn,DictOut).
+
+maybe_add_source(Id,DictIn,DictOut) :-    
+   pengines:pengine_data(Id, source(SourceID, Source))
+   -> put_dict(_{source:source(SourceID,Source)},DictIn,DictOut)
+   ;  DictIn = DictOut.
+
+% Collection information on all pengines
+
+collect_all(DictOut) :-
+   bagof(Id-DictEngine,collect_one(Id,DictEngine),BaggedPairs),
+   dict_pairs(DictOut,pengines,BaggedPairs).
+```
+
+In combination with a dict prettyprinter (which I still have to properly put into a package), you then get results like:
+
+```
+?- collect_all(D),dict_pp(D,_{border:true}).
+Checking  out pengine '17892012-ee6a-48cd-9a1a-f2570e9f8891'
+Checking  out pengine 'ffb1e780-a85b-47cc-be09-19970f024b53'
+Checking  out pengine 'b4b74d91-8492-4a22-a0af-903a83f6f658'
++-------------------------------------------------------------------------------------------+
+|                                         pengines                                          |
++-------------------------------------------------------------------------------------------+
+|17892012-ee6a-48cd-9a1a-f2570e9f8891 : +--------------------------------------------------+|
+|                                       |                     pengine                      ||
+|                                       +--------------------------------------------------+|
+|                                       |application : pengine_sandbox                     ||
+|                                       |destroy     : true                                ||
+|                                       |module      : 17892012-ee6a-48cd-9a1a-f2570e9f8891||
+|                                       |parent      : <message_queue>(0x7f44540054e0)     ||
+|                                       |remote      : false                               ||
+|                                       |self        : 17892012-ee6a-48cd-9a1a-f2570e9f8891||
+|                                       |thread      : <thread>(11,0x7f445c0167a0)         ||
+|                                       +--------------------------------------------------+|
+|b4b74d91-8492-4a22-a0af-903a83f6f658 : +--------------------------------------------------+|
+|                                       |                     pengine                      ||
+|                                       +--------------------------------------------------+|
+|                                       |application : pengine_sandbox                     ||
+|                                       |destroy     : true                                ||
+|                                       |module      : b4b74d91-8492-4a22-a0af-903a83f6f658||
+|                                       |parent      : <message_queue>(0x7f4454006a30)     ||
+|                                       |remote      : false                               ||
+|                                       |self        : b4b74d91-8492-4a22-a0af-903a83f6f658||
+|                                       |thread      : <thread>(13,0x7f445c01d8f0)         ||
+|                                       +--------------------------------------------------+|
+|ffb1e780-a85b-47cc-be09-19970f024b53 : +--------------------------------------------------+|
+|                                       |                     pengine                      ||
+|                                       +--------------------------------------------------+|
+|                                       |application : pengine_sandbox                     ||
+|                                       |destroy     : true                                ||
+|                                       |module      : ffb1e780-a85b-47cc-be09-19970f024b53||
+|                                       |parent      : <message_queue>(0x7f4454003700)     ||
+|                                       |remote      : false                               ||
+|                                       |self        : ffb1e780-a85b-47cc-be09-19970f024b53||
+|                                       |thread      : <thread>(9,0x7f445c01b9e0)          ||
+|                                       +--------------------------------------------------+|
++-------------------------------------------------------------------------------------------+
+```
