@@ -62,10 +62,15 @@
 # - automatically get the latest hamcrest and junit jars (used by JPL, the
 #   Java-Prolog bridge) from:
 #
-#   https://mvnrepository.com/artifact/org.hamcrest/hamcrest/ (currently 2.2; BSD 3 clause)
-#   https://mvnrepository.com/artifact/junit/junit/           (currently 4.13.2; EPL 1.0)
+#   https://mvnrepository.com/artifact/org.hamcrest/hamcrest/ 
+#   (currently version 2.2; license is BSD 3 clause)
+#   SHA-256 5e62846a89f05cd78cd9c1a553f340d002458380c320455dd1f8fc5497a8a1c1 
 #
-# (On a longer timeframe, move JPL to Junit Jupiter)
+#   https://mvnrepository.com/artifact/junit/junit/
+#   (currently version 4.13.2; license is EPL 1.0)
+#   SHA-256 8e495b634469d64fb8acfa3495a065cbacc8a0fff55ce1e31007be4c16dc57d3
+#
+#   (On a longer timeframe, move JPL to Junit Jupiter)
 #
 # - Disentangle building manual PDF
 #
@@ -82,10 +87,27 @@
 #
 # - What happens if Java is NOT installed? On this system, I have
 #   Adopt OpenJDK 11 ...
+#
+# - Maybe you want to do a local installation instead of a system-wide on 
+#   underneath /usr/local/logic ?
+#
+#   In that case, one should be able to specify the following on the command 
+#   line:
+# 
+#   - system_install_dir (and maybe its subdir!)
+#   - The toplevel_dir_fq
+#   - The directory with the hamcrest and junit jars
+#
+#   In some cases, one may also want to pull certain modules not from
+#   their official source but from an unoffical (i.e. forked)
+#   repository...
+#
+# - How do I build the documentation for the modules?
 # ===========================================================================
 
-# set -x # Uncomment for tracing information
-set -o nounset # No unset bash variables allowed
+# set -x # Uncomment this line for tracing information
+
+set -o nounset    # No unset bash variables allowed!
 
 # ===========================================================================
 # Obtain the URL of a remote repository to clone, as well as the
@@ -96,16 +118,16 @@ set -o nounset # No unset bash variables allowed
 # An exit here doesn't exit the script because this is called in a subshell
 # ===========================================================================
 
-perso_github_account=https://github.com/dtonhofer        # Probably want to change that!!
-swipl_github_account=https://github.com/SWI-Prolog       # Well-known and respected
-system_install_dir=/usr/local/logic                      # This looks like a good place for swipl, which will be in /usr/local/logic/swipl-<version>
-toplevel_dir_fq="$HOME/Development/swiplbuild"           # Where to put stuff "locally", i.e. in your home directory
-hamcrest_jar="hamcrest-2.2.jar"                          # the version number has to updated sometimes
-junit_jar="junit-4.13.2.jar"                             # the version number has to updated sometimes
+perso_github_account=https://github.com/dtonhofer   # You probably want to change that!
+swipl_github_account=https://github.com/SWI-Prolog  # Well-known and respected
+system_install_dir=/usr/local/logic                 # This looks like a good place for swipl, which will thus be in /usr/local/logic/swipl-<version> (TODO: Create dir if not exists)
+toplevel_dir_fq="$HOME/swiplbuild"                  # Where to (temporarily, for the build) put stuff in your home directory (TODO: Create the dir if it doesn't exist and/or ask user)
+hamcrest_jar="hamcrest-2.2.jar"                     # Download from Maven Central (see notes above); update version as needed
+junit_jar="junit-4.13.2.jar"                        # Download from Maven Central (see notes above); update version as needed
 
 
 giturl_and_subdir() {
-   local finality=${1:-}                  # "jpl" or "docs" or "system"
+   local finality=${1:-}                  # "jpl" (build the Java-Prolog bridge) or "docs" (build the docs) or "system" (build for /usr/local/logic)
    local element=${2:-}                   # "forked" (my personal fork) or "infra" (the original repo)
    local code="$finality,$element"
    case "$code" in
@@ -587,12 +609,12 @@ do_packages_exist() {
    # not an unknown system; check individual packages
 
    # - One need BOTH of libedit-devel and readline-devel.
-   # - If libarchive-devel is missing, one gets crazy error messages from ninja
+   # - If libarchive-devel is missing, one gets crazy error messages from ninja 
    #   about missing directories. So weird. Here is the text:
    #   ninja: error: 'man/archive', needed by 'man/lib/prologpack.tex', missing and no known rule to make it
    #   'ninja' command failed -- exiting
    # - GMP is need. If it is missing, at least the thread tests will
-   #   fail because "^/2" generates floats not integers.
+   #   fail because "^/2" generates floats not integers. 
    #   And the JPL (Java-Prolog Bridge) tests will fail, too.
 
    # Not in the list below; using these depends on taste & goals
@@ -725,7 +747,7 @@ build() {
    else
       #
       # TODO: This should not be a problem , it can always be created later
-      #
+      #	   
       if [[ ! -d $global_install_location ]]; then
          echo "The installation location '$global_install_location' does not exist -- exiting!" >&2
          exit 1
@@ -1202,7 +1224,7 @@ finality_match() {
 }
 
 # ===
-# main
+# main 
 # ===
 
 if [[ -z "$toplevel_dir_fq" || ! -d "$toplevel_dir_fq" ]]; then
