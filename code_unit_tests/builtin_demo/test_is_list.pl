@@ -11,17 +11,17 @@ test("An open list is not a list",fail) :-
 test("An atom is not a list",fail) :-
    is_list(x).
 
-test("A dict is not a list",fail) :-
+test("A dict is not a list (actually it's a compound term)",fail) :-
    is_list(_{}).
 
-test("A freshvar is not a list", fail) :-
-   is_list(_).
+test("An unbound variable is not a list", fail) :-
+   is_list(_List).
 
-test("Cyclic term is cyclic") :- 
+test("A cyclic term is cyclic") :- 
    give_me_cyclic(L),
    cyclic_term(L).
 
-test("A cyclic list is not a list") :-
+test("A cyclic term is not a list") :-
    give_me_cyclic(L),
    \+ is_list(L).
 
