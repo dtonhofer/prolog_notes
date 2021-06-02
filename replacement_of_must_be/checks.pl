@@ -21,7 +21,9 @@ Checks currently implemented (aliases are indicated with "/")
 
   var nonvar
   nonground ground
-  atom atomic compound
+  atom/symbol 
+  atomic/constant 
+  compound
   string stringy char                ("stringy" means it's an atom or a string)
   number 
   float 
@@ -42,7 +44,7 @@ Checks currently implemented (aliases are indicated with "/")
   pos0int/nonneg                     (positive-or-zero integer)
   negfloat posfloat                  (strictly negative/positive float)
   neg0float pos0float                (negative-or-zero/positive-or-zero float)
-  inty                               (an integer or a float that represents an integer)
+  inty                               (an integer or a float that represents an integer, e.g 1 or 1.0)
   neginty posinty                    (strictly negative/positive inty)
   neg0inty pos0inty                  (negative-or-zero/positive-or-zero inty)
   list/proper_list                   (a proper list, including the empty list)
@@ -51,6 +53,53 @@ Checks currently implemented (aliases are indicated with "/")
   forany(List)                       (recursive: pass any type test in list) 
   forall(List)                       (recursive: pass all type tests in list)
   fornone(List)                      (recursive: pass no type test in list
+
+Compare with: Checks from must_be/2. Those marked "Ok" exist in check_that/N
+
+ (Ok)  any                     : any term, including an unbound variable (this reduces to true)
+  Ok   atom,symbol             : passes atom/1
+  Ok   atomic,constant         : passes atomic/1
+  Ok oneof(L)                : ground term that is member of L; if there is an unbound variable in L, everything passes!
+  Ok compound                : passes compound/1, the complement of atomic/1 (includes dicts, but don't use that fact as that dict implementation through compounds may change!)
+     pair                    : a key-value pair or rather a compound term -/2
+     boolean                 : one of the two atoms 'true' or 'false'
+  Ok integer                 : passes integer/1
+  Ok positive_integer        : integer > 0
+  Ok negative_integer        : integer < 0
+  Ok nonneg                  : nonneg *integer*; this should really be called "nonneg_integer"
+  Ok                           ...corresponding tests >=0, >0 etc for *general* numbers are missing
+  Ok float                   : passes float/1 (in SWI-Prolog, an IEEE 64-bit float)
+  Ok rational                : a non-integer rational or an integer
+  Ok number                  : passes number/1
+     between(FloatL,FloatU)  : if FloatL is float, all other values may be float or integer (FIXME?); the limits are both INCLUSIVE; limits may be equal but NOT reversed
+     between(IntL,IntU)      : if IntL is integer, all other values must be integer; the limits are both INCLUSIVE; limits may be equal but NOT reversed
+                            FIXME: there should be specific between_int/2 and between_float/2 if one goes that way.
+     acyclic                 : passes acyclic_term/1, i.e. is an acyclic term; includes unbound var (the term is a tree if one disregards "internal sharing")
+     cyclic                  : passes cyclic_term/1, i.e. the term contains cycles (the term is a "rational tree"). Does not accept an unbound variable.
+  Ok char                    : atom of length 1
+     chars                   : list of 1-character atoms; includes the empty list
+     code                    : unicode code point (any integer between 0 and 0x10FFFF)
+     codes                   : list of integers >= 0; includes the empty list
+  Ok string                  : passes string/1, an SWI-Prolog string
+     text                    : atom or string or chars or codes (but not numbers even though some predicates "textify" those)
+  Ok var                     : passes var/1; must be an unbound variable
+  Ok nonvar                  : passes nonvar/1; anything except an unbound variable
+  Ok list,proper_list        : passes is_list/1 and is a proper/closed list; empty list is allowed
+     list(Type)              : proper list with elements of type Type (must_be/2(Type,_) is called on elements); empty list is allowed;
+                               on error the index is not indicated (why~~~). A type like "list(list(integer))" is ok!
+     list_or_partial_list    : A partial list (one ending in a variable: [x|_]). This includes an unbound variable.
+     callable                : passes callable/1. Relatively usesless, as "callable" is ill-defined. Basically (atom(X);compound(X))
+     dict                    : passes is_dict/1, an SWI-prolog dict (which is just a compound term of a particular form)
+     encoding                : valid name for a character encoding; see current_encoding/1, e.g. utf8 (but not "utf8" or 'utf-8'; also fails for 'iso_8859_1')
+     stream                  : passes is_stream/1, is a stream name or valid stream handle
+     type                    : Meta: Term is a valid type specification for must_be/2. This is done by looking up whether a clause `has_type(Type,_) :- ....` exists.
+                               Example: must_be(type,list(integer)). However, "must_be(type,list(grofx))": OK, but "must_be(type,grofx)": NOT OK.
+
+Possible extension:
+
+  predicate_indicator     : A Name/Arity predicate indicator
+  nonempty_list           : A list that is also nonempty
+                          : Tests for length of lists
 
 */
 
@@ -180,7 +229,9 @@ wellformed_sublist_check(List,X) :-
 elementary_checks([
    var,nonvar,
    nonground,ground,
-   atom,atomic,compound,
+   atom,symbol,
+   atomic,constant,
+   compound,
    string,stringy,char,
    number,float,integer,int,rational,nonint_rational,proper_rational,
    negnum,negnumber,
@@ -308,6 +359,19 @@ throw_2(instantiation,Msg,Culprit)    :- throw(error(check(not_instantiated_enou
 throw_2(groundedness,Msg,Culprit)     :- throw(error(check(not_ground             ,'?'     ,Msg,Culprit),_)).
 throw_2(random,Msg)                   :- throw(error(check(random                 ,'?'     ,Msg,'?'    ),_)).
 
+just_an_inty(X,Name,Throw) :-
+   (integer(X);inty_float(X))
+   ->
+   true
+   ;
+   throw_or_fail(type(int_or_float),X,Name,Throw,"inty"). 
+
+inty_float(X) :-
+   float(X),
+   X =\= -1.0Inf,
+   X =\= +1.0Inf,
+   round(X)=:=X.  % fails for NaN because NaN =/= NaN
+
 % TODO: the combined type-and-domain tests should probably throw "type error" on type
 % violation and "domain error" on domain violation; for now it's always just "type error".
 
@@ -352,6 +416,8 @@ eval(atom,X,Name,Throw) :-
     true
     ;
     throw_or_fail(type,X,Name,Throw,"atom")).
+eval(symbol,X,Name,Throw) :-
+   eval(atom,X,Name,Throw).
 eval(atomic,X,Name,Throw) :-
    !,
    (atomic(X)
@@ -359,6 +425,8 @@ eval(atomic,X,Name,Throw) :-
     true
     ;
     throw_or_fail(type,X,Name,Throw,"atomic")).
+eval(constant,X,Name,Throw) :-
+   eval(atomic,X,Name,Throw).
 eval(compound,X,Name,Throw) :-
    !,
    (compound(X)
@@ -535,10 +603,10 @@ eval(nonneg,X,Name,Throw) :-
    eval(pos0int,X,Name,Throw).
 eval(inty,X,Name,Throw) :-
    !,
-   inty_typeness(X,Name,Throw).
+   just_an_inty(X,Name,Throw). % may throw a type error
 eval(neginty,X,Name,Throw) :-
    !,
-   inty_typeness(X,Name,Throw),
+   eval(inty,X,Name,Throw), % may throw a type error; after this, only domain error
    ((integer(X),X<0;float(X),X<0.0)
     -> 
     true
@@ -546,7 +614,7 @@ eval(neginty,X,Name,Throw) :-
     throw_or_fail(domain,X,Name,Throw,"strictly negative inty")).
 eval(posinty,X,Name,Throw) :-
    !,
-   inty_typeness(X,Name,Throw),
+   eval(inty,X,Name,Throw), % may throw a type error; after this, only domain error
    ((integer(X),X>0;float(X),X>0.0)
     -> 
     true
@@ -554,7 +622,7 @@ eval(posinty,X,Name,Throw) :-
     throw_or_fail(domain,X,Name,Throw,"strictly positive inty")).
 eval(neg0inty,X,Name,Throw) :-
    !,
-   inty_typeness(X,Name,Throw),
+   eval(inty,X,Name,Throw), % may throw a type error; after this, only domain error
    ((integer(X),X=<0;float(X),X=<0.0)
     -> 
     true
@@ -562,7 +630,7 @@ eval(neg0inty,X,Name,Throw) :-
     throw_or_fail(domain,X,Name,Throw,"inty that is =< 0")).
 eval(pos0inty,X,Name,Throw) :-
    !,
-   inty_typeness(X,Name,Throw),
+   eval(inty,X,Name,Throw), % may throw a type error; after this, only domain error
    ((integer(X),X>=0;float(X),X>=0.0)
     -> 
     true
@@ -570,32 +638,36 @@ eval(pos0inty,X,Name,Throw) :-
     throw_or_fail(domain,X,Name,Throw,"inty that is >= 0")).
 eval(negfloat,X,Name,Throw) :-
    !,
-   ((float(X),X<0.0)
+   eval(float_not_nan,X,Name,Throw), % may throw a type error; after this, only domain error
+   (X<0.0
     -> 
     true
     ;
-    throw_or_fail(type,X,Name,Throw,"strictly negative float")).
+    throw_or_fail(domain,X,Name,Throw,"strictly negative float")).
 eval(posfloat,X,Name,Throw) :-
    !,
-   ((float(X),X>0.0)
+   eval(float_not_nan,X,Name,Throw), % may throw a type error; after this, only domain error
+   (X>0.0
     -> 
     true
     ;
-    throw_or_fail(type,X,Name,Throw,"strictly positive float")).
+    throw_or_fail(domain,X,Name,Throw,"strictly positive float")).
 eval(neg0float,X,Name,Throw) :-
    !,
-   ((float(X),X =< 0.0)
+   eval(float_not_nan,X,Name,Throw), % may throw a type error; after this, only domain error
+   (X =< 0.0
     -> 
     true
     ;
-    throw_or_fail(type,X,Name,Throw,"float that is =< 0")).
+    throw_or_fail(domain,X,Name,Throw,"float that is =< 0")).
 eval(pos0float,X,Name,Throw) :-
    !,
-   ((float(X),X >= 0.0)
+   eval(float_not_nan,X,Name,Throw), % may throw a type error; after this, only domain error
+   (X >= 0.0
     -> 
     true
     ;
-    throw_or_fail(type,X,Name,Throw,"float that is >= 0")).
+    throw_or_fail(domain,X,Name,Throw,"float that is >= 0")).
 eval(list,X,Name,Throw) :-
    !,
    (is_proper_list(X) 
@@ -607,13 +679,13 @@ eval(proper_list,X,Name,Throw) :-
    eval(list,X,Name,Throw).
 eval(member(List),X,Name,Throw) :-  % TODO this can probably be optimized
    !,
-   throw_if_X_nonground(X,Name,"listmembership"), 
+   throw_if_X_nonground(X,Name,"list-member-ship"), 
    throw_if_X_nonlist(List,Name,member), % must be a proper list
    ((\+ \+ member(X,List)) % \+ \+ to unroll any bindings
     -> 
     true
     ;  
-    throw_or_fail(domain,X,Name,Throw,"listmembership")).
+    throw_or_fail(domain,X,Name,Throw,"list-member-ship")).
 eval(random(V),_X,_Name,Throw) :-
    !,
    (maybe(V) 
@@ -637,16 +709,5 @@ eval(fornone(List),X,Name,Throw) :-
       member(Check,List),
       \+eval(Check,X,Name,Throw)).
 
-inty_typeness(X,Name,Throw) :-
-   (integer(X);inty_float(X))
-   ->
-   true
-   ;
-   throw_or_fail(type(int_or_float),X,Name,Throw,"inty"). 
 
-inty_float(X) :-
-   float(X),
-   X =\= -1.0Inf,
-   X =\= +1.0Inf,
-   round(X)=:=X.
- 
+

@@ -66,7 +66,7 @@ test("atom, failure") :-
       \+ check_that(X,[lenient(atom)])
    ).
 
-test("atom, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("atom, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(atom)]).
  
 test("atom, failure, throw", error(check(type,_,_,_))) :-
@@ -86,7 +86,7 @@ test("atomic, failure") :-
       \+ check_that(X,[lenient(atomic)])
    ).
 
-test("atomic, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("atomic, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(atomic)]).
  
 test("atomic, failure, throw", error(check(type,_,_,_))) :-
@@ -106,7 +106,7 @@ test("compound, failure") :-
       \+check_that(X,[lenient(compound)])
    ).
 
-test("compound, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("compound, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(compound)]).
  
 test("compound, failure, throw", error(check(type,_,_,_))) :-
@@ -126,7 +126,7 @@ test("string, failure") :-
       \+check_that(X,[lenient(string)])
    ).
 
-test("string, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("string, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(string)]).
  
 test("string, failure, throw", error(check(type,_,_,_))) :-
@@ -146,7 +146,7 @@ test("stringy, failure") :-
       \+check_that(X,[lenient(stringy)])
    ).
 
-test("stringy, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("stringy, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(stringy)]).
  
 test("stringy, failure, throw", error(check(type,_,_,_))) :-
@@ -166,7 +166,7 @@ test("char, failure") :-
       \+check_that(X,[lenient(char)])
    ).
 
-test("char, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("char, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(char)]).
  
 test("char, failure, throw", error(check(type,_,_,_))) :-
@@ -188,7 +188,7 @@ test("number, failure") :-
       \+check_that(X,[lenient(number)])
    ).
 
-test("number, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("number, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(number)]).
  
 test("number, failure, throw", error(check(type,_,_,_))) :-
@@ -210,7 +210,7 @@ test("float, failure") :-
       \+check_that(X,[lenient(float)])
    ).
 
-test("float, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("float, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(float)]).
  
 test("float, failure, throw", error(check(type,_,_,_))) :-
@@ -230,7 +230,7 @@ test("integer, failure") :-
       \+check_that(X,[lenient(integer)])
    ).
 
-test("integer, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("integer, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(integer)]).
  
 test("integer, failure, throw", error(check(type,_,_,_))) :-
@@ -252,7 +252,7 @@ test("rational, failure") :-
       \+check_that(X,[lenient(rational)])
    ).
 
-test("rational, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("rational, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(rational)]).
  
 test("rational, failure, throw", error(check(type,_,_,_))) :-
@@ -272,7 +272,7 @@ test("nonint_rational, failure") :-
       \+check_that(X,[lenient(nonint_rational)])
    ).
 
-test("nonint_rational, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("nonint_rational, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(nonint_rational)]).
  
 test("nonint_rational, failure, throw", error(check(type,_,_,_))) :-
@@ -295,7 +295,7 @@ test("negnumber, failure") :-
       \+check_that(X,[lenient(negnumber)])
    ).
 
-test("negnumber, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("negnumber, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(negnumber)]).
  
 test("negnumber, failure, throw", error(check(type,_,_,_))) :-
@@ -318,7 +318,7 @@ test("posnumber, failure") :-
       \+check_that(X,[lenient(posnumber)])
    ).
 
-test("posnumber, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("posnumber, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(posnumber)]).
  
 test("posnumber, failure, throw", error(check(type,_,_,_))) :-
@@ -338,7 +338,7 @@ test("non0number, failure") :-
       \+check_that(X,[lenient(non0number)])
    ).
 
-test("non0number, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("non0number, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(non0number)]).
  
 test("non0number, failure, throw", error(check(type,_,_,_))) :-
@@ -361,7 +361,7 @@ test("float_not_nan, failure") :-
       \+check_that(X,[lenient(float_not_nan)])
    ).
 
-test("float_not_nan, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("float_not_nan, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(float_not_nan)]).
  
 test("float_not_nan, failure, throw", error(check(type,_,_,_))) :-
@@ -384,7 +384,7 @@ test("float_not_inf, failure") :-
       \+check_that(X,[lenient(float_not_inf)])
    ).
 
-test("float_not_inf, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("float_not_inf, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(float_not_inf)]).
  
 test("float_not_inf, failure, throw", error(check(type,_,_,_))) :-
@@ -407,7 +407,7 @@ test("float_not_neginf, failure") :-
       \+check_that(X,[lenient(float_not_neginf)])
    ).
 
-test("float_not_neginf, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("float_not_neginf, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(float_not_neginf)]).
  
 test("float_not_neginf, failure, throw", error(check(type,_,_,_))) :-
@@ -430,7 +430,7 @@ test("float_not_posinf, failure") :-
       \+check_that(X,[lenient(float_not_posinf)])
    ).
 
-test("float_not_posinf, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("float_not_posinf, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(float_not_posinf)]).
  
 test("float_not_posinf, failure, throw", error(check(type,_,_,_))) :-
@@ -450,7 +450,7 @@ test("negint, failure") :-
       \+check_that(X,[lenient(negint)])
    ).
 
-test("negint, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("negint, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(negint)]).
  
 test("negint, failure, throw", error(check(type,_,_,_))) :-
@@ -470,7 +470,7 @@ test("posint, failure") :-
       \+check_that(X,[lenient(posint)])
    ).
 
-test("posint, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("posint, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(posint)]).
  
 test("posint, failure, throw", error(check(type,_,_,_))) :-
@@ -490,7 +490,7 @@ test("neg0int, failure") :-
       \+check_that(X,[lenient(neg0int)])
    ).
 
-test("neg0int, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("neg0int, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(neg0int)]).
  
 test("neg0int, failure, throw", error(check(type,_,_,_))) :-
@@ -510,7 +510,7 @@ test("pos0int, failure") :-
       \+check_that(X,[lenient(pos0int)])
    ).
 
-test("pos0int, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("pos0int, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(pos0int)]).
  
 test("posint, failure, throw", error(check(type,_,_,_))) :-
@@ -542,11 +542,8 @@ test("inty, strict, type exception") :-
       catch(check_that(X,[strict(inty)]),error(check(type,_,_,_),_),true)
    ).
       
-test("inty, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("inty, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(inty)]).
- 
-test("inty, failure, throw", error(check(type,_,_,_))) :-
-   check_that(foo,[strict(inty)]).
 
 % --- posinty
 
@@ -580,12 +577,9 @@ test("posinty, strict, domain exception") :-
       catch(check_that(X,[strict(posinty)]),error(check(domain,_,_,_),_),true)
    ).
    
-test("posinty, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("posinty, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(posinty)]).
  
-test("posinty, failure, throw", error(check(type,_,_,_))) :-
-   check_that(foo,[strict(posinty)]).
-
 % --- neginty
 
 test("neginty, success") :-
@@ -603,12 +597,24 @@ test("neginty, failure") :-
       \+check_that(X,[lenient(neginty)])
    ).
 
-test("neginty, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("neginty, strict, type exception") :-
+   NegInf is -1.0Inf,
+   PosInf is +1.0Inf,   
+   NaN is nan,
+   forall(
+      member(X,[foo, "foo", 1r12, -1.5, +1.5, NegInf, PosInf, NaN, 0.00000001 ]),
+      catch(check_that(X,[strict(neginty)]),error(check(type,_,_,_),_),true)
+   ).
+
+test("neginty, strict, domain exception") :-
+   forall(
+      member(X,[0, 0.0, -0.0, 1000, 1000.0]),
+      catch(check_that(X,[strict(neginty)]),error(check(domain,_,_,_),_),true)
+   ).
+
+test("neginty, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(neginty)]).
  
-test("neginty, failure, throw", error(check(type,_,_,_))) :-
-   check_that(foo,[strict(neginty)]).
-
 % --- pos0inty
 
 test("pos0inty, success") :-
@@ -626,12 +632,24 @@ test("pos0inty, failure") :-
       \+check_that(X,[lenient(pos0inty)])
    ).
 
-test("pos0inty, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("pos0inty, strict, type exception") :-
+   NaN is nan,
+   NegInf is -1.0Inf,
+   PosInf is +1.0Inf,   
+   forall(
+      member(X,[foo, "foo", 1r12, -1.5, +1.5, NegInf, PosInf, NaN, 0.00000001]),
+      catch(check_that(X,[strict(pos0inty)]),error(check(type,_,_,_),_),true)
+   ).
+
+test("pos0inty, strict, domain exception") :-
+   forall(
+      member(X,[ -1000.0 ]),
+      catch(check_that(X,[strict(pos0inty)]),error(check(domain,_,_,_),_),true)
+   ).
+
+test("pos0inty, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(pos0inty)]).
  
-test("pos0inty, failure, throw", error(check(type,_,_,_))) :-
-   check_that(foo,[strict(pos0inty)]).
-
 % --- neg0inty
 
 test("neg0inty, success") :-
@@ -649,7 +667,7 @@ test("neg0inty, failure") :-
       \+check_that(X,[lenient(neg0inty)])
    ).
 
-test("neg0inty, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("neg0inty, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(neg0inty)]).
  
 test("neg0inty, failure, throw", error(check(type,_,_,_))) :-
@@ -660,7 +678,7 @@ test("neg0inty, failure, throw", error(check(type,_,_,_))) :-
 test("negfloat, success") :-
    NegInf is -1.0Inf,
    forall(
-      member(X,[NegInf,-2.0,-1.0]),
+      member(X,[NegInf, -2.0, -1.0]),
       check_that(X,[lenient(negfloat)])
    ).
 
@@ -668,15 +686,26 @@ test("negfloat, failure") :-
    PosInf is +1.0Inf,
    NaN is nan,
    forall(
-      member(X,[foo,"foo",1.0,-1,0,-0.0,0.0,PosInf,NaN]),
+      member(X,[foo, "foo", 1.0, -1,0, -0.0, 0.0, PosInf, NaN]),
       \+check_that(X,[lenient(negfloat)])
    ).
 
-test("negfloat, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("negfloat, strict, type exception") :-
+   NaN is nan,
+   forall(
+      member(X,[foo, "foo", 1r12, 0, NaN]),
+      catch(check_that(X,[strict(negfloat)]),error(check(type,_,_,_),_),true)
+   ).
+
+test("negfloat, strict, domain exception") :-
+   PosInf is +1.0Inf,
+   forall(
+      member(X,[0.0, -0.0, 1000.0, PosInf]),
+      catch(check_that(X,[strict(negfloat)]),error(check(domain,_,_,_),_),true)
+   ).
+
+test("negfloat, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(negfloat)]).
- 
-test("negfloat, failure, throw", error(check(type,_,_,_))) :-
-   check_that(0.0,[strict(negfloat)]).
 
 % --- (strictly) positive float
 
@@ -695,18 +724,29 @@ test("posfloat, failure") :-
       \+check_that(X,[lenient(posfloat)])
    ).
 
-test("posfloat, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("posfloat, strict, type exception") :-
+   NaN is nan,
+   forall(
+      member(X,[foo, "foo", 1r12, 0, NaN]),
+      catch(check_that(X,[strict(posfloat)]),error(check(type,_,_,_),_),true)
+   ).
+
+test("posfloat, strict, domain exception") :-
+   NegInf is -1.0Inf,
+   forall(
+      member(X,[0.0, -0.0, -1000.0, NegInf]),
+      catch(check_that(X,[strict(posfloat)]),error(check(domain,_,_,_),_),true)
+   ).
+
+test("posfloat, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(posfloat)]).
  
-test("posfloat, failure, throw", error(check(type,_,_,_))) :-
-   check_that(0.0,[strict(posfloat)]).
-
 % --- negative-or-zero float
 
 test("neg0float, success") :-
    NegInf is -1.0Inf,
    forall(
-      member(X,[NegInf,-2.0,-1.0,0.0]),
+      member(X,[NegInf, -2.0, -1.0, 0.0]),
       check_that(X,[lenient(neg0float)])
    ).
 
@@ -714,16 +754,27 @@ test("neg0float, failure") :-
    PosInf is +1.0Inf,
    NaN is nan,
    forall(
-      member(X,[foo,"foo",1.0,-1,0,PosInf,NaN]),
+      member(X,[foo, "foo", 1r12, 0, 1000, 1000.0, 1.0, PosInf, NaN]),
       \+check_that(X,[lenient(neg0float)])
    ).
 
-test("neg0float, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("neg0float, strict, type exception") :-
+   NaN is nan,
+   forall(
+      member(X,[foo, "foo", 1r12, 0, 1000, NaN]),
+      catch(check_that(X,[strict(neg0float)]),error(check(type,_,_,_),_),true)
+   ).
+
+test("neg0float, strict, domain exception") :-
+   PosInf is +1.0Inf,
+   forall(
+      member(X,[0.0, -0.0, 1000.0, 1.0, PosInf]),
+      catch(check_that(X,[strict(neg0float)]),error(check(domain,_,_,_),_),true)
+   ).
+
+test("neg0float, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(neg0float)]).
  
-test("neg0float, failure, throw", error(check(type,_,_,_))) :-
-   check_that(1.0,[strict(neg0float)]).
-
 % --- positive-or-zero float
 
 test("pos0float, success") :-
@@ -741,11 +792,11 @@ test("pos0float, failure") :-
       \+check_that(X,[lenient(pos0float)])
    ).
 
-test("pos0float, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("pos0float, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(pos0float)]).
  
 test("pos0float, failure, throw", error(check(type,_,_,_))) :-
-   check_that(-1.0,[strict(pos0float)]).
+   check_that(foo,[strict(pos0float)]).
 
 % --- list
 
@@ -761,7 +812,7 @@ test("list, failure") :-
       \+check_that(X,[lenient(list)])
    ).
 
-test("list, failure, uninstantiated",error(check(not_instantiated_enough,_,_,_))) :-
+test("list, lenient, uninstantiated exception",error(check(not_instantiated_enough,_,_,_))) :-
    check_that(_,[lenient(list)]).
  
 test("list, failure, throw", error(check(type,_,_,_))) :-
