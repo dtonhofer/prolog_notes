@@ -1,5 +1,27 @@
 https://eu.swi-prolog.org/pldoc/doc_for?object=atom_length/2
 
+## Efficiency
+
+This test: 
+
+```
+atom_length(A,1) 
+```
+
+tests whether the length of =|A|= is 1.
+
+It is (should be) equivalent to
+
+```
+atom_length(A,L), L=1.
+```
+
+i.e. the length of =|A|= is determined first, then unified with 1.
+
+This may be efficient or inefficient depending on how the length of a string is or atom is handled (if it's a C string, it's inefficient). 
+
+Should there be a task-specific =|atom_length_test(A,L)|= predicate where =|L|= needs to be instantiated, which can fail-fast?
+
 ## Doc and Design needs help or surgery
 
 In fact, atom_length/2 takes "anytext" (see [Predicates that operate on strings](https://eu.swi-prolog.org/pldoc/man?section=string-predicates)) as first argument:

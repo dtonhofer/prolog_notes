@@ -1,0 +1,53 @@
+https://eu.swi-prolog.org/pldoc/man?predicate=atom_concat/3
+
+## Your choices
+
+   - atom_concat/3 - ISO (i.e. there is a predicate with the name in the standard), generates atom, accepts string/atom. Can break argument 3 into subatoms.
+   - atomic_concat/3 - not ISO, generates atom, accepts string/atom. Like atom_concat/3. **Refuses** to break argument 3 into subatoms.
+   - atomic_list_concat/2 - not ISO, concatenate atomics from a list into a single atom. **Refuses** to break argument 2 into subatoms (even for unique solution).
+      - **Refuses** string at argument 2 in _accept_ mode (that's likely a bug). 
+   - atomic_list_concat/3 - not ISO, concatenate atomics from a list, plus a separator, into a single atom (i.e. performs **string join** or **intersperse**). Can break 3rd argument into subatoms along non-empty separator (i.e. can perform **string split**).
+      - **Refuses** string at argument 3 in _accept_ mode (that's likely a bug). 
+   - atomics_to_string/2 - Like atomic_list_concat/2, but generates string at argument 2. 
+      - **Refuses** atom at argument 2 in _accept_ mode (that's likely a bug). 
+   - atomics_to_string/3 - Like atomic_list_concat/3, but generates string at argument 3.
+      - **Refuses** atom at argument 3 in _accept_ mode (that's likely a bug). 
+
+## Test code
+
+```
+:- begin_tests(atom_concat).
+
+test("atom_concat/3 generates atom at the 3rd argument") :-
+   atom_concat(a,b,X),
+   assertion(X==ab).
+   
+test("atom_concat/3 in 'accept mode' allows string at 3rd argument") :-
+   atom_concat(a,b,"ab").
+
+test("atom_concat/3 accepts string at argument 1 and 2") :-
+   atom_concat("a",b,X),
+   assertion(X==ab),
+   atom_concat(a,"b",Y),
+   assertion(Y==ab),
+   atom_concat("a","b",Z),
+   assertion(Z==ab).
+   
+test("atom_concat/3 actually accepts atomic at argument 1 and 2 and even 3") :-
+   atom_concat(1,2,X),
+   assertion(X=='12'),
+   atom_concat(1,2,12).
+
+test("atom_concat/3 generates possible inputs") :-
+   bagof(X-Y,atom_concat(X,Y,ab),Bag1),
+   assertion(Bag1 == [''-ab,a-b,ab-'']),
+   bagof(X-Y,atom_concat(X,Y,12),Bag2),
+   assertion(Bag2 == [''-'12','1'-'2','12'-'']).
+
+test("atom_concat/3 concatenating rationals is weird") :-
+   atom_concat(1r12,2r4,X),
+   assertion(X == '1r121r2').
+   
+:- end_tests(atom_concat).
+```
+

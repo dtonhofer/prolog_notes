@@ -100,6 +100,13 @@ Possible extension:
   predicate_indicator     : A Name/Arity predicate indicator
   nonempty_list           : A list that is also nonempty
                           : Tests for length of lists
+  equals
+  arith_equals
+  subsumes
+  less_than
+  more_than
+  would_unify
+  does_not_unify
 
 */
 
@@ -310,8 +317,8 @@ throw_if_X_uninstantiated(X,Name,Ness) :-
    var(X)
    -> 
    (select_name(Name,Name2),
-    format(string(Msg),"... ~s to be instantiated. Can't check for ~s-ness",[Name2,Ness]),
-    throw_2(instantiation,Msg,X))
+    format(string(Msg),"~s should be more instantiated. Can't check for '~s-ness'",[Name2,Ness]),
+    throw_2(too_little_instantiation,Msg,X))
    ;
    true.
 
@@ -319,7 +326,7 @@ throw_if_X_nonground(X,Name,Ness) :-
    \+ground(X)
    ->
    (select_name(Name,Name2),
-    format(string(Msg),"... ~s to be ground. Can't check for ~s-ness",[Name2,Ness]),
+    format(string(Msg),"~s should be ground. Can't check for '~s-ness'",[Name2,Ness]),
     throw_2(groundedness,Msg,X))
    ;
    true.
@@ -328,36 +335,84 @@ throw_if_X_nonlist(X,Name,Ness) :-
    \+is_proper_list(X)
    ->
    (select_name(Name,Name2),
-    format(string(Msg),"... ~s to be a proper list. Can't check for ~s-ness",[Name2,Ness]),
+    format(string(Msg),"~s should be a proper list. Can't check for '~s-ness'",[Name2,Ness]),
     throw_2(type,Msg,X))
    ;
    true.
  
 throw_or_fail_for_case_random(Throw) :-
    throw_is_set(Throw), % if this fails, the call fails (which is what we want)
-   throw_2(random,"... random failure after calling maybe/1").
+   throw_2(random,"random failure after calling maybe/1").
 
 throw_or_fail(Error,X,Name,Throw,Ness) :-
    throw_if_X_uninstantiated(X,Name,Ness),
    throw_is_set(Throw), % if this fails, the call fails (which is what we want)
    select_name(Name,Name2),
-   format(string(Msg),"... ~s to fulfill ~s-ness",[Name2,Ness]),
+   format(string(Msg),"~s should fulfill '~s-ness'",[Name2,Ness]),
    throw_2(Error,Msg,X).
 
 throw_or_fail_missing_ok(Error,X,Name,Throw,Ness) :-
    throw_is_set(Throw), % if this fails, the call fails (which is what we want)
    select_name(Name,Name2),
-   format(string(Msg),"... ~s to fulfill ~s-ness",[Name2,Ness]),
+   format(string(Msg),"~s should fulfill '~s-ness'",[Name2,Ness]),
    throw_2(Error,Msg,X).
 
-throw_2(domain(Expected),Msg,Culprit) :- throw(error(check(domain                 ,Expected,Msg,Culprit),_)).
-throw_2(type(Expected),Msg,Culprit)   :- throw(error(check(type                   ,Expected,Msg,Culprit),_)).
-throw_2(domain,Msg,Culprit)           :- throw(error(check(domain                 ,'?'     ,Msg,Culprit),_)).
-throw_2(type,Msg,Culprit)             :- throw(error(check(type                   ,'?'     ,Msg,Culprit),_)).
-throw_2(uninstantiation,Msg,Culprit)  :- throw(error(check(too_instantiated       ,'?'     ,Msg,Culprit),_)).
-throw_2(instantiation,Msg,Culprit)    :- throw(error(check(not_instantiated_enough,'?'     ,Msg,Culprit),_)).
-throw_2(groundedness,Msg,Culprit)     :- throw(error(check(not_ground             ,'?'     ,Msg,Culprit),_)).
-throw_2(random,Msg)                   :- throw(error(check(random                 ,'?'     ,Msg,'?'    ),_)).
+throw_2(domain(Expected),Msg,Culprit)         :- throw(error(check(domain                   ,Expected,Msg,Culprit),_)).
+throw_2(type(Expected),Msg,Culprit)           :- throw(error(check(type                     ,Expected,Msg,Culprit),_)).
+throw_2(domain,Msg,Culprit)                   :- throw(error(check(domain                   ,_       ,Msg,Culprit),_)).
+throw_2(type,Msg,Culprit)                     :- throw(error(check(type                     ,_       ,Msg,Culprit),_)).
+throw_2(too_much_instantiation,Msg,Culprit)   :- throw(error(check(too_much_instantiation   ,_       ,Msg,Culprit),_)). % ISO's "uninstantiation error"
+throw_2(too_little_instantiation,Msg,Culprit) :- throw(error(check(too_little_instantiation ,_       ,Msg,Culprit),_)). % ISO's "instantiation error"
+throw_2(groundedness,Msg,Culprit)             :- throw(error(check(not_ground               ,_       ,Msg,Culprit),_)).
+throw_2(random,Msg)                           :- throw(error(check(random                   ,_       ,Msg,_      ),_)).
+
+% Transforming the "formal" term of an exception, i.e. the 1st argument of error(Formal,Context)
+% into something readable by hooking into the error_message//1 multifile DCG rule.
+
+extended_msg(domain,"the culprit is outside the required domain").
+extended_msg(type,"the culprit is not of the required type").
+extended_msg(too_much_instantiation,"the culprit is already (fully) instantiated").
+extended_msg(too_little_instantiation,"the culprit is not instantiated (enough)").
+extended_msg(not_ground,"the culprit should be ground").
+extended_msg(random,"this is a random error due to the outcome of maybe/1").
+
+:- multifile prolog:error_message//1.  % 1-st argument of error term
+
+prolog:error_message(check(Type,Expected,Msg,Culprit)) -->
+    { build_main_text_pair(Type,MainTextPair) },
+    [ MainTextPair, nl ],
+    lineify_expected(Expected),
+    lineify_msg(Msg),
+    lineify_culprit(Culprit).
+
+build_main_text_pair(Type,MainTextPair) :-
+   extended_msg(Type,ExMsg),
+   !,
+   atomics_to_string([ExMsg],"",ExMsgStr), % make sure it's string
+   MainTextPair = 'check failed : ~q error (~s)'-[Type,ExMsgStr].
+build_main_text_pair(Type,MainTextPair) :-
+   MainTextPair = 'check failed : ~q error'-[Type].
+
+lineify_expected(Expected) --> 
+   { nonvar(Expected), atomics_to_string([Expected],"",ExpectedStr) },
+   !,
+   [ '   expected  : ~s'-[ExpectedStr], nl ].
+lineify_expected(_) --> [].
+
+lineify_msg(Msg) -->
+   { nonvar(Msg), atomics_to_string([Msg],"",MsgStr) },
+   !,
+   [ '   message   : ~s'-[MsgStr], nl ].
+lineify_msg(_) --> [].
+
+lineify_culprit(Culprit) -->
+   { nonvar(Culprit), atomics_to_string([Culprit],"",CulpritStr) },
+   !,
+   [ '   culprit   : ~s'-[CulpritStr], nl ].
+lineify_culprit(_) --> [].
+
+
+% Some helpers
 
 just_an_inty(X,Name,Throw) :-
    (integer(X);inty_float(X))
@@ -372,14 +427,7 @@ inty_float(X) :-
    X =\= +1.0Inf,
    round(X)=:=X.  % fails for NaN because NaN =/= NaN
 
-% TODO: the combined type-and-domain tests should probably throw "type error" on type
-% violation and "domain error" on domain violation; for now it's always just "type error".
-
-% TODO: these should not throw the ISO error but a dedicated error:
-%
-% check_error([domain|type],Msg,Culprit)
-%
-% For this, a proper printer for the toplevel needs to be defined.
+% Evaluate a given check
 
 eval(var,X,Name,Throw) :-
    !,
@@ -387,14 +435,14 @@ eval(var,X,Name,Throw) :-
     -> 
     true
     ;
-    throw_or_fail_missing_ok(domain,X,Name,Throw,"var")).
+    throw_or_fail_missing_ok(too_much_instantiation,X,Name,Throw,"var")).
 eval(nonvar,X,Name,Throw) :-
    !,
    (nonvar(X)
     -> 
     true
     ;
-    throw_or_fail_missing_ok(domain,X,Name,Throw,"nonvar")).
+    throw_or_fail_missing_ok(too_little_instantiation,X,Name,Throw,"nonvar")).
 eval(ground,X,Name,Throw) :-
    !,
    (ground(X)

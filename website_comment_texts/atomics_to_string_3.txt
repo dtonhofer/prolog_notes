@@ -1,0 +1,93 @@
+## Your choices
+
+   - atom_concat/3 - ISO (i.e. there is a predicate with the name in the standard), generates atom, accepts string/atom. Can break argument 3 into subatoms.
+   - atomic_concat/3 - not ISO, generates atom, accepts string/atom. Like atom_concat/3. **Refuses** to break argument 3 into subatoms.
+   - atomic_list_concat/2 - not ISO, concatenate atomics from a list into a single atom. **Refuses** to break argument 2 into subatoms (even for unique solution).
+      - **Refuses** string at argument 2 in _accept_ mode (that's likely a bug). 
+   - atomic_list_concat/3 - not ISO, concatenate atomics from a list, plus a separator, into a single atom (i.e. performs **string join** or **intersperse**). Can break 3rd argument into subatoms along non-empty separator (i.e. can perform **string split**).
+      - **Refuses** string at argument 3 in _accept_ mode (that's likely a bug). 
+   - atomics_to_string/2 - Like atomic_list_concat/2, but generates string at argument 2. 
+      - **Refuses** atom at argument 2 in _accept_ mode (that's likely a bug). 
+   - atomics_to_string/3 - Like atomic_list_concat/3, but generates string at argument 3.
+      - **Refuses** atom at argument 3 in _accept_ mode (that's likely a bug). 
+
+## A hand-coded "intersperse" might be written like this
+
+```
+intersperse(['',In2|Ins] ,['/'|Outs]) :-
+  !,
+  intersperse([In2|Ins],Outs).
+  
+intersperse([In1,In2|Ins],[In1,'/'|Outs]) :-
+  !,
+  intersperse([In2|Ins],Outs).
+
+intersperse([''],[]) :- !.
+intersperse([In],[In]) :- !.
+intersperse([],[]).
+```
+
+## Test code
+
+```
+:- begin_tests(atomics_to_string_3).
+
+test("atomics_to_string/3 always generates atom at the 3rd argument from any list-of-atomics") :-
+   atomics_to_string([a,b],'&',X1A),
+   assertion(X1A=="a&b"),
+   atomics_to_string(["a","b"],'&',X2A),
+   assertion(X2A=="a&b"),
+   atomics_to_string([a,"b",12],'&',X3A),
+   assertion(X3A=="a&b&12"),
+   atomics_to_string([a,b],"&",X1S),
+   assertion(X1S=="a&b"),
+   atomics_to_string(["a","b"],"&",X2S),
+   assertion(X2S=="a&b"),
+   atomics_to_string([a,"b",12],"&",X3S),
+   assertion(X3S=="a&b&12").   
+
+test("atomics_to_string/3 in 'accept mode'") :-
+   atomics_to_string([a,b],'&',"a&b"),
+   atomics_to_string(["a","b"],'&',"a&b"),
+   atomics_to_string([a,"b",12],'&',"a&b&12"),
+   atomics_to_string([a,b],"&","a&b"),
+   atomics_to_string(["a","b"],"&","a&b"),
+   atomics_to_string([a,"b",12],"&","a&b&12").   
+
+test("atomics_to_string/3 in 'accept mode' (surprisingly) disallows atom for argument 2",fail) :-
+   atomics_to_string(["a",b],'&','a&b').
+
+test("atomics_to_string/3 edge case works as expected") :-
+   atomics_to_string([],'',X1),
+   assertion(X1==""),
+   atomics_to_string([''],'',X2),
+   assertion(X2==""),   
+   atomics_to_string(['',''],'',X3),
+   assertion(X3==""),
+   atomics_to_string([""],'',X4),
+   assertion(X4==""),   
+   atomics_to_string(["",""],'',X5),
+   assertion(X5=="").
+
+test("atomics_to_string/3 splits as it should") :-
+   atomics_to_string(L1,"&","a&b&c"),
+   assertion(L1==[a,b,c]),
+   atomics_to_string(L2,'&',"a&b&c"),
+   assertion(L2==[a,b,c]), 
+   atomics_to_string(L3,"&",'a&b&c'),
+   assertion(L3==[a,b,c]),
+   atomics_to_string(L4,'&','a&b&c'),
+   assertion(L4==[a,b,c]),    
+   atomics_to_string(L5,'&',"a&&b&&c"),
+   assertion(L5==[a,'',b,'',c]),
+   atomics_to_string(L6,'&','&a&&b&&c&'),
+   assertion(L6==['',a,'',b,'',c,'']).
+
+test("atomics_to_string/3 processing input consisting only of splitters") :-   
+   atomics_to_string(L1,'&','&&&'),
+   assertion(L1==['','','','']),
+   atomics_to_string(L2,'foo','foofoo'),
+   assertion(L2==['','','']).
+   
+:- end_tests(atomics_to_string_3).
+```

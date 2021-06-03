@@ -1,0 +1,115 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=atomic_list_concat/3
+
+## Your choices
+
+   - atom_concat/3 - ISO (i.e. there is a predicate with the name in the standard), generates atom, accepts string/atom. Can break argument 3 into subatoms.
+   - atomic_concat/3 - not ISO, generates atom, accepts string/atom. Like atom_concat/3. **Refuses** to break argument 3 into subatoms.
+   - atomic_list_concat/2 - not ISO, concatenate atomics from a list into a single atom. **Refuses** to break argument 2 into subatoms (even for unique solution).
+      - **Refuses** string at argument 2 in _accept_ mode (that's likely a bug). 
+   - atomic_list_concat/3 - not ISO, concatenate atomics from a list, plus a separator, into a single atom (i.e. performs **string join** or **intersperse**). Can break 3rd argument into subatoms along non-empty separator (i.e. can perform **string split**).
+      - **Refuses** string at argument 3 in _accept_ mode (that's likely a bug). 
+   - atomics_to_string/2 - Like atomic_list_concat/2, but generates string at argument 2. 
+      - **Refuses** atom at argument 2 in _accept_ mode (that's likely a bug). 
+   - atomics_to_string/3 - Like atomic_list_concat/3, but generates string at argument 3.
+      - **Refuses** atom at argument 3 in _accept_ mode (that's likely a bug). 
+
+## Another example
+
+Useful for disassembling a path relative:
+
+```
+?- atomic_list_concat([Seg1,Seg2,Seg3],/,"my/fav/location").
+Seg1 = my,
+Seg2 = fav,
+Seg3 = location.
+```
+
+Or an absolute path:
+
+```
+?- atomic_list_concat(['',Seg1,Seg2,Seg3],/,"/my/fav/location").
+Seg1 = my,
+Seg2 = fav,
+Seg3 = location.
+```
+
+## Test code
+
+```
+:- begin_tests(atomic_list_concat_3).
+
+test("atomic_list_concat/3 always generates atom at the 3rd argument from any list-of-atomics") :-
+   atomic_list_concat([a,b],'&',X1A),
+   assertion(X1A=='a&b'),
+   atomic_list_concat(["a","b"],'&',X2A),
+   assertion(X2A=='a&b'),
+   atomic_list_concat([a,"b",12],'&',X3A),
+   assertion(X3A=='a&b&12'),
+   atomic_list_concat([a,b],"&",X1S),
+   assertion(X1S=='a&b'),
+   atomic_list_concat(["a","b"],"&",X2S),
+   assertion(X2S=='a&b'),
+   atomic_list_concat([a,"b",12],"&",X3S),
+   assertion(X3S=='a&b&12').   
+
+test("atomic_list_concat/3 in 'accept mode'") :-
+   atomic_list_concat([a,b],'&','a&b'),
+   atomic_list_concat(["a","b"],'&','a&b'),
+   atomic_list_concat([a,"b",12],'&','a&b&12'),
+   atomic_list_concat([a,b],"&",'a&b'),
+   atomic_list_concat(["a","b"],"&",'a&b'),
+   atomic_list_concat([a,"b",12],"&",'a&b&12').   
+
+test("atomic_list_concat/3 in 'accept mode' (surprisingly) disallows string for argument 2",fail) :-
+   atomic_list_concat(["a",b],'&',"a&b").
+
+test("atomic_list_concat/3 edge case works as expected") :-
+   atomic_list_concat([],'',X1),
+   assertion(X1==''),
+   atomic_list_concat([''],'',X2),
+   assertion(X2==''),   
+   atomic_list_concat(['',''],'',X3),
+   assertion(X3==''),
+   atomic_list_concat([""],'',X4),
+   assertion(X4==''),   
+   atomic_list_concat(["",""],'',X5),
+   assertion(X5=='').
+
+test("atomic_list_concat/3 splits as it should") :-
+   atomic_list_concat(L1,",",abc),
+   assertion(L1==[abc]),
+   atomic_list_concat(L2,'&','a&b&c'),
+   assertion(L2==[a,b,c]),
+   atomic_list_concat(L3,'&',"a&b&c"),
+   assertion(L3==[a,b,c]),
+   atomic_list_concat(L4,"&","a&b&c"),
+   assertion(L4==[a,b,c]),
+   atomic_list_concat(L5,'&','a&&b&&c'),
+   assertion(L5==[a,'',b,'',c]),
+   atomic_list_concat(L6,'&','&a&&b&&c&'),
+   assertion(L6==['',a,'',b,'',c,'']).
+
+test("atomic_list_concat/3 processing input consisting only of splitters") :-   
+   atomic_list_concat(L1,'&','&&&'),
+   assertion(L1==['','','','']),
+   atomic_list_concat(L2,'foo','foofoo'),
+   assertion(L2==['','','']).
+   
+:- end_tests(atomic_list_concat_3).
+```
+
+## Edge asymmetry
+
+You can assemble with the empty string:
+
+```
+?- atomic_list_concat([fo,o],'',X).
+X = foo.
+```
+
+But you can't disassemble with the empty string:
+
+```
+?- atomic_list_concat(L,'',foo).
+ERROR: Domain error: `non_empty_atom' expected, found `'''
+```

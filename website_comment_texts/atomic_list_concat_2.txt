@@ -1,0 +1,52 @@
+https://eu.swi-prolog.org/pldoc/man?predicate=atomic_list_concat/2
+
+## Your choices
+
+   - atom_concat/3 - ISO (i.e. there is a predicate with the name in the standard), generates atom, accepts string/atom. Can break argument 3 into subatoms.
+   - atomic_concat/3 - not ISO, generates atom, accepts string/atom. Like atom_concat/3. **Refuses** to break argument 3 into subatoms.
+   - atomic_list_concat/2 - not ISO, concatenate atomics from a list into a single atom. **Refuses** to break argument 2 into subatoms (even for unique solution).
+      - **Refuses** string at argument 2 in _accept_ mode (that's likely a bug). 
+   - atomic_list_concat/3 - not ISO, concatenate atomics from a list, plus a separator, into a single atom (i.e. performs **string join** or **intersperse**). Can break 3rd argument into subatoms along non-empty separator (i.e. can perform **string split**).
+      - **Refuses** string at argument 3 in _accept_ mode (that's likely a bug). 
+   - atomics_to_string/2 - Like atomic_list_concat/2, but generates string at argument 2. 
+      - **Refuses** atom at argument 2 in _accept_ mode (that's likely a bug). 
+   - atomics_to_string/3 - Like atomic_list_concat/3, but generates string at argument 3.
+      - **Refuses** atom at argument 3 in _accept_ mode (that's likely a bug). 
+
+## Test code
+
+```
+:- begin_tests(atomic_list_concat).
+
+test("atom_list_concat/2 always generates atom at the 3rd argument from any list-of-atomics") :-
+   atomic_list_concat([a,b],X1),
+   assertion(X1==ab),
+   atomic_list_concat(["a","b"],X2),
+   assertion(X2==ab),
+   atomic_list_concat([a,"b",12],X3),
+   assertion(X3==ab12).   
+
+test("atom_list_concat/3 in 'accept mode' (as expected) allows atomics in the list") :-
+   atomic_list_concat(["a",b],ab),
+   atomic_list_concat(["a",12,b],a12b).
+
+test("atom_list_concat/3 in 'accept mode' (surprisingly) disallows string for argument 2",fail) :-
+   atomic_list_concat(["a",b],"ab").
+
+test("atom_list_concat/3 edge case works as expected") :-
+   atomic_list_concat([],X1),
+   assertion(X1==''),
+   atomic_list_concat([''],X2),
+   assertion(X2==''),   
+   atomic_list_concat(['',''],X3),
+   assertion(X3==''),
+   atomic_list_concat([""],X4),
+   assertion(X4==''),   
+   atomic_list_concat(["",""],X5),
+   assertion(X5=='').
+   
+test("atom_list_concat/3 refuses to generate",error(instantiation_error)) :-
+   atomic_list_concat([a,_X,c],abc).
+   
+:- end_tests(atomic_list_concat).
+```

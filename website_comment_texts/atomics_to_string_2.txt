@@ -1,0 +1,68 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=atomics_to_string/2
+
+## Your choices
+
+   - atom_concat/3 - ISO (i.e. there is a predicate with the name in the standard), generates atom, accepts string/atom. Can break argument 3 into subatoms.
+   - atomic_concat/3 - not ISO, generates atom, accepts string/atom. Like atom_concat/3. **Refuses** to break argument 3 into subatoms.
+   - atomic_list_concat/2 - not ISO, concatenate atomics from a list into a single atom. **Refuses** to break argument 2 into subatoms (even for unique solution).
+      - **Refuses** string at argument 2 in _accept_ mode (that's likely a bug). 
+   - atomic_list_concat/3 - not ISO, concatenate atomics from a list, plus a separator, into a single atom (i.e. performs **string join** or **intersperse**). Can break 3rd argument into subatoms along non-empty separator (i.e. can perform **string split**).
+      - **Refuses** string at argument 3 in _accept_ mode (that's likely a bug). 
+   - atomics_to_string/2 - Like atomic_list_concat/2, but generates string at argument 2. 
+      - **Refuses** atom at argument 2 in _accept_ mode (that's likely a bug). 
+   - atomics_to_string/3 - Like atomic_list_concat/3, but generates string at argument 3.
+      - **Refuses** atom at argument 3 in _accept_ mode (that's likely a bug). 
+
+## Examples
+
+```
+?- atomics_to_string([],S).
+S = "".
+```
+
+```
+?- atomics_to_string([a,b,c],S).
+S = "abc".
+```
+
+```
+?- atomics_to_string([a,1,c],S).
+S = "a1c".
+```
+
+Integers stay integers and aren't mapped to chars:
+
+```
+?- atomics_to_string([a,"b",122,0'f,d],X).
+X = "ab122102d".
+```
+
+Verifying:
+
+```
+?- atomics_to_string([a,b,c],"abc").
+true.
+```
+
+atomics_to_string/2 insists on seeing a string at argument 2 place:
+
+```
+?- atomics_to_string([a,b,c],'abc').
+false.
+```
+
+It doesn't break a string apart:
+
+```
+?- atomics_to_string(X,"abc").
+ERROR: Arguments are not sufficiently instantiated
+```
+
+No flattening:
+
+```
+?- atomics_to_string([a,[b,c],d],"abc").
+ERROR: Type error: `text' expected, found `[b,c]' (a list)
+```
+
+

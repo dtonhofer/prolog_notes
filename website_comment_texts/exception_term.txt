@@ -1,11 +1,15 @@
 https://eu.swi-prolog.org/pldoc/man?section=exceptterm
 
+## ISO standard exceptions
+
+The ISO standard ISO/IEC 13211-1 is VERY paywalled (I won't say anything more about the reasonableness/ethics/sustainability of this), so:
+
+- The following page substantially _is_ the ISO Standard text: https://www.deransart.fr/prolog/exceptions.html
+- Ulrich Neumerkel lists the various error classes here: http://www.complang.tuwien.ac.at/ulrich/iso-prolog/error_k - The context is a discussion leading up to the second corrigendum of the ISO standard.
+
 ## More info
 
-I'm trying to keep [**this page**](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_exceptions/README.md) updated with info on Prolog exceptions.
-
-It also explains why I really _do not like_ the ISO Standard exception term. Here
-is hoping for a v2 exception term in the future (hopefully in ... ECMAProlog?)
+I'm trying to keep [**this opinionated page**](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_exceptions/README.md) updated with info on Prolog exceptions.
 
 ## About the backtrace
 
@@ -13,26 +17,26 @@ How do we get a backtrace and how does the exception term have to look to get on
 
 The backtrace is filled in according to SWI-Prolog conventions because the ISO Standard has nothing to say about this.
 
-SWI-Prolog wants the second argument of the `error/2` term (given in the ISO standard as `Imp_def`) to look like
+SWI-Prolog wants the second argument of the `error/2` term (given in the ISO standard as `Imp_def`) to look like 
 `context(Location,Message)`. If `Location` is fresh and the catch is performed by catch_with_backtrace/3
-(which happens either explicity in code or at the latest possible time at the Prolog Toplevel),
+(which happens either explicity in code or at the latest possible time at the Prolog Toplevel), 
 then `Location` is filled with a backtrace (as implemented by `library(prolog_stack)` in
 file `swipl/lib/swipl/library/prolog_stack.pl`). The Message is generally a cleartext message (string or atom).
 
 Take this program:
 
 ==
-call0(ExceptionTerm) :-
+call0(ExceptionTerm) :- 
    call1(ExceptionTerm).
-
-call1(ExceptionTerm) :-
+   
+call1(ExceptionTerm) :- 
    call2(ExceptionTerm).
-
-call2(ExceptionTerm) :-
+   
+call2(ExceptionTerm) :- 
    throw(ExceptionTerm).
 ==
 
-Enable debugging to keep the compiler from optimizing-away stack frames.
+Enable debugging to keep the compiler from optimizing-away stack frames. 
 
 ==
 ?- debug.
@@ -71,8 +75,8 @@ ERROR:   [10] call0(error("deep in a search tree",_4216)) at user://1:8
 ERROR:    [9] <user>
    Exception: (13) throw(error("deep in a search tree", _3266)) ? Exception details
 ==
-
-Asking for "exception details" using `m` reveals that `Context` has been filled in with a
+   
+Asking for "exception details" using `m` reveals that `Context` has been filled in with a 
 term `context(prolog_stack(Frames),_)` as the exception term looks as follows:
 
 ==
@@ -89,7 +93,7 @@ error("deep in a search tree",
 **Quasi-ISO-standard exception term with SWI-Prolog context term `error(_,context(_,_))`**
 
 The same as above, we just have SWI-Prolog specific `context/2` subterm already in the
-ISO-standard specific `error/2` term.
+ISO-standard specific `error/2` term. 
 
 We can put a generic message in the second argument of `context/2`. In this example, a String:
 
@@ -100,7 +104,7 @@ ERROR: Unknown error term: "deep in a search tree" (get me outta here)
 
 **ISO-standard exception term with SWI-Prolog context term `error(IsoFormal,context(_,_))`**
 
-As above, backtrace and all, except that now error message generation is correct as it is based on the
+As above, backtrace and all, except that now error message generation is correct as it is based on the 
 list of valid ISO formal terms:
 
 ==
@@ -113,3 +117,54 @@ ERROR:   [11] call1(error(instantiation_error,context(_3100,"get me outta here")
 ERROR:   [10] call0(error(instantiation_error,context(_3136,"get me outta here"))) at user://1:8
 ERROR:    [9] <user>
 ==
+
+## Printing your own exception terms
+
+Suppose you want to throw your own non-ISO exception terms (but still enclosed in =|error(Formal,Context)|=) for example:
+
+```
+error(check(domain,Expected,Msg,Culprit),_)
+```
+
+By default, the toplevel won't know how to print this =|Formal|=. 
+
+You have to inject your own clauses for =|prolog:error_message(ErrorTerm)|=. For example:
+
+```
+:- multifile prolog:error_message//1.  % 1-st argument of error term
+
+extended_msg(domain,"the culprit is outside the required domain").
+
+prolog:error_message(check(Type,Expected,Msg,Culprit)) -->
+    { build_main_text_pair(Type,MainTextPair) },
+    [ MainTextPair, nl ],
+    lineify_expected(Expected),
+    lineify_msg(Msg),
+    lineify_culprit(Culprit).
+
+build_main_text_pair(Type,MainTextPair) :-
+   extended_msg(Type,ExMsg),
+   !,
+   atomics_to_string([ExMsg],"",ExMsgStr), % make sure it's string
+   MainTextPair = 'check failed : ~q error (~s)'-[Type,ExMsgStr].
+build_main_text_pair(Type,MainTextPair) :-
+   MainTextPair = 'check failed : ~q error'-[Type].
+
+lineify_expected(Expected) -->
+   { nonvar(Expected), atomics_to_string([Expected],"",ExpectedStr) },
+   !,
+   [ '   expected  : ~s'-[ExpectedStr], nl ].
+lineify_expected(_) --> [].
+
+lineify_msg(Msg) -->
+   { nonvar(Msg), atomics_to_string([Msg],"",MsgStr) },
+   !,
+   [ '   message   : ~s'-[MsgStr], nl ].
+lineify_msg(_) --> [].
+
+lineify_culprit(Culprit) -->
+   { nonvar(Culprit), atomics_to_string([Culprit],"",CulpritStr) },
+   !,
+   [ '   culprit   : ~s'-[CulpritStr], nl ].
+lineify_culprit(_) --> [].
+```

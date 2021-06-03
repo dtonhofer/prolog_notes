@@ -1,0 +1,65 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=char_type/2
+
+What is both in the class "white" and "space"?
+
+```
+?- 
+bagof(Char-Hex,
+   Code^(char_type(Char,space),
+         atom_codes(Char,Code]),
+         format(atom(Hex),"0x~|~`0t~16r~4+",[Code])),
+   Bag).
+
+Bag = [
+   '\t'-'0x0009', % (horizontal) tab
+   '\n'-'0x000a', % line feed
+   '\v'-'0x000b', % vertical tab 
+   '\f'-'0x000c', % form feed 
+   '\r'-'0x000d', % carriage return
+   ' '-'0x0020',  % the "SPACE" character, more correctly the "blank" character 
+   ' '-'0x1680',  % Ogham Space Mark
+   ' '-'0x2000',  % EN QUAD
+   ' '-'0x2001',  % EM QUAD
+   ' '-'0x2002',  % EN SPACE
+   ' '-'0x2003',  % EM SPACE
+   ' '-'0x2004',  % THREE-PER-EM SPACE
+   ' '-'0x2005',  % FOUR-PER-EM-SPACE
+   ' '-'0x2006',  % SIX-PER-EM SPACE
+   ' '-'0x2008',  % FIGURE SPACE
+   ' '-'0x2009',  % THIN SPACE
+   ' '-'0x200a',  % HAIR SPACE
+   ' '-'0x2028',   % LINE SEPARATOR
+   ' '-'0x2029',   % PARAGRAPH SEPARATOR
+   ' '-'0x205f',  % MEDIUM MATHEMATICAL SPACE
+   '　'-'0x3000']. % IDEOGRAPHIC SPACE
+```
+
+Where is the "non-breakable sapce" 0x00A0?
+
+Amazingly, it's neither "white" nor "space", at least on GNU/Linux Fedora 33:
+
+```
+?- code_type(0xA0,T).
+T = graph ;
+T = punct ;
+T = to_lower(160) ;
+T = to_upper(160) ;
+false.
+```
+
+Well, that's not right, here is the offical list:
+
+https://util.unicode.org/UnicodeJsps/list-unicodeset.jsp?a=%5B:General_Category=Space_Separator:%5D
+
+SWI-Prolog probably uses something out of the C library here.
+
+On Windows:
+
+```
+?- code_type(0xA0,T).
+T = space ;
+T = to_lower(160) ;
+T = to_upper(160) ;
+false.
+```
+

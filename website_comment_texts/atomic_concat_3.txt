@@ -1,0 +1,47 @@
+https://eu.swi-prolog.org/pldoc/man?predicate=atomic_concat/3
+ 
+This nearly the same as atom_concat/3 but it doesn't generate substrings from the 3rd argument if asked to do so.
+
+## Your choices
+
+   - atom_concat/3 - ISO (i.e. there is a predicate with the name in the standard), generates atom, accepts string/atom. Can break argument 3 into subatoms.
+   - atomic_concat/3 - not ISO, generates atom, accepts string/atom. Like atom_concat/3. **Refuses** to break argument 3 into subatoms.
+   - atomic_list_concat/2 - not ISO, concatenate atomics from a list into a single atom. **Refuses** to break argument 2 into subatoms (even for unique solution).
+      - **Refuses** string at argument 2 in _accept_ mode (that's likely a bug). 
+   - atomic_list_concat/3 - not ISO, concatenate atomics from a list, plus a separator, into a single atom (i.e. performs **string join** or **intersperse**). Can break 3rd argument into subatoms along non-empty separator (i.e. can perform **string split**).
+      - **Refuses** string at argument 3 in _accept_ mode (that's likely a bug). 
+   - atomics_to_string/2 - Like atomic_list_concat/2, but generates string at argument 2. 
+      - **Refuses** atom at argument 2 in _accept_ mode (that's likely a bug). 
+   - atomics_to_string/3 - Like atomic_list_concat/3, but generates string at argument 3.
+      - **Refuses** atom at argument 3 in _accept_ mode (that's likely a bug). 
+
+## Test code
+
+```
+:- begin_tests(atomic_concat).
+
+test("atomic_concat/3 generates atom at the 3rd argument") :-
+   atomic_concat(a,b,X),
+   assertion(X==ab).
+   
+test("atomic_concat/3 in 'accept mode' allows string at 3rd argument") :-
+   atomic_concat(a,b,"ab").
+
+test("atomic_concat/3 accepts string at argument 1 and 2") :-
+   atomic_concat("a",b,X),
+   assertion(X==ab),
+   atomic_concat(a,"b",Y),
+   assertion(Y==ab),
+   atomic_concat("a","b",Z),
+   assertion(Z==ab).
+   
+test("atomic_concat/3 actually accepts atomic at argument 1 and 2 and even 3") :-
+   atomic_concat(1,2,X),
+   assertion(X=='12'),
+   atomic_concat(1,2,12).
+
+test("atomic_concat/3 refuses to generate",error(instantiation_error)) :-
+   atomic_concat(_X,_Y,ab).
+   
+:- end_tests(atomic_concat).
+```
