@@ -40,19 +40,45 @@
  * See: https://eu.swi-prolog.org/pldoc/doc_for?object=must_be/2
  * **********************************
 
-Checks currently implemented (aliases are indicated with "/")
+Note the structure given to check_that(X,Cs), with X being the term to check.
+
+Cs is a list of *conditions*, which are compound terms. 
+The list of conditions behaves like a "conditional and" (aka. "short-circuiting and")
+which can also "break out to succees" or throw at a condition.
+
+  true           : Succeed unconditionally, do not verify conditions "further to the right" in the list of conditions.
+  false,fail     : Fail unconditionally.
+  break(Check)   : Succeed (and break off further tests) if Check succeeds, and do not verify conditions "further to the right" in the list of conditions.
+  fail(Check)    : Fail if Check succeeds.
+  lenient(Check) : If Check succeeds, proceed with conditions "further to the right", otherwise fail if "not throw" or throw a Check-relevant exception if "throw" ("throw" is switched on if Throw is one of =|true|= or =|throw|=).
+  strict(Check)  : If Check succeeds, proceed with conditions "further to the right", otherwise throw a Check-relevant exception, irrespective of the value of Throw.
+
+Shorther:
+ 
+  tr
+  fa
+  br(Check)
+  fa(Check)
+  le(Check)
+  st(Check)
+
+The Check is either an atom or a compound term from the following list of atoms and compound terms (aliases are indicated with "/")
 
   var nonvar
   nonground ground
   atom/symbol 
   atomic/constant 
   compound
+  boolean                            (either the atom 'true' or the atom 'false')
+  pair                               (a compound term with functor name '-' and arity 2)
   string stringy char                ("stringy" means it's an atom or a string)
-  number 
-  float 
-  float_not_nan
-  float_not_inf 
-  float_not_neginf float_not_posinf
+  nestringy                          (different from '' and "")
+  number                             (any number)
+  float                              (any float, including +1.0Inf, -1.0Inf, NaN, -0.0)  
+  float_not_nan                      (any float, excluding NaN)
+  float_not_inf                      (any float, excluding +1.0Inf, -1.0Inf)
+  float_not_neginf                   (any float, excluding -1.0Inf)
+  float_not_posinf                   (any float, excluding +1.0Inf)
   int/integer                        (an integer)
   rational                           (a rational, incldues integers)
   nonint_rational/proper_rational    (a rational that is not an integer)
@@ -71,21 +97,26 @@ Checks currently implemented (aliases are indicated with "/")
   neginty posinty                    (strictly negative/positive inty)
   neg0inty pos0inty                  (negative-or-zero/positive-or-zero inty)
   list/proper_list                   (a proper list, including the empty list)
-  member(List)                       (member of a list of values)
-  random(V)                          (randomly fails with probability V)
-  forany(List)                       (recursive: pass any type test in list) 
-  forall(List)                       (recursive: pass all type tests in list)
-  fornone(List)                      (recursive: pass no type test in list
+  dict                               (an SWI-Prolog dict)
+  member(ListOfValues)               (member of a list of values; test is unification)
+  random(Probability)                (randomly fails with probability 0 =< Probability =< 1)
+  forall(ListOfChecks)               (recursive: the term to check must pass all checks in ListOfChecks)
+  forany(ListOfChecks)               (recursive: the term to check must pass at least one check in ListOfChecks)
+  fornone(ListOfChecks)              (recursive: the term to check must pass no check in ListOfChecks), also useful as negation
+  passall(Check)                     (all the terms in the list of terms that is the input term must pass the Check)
+  passany(Check)                     (at least one term in the list of terms that is the input term must pass the Check)
+  passnone(Check)                    (none of the terms in the list of terms that is the input term must pass the Check)
+
 
 Compare with: Checks from must_be/2. Those marked "Ok" exist in check_that/N
 
- (Ok)  any                     : any term, including an unbound variable (this reduces to true)
-  Ok   atom,symbol             : passes atom/1
-  Ok   atomic,constant         : passes atomic/1
+     any                     : any term, including an unbound variable (this reduces to true)
+  Ok atom,symbol             : passes atom/1
+  Ok atomic,constant         : passes atomic/1
   Ok oneof(L)                : ground term that is member of L; if there is an unbound variable in L, everything passes!
   Ok compound                : passes compound/1, the complement of atomic/1 (includes dicts, but don't use that fact as that dict implementation through compounds may change!)
-     pair                    : a key-value pair or rather a compound term -/2
-     boolean                 : one of the two atoms 'true' or 'false'
+  Ok pair                    : a key-value pair or rather a compound term -/2
+  Ok boolean                 : one of the two atoms 'true' or 'false'
   Ok integer                 : passes integer/1
   Ok positive_integer        : integer > 0
   Ok negative_integer        : integer < 0
@@ -112,7 +143,7 @@ Compare with: Checks from must_be/2. Those marked "Ok" exist in check_that/N
                                on error the index is not indicated (why~~~). A type like "list(list(integer))" is ok!
      list_or_partial_list    : A partial list (one ending in a variable: [x|_]). This includes an unbound variable.
      callable                : passes callable/1. Relatively usesless, as "callable" is ill-defined. Basically (atom(X);compound(X))
-     dict                    : passes is_dict/1, an SWI-prolog dict (which is just a compound term of a particular form)
+  Ok dict                    : passes is_dict/1, an SWI-prolog dict (which is just a compound term of a particular form)
      encoding                : valid name for a character encoding; see current_encoding/1, e.g. utf8 (but not "utf8" or 'utf-8'; also fails for 'iso_8859_1')
      stream                  : passes is_stream/1, is a stream name or valid stream handle
      type                    : Meta: Term is a valid type specification for must_be/2. This is done by looking up whether a clause `has_type(Type,_) :- ....` exists.
@@ -178,91 +209,145 @@ check_that_named(X,Conditions,Name,Throw) :-
    ;
    check_that_1([Conditions],X,Name,Throw).
 
+% ***************
+% What lies beneath the exported predicates
+% ***************
+
 % ---
-% Pre-check: Verify the "Conditions" list (this may be commented out in
-% well-working programs)
+% Two-step process:
+% 1) Verify the syntactic correctness of all conditions.
+%    Throw if there is a problems with the syntax.
+%    TODO: That should be done during compilation, i.e. using term expansion, because 
+%    checking the syntax once is enough!
+% 2) Evaluate the conditions and their embedded checks.
+%
+% For the syntax checks, the code tries to tell the caller _why_ there is a problem,
+% instead of just "failing" with zero information left, so it's a bit unidiomatic,
+% Prolog needs something to handle that elegantly.
 % ---
 
 check_that_1(Conditions,X,Name,Throw) :-
-   wellformed(Conditions,X),
+   % syntax check
+   no_var_in_list_or_throw(Conditions),
+   wellformed_conds_or_throw(Conditions,X), 
+   % evaluate the conditions
    check_that_2(Conditions,X,Name,Throw).
+
+no_var_in_list_or_throw(Conditions) :-
+   no_var_in_list(Conditions) 
+   ->
+   true
+   ;
+   throw_various(syntax,"unbound variable in conditions list",Conditions).
  
+no_var_in_list([C|More]) :-
+   nonvar(C),
+   no_var_in_list(More).
+no_var_in_list([]).
+
+wellformed_conds_or_throw(Conditions,X) :-
+   wellformed_conds(Conditions,X) % may also throw
+   ->
+   true
+   ;
+   throw_various(syntax,"conditions do not pass syntax check",Conditions).
+  
 % ---
-% Check the "Conditions" list for well-formed-ness.
-% No need to cut, the caller cuts on success.
+% wellformed_conds(Conditions,X)
 %
-% Allowed:
-%
-% true           : Succeed unconditionally, do not verify conditions "further to the right".
-% false,fail     : Fail unconditionally.
-% break(Check)   : Succeed (and break off further tests) if Check succeeds, do not verifiy conditions "further to the right".
-% fail(Check)    : Fail if Check succeeds.
-% lenient(Check) : If Check succeeds, proceed, otherwise fail if "not throw" and throw if "throw" (Throw is one of =|true|= or =|throw|=).
-% strict(Check)  : If Check succeeds, proceed, otherwise throw irrespective of the value of Throw.
+% Verify the conds of Conditions for syntactic correctness. This is done
+% outside of actual check-evaluation eval/4, to have clean code and to be able to
+% disable the verification for well-formedness by (currently) commenting out
+% the call to wellformed/2.
 % --- 
 
-wellformed([true|_],_)  :- !.
-wellformed([false|_],_) :- !.
-wellformed([fail|_],_)  :- !.
-wellformed([break(Check)|More],X) :-
-   wellformed_check(Check,X),
-   wellformed(More,X),
-   !.
-wellformed([fail(Check)|More],X) :-
-   wellformed_check(Check,X),
-   wellformed(More,X),
-   !.
-wellformed([lenient(Check)|More],X) :-
-   wellformed_check(Check,X),
-   wellformed(More,X),
-   !.
-wellformed([strict(Check)|More],X) :-
-   wellformed_check(Check,X),
-   wellformed(More,X),
-   !.
-wellformed([UnknownOrCausingFailure|_],_) :-
-   domain_error("...a known entry in list-of-checks (wellformed/2)",UnknownOrCausingFailure). % ISO!
-wellformed([],_).
+wellformed_conds([Condition|More],X) :-
+   exists_cond_or_throw(Condition),
+   wellformed_cond_or_throw(Condition,X),
+   wellformed_conds(More,X).
+wellformed_conds([],_).
 
-wellformed_check(Check,_) :-
-   atom(Check),
-   !,
-   elementary_checks(ECs),
-   memberchk(Check,ECs).
-wellformed_check(member(List),_) :-
-   !,   
-   is_proper_list(List).
-wellformed_check(type(List),_) :-
-   !,
-   is_proper_list(List),
-   elementary_checks(ETs),
-   maplist({ETs}/[X]>>memberchk(X,ETs),List).
-wellformed_check(random(V),_) :-
-   !,
-   number(V),V>=0,V=<1.
-wellformed_check(forany(List),X) :-
-   !,
-   wellformed_sublist_check(List,X).
-wellformed_check(forall(List),X) :-
-   !,
-   wellformed_sublist_check(List,X).
-wellformed_check(fornone(List),X) :-
-   !,
-   wellformed_sublist_check(List,X).
+exists_cond_or_throw(Condition) :-
+   exists_cond(Condition)
+   ->
+   true
+   ;
+   throw_various(unknown_condition,"unknown condition found during syntax check",Condition).
+ 
+exists_cond(true).
+exists_cond(tr).
+exists_cond(false).
+exists_cond(fail).
+exists_cond(fa).
+exists_cond(break(_Check)).
+exists_cond(br(_Check)).
+exists_cond(fail(_Check)).
+exists_cond(fa(_Check)).
+exists_cond(lenient(_Check)).
+exists_cond(le(_Check)).
+exists_cond(strict(_Check)).
+exists_cond(st(_Check)).
 
-wellformed_sublist_check(List,X) :-
-   is_proper_list(List),
+wellformed_cond_or_throw(Condition,X) :-
+   atom(Condition)
+   -> 
+   true
+   ;
+   (Condition =.. [_,Check], wellformed_check_or_throw(Check,X)).
+
+wellformed_check_or_throw(Check,X) :-
+   wellformed_check_2(Check,X)
+   ->
+   true
+   ;
+   throw_various(unknown_or_problematic_check,"unknown or problematic check found during syntax check",Check).
+   
+wellformed_check_2(Check,_)                 :- atom(Check),!,atomoform_checks(AFCs),memberchk(Check,AFCs).
+wellformed_check_2(member(ListOfValues),_)  :- is_proper_list(ListOfValues).
+wellformed_check_2(type(ListOfTypes),_)     :- is_proper_list(ListOfTypes),atomoform_checks(AFCs),maplist({AFCs}/[T]>>memberchk(T,AFCs),ListOfTypes).
+wellformed_check_2(random(Probability),_)   :- number(Probability),0=<Probability,Probability=<1.
+wellformed_check_2(forall(ListOfChecks),X)  :- wellformed_list_of_checks(ListOfChecks,X).
+wellformed_check_2(forany(ListOfChecks),X)  :- wellformed_list_of_checks(ListOfChecks,X).
+wellformed_check_2(fornone(ListOfChecks),X) :- wellformed_list_of_checks(ListOfChecks,X).
+wellformed_check_2(passall(Check),ListOfX)  :- wellformed_check_over_list(Check,ListOfX).
+wellformed_check_2(passany(Check),ListOfX)  :- wellformed_check_over_list(Check,ListOfX).
+wellformed_check_2(passnone(Check),ListOfX) :- wellformed_check_over_list(Check,ListOfX).
+
+wellformed_list_of_checks(ListOfChecks,X) :-
+   is_proper_list(ListOfChecks),
    forall(
-      member(Check,List),
-      wellformed_check(Check,X)).
+      member(Check,ListOfChecks),
+      wellformed_check_or_throw(Check,X)). % ** recursive **
 
-elementary_checks([
+wellformed_check_over_list(Check,ListOfX) :-
+   is_proper_list_or_throw(Check,ListOfX), 
+   forall(
+      member(M,ListOfX),
+      wellformed_check_or_throw(Check,M)). % ** recursive **
+
+is_proper_list_or_throw(Check,ListOfX) :-
+   is_proper_list(ListOfX) 
+   ->
+   true
+   ;
+   throw_various(type,"check needs a list as argument",[check(Check),arg(ListOfX)]).
+ 
+% ---
+% All the atoms for "elementary checks", i.e. those that
+% are not a compound term, are listed here.
+% ---
+
+atomoform_checks(
+   [
    var,nonvar,
    nonground,ground,
    atom,symbol,
    atomic,constant,
    compound,
+   boolean,
+   pair,
    string,stringy,char,
+   nestringy,
    number,float,integer,int,rational,nonint_rational,proper_rational,
    negnum,negnumber,
    posnum,posnumber,
@@ -282,59 +367,86 @@ elementary_checks([
    neginty,posinty,
    neg0inty,pos0inty,
    list,proper_list,
-   forall,forany,fornone]).
+   dict
+   ]
+).
 
-is_proper_list(L) :- is_list(L).
+% ---
+% check_that_2(Conditions,TermToCheck,NameOfTerm,ThrowFlag)
+%
+% One we have passed the basic syntactic/well-formedness checks of 
+% check_that_1/4, we can proceed to evaluate the checks in-order.
+% Generally this means unpacking the compound term of the check and
+% calling eval/4.
+%
+% In case we find an unknown check, we throw ISO type error in the
+% penultimate clause. If check_that_1/4 indeed performed 
+% well-formedness checks, this actually can't happen.
+% ---
 
-check_that_2([true|_],_,_,_) :- !.
-check_that_2([fail|_],_,_,_) :- !,fail.
-check_that_2([false|_],_,_,_) :- !,fail.
-check_that_2([break(Check)|More],X,Name,Throw) :-
-   !,
-   (eval(Check,X,Name,false) 
-    ->
-    true
-    ;
-    check_that_2(More,X,Name,Throw)).
-check_that_2([fail(Check)|More],X,Name,Throw) :-
-   !,
-   (eval(Check,X,Name,false)
-    ->
-    fail
-    ;
-    check_that_2(More,X,Name,Throw)).
-check_that_2([lenient(Check)|More],X,Name,Throw) :-
-   !,
-   (eval(Check,X,Name,Throw)
-    ->
-    check_that_2(More,X,Name,Throw) 
-    ;
-    fail).
-check_that_2([strict(Check)|More],X,Name,Throw) :-
-   !,
-   (eval(Check,X,Name,true)
-    -> 
-    check_that_2(More,X,Name,Throw)
-    ;
-    fail).
-check_that_2([Unknown|_],_,_,_) :-
-   type_error("... a known entry in check list",Unknown).
+check_that_2([Condition|More],X,Name,Throw) :-
+   exists_cond_or_throw(Condition), % always succeeds if the syntax check was passed
+   check_that_3(Condition,X,Name,Throw,Outcome), % needs no internal cut
+   !, % no need to go back on success
+   outcome_branching(Outcome,Condition,More,X,Name,Throw). % recurses
 check_that_2([],_,_,_).
+ 
+outcome_branching(break,_,_,_,_,_)           :- !.
+outcome_branching(done,_,_,_,_,_)            :- !. 
+outcome_branching(fail,_,_,_,_,_)            :- !,fail.
+outcome_branching(next,_,More,X,Name,Throw)  :- !,check_that_2(More,X,Name,Throw).
+outcome_branching(Outcome,Condition,_,_,_,_) :- throw_various(unknown_outcome,"bug: condition yields unknown outcome",[Condition,Outcome]).
+
+check_that_3(true  ,_,_,_,break).
+check_that_3(tr    ,_,_,_,break).
+check_that_3(fail  ,_,_,_,fail).
+check_that_3(false ,_,_,_,fail).
+check_that_3(fa    ,_,_,_,fail).
+check_that_3(break(Check),X,Name,_,Outcome) :-
+   eval(Check,X,Name,false) 
+   ->
+   Outcome = break
+   ;
+   Outcome = next.
+check_that_3(br(Check),X,Name,Throw,Outcome) :-
+   check_that_3(break(Check),X,Name,Throw,Outcome).
+check_that_3(fail(Check),X,Name,_,Outcome) :-
+   eval(Check,X,Name,false)
+   ->
+   Outcome = fail
+   ;
+   Outcome = next.
+check_that_3(fa(Check),X,Name,Throw,Outcome) :-
+   check_that_3(fail(Check),X,Name,Throw,Outcome).
+check_that_3(lenient(Check),X,Name,Throw,Outcome) :-
+   eval(Check,X,Name,Throw)
+   ->
+   Outcome = next
+   ;
+   Outcome = fail.
+check_that_3(le(Check),X,Name,Throw,Outcome) :-
+   check_that_3(le(Check),X,Name,Throw,Outcome).
+check_that_3(strict(Check),X,Name,_,Outcome) :-
+   eval(Check,X,Name,throw)
+   ->
+   Outcome = next
+   ;
+   throw_various(strict_check_fails,"check should throw instead of fail",Check).
+check_that_3(st(Check),X,Name,_,Outcome) :-
+   check_that_3(strict(Check),X,Name,_,Outcome).
+check_that_3([],_,_,_,done).
 
 % ---
-% Evaluation
+% Checking the "Throw" flag for being set
 % ---
-
-% Generate a string from an uncertain "Name", which may be unset
-
-select_name(Name,"the value") :-
-   (var(Name);Name=='';Name==""),
-   !.
-select_name(NameIn,NameOut) :-
-   format(string(NameOut),"~q",[NameIn]).
 
 throw_is_set(Throw) :- Throw==true.
 throw_is_set(Throw) :- Throw==throw.
+
+% ---
+% Predicates which check a condition, and if true, construct an exception message and 
+% then throw via throw_2/3
+% ---
 
 throw_if_X_uninstantiated(X,Name,Ness) :-
    var(X)
@@ -363,6 +475,12 @@ throw_if_X_nonlist(X,Name,Ness) :-
    ;
    true.
  
+% ---
+% Predicates which check whether the Throw flag is set, and if so, 
+% construct an exception message and then throw via throw_2/3.
+% Otherwise they fail.
+% ---
+
 throw_or_fail_for_case_random(Throw) :-
    throw_is_set(Throw), % if this fails, the call fails (which is what we want)
    throw_2(random,"random failure after calling maybe/1").
@@ -380,24 +498,40 @@ throw_or_fail_missing_ok(Error,X,Name,Throw,Ness) :-
    format(string(Msg),"~s should fulfill '~s-ness'",[Name2,Ness]),
    throw_2(Error,Msg,X).
 
-throw_2(domain(Expected),Msg,Culprit)         :- throw(error(check(domain                   ,Expected,Msg,Culprit),_)).
-throw_2(type(Expected),Msg,Culprit)           :- throw(error(check(type                     ,Expected,Msg,Culprit),_)).
-throw_2(domain,Msg,Culprit)                   :- throw(error(check(domain                   ,_       ,Msg,Culprit),_)).
-throw_2(type,Msg,Culprit)                     :- throw(error(check(type                     ,_       ,Msg,Culprit),_)).
-throw_2(too_much_instantiation,Msg,Culprit)   :- throw(error(check(too_much_instantiation   ,_       ,Msg,Culprit),_)). % ISO's "uninstantiation error"
-throw_2(too_little_instantiation,Msg,Culprit) :- throw(error(check(too_little_instantiation ,_       ,Msg,Culprit),_)). % ISO's "instantiation error"
-throw_2(groundedness,Msg,Culprit)             :- throw(error(check(not_ground               ,_       ,Msg,Culprit),_)).
-throw_2(random,Msg)                           :- throw(error(check(random                   ,_       ,Msg,_      ),_)).
+% ---
+% Basement throwing predicate constructing the exception term itself.
+% ---
 
-% Transforming the "formal" term of an exception, i.e. the 1st argument of error(Formal,Context)
-% into something readable by hooking into the error_message//1 multifile DCG rule.
+throw_2(domain(Expected),Msg,Culprit)             :- throw(error(check(domain                   ,Expected,Msg,Culprit),_)).
+throw_2(type(Expected),Msg,Culprit)               :- throw(error(check(type                     ,Expected,Msg,Culprit),_)).
+throw_2(domain,Msg,Culprit)                       :- throw(error(check(domain                   ,_       ,Msg,Culprit),_)).
+throw_2(type,Msg,Culprit)                         :- throw(error(check(type                     ,_       ,Msg,Culprit),_)).
+throw_2(too_much_instantiation,Msg,Culprit)       :- throw(error(check(too_much_instantiation   ,_       ,Msg,Culprit),_)). % ISO's "uninstantiation error"
+throw_2(too_little_instantiation,Msg,Culprit)     :- throw(error(check(too_little_instantiation ,_       ,Msg,Culprit),_)). % ISO's "instantiation error"
+throw_2(groundedness,Msg,Culprit)                 :- throw(error(check(not_ground               ,_       ,Msg,Culprit),_)).
+throw_2(passany,Msg,Culprit)                      :- throw(error(check(passany                  ,_       ,Msg,Culprit),_)).
+throw_2(passnone,Msg,Culprit)                     :- throw(error(check(passnone                 ,_       ,Msg,Culprit),_)).
+throw_2(_,_,_)                                    :- throw("Bug! You forgot a throw_2/3").
 
-extended_msg(domain,"the culprit is outside the required domain").
-extended_msg(type,"the culprit is not of the required type").
-extended_msg(too_much_instantiation,"the culprit is already (fully) instantiated").
-extended_msg(too_little_instantiation,"the culprit is not instantiated (enough)").
-extended_msg(not_ground,"the culprit should be ground").
-extended_msg(random,"this is a random error due to the outcome of maybe/1").
+throw_2(random,Msg)                               :- throw(error(check(random                   ,_       ,Msg,_      ),_)).
+
+throw_various(Type,Msg,Culprit)                   :- throw(error(check(Type,_,Msg,Culprit),_)).
+throw_on_bug(strict_check_just_fails,Msg,Culprit) :- throw(error(check(strict_check_just_fails,_,Msg,Culprit),_)).
+ 
+% ---
+% Helpers for throwing
+% ---
+
+select_name(Name,"the value") :-
+   (var(Name);Name=='';Name==""),
+   !.
+select_name(NameIn,NameOut) :-
+   format(string(NameOut),"~q",[NameIn]).
+
+% ---
+% Properly printing the error(check(_,_,_,_),_) exception term
+% by adding rules to the prolog::error_message//1 multifile DCG rule.
+% ---
 
 :- multifile prolog:error_message//1.  % 1-st argument of error term
 
@@ -408,34 +542,58 @@ prolog:error_message(check(Type,Expected,Msg,Culprit)) -->
     lineify_msg(Msg),
     lineify_culprit(Culprit).
 
+% ---
+% Helpers for prolog:error_message(Formal)
+% ---
+
+extended_msg(domain,                   "the culprit is outside the required domain").
+extended_msg(type,                     "the culprit is not of the required type").
+extended_msg(too_much_instantiation,   "the culprit is already (fully) instantiated").
+extended_msg(too_little_instantiation, "the culprit is not instantiated (enough)").
+extended_msg(not_ground,               "the culprit should be ground").
+extended_msg(random,                   "this is a random error due to the outcome of maybe/1").
+
+make_sure_it_is_string(X,X) :- 
+   string(X),
+   !.
+make_sure_it_is_string(X,Str) :- 
+   atom(X),
+   !,
+   atom_string(X,Str).
+make_sure_it_is_string(X,Str) :- 
+   format(string(Str),"~q",[X]).
+
 build_main_text_pair(Type,MainTextPair) :-
    extended_msg(Type,ExMsg),
    !,
-   atomics_to_string([ExMsg],"",ExMsgStr), % make sure it's string
+   make_sure_it_is_string(ExMsg,ExMsgStr),
    MainTextPair = 'check failed : ~q error (~s)'-[Type,ExMsgStr].
 build_main_text_pair(Type,MainTextPair) :-
    MainTextPair = 'check failed : ~q error'-[Type].
 
 lineify_expected(Expected) --> 
-   { nonvar(Expected), atomics_to_string([Expected],"",ExpectedStr) },
+   { nonvar(Expected), make_sure_it_is_string(Expected,ExpectedStr) },
    !,
    [ '   expected  : ~s'-[ExpectedStr], nl ].
 lineify_expected(_) --> [].
 
 lineify_msg(Msg) -->
-   { nonvar(Msg), atomics_to_string([Msg],"",MsgStr) },
+   { nonvar(Msg), make_sure_it_is_string(Msg,MsgStr) },
    !,
    [ '   message   : ~s'-[MsgStr], nl ].
 lineify_msg(_) --> [].
 
 lineify_culprit(Culprit) -->
-   { nonvar(Culprit), atomics_to_string([Culprit],"",CulpritStr) },
+   { nonvar(Culprit), make_sure_it_is_string(Culprit,CulpritStr) },
    !,
    [ '   culprit   : ~s'-[CulpritStr], nl ].
 lineify_culprit(_) --> [].
 
-
-% Some helpers
+% ----
+% The "type test" for inty terms: accepts an integer
+% or a float that represents an integer. Anything else
+% causes failure to type error.
+% ---
 
 just_an_inty(X,Name,Throw) :-
    (integer(X);inty_float(X))
@@ -444,341 +602,422 @@ just_an_inty(X,Name,Throw) :-
    ;
    throw_or_fail(type(int_or_float),X,Name,Throw,"inty"). 
 
+% ---
+% Accept a float that represents an integer
+% round(X)=:=X fails for NaN because NaN =/= NaN, so there is no
+% need to test for NaN separately.
+% ---
+
 inty_float(X) :-
    float(X),
    X =\= -1.0Inf,
    X =\= +1.0Inf,
-   round(X)=:=X.  % fails for NaN because NaN =/= NaN
+   round(X)=:=X. 
 
-% Evaluate a given check
+% ---
+% This one just exists to make code clearer
+% ---
+
+is_proper_list(L) :- 
+   is_list(L).
+
+% ---
+% eval(Check,TermToCheck,NameOfTerm,ThrowOrFailFlag)
+% This predicate needs no internal cuts as a unique decision is taken on arg 1
+% ---
 
 eval(var,X,Name,Throw) :-
-   !,
-   (var(X)
-    -> 
-    true
-    ;
-    throw_or_fail_missing_ok(too_much_instantiation,X,Name,Throw,"var")).
+   var(X)
+   -> 
+   true
+   ;
+   throw_or_fail_missing_ok(too_much_instantiation,X,Name,Throw,"var").
 eval(nonvar,X,Name,Throw) :-
-   !,
-   (nonvar(X)
-    -> 
-    true
-    ;
-    throw_or_fail_missing_ok(too_little_instantiation,X,Name,Throw,"nonvar")).
+   nonvar(X)
+   -> 
+   true
+   ;
+   throw_or_fail_missing_ok(too_little_instantiation,X,Name,Throw,"nonvar").
 eval(ground,X,Name,Throw) :-
-   !,
-   (ground(X)
-    -> 
-    true
-    ;
-    throw_or_fail_missing_ok(domain,X,Name,Throw,"ground")).
+   ground(X)
+   -> 
+   true
+   ;
+   throw_or_fail_missing_ok(domain,X,Name,Throw,"ground").
 eval(nonground,X,Name,Throw) :-
-   !,
-   (\+ground(X)
-    -> 
-    true
-    ;
-    throw_or_fail_missing_ok(domain,X,Name,Throw,"nonground")).
+   \+ground(X)
+   -> 
+   true
+   ;
+   throw_or_fail_missing_ok(domain,X,Name,Throw,"nonground").
 eval(atom,X,Name,Throw) :-
-   !,
-   (atom(X)
-    -> 
-    true
-    ;
-    throw_or_fail(type,X,Name,Throw,"atom")).
+   atom(X)
+   -> 
+   true
+   ;
+   throw_or_fail(type,X,Name,Throw,"atom").
 eval(symbol,X,Name,Throw) :-
    eval(atom,X,Name,Throw).
 eval(atomic,X,Name,Throw) :-
-   !,
-   (atomic(X)
-    -> 
-    true
-    ;
-    throw_or_fail(type,X,Name,Throw,"atomic")).
+   atomic(X)
+   -> 
+   true
+   ;
+   throw_or_fail(type,X,Name,Throw,"atomic").
 eval(constant,X,Name,Throw) :-
    eval(atomic,X,Name,Throw).
 eval(compound,X,Name,Throw) :-
-   !,
-   (compound(X)
+   compound(X)
+   -> 
+   true
+   ;
+   throw_or_fail(type,X,Name,Throw,"compound").
+eval(boolean,X,Name,Throw) :-
+   eval(atom,X,Name,Throw),
+   ((X==true;X==false)
     -> 
     true
     ;
-    throw_or_fail(type,X,Name,Throw,"compound")).
+    throw_or_fail(domain,X,Name,Throw,"boolean")).
+eval(pair,X,Name,Throw) :-
+   eval(compound,X,Name,Throw),
+   (X = -(_,_)
+    -> 
+    true
+    ;
+    throw_or_fail(domain,X,Name,Throw,"pair")).
 eval(string,X,Name,Throw) :-
-   !,
-   (string(X)
-    -> 
-    true
-    ;
-    throw_or_fail(type,X,Name,Throw,"string")).
+   string(X)
+   -> 
+   true
+   ;
+   throw_or_fail(type,X,Name,Throw,"string").
 eval(stringy,X,Name,Throw) :-
-   !,
-   ((atom(X);string(X))
-    -> 
-    true
+   (atom(X);string(X))
+   -> 
+   true
+   ;
+   throw_or_fail(type,X,Name,Throw,"stringy").
+eval(nestringy,X,Name,Throw) :-
+   eval(stringy,X,Name,Throw), % may throw a type error; after this, only domain error
+   ((X=='';X== "") 
+    ->
+    throw_or_fail(domain,X,Name,Throw,"nonempty stringy")
     ;
-    throw_or_fail(type,X,Name,Throw,"stringy")).
+    true).
 eval(char,X,Name,Throw) :-
-   !,
-   ((atom(X),atom_length(X,1)) % is this fast?? Note that we need to test first because atom_length/2 is lenient ("atomizes")
-    -> 
-    true
-    ;
-    throw_or_fail(type,X,Name,Throw,"char")).
+   % Is atom_length/2 fast? Note that we need to test atom/1 first
+   % because atom_length/2 transforms-to-atom
+   (atom(X),atom_length(X,1))
+   -> 
+   true
+   ;
+   throw_or_fail(type,X,Name,Throw,"char").
 eval(number,X,Name,Throw) :-
-   !,
-   (number(X)
-    -> 
-    true
-    ;
-    throw_or_fail(type,X,Name,Throw,"number")).
+   number(X)
+   -> 
+   true
+   ;
+   throw_or_fail(type,X,Name,Throw,"number").
 eval(float,X,Name,Throw) :-
-   !,
-   (float(X)
-    -> 
-    true
-    ;
-    throw_or_fail(type,X,Name,Throw,"float")).
+   float(X)
+   -> 
+   true
+   ;
+   throw_or_fail(type,X,Name,Throw,"float").
 eval(int,X,Name,Throw) :-
-   !,
-   (integer(X)
-    -> 
-    true
-    ;
-    throw_or_fail(type,X,Name,Throw,"integer")).
+   integer(X)
+   -> 
+   true
+   ;
+   throw_or_fail(type,X,Name,Throw,"integer").
 eval(integer,X,Name,Throw) :-
    eval(int,X,Name,Throw).
 eval(rational,X,Name,Throw) :-
-   !,
-   (rational(X)
-    -> 
-    true
-    ;
-    throw_or_fail(type,X,Name,Throw,"rational")).
+   rational(X)
+   -> 
+   true
+   ;
+   throw_or_fail(type,X,Name,Throw,"rational").
 eval(nonint_rational,X,Name,Throw) :-
-   !,
-   ((rational(X),\+integer(X))
-    -> 
+   (rational(X)
+    ->
     true
+    ; 
+    throw_or_fail(type,X,Name,Throw,"nonint_rational")),
+   (integer(X)
+    ->
+    throw_or_fail(domain,X,Name,Throw,"nonint_rational")
     ;
-    throw_or_fail(type,X,Name,Throw,"nonint_rational")).
+    true).
 eval(proper_rational,X,Name,Throw) :-
    eval(nonint_rational,X,Name,Throw).
 eval(negnum,X,Name,Throw) :-
-   !,
-   ((number(X),X<0)
-    -> 
-    true
-    ;
-    throw_or_fail(type,X,Name,Throw,"strictly negative number")).
+   eval(number,X,Name,Throw), % may throw a type error; after this, only domain error
+   (X < 0)
+   -> 
+   true
+   ;
+   throw_or_fail(domain,X,Name,Throw,"strictly negative number").
 eval(negnumber,X,Name,Throw) :-
    eval(negnum,X,Name,Throw).
 eval(posnum,X,Name,Throw) :-
-   !,
-   ((number(X),X>0)
-    -> 
-    true
-    ;
-    throw_or_fail(type,X,Name,Throw,"strictly positive number")).
+   eval(number,X,Name,Throw), % may throw a type error; after this, only domain error
+   (X > 0)
+   -> 
+   true
+   ;
+   throw_or_fail(domain,X,Name,Throw,"strictly positive number").
 eval(posnumber,X,Name,Throw) :-
    eval(posnum,X,Name,Throw).
 eval(neg0num,X,Name,Throw) :-
-   !,
-   ((number(X),X =< 0)
-    -> 
-    true
-    ;
-    throw_or_fail(type,X,Name,Throw,"number that is =< 0")).
+   eval(number,X,Name,Throw), % may throw a type error; after this, only domain error
+   (X =< 0)
+   -> 
+   true
+   ;
+   throw_or_fail(domain,X,Name,Throw,"number that is =< 0").
 eval(neg0number,X,Name,Throw) :-
    eval(neg0num,X,Name,Throw).
 eval(pos0num,X,Name,Throw) :-
-   !,
-   ((number(X),X >= 0)
-    -> 
-    true
-    ;
-    throw_or_fail(type,X,Name,Throw,"number that is >= 0")).
+   eval(number,X,Name,Throw), % may throw a type error; after this, only domain error
+   (X >= 0)
+   -> 
+   true
+   ;
+   throw_or_fail(domain,X,Name,Throw,"number that is >= 0").
 eval(pos0number,X,Name,Throw) :-
    eval(pos0num,X,Name,Throw).
 eval(non0num,X,Name,Throw) :-
-   !,
-   ((number(X),X =\= 0)
-    -> 
-    true
-    ;
-    throw_or_fail(type,X,Name,Throw,"number that is not 0")).
+   eval(number,X,Name,Throw), % may throw a type error; after this, only domain error
+   (X =\= 0)
+   -> 
+   true
+   ;
+   throw_or_fail(domain,X,Name,Throw,"number that is not 0").
 eval(non0number,X,Name,Throw) :-
    eval(non0num,X,Name,Throw).
 eval(float_not_nan,X,Name,Throw) :-
-   !,
-   ((float(X),NaN is nan,X \== NaN) % arithmetic comparison would fail
-    -> 
-    true
-    ;
-    throw_or_fail(type,X,Name,Throw,"float that is not NaN")).
+   eval(float,X,Name,Throw), % may throw a type error; after this, only domain error
+   (NaN is nan,X \== NaN) % arithmetic comparison would fail
+   -> 
+   true
+   ;
+   throw_or_fail(domain,X,Name,Throw,"float that is not NaN").
 eval(float_not_inf,X,Name,Throw) :-
-   !,
-   ((float(X),X =\= -1.0Inf,X =\= +1.0Inf)
-    -> 
-    true
-    ;
-    throw_or_fail(type,X,Name,Throw,"float that is not positive or negative infinity")).
+   eval(float,X,Name,Throw), % may throw a type error; after this, only domain error
+   (X =\= -1.0Inf,X =\= +1.0Inf)
+   -> 
+   true
+   ;
+   throw_or_fail(domain,X,Name,Throw,"float that is not positive or negative infinity").
 eval(float_not_neginf,X,Name,Throw) :-
-   !,
-   ((float(X),X =\= -1.0Inf)
-    -> 
-    true
-    ;
-    throw_or_fail(type,X,Name,Throw,"float that is not negative infinity")).
+   eval(float,X,Name,Throw), % may throw a type error; after this, only domain error
+   (X =\= -1.0Inf)
+   -> 
+   true
+   ;
+   throw_or_fail(domain,X,Name,Throw,"float that is not negative infinity").
 eval(float_not_posinf,X,Name,Throw) :-
-   !,
-   ((float(X),X =\= +1.0Inf)
-    -> 
-    true
-    ;
-    throw_or_fail(type,X,Name,Throw,"float that is not positive infinity")).
+   eval(float,X,Name,Throw), % may throw a type error; after this, only domain error
+   (X =\= +1.0Inf)
+   -> 
+   true
+   ;
+   throw_or_fail(domain,X,Name,Throw,"float that is not positive infinity").
 eval(negint,X,Name,Throw) :-
-   !,
-   ((integer(X),X<0)
-    -> 
-    true
-    ;
-    throw_or_fail(type,X,Name,Throw,"strictly negative integer")).
+   eval(int,X,Name,Throw), % may throw a type error; after this, only domain error
+   (X<0)
+   -> 
+   true
+   ;
+   throw_or_fail(domain,X,Name,Throw,"strictly negative integer").
 eval(negative_integer,X,Name,Throw) :-
    eval(negint,X,Name,Throw).
 eval(posint,X,Name,Throw) :-
-   !,
-   ((integer(X),X>0)
-    -> 
-    true
-    ;
-    throw_or_fail(type,X,Name,Throw,"strictly positive integer")).
+   eval(int,X,Name,Throw), % may throw a type error; after this, only domain error
+   (X>0)
+   -> 
+   true
+   ;
+   throw_or_fail(domain,X,Name,Throw,"strictly positive integer").
 eval(positive_integer,X,Name,Throw) :-
    eval(posint,X,Name,Throw).
 eval(neg0int,X,Name,Throw) :-
-   !,
-   ((integer(X),X =< 0)
-    -> 
-    true
-    ;
-    throw_or_fail(type,X,Name,Throw,"integer that is =< 0")).
+   eval(int,X,Name,Throw), % may throw a type error; after this, only domain error
+   (X =< 0)
+   -> 
+   true
+   ;
+   throw_or_fail(domain,X,Name,Throw,"integer that is =< 0").
 eval(pos0int,X,Name,Throw) :-
-   !,
-   ((integer(X),X >= 0)
-    -> 
-    true
-    ;
-    throw_or_fail(type,X,Name,Throw,"integer that is >= 0")).
+   eval(int,X,Name,Throw), % may throw a type error; after this, only domain error
+   (X >= 0)
+   -> 
+   true
+   ;
+   throw_or_fail(domain,X,Name,Throw,"integer that is >= 0").
 eval(nonneg,X,Name,Throw) :-
    eval(pos0int,X,Name,Throw).
 eval(inty,X,Name,Throw) :-
-   !,
    just_an_inty(X,Name,Throw). % may throw a type error
 eval(neginty,X,Name,Throw) :-
-   !,
    eval(inty,X,Name,Throw), % may throw a type error; after this, only domain error
-   ((integer(X),X<0;float(X),X<0.0)
-    -> 
-    true
-    ;
-    throw_or_fail(domain,X,Name,Throw,"strictly negative inty")).
+   ((integer(X),X<0);
+    (float(X),X<0.0))
+   -> 
+   true
+   ;
+   throw_or_fail(domain,X,Name,Throw,"strictly negative inty").
 eval(posinty,X,Name,Throw) :-
-   !,
    eval(inty,X,Name,Throw), % may throw a type error; after this, only domain error
-   ((integer(X),X>0;float(X),X>0.0)
-    -> 
-    true
-    ;
-    throw_or_fail(domain,X,Name,Throw,"strictly positive inty")).
+   ((integer(X),X>0);
+    (float(X),X>0.0))
+   -> 
+   true
+   ;
+   throw_or_fail(domain,X,Name,Throw,"strictly positive inty").
 eval(neg0inty,X,Name,Throw) :-
-   !,
    eval(inty,X,Name,Throw), % may throw a type error; after this, only domain error
-   ((integer(X),X=<0;float(X),X=<0.0)
-    -> 
-    true
-    ;
-    throw_or_fail(domain,X,Name,Throw,"inty that is =< 0")).
+   ((integer(X),X=<0);
+    (float(X),X=<0.0))
+   -> 
+   true
+   ;
+   throw_or_fail(domain,X,Name,Throw,"inty that is =< 0").
 eval(pos0inty,X,Name,Throw) :-
-   !,
    eval(inty,X,Name,Throw), % may throw a type error; after this, only domain error
-   ((integer(X),X>=0;float(X),X>=0.0)
-    -> 
-    true
-    ;
-    throw_or_fail(domain,X,Name,Throw,"inty that is >= 0")).
+   ((integer(X),X>=0);
+    (float(X),X>=0.0))
+   -> 
+   true
+   ;
+   throw_or_fail(domain,X,Name,Throw,"inty that is >= 0").
 eval(negfloat,X,Name,Throw) :-
-   !,
    eval(float_not_nan,X,Name,Throw), % may throw a type error; after this, only domain error
-   (X<0.0
-    -> 
-    true
-    ;
-    throw_or_fail(domain,X,Name,Throw,"strictly negative float")).
+   X<0.0
+   -> 
+   true
+   ;
+   throw_or_fail(domain,X,Name,Throw,"strictly negative float").
 eval(posfloat,X,Name,Throw) :-
-   !,
    eval(float_not_nan,X,Name,Throw), % may throw a type error; after this, only domain error
-   (X>0.0
-    -> 
-    true
-    ;
-    throw_or_fail(domain,X,Name,Throw,"strictly positive float")).
+   X>0.0
+   -> 
+   true
+   ;
+   throw_or_fail(domain,X,Name,Throw,"strictly positive float").
 eval(neg0float,X,Name,Throw) :-
-   !,
    eval(float_not_nan,X,Name,Throw), % may throw a type error; after this, only domain error
-   (X =< 0.0
-    -> 
-    true
-    ;
-    throw_or_fail(domain,X,Name,Throw,"float that is =< 0")).
+   X =< 0.0
+   -> 
+   true
+   ;
+   throw_or_fail(domain,X,Name,Throw,"float that is =< 0").
 eval(pos0float,X,Name,Throw) :-
-   !,
    eval(float_not_nan,X,Name,Throw), % may throw a type error; after this, only domain error
-   (X >= 0.0
-    -> 
-    true
-    ;
-    throw_or_fail(domain,X,Name,Throw,"float that is >= 0")).
+   X >= 0.0
+   -> 
+   true
+   ;
+   throw_or_fail(domain,X,Name,Throw,"float that is >= 0").
 eval(list,X,Name,Throw) :-
-   !,
-   (is_proper_list(X) 
-    -> 
-    true
-    ;
-    throw_or_fail(type,X,Name,Throw,"proper list")).
+   is_proper_list(X) 
+   -> 
+   true
+   ;
+   throw_or_fail(type,X,Name,Throw,"proper list").
 eval(proper_list,X,Name,Throw) :-
    eval(list,X,Name,Throw).
-eval(member(List),X,Name,Throw) :-  % TODO this can probably be optimized
-   !,
+eval(dict,X,Name,Throw) :-
+   is_dict(X)
+   -> 
+   true
+   ;
+   throw_or_fail(type,X,Name,Throw,"dict").
+
+% ---
+% eval with compound terms
+% ---
+
+eval(member(ListOfValues),X,Name,Throw) :-  % TODO this can probably be optimized
    throw_if_X_nonground(X,Name,"list-member-ship"), 
-   throw_if_X_nonlist(List,Name,member), % must be a proper list
-   ((\+ \+ member(X,List)) % \+ \+ to unroll any bindings
-    -> 
-    true
-    ;  
-    throw_or_fail(domain,X,Name,Throw,"list-member-ship")).
-eval(random(V),_X,_Name,Throw) :-
-   !,
-   (maybe(V) 
-    -> 
-    true
-    ;  
-    throw_or_fail_for_case_random(Throw)).
-eval(forall(List),X,Name,Throw) :-
-   !,
-   forall(
-      member(Check,List),
+   throw_if_X_nonlist(ListOfValues,Name,"member"), % must be a proper list
+   (\+ \+ member(X,ListOfValues)) % \+ \+ to unroll any bindings
+   -> 
+   true
+   ;  
+   throw_or_fail(domain,X,Name,Throw,"list-member-ship").
+eval(random(Probability),_X,_Name,Throw) :-
+   maybe(Probability)  % throws type error on value not in [0.0,1.0]
+   -> 
+   true
+   ;  
+   throw_or_fail_for_case_random(Throw).
+eval(forall(ListOfChecks),X,Name,Throw) :-
+   forall_forall_loop(ListOfChecks,X,Name,Throw).
+eval(forany(ListOfChecks),X,Name,Throw) :-
+   forany_forall_loop(ListOfChecks,X,Name,Throw).
+eval(fornone(ListOfChecks),X,Name,Throw) :-
+   fornone_forall_loop(ListOfChecks,X,Name,Throw).
+eval(passall(Check),ListOfX,Name,Throw) :-
+   passall_forall_loop(Check,ListOfX,Name,Throw) 
+   ->
+   true
+   ;
+   throw_or_fail(passall,[check(Check),arg(ListOfX)],Name,Throw,"passall").
+eval(passany(Check),ListOfX,Name,Throw) :-
+   passany_forall_loop(Check,ListOfX,Name) 
+   ->
+   true
+   ;
+   throw_or_fail(passany,[check(Check),arg(ListOfX)],Name,Throw,"passany").
+eval(passnone(Check),ListOfX,Name,Throw) :-
+   passnone_forall_loop(Check,ListOfX,Name)
+   -> 
+   true
+   ;
+   throw_or_fail(passnone,[check(Check),arg(ListOfX)],Name,Throw,"passnone").
+
+% ---
+% More helpers
+% ---
+
+forall_forall_loop(ListOfChecks,X,Name,Throw) :-
+  forall(                           % success of ListOfChecks is empty
+      member(Check,ListOfChecks),  
       eval(Check,X,Name,Throw)).
-eval(forany(List),X,Name,Throw) :-
-   !,
-   \+forall(
-      member(Check,List),
+
+forany_forall_loop(ListOfChecks,X,Name,Throw) :-
+   \+forall(                        % failure if ListOfChecks is empty
+      member(Check,ListOfChecks),
       \+eval(Check,X,Name,Throw)).
-eval(fornone(List),X,Name,Throw) :-
-   !,
+
+fornone_forall_loop(ListOfChecks,X,Name,Throw) :-
+   (ListOfChecks == [])             % force failure if ListOfChecks is empty
+   ->
+   false 
+   ;
    forall(
-      member(Check,List),
+      member(Check,ListOfChecks),
       \+eval(Check,X,Name,Throw)).
 
+passall_forall_loop(Check,ListOfX,Name,Throw) :-
+  forall(                           % success if ListOfX is empty
+      member(X,ListOfX),
+      eval(Check,X,Name,Throw)).
 
+passany_forall_loop(Check,ListOfX,Name) :-
+   \+forall(                        % failure if ListOfX is empty
+      member(X,ListOfX),
+      \+eval(Check,X,Name,false)).  % disable throwing
 
+passnone_forall_loop(Check,ListOfX,Name) :-
+   (ListOfX == [])                  % force failure if ListOfX is empty
+   ->
+   false
+   ;
+   forall(
+      member(X,ListOfX),
+      \+eval(Check,X,Name,false)). % disable throwing
+ 

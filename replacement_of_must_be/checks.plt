@@ -23,15 +23,23 @@
 */
 
 /*
+ * plunit tests for checks.pl, which implements a replacement for
+ * the must_be/2 predicate.
+ */
 
- * **********************************
- * plunit tests for checks.pl, which exports a replacement for
- * the must_be72 predicate.
- * **********************************
 
 :- use_module(library('onepointfour_text/checks.pl')).
 
+
 :- begin_tests(checks).
+
+% --- no conditions 
+
+test("no conditions always succeed #1") :-
+   check_that(_,[]).
+
+test("no conditions always succeed #2") :-
+   check_that(foo,[]).
 
 % --- var
 
@@ -143,6 +151,61 @@ test("compound, lenient, uninstantiated exception",error(check(too_little_instan
 test("compound, failure, throw", error(check(type,_,_,_))) :-
    check_that(foo,[strict(compound)]).
 
+% --- boolean
+
+test("boolean, success") :-
+   forall(
+      member(X,[false,true]),
+      check_that(X,[lenient(boolean)])
+   ).
+
+test("boolean, failure") :-
+   forall(
+      member(X,[1,0,y,n,yes,no,f(x),alpha,[],'',"","false","true"]),
+      \+check_that(X,[lenient(boolean)])
+   ).
+
+test("boolean, strict, type exception") :-
+   forall(
+      member(X,[1,0,f(x),"false","true"]),
+      catch(check_that(X,[strict(boolean)]),error(check(type,_,_,_),_),true)
+   ).
+
+test("boolean, strict, domain exception") :-
+   forall(
+      member(X,[yes,no,'']),
+      catch(check_that(X,[strict(boolean)]),error(check(domain,_,_,_),_),true)
+   ).
+
+test("boolean, lenient, uninstantiated exception",error(check(too_little_instantiation,_,_,_))) :-
+   check_that(_,[lenient(boolean)]).
+
+% --- pair
+
+test("pair, success") :-
+   forall(
+      member(X,[a-b,1-2,_-_]),
+      check_that(X,[lenient(pair)])
+   ).
+
+test("pair, failure") :-
+   forall(
+      member(X,[f(x),-(1,2,3),pair,'-']),
+      \+check_that(X,[lenient(pair)])
+   ).
+
+test("pair, strict, type exception") :-
+   forall(
+      member(X,[1,0,hello]),
+      catch(check_that(X,[strict(pair)]),error(check(type,_,_,_),_),true)
+   ).
+
+test("pair, strict, domain exception") :-
+   forall(
+      member(X,[f(x),-(_,_,_),-(1,2,3)]),
+      catch(check_that(X,[strict(pair)]),error(check(domain,_,_,_),_),true)
+   ).
+ 
 % --- string
 
 test("string, success") :-
@@ -182,6 +245,29 @@ test("stringy, lenient, uninstantiated exception",error(check(too_little_instant
  
 test("stringy, failure, throw", error(check(type,_,_,_))) :-
    check_that(444,[strict(stringy)]).
+
+% --- stringy, nonempty
+
+test("nonempty stringy, success") :-
+   forall(
+      member(X,["foo",foo]),
+      check_that(X,[lenient(nestringy)])
+   ).
+
+test("nonempty stringy, failure") :-
+   forall(
+      member(X,[1,"",'',f(x)]),
+      \+check_that(X,[lenient(nestringy)])
+   ).
+
+test("nonempty stringy, lenient, uninstantiated exception",error(check(too_little_instantiation,_,_,_))) :-
+   check_that(_,[lenient(nestringy)]).
+ 
+test("nonempty stringy, failure, throw type error", error(check(type,_,_,_))) :-
+   check_that(444,[strict(nestringy)]).
+
+test("nonempty stringy, failure, throw domain error", error(check(domain,_,_,_))) :-
+   check_that("",[strict(nestringy)]).
 
 % --- char
 
@@ -306,7 +392,7 @@ test("nonint_rational, failure") :-
 test("nonint_rational, lenient, uninstantiated exception",error(check(too_little_instantiation,_,_,_))) :-
    check_that(_,[lenient(nonint_rational)]).
  
-test("nonint_rational, failure, throw", error(check(type,_,_,_))) :-
+test("nonint_rational, failure, throw", error(check(domain,_,_,_))) :-
    check_that(777,[strict(nonint_rational)]).
 
 % --- strictly negative number
@@ -329,7 +415,7 @@ test("negnumber, failure") :-
 test("negnumber, lenient, uninstantiated exception",error(check(too_little_instantiation,_,_,_))) :-
    check_that(_,[lenient(negnumber)]).
  
-test("negnumber, failure, throw", error(check(type,_,_,_))) :-
+test("negnumber, failure, throw", error(check(domain,_,_,_))) :-
    check_that(+1,[strict(negnumber)]).
 
 % --- strictly positive number
@@ -352,7 +438,7 @@ test("posnumber, failure") :-
 test("posnumber, lenient, uninstantiated exception",error(check(too_little_instantiation,_,_,_))) :-
    check_that(_,[lenient(posnumber)]).
  
-test("posnumber, failure, throw", error(check(type,_,_,_))) :-
+test("posnumber, failure, throw", error(check(domain,_,_,_))) :-
    check_that(-1,[strict(posnumber)]).
 
 % --- nonzero number
@@ -372,7 +458,7 @@ test("non0number, failure") :-
 test("non0number, lenient, uninstantiated exception",error(check(too_little_instantiation,_,_,_))) :-
    check_that(_,[lenient(non0number)]).
  
-test("non0number, failure, throw", error(check(type,_,_,_))) :-
+test("non0number, failure, throw", error(check(domain,_,_,_))) :-
    check_that(0.0,[strict(non0number)]).
 
 % --- float, not NaN
@@ -483,8 +569,11 @@ test("negint, failure") :-
 
 test("negint, lenient, uninstantiated exception",error(check(too_little_instantiation,_,_,_))) :-
    check_that(_,[lenient(negint)]).
- 
-test("negint, failure, throw", error(check(type,_,_,_))) :-
+
+test("negint, failure, throw #1", error(check(type,_,_,_))) :-
+   check_that(foo,[strict(negint)]).
+
+test("negint, failure, throw #2", error(check(domain,_,_,_))) :-
    check_that(0,[strict(negint)]).
 
 % --- (strictly) positive integer
@@ -503,8 +592,11 @@ test("posint, failure") :-
 
 test("posint, lenient, uninstantiated exception",error(check(too_little_instantiation,_,_,_))) :-
    check_that(_,[lenient(posint)]).
- 
-test("posint, failure, throw", error(check(type,_,_,_))) :-
+
+test("posint, failure, throw #1", error(check(type,_,_,_))) :-
+   check_that(foo,[strict(posint)]).
+
+test("posint, failure, throw #2", error(check(domain,_,_,_))) :-
    check_that(0,[strict(posint)]).
 
 % --- negative-or-zero integer
@@ -722,16 +814,16 @@ test("negfloat, failure") :-
    ).
 
 test("negfloat, strict, type exception") :-
-   NaN is nan,
    forall(
-      member(X,[foo, "foo", 1r12, 0, NaN]),
+      member(X,[foo, "foo", 1r12, 0]),
       catch(check_that(X,[strict(negfloat)]),error(check(type,_,_,_),_),true)
    ).
 
 test("negfloat, strict, domain exception") :-
+   NaN is nan,
    PosInf is +1.0Inf,
    forall(
-      member(X,[0.0, -0.0, 1000.0, PosInf]),
+      member(X,[0.0, -0.0, 1000.0, PosInf, NaN]),
       catch(check_that(X,[strict(negfloat)]),error(check(domain,_,_,_),_),true)
    ).
 
@@ -756,16 +848,16 @@ test("posfloat, failure") :-
    ).
 
 test("posfloat, strict, type exception") :-
-   NaN is nan,
    forall(
-      member(X,[foo, "foo", 1r12, 0, NaN]),
+      member(X,[foo, "foo", 1r12, 0]),
       catch(check_that(X,[strict(posfloat)]),error(check(type,_,_,_),_),true)
    ).
 
 test("posfloat, strict, domain exception") :-
+   NaN is nan,
    NegInf is -1.0Inf,
    forall(
-      member(X,[0.0, -0.0, -1000.0, NegInf]),
+      member(X,[0.0, -0.0, -1000.0, NegInf, NaN]),
       catch(check_that(X,[strict(posfloat)]),error(check(domain,_,_,_),_),true)
    ).
 
@@ -790,16 +882,16 @@ test("neg0float, failure") :-
    ).
 
 test("neg0float, strict, type exception") :-
-   NaN is nan,
    forall(
-      member(X,[foo, "foo", 1r12, 0, 1000, NaN]),
+      member(X,[foo, "foo", 1r12, 0, 1000]),
       catch(check_that(X,[strict(neg0float)]),error(check(type,_,_,_),_),true)
    ).
 
 test("neg0float, strict, domain exception") :-
+   NaN is nan,
    PosInf is +1.0Inf,
    forall(
-      member(X,[0.0, -0.0, 1000.0, 1.0, PosInf]),
+      member(X,[0.0, -0.0, 1000.0, 1.0, PosInf,NaN]),
       catch(check_that(X,[strict(neg0float)]),error(check(domain,_,_,_),_),true)
    ).
 
@@ -849,6 +941,26 @@ test("list, lenient, uninstantiated exception",error(check(too_little_instantiat
 test("list, failure, throw", error(check(type,_,_,_))) :-
    check_that(foo,[strict(list)]).
 
+% --- dict
+
+test("dict, success") :-
+   forall(
+      member(X,[_{},foo{},bar{a:1,b:2}]),
+      check_that(X,[lenient(dict)])
+   ).
+
+test("dict, failure") :-
+   forall(
+      member(X,["",foo]),
+      \+check_that(X,[lenient(dict)])
+   ).
+
+test("dict, lenient, uninstantiated exception",error(check(too_little_instantiation,_,_,_))) :-
+   check_that(_,[lenient(dict)]).
+ 
+test("dict, failure, throw", error(check(type,_,_,_))) :-
+   check_that(foo,[strict(dict)]).
+
 % --- member
 
 test("member, success #1") :-
@@ -870,13 +982,13 @@ test("member, failure #2",fail) :-
 test("member, element nonground",error(check(not_ground,_,_,_))) :-
    check_that(_,[lenient(member([a,b,c]))]).
 
-test("member, not a proper list",error(domain_error(_,_))) :-
+test("member, not a proper list",error(check(unknown_or_problematic_check,_,_,_))) :-
    check_that(a,[lenient(member(_))]). % already caught in well-formedness check
 
-test("member, not a proper list",error(domain_error(_,_))) :-
+test("member, not a proper list",error(check(unknown_or_problematic_check,_,_,_))) :-
    check_that(a,[lenient(member(foo))]).  % already caught in well-formedness check
 
-test("member, not a proper list",error(domain_error(_,_))) :-
+test("member, not a proper list",error(check(unknown_or_problematic_check,_,_,_))) :-
    check_that(a,[lenient(member([a,b,c|_]))]).  % already caught in well-formedness check
 
 % --- random
@@ -891,21 +1003,21 @@ test("random until failure",error(check(random,_,_,_))) :-
 test("forall, success") :-
    check_that(12.0,[lenient(forall([float,inty,posnum]))]).
 
-test("forall, success on empty list") :-
+test("forall, empty list of checks, success") :-
    check_that(12.0,[]).
 
 test("forall, failure",fail) :-
    check_that(-12.0,[lenient(forall([float,inty,posnum]))]).
 
-test("forall, strict, failure",error(check(type,_,_,_))) :-
-   check_that(-12.0,[strict(forall([float,inty,posnum]))]).
+test("forall, strict, failure",error(check(domain,_,_,_))) :-
+   check_that(-12.0,[strict(forall([float,inty,posnum]))]). % fails on posnum
 
 % --- forany
 
 test("forany, success") :-
    check_that(-12,[lenient(forany([float,inty,posnum]))]).
 
-test("forany, failure on empty list",fail) :-
+test("forany, empty list of checks, failure",fail) :-
    check_that(-12,[lenient(forany([]))]).
 
 test("forany, failure",fail) :-
@@ -919,7 +1031,7 @@ test("forany, strict, failure",error(check(type,_,_,_))) :-
 test("fornone, success") :-
    check_that(foo,[lenient(fornone([float,inty,posnum]))]).
 
-test("fornone, failure on empty list") :-
+test("fornone, empty list of checks, failure", fail) :-
    check_that(foo,[lenient(fornone([]))]).
 
 test("fornone, failure",fail) :-
@@ -928,7 +1040,85 @@ test("fornone, failure",fail) :-
 test("fornone, strict, failure",error(check(type,_,_,_))) :-
    check_that(12.0,[strict(fornone([integer,negnum,inty]))]).
 
-% --- list of conditions
+% --- passall
+
+test("passall, not a list as X", error(check(type,_,_,_),_)) :-
+   check_that(foo,[lenient(passall(integer))]).
+
+test("passall, empty list as X, success") :-
+   check_that([],[lenient(passall(integer))]).
+
+test("passall, success") :-
+   check_that([1, 0, 3.0],[lenient(passall(inty))]).
+
+test("passall, failure",fail) :-
+   check_that([1, 0, 3.1],[lenient(passall(inty))]).
+
+test("passall, strict, failure, #1", error(check(type,_,_,_),_)) :-
+   check_that([1, 0, 3.1],[lenient(passall(inty))],throw).
+
+test("passall, strict, failure, #2", error(check(type,_,_,_),_)) :-
+   check_that([1, 0, 3.1],[strict(passall(inty))]).
+
+test("passall, strict, failure, #3", error(check(type,_,_,_),_)) :-
+   check_that([-1, foo, -2],[strict(passall(negint))]).
+
+test("passall, strict, failure, #4", error(check(domain,_,_,_),_)) :-
+   check_that([-1, 0, -2],[strict(passall(negint))]).
+
+
+% --- passany
+
+test("passany, not a list as X", error(check(type,_,_,_),_)) :-
+   check_that(foo,[lenient(passany(integer))]).
+
+test("passany, empty list as X, failure", fail) :-
+   check_that([],[lenient(passany(integer))]).
+
+test("passany, success") :-
+   check_that([foo, g(x), 3.0],[lenient(passany(inty))]).
+
+test("passany, failure",fail) :-
+   check_that([foo, g(x), 3.1],[lenient(passany(inty))]).
+
+test("passany, strict, failure, #1", error(check(passany,_,_,_),_)) :-
+   check_that([foo, g(x), 3.1],[lenient(passany(inty))],throw).
+
+test("passany, strict, failure, #2", error(check(passany,_,_,_),_)) :-
+   check_that([foo, g(x), 3.1],[strict(passany(inty))]).
+
+test("passany, strict, failure, #3", error(check(passany,_,_,_),_)) :-
+   check_that([1, 2, foo],[strict(passany(negint))]). % fails on 1
+
+test("passany, strict, failure, #4", error(check(passany,_,_,_),_)) :-
+   check_that([1, 2, 3],[strict(passany(negint))]).
+
+% --- passnone
+
+test("passnone, not a list as X", error(check(type,_,_,_),_)) :-
+   check_that(foo,[lenient(passnone(integer))]).
+
+test("passnone, empty list as X, failure", fail) :-
+   check_that([],[lenient(passnone(integer))]).
+
+test("passnone, success: there is no inty") :-
+   check_that([foo, g(x), 3.1],[lenient(passnone(inty))]).
+
+test("passnone, failure: there is an inty",fail) :-
+   check_that([foo, 2, 3.1],[lenient(passnone(inty))]).
+
+test("passnone, strict, failure: there is an inty, #1", error(check(passnone,_,_,_),_)) :-
+   check_that([foo, 2, 3.1],[lenient(passnone(inty))],throw).
+
+test("passnone, strict, failure: there is an inty, #2", error(check(passnone,_,_,_),_)) :-
+   check_that([foo, 2, 3.1],[strict(passnone(inty))]).
+
+
+
+
+
+
+% --- list of several conditions
 
 test("12 is nonvar and an integer, strict, succeeds") :-
    check_that(12,[strict(nonvar),strict(int)]).
