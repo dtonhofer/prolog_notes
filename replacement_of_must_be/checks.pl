@@ -71,8 +71,11 @@ The Check is either an atom or a compound term from the following list of atoms 
   compound
   boolean                            (either the atom 'true' or the atom 'false')
   pair                               (a compound term with functor name '-' and arity 2)
-  string stringy char                ("stringy" means it's an atom or a string)
-  nestringy                          (different from '' and "")
+  string                             (an SWI-Prolog string)
+  stringy                            (either an atom or an SWI-Prolog string)
+  nonempty_stringy                   (nonempty stringy: a stringy that is different from '' and "")
+  char                               (an atom of length 1, this is the traditional Prolog 'char' type)
+  stringy_typeid                     (one of the atoms 'string' or 'atom'; compare to 'boolean')
   number                             (any number)
   float                              (any float, including +1.0Inf, -1.0Inf, NaN, -0.0)  
   float_not_nan                      (any float, excluding NaN)
@@ -162,6 +165,26 @@ Possible extension:
   would_unify
   does_not_unify
 
+Usage scenarios
+
+  - Use check_that/2 to verify predicate entry preconditions
+    - Expecting to switch them off at "production time" (assertions) to gain performance 
+    - They are also goo "live documentation" saying exactly what parts of the input space are covered by throws and which ones by fails
+      One can rely on "implicitly building" that space via the behaviour of the predicates called in turn, but may become unclear
+      what that space is. (This may be ok depending on coding style)   
+    - Using check_that/2 "normally" as a guard to make the predicate 
+      - throw on extremely bad arguments (i.e. badly typed ones) 
+      - fail on bad arguments (i.e. out-of-domain ones)
+     - Logic/Search parts of the program will preferentially fail (or only enter the situation where a fail makes sense)
+     - Functional programming parts of the program will preferentially throw (or only enter the situation where a throw makes sense)    
+
+  - Use check_that/2 to verify invariants inside of predicates (generally not needed as this is done by checking pre/postconditions in Prolog)
+    - Expecting to switch them off at "production time" (assertions) to gain performance
+
+  - Use check_that/2 normally in code, as just a particular form of a guard, i.e. it is not expected that they will be switched off
+
+  - Sadly there is no easy way to perform postconditions-on-success in Prolog. Why not!
+  
 */
 
 :- use_module(library(yall)).
@@ -347,7 +370,8 @@ atomoform_checks(
    boolean,
    pair,
    string,stringy,char,
-   nestringy,
+   nonempty_stringy,
+   stringy_typeid,
    number,float,integer,int,rational,nonint_rational,proper_rational,
    negnum,negnumber,
    posnum,posnumber,
@@ -479,6 +503,10 @@ throw_if_X_nonlist(X,Name,Ness) :-
 % Predicates which check whether the Throw flag is set, and if so, 
 % construct an exception message and then throw via throw_2/3.
 % Otherwise they fail.
+%
+% "Ness" is a a free string that expresses what was expected byut not seen
+% For example, if "Ness" is "integer", the message will be about missing
+% "integer-ness".
 % ---
 
 throw_or_fail_for_case_random(Throw) :-
@@ -673,14 +701,14 @@ eval(compound,X,Name,Throw) :-
    ;
    throw_or_fail(type,X,Name,Throw,"compound").
 eval(boolean,X,Name,Throw) :-
-   eval(atom,X,Name,Throw),
+   eval(atom,X,Name,Throw), % may throw a type error; after this, only domain error
    ((X==true;X==false)
     -> 
     true
     ;
     throw_or_fail(domain,X,Name,Throw,"boolean")).
 eval(pair,X,Name,Throw) :-
-   eval(compound,X,Name,Throw),
+   eval(compound,X,Name,Throw), % may throw a type error; after this, only domain error
    (X = -(_,_)
     -> 
     true
@@ -698,7 +726,7 @@ eval(stringy,X,Name,Throw) :-
    true
    ;
    throw_or_fail(type,X,Name,Throw,"stringy").
-eval(nestringy,X,Name,Throw) :-
+eval(nonempty_stringy,X,Name,Throw) :-
    eval(stringy,X,Name,Throw), % may throw a type error; after this, only domain error
    ((X=='';X== "") 
     ->
@@ -935,6 +963,13 @@ eval(dict,X,Name,Throw) :-
    true
    ;
    throw_or_fail(type,X,Name,Throw,"dict").
+eval(stringy_typeid,X,Name,Throw) :-
+   eval(atom,X,Name,Throw), % may throw a type error; after this, only domain error
+   ((X==atom;X==string)
+    -> 
+    true
+    ;
+    throw_or_fail(domain,X,Name,Throw,"stringy_typeid")).
 
 % ---
 % eval with compound terms
@@ -965,19 +1000,19 @@ eval(passall(Check),ListOfX,Name,Throw) :-
    ->
    true
    ;
-   throw_or_fail(passall,[check(Check),arg(ListOfX)],Name,Throw,"passall").
+   throw_or_fail(passall,[check(Check),arg(ListOfX)],Name,Throw,"pass-all-of-the-checks").
 eval(passany(Check),ListOfX,Name,Throw) :-
    passany_forall_loop(Check,ListOfX,Name) 
    ->
    true
    ;
-   throw_or_fail(passany,[check(Check),arg(ListOfX)],Name,Throw,"passany").
+   throw_or_fail(passany,[check(Check),arg(ListOfX)],Name,Throw,"pass-any-of-the-checks").
 eval(passnone(Check),ListOfX,Name,Throw) :-
    passnone_forall_loop(Check,ListOfX,Name)
    -> 
    true
    ;
-   throw_or_fail(passnone,[check(Check),arg(ListOfX)],Name,Throw,"passnone").
+   throw_or_fail(passnone,[check(Check),arg(ListOfX)],Name,Throw,"pass-none-of-the-checks").
 
 % ---
 % More helpers

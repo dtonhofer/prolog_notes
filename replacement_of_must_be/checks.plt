@@ -180,6 +180,35 @@ test("boolean, strict, domain exception") :-
 test("boolean, lenient, uninstantiated exception",error(check(too_little_instantiation,_,_,_))) :-
    check_that(_,[lenient(boolean)]).
 
+% --- stringy_typeid
+
+test("stringy_typeid, success") :-
+   forall(
+      member(X,[atom,string]),
+      check_that(X,[lenient(stringy_typeid)])
+   ).
+
+test("stringy_typeid, failure") :-
+   forall(
+      member(X,[foo,"","atom","string",1,0]),
+      \+check_that(X,[lenient(stringy_typeid)])
+   ).
+
+test("stringy_typeid, strict, type exception") :-
+   forall(
+      member(X,[1,0,f(x),"atom","string"]),
+      catch(check_that(X,[strict(stringy_typeid)]),error(check(type,_,_,_),_),true)
+   ).
+
+test("stringy_typeid, strict, domain exception") :-
+   forall(
+      member(X,[yes,no,'']),
+      catch(check_that(X,[strict(stringy_typeid)]),error(check(domain,_,_,_),_),true)
+   ).
+
+test("stringy_typeid, lenient, uninstantiated exception",error(check(too_little_instantiation,_,_,_))) :-
+   check_that(_,[lenient(stringy_typeid)]).
+
 % --- pair
 
 test("pair, success") :-
@@ -251,23 +280,23 @@ test("stringy, failure, throw", error(check(type,_,_,_))) :-
 test("nonempty stringy, success") :-
    forall(
       member(X,["foo",foo]),
-      check_that(X,[lenient(nestringy)])
+      check_that(X,[lenient(nonempty_stringy)])
    ).
 
 test("nonempty stringy, failure") :-
    forall(
       member(X,[1,"",'',f(x)]),
-      \+check_that(X,[lenient(nestringy)])
+      \+check_that(X,[lenient(nonempty_stringy)])
    ).
 
 test("nonempty stringy, lenient, uninstantiated exception",error(check(too_little_instantiation,_,_,_))) :-
-   check_that(_,[lenient(nestringy)]).
+   check_that(_,[lenient(nonempty_stringy)]).
  
 test("nonempty stringy, failure, throw type error", error(check(type,_,_,_))) :-
-   check_that(444,[strict(nestringy)]).
+   check_that(444,[strict(nonempty_stringy)]).
 
 test("nonempty stringy, failure, throw domain error", error(check(domain,_,_,_))) :-
-   check_that("",[strict(nestringy)]).
+   check_that("",[strict(nonempty_stringy)]).
 
 % --- char
 
