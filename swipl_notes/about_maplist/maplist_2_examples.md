@@ -472,6 +472,86 @@ maplist(
 false.
 ```
 
+**Another example**
+
+Consider
+
+```
+repeated_success(X) :-
+   between(0,10,X),
+   between(X,10,Y),
+   format("Success for X=~d, Y=~d~n",[X,Y]).
+```
+
+Then _forall/2_ does not backtrack over the individual calls if it fails at 11:
+
+```
+?- forall(member(X,[8,9,10,11]),repeated_success(X)).
+Success for X=8, Y=8
+Success for X=9, Y=9
+Success for X=10, Y=10
+false.
+```
+
+But _maplist/2_ backtracks if it fails at 11:
+
+```
+?- maplist(repeated_success,[8,9,10,11]).
+Success for X=8, Y=8
+Success for X=9, Y=9
+Success for X=10, Y=10
+Success for X=9, Y=10
+Success for X=10, Y=10
+Success for X=8, Y=9
+Success for X=9, Y=9
+Success for X=10, Y=10
+Success for X=9, Y=10
+Success for X=10, Y=10
+Success for X=8, Y=10
+Success for X=9, Y=9
+Success for X=10, Y=10
+Success for X=9, Y=10
+Success for X=10, Y=10
+false.
+```
+
+Similarly, _forall/2_ in case of success:
+
+```
+?- forall(member(X,[8,9,10]),repeated_success(X)).
+Success for X=8, Y=8
+Success for X=9, Y=9
+Success for X=10, Y=10
+true.
+```
+
+But for _maplist/2_ we see:
+
+```
+?- maplist(repeated_success,[8,9,10]).
+Success for X=8, Y=8
+Success for X=9, Y=9
+Success for X=10, Y=10
+true ;
+Success for X=9, Y=10
+Success for X=10, Y=10
+true ;
+Success for X=8, Y=9
+Success for X=9, Y=9
+Success for X=10, Y=10
+true ;
+Success for X=9, Y=10
+Success for X=10, Y=10
+true ;
+Success for X=8, Y=10
+Success for X=9, Y=9
+Success for X=10, Y=10
+true ;
+Success for X=9, Y=10
+Success for X=10, Y=10
+true.
+```
+
 ## Going multilevel: Using _maplist/N_ inside of _maplist/N_<a name="maplist_inside_of_maplist"></a>
 
 If you want to test a list of lists, with the condition that every sublist has the same length, you can use `maplist/N` inside of `maplist/N`:
