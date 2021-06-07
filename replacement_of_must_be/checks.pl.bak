@@ -116,18 +116,6 @@ Usage scenarios:
   - Use check_that/2 normally in code, as just a particular form of a guard, i.e. it is not expected that they will be switched off
   - (There is no easy way to perform postconditions-on-success in Prolog except by wrapping a predicate with another predicate. Annoying.)
 
-Assertions
-
-  - Assertions are basically the subset of conditions that one does not expect to fail or throw at runtime.
-    The idea is to remove those tests because they "never fail" and the insurance will pick up the slack if they do.
-    Prolog is special in that "failing" is an integral part of its approach, so switching off checks wholesale is not an option
-    (Unless one wants to really have separate instructions for "necessary checks" and "assertion checks")
-    To "remove unnecessary checks" it must both be possible to:
-    1) identify them. This can be done my giving them a special name, e.g. lenient_assert instead of just lenient
-    2) be able to "remove them" cheaply; this can be done during compilation phase: the marked conditions can be written out
-    3) select those which should be removed based on program structure: eg. all those in module XY should be removed
-       this also seems a case for the compilation phase
-
 Desgin question especially clear in case of complex checking of lists:
 
   - The structure to test may have multiple layers of testing. For example, for a "proper list of char":
@@ -137,18 +125,14 @@ Desgin question especially clear in case of complex checking of lists:
     - X contains non-chars   -> fails or exception
     - and finally success
     A caller could demand throwing down to any level of the above (and possibly accept var)
-    The **proper way to have this flexibility** is exactly to use check_that/2 with the detailed
+    The **proper way to have this flexibility** is exactly to use check_that/2 with the detailed 
     more-and-more-precise check sequence, going from strictness to leniency depending on taste, for example
       check_that(X,[break(var),strict(list),strict(list(nonvar)),lenient(list(char))])
     instead of a single monolitic
       check_that(X,[break(var),strict(chars)])
     However, in that case the "rightmost checks" may perform wasteful checks against that we already
     know will succeed. So there is a need for doing bare-bones checks (maybe?). Probably not worth it.
-    Note that what exception to throw is generally made in this order:
-    X uninstantiated -> throw instantiation error
-    X instantiated but not of the correct type (e.g. expecting integer but it's a float) -> throw type error
-    X of the correct type but not in the correct domain (e.g. expecting positive integer but it's negative) -> throw domain error
- 
+
 The Check is either an atom or a compound term from the following list of atoms and compound terms (aliases are indicated with "/")
 
   var nonvar
@@ -620,7 +604,7 @@ throw_2(passnone,Msg,Culprit)                     :- throw(error(check(passnone 
 throw_2(forall,Msg,Culprit)                       :- throw(error(check(forall                   ,_       ,Msg,Culprit),_)).
 throw_2(forany,Msg,Culprit)                       :- throw(error(check(forany                   ,_       ,Msg,Culprit),_)).
 throw_2(fornone,Msg,Culprit)                      :- throw(error(check(fornone                  ,_       ,Msg,Culprit),_)).
-throw_2(_,_,_)                                    :- throw("Bug! You forgot a throw_2/3"). % Having this saves the day when debugging.
+throw_2(_,_,_)                                    :- throw("Bug! You forgot a throw_2/3"). % Having this saves the day when debugging. 
 
 throw_2(random,Msg)                               :- throw(error(check(random                   ,_       ,Msg,_      ),_)).
 
@@ -705,7 +689,7 @@ lineify_culprit(_) --> [].
 % ---
 
 just_an_inty(X,Name,Throw) :-
-   eval(nonvar,X,Name,Throw), % may throw uninstantiation error
+   eval(nonvar,X,Name,throw), % uninstantiation error
    ((integer(X);inty_float(X))
     ->
     true
@@ -761,7 +745,7 @@ eval(nonground,X,Name,Throw) :-
    ;
    throw_or_fail_missing_ok(domain,X,Name,Throw,"nonground").
 eval(atom,X,Name,Throw) :-
-   eval(nonvar,X,Name,Throw), % may throw uninstantiation error
+   eval(nonvar,X,Name,throw), % uninstantiation error
    (atom(X)
     ->
     true
@@ -770,7 +754,7 @@ eval(atom,X,Name,Throw) :-
 eval(symbol,X,Name,Throw) :-
    eval(atom,X,Name,Throw).
 eval(atomic,X,Name,Throw) :-
-   eval(nonvar,X,Name,Throw), % may throw uninstantiation error
+   eval(nonvar,X,Name,throw), % uninstantiation error
    (atomic(X)
     ->
     true
@@ -779,7 +763,7 @@ eval(atomic,X,Name,Throw) :-
 eval(constant,X,Name,Throw) :-
    eval(atomic,X,Name,Throw).
 eval(compound,X,Name,Throw) :-
-   eval(nonvar,X,Name,Throw), % may uninstantiation error
+   eval(nonvar,X,Name,throw), % uninstantiation error
    (compound(X)
     ->
     true
@@ -800,14 +784,14 @@ eval(pair,X,Name,Throw) :-
     ;
     throw_or_fail(domain,X,Name,Throw,"pair")).
 eval(string,X,Name,Throw) :-
-   eval(nonvar,X,Name,Throw), % may throw uninstantiation error
+   eval(nonvar,X,Name,throw), % uninstantiation error
    (string(X)
     ->
     true
     ;
     throw_or_fail(type,X,Name,Throw,"string")).
 eval(stringy,X,Name,Throw) :-
-   eval(nonvar,X,Name,Throw), % may throw uninstantiation error
+   eval(nonvar,X,Name,throw), % uninstantiation error
    ((atom(X);string(X))
     ->
     true
@@ -837,8 +821,8 @@ eval(code,X,Name,Throw) :-
     ;
     throw_or_fail(domain,X,Name,Throw,"code")).
 eval(chary,X,Name,Throw) :-
-   eval(nonvar,X,Name,Throw), % may throw uninstantiation error
-   (integer(X)
+   eval(nonvar,X,Name,throw), % uninstantiation error
+   (integer(X) 
     ->
     eval(code,X,Name,Throw)
     ;
@@ -848,21 +832,21 @@ eval(chary,X,Name,Throw) :-
     ;
     throw_or_fail(type,X,Name,Throw,"chary")).
 eval(number,X,Name,Throw) :-
-   eval(nonvar,X,Name,Throw), % may throw uninstantiation error
+   eval(nonvar,X,Name,throw), % uninstantiation error
    (number(X)
     ->
     true
     ;
     throw_or_fail(type,X,Name,Throw,"number")).
 eval(float,X,Name,Throw) :-
-   eval(nonvar,X,Name,Throw), % may throw uninstantiation error
+   eval(nonvar,X,Name,throw), % uninstantiation error
    (float(X)
     ->
     true
     ;
     throw_or_fail(type,X,Name,Throw,"float")).
 eval(int,X,Name,Throw) :-
-   eval(nonvar,X,Name,Throw), % may throw uninstantiation error
+   eval(nonvar,X,Name,throw), % uninstantiation error
    (integer(X)
     ->
     true
@@ -871,14 +855,14 @@ eval(int,X,Name,Throw) :-
 eval(integer,X,Name,Throw) :-
    eval(int,X,Name,Throw).
 eval(rational,X,Name,Throw) :-
-   eval(nonvar,X,Name,Throw), % may throw uninstantiation error
+   eval(nonvar,X,Name,throw), % uninstantiation error
    (rational(X)
     ->
     true
     ;
     throw_or_fail(type,X,Name,Throw,"rational")).
 eval(nonint_rational,X,Name,Throw) :-
-   eval(nonvar,X,Name,Throw), % may throw uninstantiation error
+   eval(nonvar,X,Name,throw), % uninstantiation error
    (rational(X)
     ->
     true
@@ -1061,7 +1045,7 @@ eval(pos0float,X,Name,Throw) :-
    ;
    throw_or_fail(domain,X,Name,Throw,"float that is >= 0").
 eval(list,X,Name,Throw) :-
-   eval(nonvar,X,Name,Throw),
+   eval(nonvar,X,Name,throw), % uninstantiation error
    (is_proper_list(X)
     ->
     true
@@ -1098,17 +1082,16 @@ eval(chary_typeid,X,Name,Throw) :-
     ;
     throw_or_fail(domain,X,Name,Throw,"chary_typeid")).
 eval(char_list,X,Name,Throw) :-
-   eval(proper_list,X,Name,Throw), % TODO dual traversal? One is in C, so this may be faster than "unifying" to a single traversal.
+   eval(proper_list,X,Name,Throw), % TODO dual traversal? One is in C, so this may be faster than "unifying" to a single traversal.   
    forall(member(MX,X),eval(char,MX,Name,Throw)). % Simple, but is it fast enough? Also does not indicate the erroneous index.
 eval(chars,X,Name,Throw) :-
    eval(char_list,X,Name,Throw).
 eval(code_list,X,Name,Throw) :-
-   eval(proper_list,X,Name,Throw),
+   eval(proper_list,X,Name,Throw), 
    forall(member(MX,X),eval(code,MX,Name,Throw)). % TODO: indicate index too; for this we need our own loop
 eval(codes,X,Name,Throw) :-
    eval(code_list,X,Name,Throw).
 eval(chary_list,X,Name,Throw) :-
-   eval(proper_list,X,Name,Throw), % TODO dual traversal? One is in C, so this may be faster than "unifying" to a single traversal.
    eval(forany([chars,codes]),X,Name,Throw). % TODO: indicate index too; for this we need our own loop
 eval(charys,X,Name,Throw) :-
    eval(chary_list,X,Name,Throw). % Simple but the error is confusing for check_that([a,2],strict(chary_list)) for example and does not give index
@@ -1159,14 +1142,10 @@ eval(fornone(ListOfChecks),X,Name,Throw) :-
 
 % ---
 % eval with passall/passany/passnone
-% TODO: - We give not precise indicates which X failed the check how (i..e no index)
-%       - Also, passany and passnone do not give any information about what went wrong at
-%         all as they fail the individual checks and then throw a generic exception
-%       Is fixing both of these worth the complexity?
 % ---
 
 eval(passall(Check),ListOfX,Name,Throw) :-
-   passall_forall_loop(Check,ListOfX,Name,Throw) % Throw is passed; thrown exception informs about problem
+   passall_forall_loop(Check,ListOfX,Name,Throw) % Throw is passed
    ->
    true
    ;
