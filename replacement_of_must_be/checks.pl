@@ -56,6 +56,10 @@ which can also "break out to succees" or throw at a condition.
   fail(Check)    : Fail if Check succeeds.
   lenient(Check) : If Check succeeds, proceed with conditions "further to the right", otherwise fail if "not throw" or throw a Check-relevant exception if "throw" ("throw" is switched on if Throw is one of =|true|= or =|throw|=).
   strict(Check)  : If Check succeeds, proceed with conditions "further to the right", otherwise throw a Check-relevant exception, irrespective of the value of Throw.
+  fullylenient(Check) : Fails even if the value is underspecified to make a proper decision (i.e. if X is uninstantiated).
+                        Generally, one would throw in that case.
+                        The Prolog predicates actually behave like that, i.e. "atom(_)" fails instead of throwing, actually performing a second-order check about the state of computation.
+                        In this context, one would eschew "fullylenient" and perform a releavant "fail" check to the left to get the same effect
 
 Shorther aliases of the above:
 
@@ -65,6 +69,7 @@ Shorther aliases of the above:
   fa(Check)
   le(Check)
   st(Check)
+  fule(Check)
 
 Synopsis:
 
@@ -148,8 +153,17 @@ Desgin question especially clear in case of complex checking of lists:
     X uninstantiated -> throw instantiation error
     X instantiated but not of the correct type (e.g. expecting integer but it's a float) -> throw type error
     X of the correct type but not in the correct domain (e.g. expecting positive integer but it's negative) -> throw domain error
- 
+
+Note that eval generally fails (or throws, if so demanded) if the question is "about" an uninstantiated variable.
+However, passing an uninstantiated variable is actually a different level in that the question posed by the
+predicate is "ill-formed" (e.g. is "_" an atom? cannot be answered (there is not enough information) unless one
+considers this is a second-order question, in that "unbound variables" become themselves the object of discourse;
+in which case "second-order: is an unbound variable an atom" can be answered with 'false'). Anyway, should ill-formed
+questions _really_ be answered with failure/standard-throw or with an unconditional throw of a dedicated exception?
+I am unsure about this. For, it's "as usual".
+
 The Check is either an atom or a compound term from the following list of atoms and compound terms (aliases are indicated with "/")
+TODO: The unbound variable is mostly a special case and should maybe merit special handling (an unconditional exception)
 
   var nonvar
   nonground ground
@@ -195,6 +209,10 @@ The Check is either an atom or a compound term from the following list of atoms 
   list/proper_list                   (a proper list, including the empty list)
   nonempty_list                      (a proper list that is not empty)
   dict                               (an SWI-Prolog dict)
+  cyclic                             (a term that has a cyclic structure)
+  acyclic                            (a term that has no cyclic structure for now, but have acquire it later unless it is also ground)
+  acyclic_forever                    (a term that is both ground and acyclic)
+  stream                             (a term that is a stream name (atom) or a valid stream handle (blob))
   member(ListOfValues)               (member of a list of values; test is unification)
   random(Probability)                (randomly fails with probability 0 =< Probability =< 1)
   forall(ListOfChecks)               (recursive: the term to check must pass all checks in ListOfChecks)
@@ -206,7 +224,7 @@ The Check is either an atom or a compound term from the following list of atoms 
 
 Compare with: Checks from must_be/2. Those marked "Ok" have been implemented in "check_that/N"
 
-     any                     : any term, including an unbound variable (this reduces to true)
+ n/a any                     : any term, including an unbound variable (this reduces to true)
   Ok atom,symbol             : passes atom/1
   Ok atomic,constant         : passes atomic/1
   Ok oneof(L)                : ground term that is member of L; if there is an unbound variable in L, everything passes!
@@ -224,8 +242,8 @@ Compare with: Checks from must_be/2. Those marked "Ok" have been implemented in 
      between(FloatL,FloatU)  : if FloatL is float, all other values may be float or integer (FIXME?); the limits are both INCLUSIVE; limits may be equal but NOT reversed
      between(IntL,IntU)      : if IntL is integer, all other values must be integer; the limits are both INCLUSIVE; limits may be equal but NOT reversed
                             FIXME: there should be specific between_int/2 and between_float/2 if one goes that way.
-     acyclic                 : passes acyclic_term/1, i.e. is an acyclic term; includes unbound var (the term is a tree if one disregards "internal sharing")
-     cyclic                  : passes cyclic_term/1, i.e. the term contains cycles (the term is a "rational tree"). Does not accept an unbound variable.
+  Ok acyclic                 : passes acyclic_term/1, i.e. is an acyclic term; includes unbound var (the term is a tree if one disregards "internal sharing")
+  Ok cyclic                  : passes cyclic_term/1, i.e. the term contains cycles (the term is a "rational tree"). Does not accept an unbound variable.
   Ok char                    : atom of length 1
   Oj chars                   : list of 1-character atoms; includes the empty list
   Ok code                    : unicode code point (any integer between 0 and 0x10FFFF)
@@ -241,7 +259,7 @@ Compare with: Checks from must_be/2. Those marked "Ok" have been implemented in 
      callable                : passes callable/1. Relatively usesless, as "callable" is ill-defined. Basically (atom(X);compound(X))
   Ok dict                    : passes is_dict/1, an SWI-prolog dict (which is just a compound term of a particular form)
      encoding                : valid name for a character encoding; see current_encoding/1, e.g. utf8 (but not "utf8" or 'utf-8'; also fails for 'iso_8859_1')
-     stream                  : passes is_stream/1, is a stream name or valid stream handle
+  Ok stream                  : passes is_stream/1, is a stream name or valid stream handle
      type                    : Meta: Term is a valid type specification for must_be/2. This is done by looking up whether a clause `has_type(Type,_) :- ....` exists.
                                Example: must_be(type,list(integer)). However, "must_be(type,list(grofx))": OK, but "must_be(type,grofx)": NOT OK.
 Possible extension:
@@ -381,6 +399,8 @@ exists_cond(lenient(_Check)).
 exists_cond(le(_Check)).
 exists_cond(strict(_Check)).
 exists_cond(st(_Check)).
+exists_cond(fullylenient(_Check)).
+exists_cond(fule(_Check)).
 
 wellformed_cond_or_throw(Condition,X) :-
    atom(Condition)
@@ -468,7 +488,9 @@ atomoform_checks(
    neg0inty,pos0inty,
    list,proper_list,
    nonempty_list,
-   dict
+   dict,
+   cyclic,acyclic_now,acyclic_forever,
+   stream
    ]
 ).
 
@@ -500,41 +522,56 @@ outcome_branching(Outcome,Condition,_,_,_,_) :- throw_various(unknown_outcome,"b
 
 check_that_3(true  ,_,_,_,break).
 check_that_3(tr    ,_,_,_,break).
+
 check_that_3(fail  ,_,_,_,fail).
 check_that_3(false ,_,_,_,fail).
 check_that_3(fa    ,_,_,_,fail).
+
 check_that_3(break(Check),X,Name,_,Outcome) :-
-   eval(Check,X,Name,false)
+   eval(Check,X,Name,false,true)
    ->
    Outcome = break
    ;
    Outcome = next.
 check_that_3(br(Check),X,Name,Throw,Outcome) :-
    check_that_3(break(Check),X,Name,Throw,Outcome).
+
 check_that_3(fail(Check),X,Name,_,Outcome) :-
-   eval(Check,X,Name,false)
+   eval(Check,X,Name,false,true)
    ->
    Outcome = fail
    ;
    Outcome = next.
 check_that_3(fa(Check),X,Name,Throw,Outcome) :-
    check_that_3(fail(Check),X,Name,Throw,Outcome).
+
 check_that_3(lenient(Check),X,Name,Throw,Outcome) :-
-   eval(Check,X,Name,Throw)
+   eval(Check,X,Name,Throw,true)
    ->
    Outcome = next
    ;
    Outcome = fail.
 check_that_3(le(Check),X,Name,Throw,Outcome) :-
-   check_that_3(le(Check),X,Name,Throw,Outcome).
+   check_that_3(lenient(Check),X,Name,Throw,Outcome).
+
 check_that_3(strict(Check),X,Name,_,Outcome) :-
-   eval(Check,X,Name,throw)
+   eval(Check,X,Name,throw,true)
    ->
    Outcome = next
    ;
    throw_various(strict_check_fails,"check should throw instead of fail",Check).
 check_that_3(st(Check),X,Name,_,Outcome) :-
    check_that_3(strict(Check),X,Name,_,Outcome).
+
+check_that_3(fullylenient(Check),X,Name,Throw,Outcome) :-
+   eval(Check,X,Name,Throw,Throw) % pass Throw also on last position
+   ->
+   Outcome = next
+   ;
+   Outcome = fail.
+check_that_3(fule(Check),X,Name,Throw,Outcome) :-
+   check_that_3(fullylenient(Check),X,Name,Throw,Outcome).
+
 check_that_3([],_,_,_,done).
 
 % ---
@@ -545,36 +582,47 @@ throw_is_set(Throw) :- Throw==true.
 throw_is_set(Throw) :- Throw==throw.
 
 % ---
-% Predicates which check a condition, and if true, construct an exception message and
-% then throw via throw_2/3
+% Special precondition checks: we want to unconditionally throw if X does not have enough
+% information for a meaningful answer, i.e. if we encounter an "instantiation error"
 % ---
 
-throw_if_X_uninstantiated(X,Name,Ness) :-
-   var(X)
+/*
+precondition_X_must_be_ground(X,Name,Ness,Throw) :-
+   ground(X)
    ->
-   (select_name(Name,Name2),
-    format(string(Msg),"~s should be more instantiated. Can't check for '~s-ness'",[Name2,Ness]),
-    throw_2(too_little_instantiation,Msg,X))
+   true
    ;
-   true.
+   (
+      throw_is_set(Throw), % if this fails, the call fails (which is what we want)
+      select_name(Name,Name2),
+      format(string(Msg),"~s should be ground. Can't check for '~s-ness'",[Name2,Ness]),
+      throw_2(too_little_instantiation,Msg,X)
+   ).
+*/
 
-throw_if_X_nonground(X,Name,Ness) :-
-   \+ground(X)
+precondition_X_must_be_instantiated(X,Name,Ness,Throw) :-
+   nonvar(X)
    ->
-   (select_name(Name,Name2),
-    format(string(Msg),"~s should be ground. Can't check for '~s-ness'",[Name2,Ness]),
-    throw_2(groundedness,Msg,X))
+   true
    ;
-   true.
+   (
+      throw_is_set(Throw), % if this fails, the call fails (which is what we want)
+      select_name(Name,Name2),
+      format(string(Msg),"~s should be instantiated. Can't check for '~s-ness'",[Name2,Ness]),
+      throw_2(too_little_instantiation,Msg,X)
+   ).
 
-throw_if_X_nonlist(X,Name,Ness) :-
-   \+is_proper_list(X)
+precondition_X_must_be_list(X,Name,Ness,Throw) :-
+   is_proper_list(X)
    ->
-   (select_name(Name,Name2),
-    format(string(Msg),"~s should be a proper list. Can't check for '~s-ness'",[Name2,Ness]),
-    throw_2(type,Msg,X))
+   true
    ;
-   true.
+   (
+      throw_is_set(Throw), % if this fails, the call fails (which is what we want)
+      select_name(Name,Name2),
+      format(string(Msg),"~s should be a proper list. Can't check for '~s-ness'",[Name2,Ness]),
+      throw_2(type,Msg,X)
+   ).
 
 % ---
 % Predicates which check whether the Throw flag is set, and if so,
@@ -591,13 +639,6 @@ throw_or_fail_for_case_random(Throw) :-
    throw_2(random,"random failure after calling maybe/1").
 
 throw_or_fail(Error,X,Name,Throw,Ness) :-
-   % throw_if_X_uninstantiated(X,Name,Ness), % This test has been move out into eval, so one should be able to comment this out
-   throw_is_set(Throw), % if this fails, the call fails (which is what we want)
-   select_name(Name,Name2),
-   format(string(Msg),"~s should fulfill '~s-ness'",[Name2,Ness]),
-   throw_2(Error,Msg,X).
-
-throw_or_fail_missing_ok(Error,X,Name,Throw,Ness) :-
    throw_is_set(Throw), % if this fails, the call fails (which is what we want)
    select_name(Name,Name2),
    format(string(Msg),"~s should fulfill '~s-ness'",[Name2,Ness]),
@@ -613,7 +654,6 @@ throw_2(domain,Msg,Culprit)                       :- throw(error(check(domain   
 throw_2(type,Msg,Culprit)                         :- throw(error(check(type                     ,_       ,Msg,Culprit),_)).
 throw_2(too_much_instantiation,Msg,Culprit)       :- throw(error(check(too_much_instantiation   ,_       ,Msg,Culprit),_)). % ISO's "uninstantiation error"
 throw_2(too_little_instantiation,Msg,Culprit)     :- throw(error(check(too_little_instantiation ,_       ,Msg,Culprit),_)). % ISO's "instantiation error"
-throw_2(groundedness,Msg,Culprit)                 :- throw(error(check(not_ground               ,_       ,Msg,Culprit),_)).
 throw_2(passall,Msg,Culprit)                      :- throw(error(check(passall                  ,_       ,Msg,Culprit),_)).
 throw_2(passany,Msg,Culprit)                      :- throw(error(check(passany                  ,_       ,Msg,Culprit),_)).
 throw_2(passnone,Msg,Culprit)                     :- throw(error(check(passnone                 ,_       ,Msg,Culprit),_)).
@@ -704,8 +744,8 @@ lineify_culprit(_) --> [].
 % causes failure to type error.
 % ---
 
-just_an_inty(X,Name,Throw) :-
-   eval(nonvar,X,Name,Throw), % may throw uninstantiation error
+just_an_inty(X,Name,Throw,TP) :-
+   precondition_X_must_be_instantiated(X,Name,"inty",TP),
    ((integer(X);inty_float(X))
     ->
     true
@@ -732,153 +772,183 @@ is_proper_list(L) :-
    is_list(L).
 
 % ---
-% eval(Check,TermToCheck,NameOfTerm,ThrowOrFailFlag)
+% eval(Check,TermToCheck,NameOfTerm,ThrowOrFail,ThrowOrFailForPrecondition)
 % This predicate needs no internal cuts as a unique decision is taken on arg 1
 % ---
 
-eval(var,X,Name,Throw) :-
+eval(var,X,Name,Throw,_TP) :-
    var(X)
    ->
    true
    ;
-   throw_or_fail_missing_ok(too_much_instantiation,X,Name,Throw,"var").
-eval(nonvar,X,Name,Throw) :-
+   throw_or_fail(too_much_instantiation,X,Name,Throw,"var").
+
+eval(nonvar,X,Name,Throw,_TP) :-
    nonvar(X)
    ->
    true
    ;
-   throw_or_fail_missing_ok(too_little_instantiation,X,Name,Throw,"nonvar").
-eval(ground,X,Name,Throw) :-
+   throw_or_fail(too_little_instantiation,X,Name,Throw,"nonvar").
+
+eval(ground,X,Name,Throw,_TP) :-
    ground(X)
    ->
    true
    ;
-   throw_or_fail_missing_ok(domain,X,Name,Throw,"ground").
-eval(nonground,X,Name,Throw) :-
+   throw_or_fail(domain,X,Name,Throw,"ground").
+
+eval(nonground,X,Name,Throw,_TP) :-
    \+ground(X)
    ->
    true
    ;
-   throw_or_fail_missing_ok(domain,X,Name,Throw,"nonground").
-eval(atom,X,Name,Throw) :-
-   eval(nonvar,X,Name,Throw), % may throw uninstantiation error
+   throw_or_fail(domain,X,Name,Throw,"nonground").
+
+eval(atom,X,Name,Throw,TP) :-
+   precondition_X_must_be_instantiated(X,Name,"atom",TP),
    (atom(X)
     ->
     true
     ;
     throw_or_fail(type,X,Name,Throw,"atom")).
-eval(symbol,X,Name,Throw) :-
-   eval(atom,X,Name,Throw).
-eval(atomic,X,Name,Throw) :-
-   eval(nonvar,X,Name,Throw), % may throw uninstantiation error
+
+eval(symbol,X,Name,Throw,TP) :-
+   eval(atom,X,Name,Throw,TP).
+
+eval(atomic,X,Name,Throw,TP) :-
+   precondition_X_must_be_instantiated(X,Name,"atomic",TP),
    (atomic(X)
     ->
     true
     ;
     throw_or_fail(type,X,Name,Throw,"atomic")).
-eval(constant,X,Name,Throw) :-
-   eval(atomic,X,Name,Throw).
-eval(compound,X,Name,Throw) :-
-   eval(nonvar,X,Name,Throw), % may uninstantiation error
+
+eval(constant,X,Name,Throw,TP) :-
+   eval(atomic,X,Name,Throw,TP).
+
+eval(compound,X,Name,Throw,TP) :-
+   precondition_X_must_be_instantiated(X,Name,"compound",TP),
    (compound(X)
     ->
     true
     ;
     throw_or_fail(type,X,Name,Throw,"compound")).
-eval(boolean,X,Name,Throw) :-
-   eval(atom,X,Name,Throw), % may throw a type/uninstantion error; after this, only domain error
+
+eval(boolean,X,Name,Throw,TP) :-
+   eval(atom,X,Name,Throw,TP),
    ((X==true;X==false)
     ->
     true
     ;
     throw_or_fail(domain,X,Name,Throw,"boolean")).
-eval(pair,X,Name,Throw) :-
-   eval(compound,X,Name,Throw), % may throw a type/uninstantiation error; after this, only domain error
+
+eval(pair,X,Name,Throw,TP) :-
+   eval(compound,X,Name,Throw,TP),
    (X = -(_,_)
     ->
     true
     ;
     throw_or_fail(domain,X,Name,Throw,"pair")).
-eval(string,X,Name,Throw) :-
-   eval(nonvar,X,Name,Throw), % may throw uninstantiation error
+
+eval(string,X,Name,Throw,TP) :-
+   precondition_X_must_be_instantiated(X,Name,"string",TP),
    (string(X)
     ->
     true
     ;
     throw_or_fail(type,X,Name,Throw,"string")).
-eval(stringy,X,Name,Throw) :-
-   eval(nonvar,X,Name,Throw), % may throw uninstantiation error
+
+eval(stringy,X,Name,Throw,TP) :-
+   precondition_X_must_be_instantiated(X,Name,"stringy",TP),
    ((atom(X);string(X))
     ->
     true
     ;
     throw_or_fail(type,X,Name,Throw,"stringy")).
-eval(nonempty_stringy,X,Name,Throw) :-
-   eval(stringy,X,Name,Throw), % may throw a type/uninstantiation error; after this, only domain error
-   ((X=='';X== "")
+
+eval(nonempty_stringy,X,Name,Throw,TP) :-
+   eval(stringy,X,Name,Throw,TP),
+   ((X\=='',X\== "")
     ->
-    throw_or_fail(domain,X,Name,Throw,"nonempty stringy")
+    true
     ;
-    true).
-eval(char,X,Name,Throw) :-
-   eval(atom,X,Name,Throw), % may throw a type/uninstantiation error; after this, only domain error
+    throw_or_fail(domain,X,Name,Throw,"nonempty stringy")).
+
+eval(char,X,Name,Throw,TP) :-
+   eval(atom,X,Name,Throw,TP),
    % Note that we need to test atom/1 first because atom_length/2 transforms-to-atom!
-   % atom_length/2 may be too wasteful to test for a precise length!
+   % atom_length/2 may be too wasteful to test for a precise length (?)
    (atom_length(X,1)
     ->
     true
     ;
     throw_or_fail(domain,X,Name,Throw,"char")).
-eval(code,X,Name,Throw) :-
-   eval(integer,X,Name,Throw), % may throw a type/uninstantiation error; after this, only domain error
+
+eval(code,X,Name,Throw,TP) :-
+   eval(integer,X,Name,Throw,TP),
    ((0=<X,X=<0x10FFFF)
     ->
     true
     ;
     throw_or_fail(domain,X,Name,Throw,"code")).
-eval(chary,X,Name,Throw) :-
-   eval(nonvar,X,Name,Throw), % may throw uninstantiation error
+
+eval(chary,X,Name,Throw,TP) :-
+   precondition_X_must_be_instantiated(X,Name,"chary",TP),
    (integer(X)
     ->
-    eval(code,X,Name,Throw)
+       ((0=<X,X=<0x10FFFF)
+        ->
+        true
+        ;
+        throw_or_fail(domain,X,Name,Throw,"code"))
     ;
     atom(X)
     ->
-    eval(char,X,Name,Throw)
+       (atom_length(X,1)
+        ->
+        true
+        ;
+        throw_or_fail(domain,X,Name,Throw,"char"))
     ;
     throw_or_fail(type,X,Name,Throw,"chary")).
-eval(number,X,Name,Throw) :-
-   eval(nonvar,X,Name,Throw), % may throw uninstantiation error
+
+eval(number,X,Name,Throw,TP) :-
+   precondition_X_must_be_instantiated(X,Name,"number",TP),
    (number(X)
     ->
     true
     ;
     throw_or_fail(type,X,Name,Throw,"number")).
-eval(float,X,Name,Throw) :-
-   eval(nonvar,X,Name,Throw), % may throw uninstantiation error
+
+eval(float,X,Name,Throw,TP) :-
+   precondition_X_must_be_instantiated(X,Name,"float",TP),
    (float(X)
     ->
     true
     ;
     throw_or_fail(type,X,Name,Throw,"float")).
-eval(int,X,Name,Throw) :-
-   eval(nonvar,X,Name,Throw), % may throw uninstantiation error
+
+eval(int,X,Name,Throw,TP) :-
+   precondition_X_must_be_instantiated(X,Name,"integer",TP),
    (integer(X)
     ->
     true
     ;
     throw_or_fail(type,X,Name,Throw,"integer")).
-eval(integer,X,Name,Throw) :-
-   eval(int,X,Name,Throw).
-eval(rational,X,Name,Throw) :-
-   eval(nonvar,X,Name,Throw), % may throw uninstantiation error
+
+eval(integer,X,Name,Throw,TP) :-
+   eval(int,X,Name,Throw,TP).
+
+eval(rational,X,Name,Throw,TP) :-
+   precondition_X_must_be_instantiated(X,Name,"rational",TP),
    (rational(X)
     ->
     true
     ;
     throw_or_fail(type,X,Name,Throw,"rational")).
-eval(nonint_rational,X,Name,Throw) :-
-   eval(nonvar,X,Name,Throw), % may throw uninstantiation error
+
+eval(nonint_rational,X,Name,Throw,TP) :-
+   precondition_X_must_be_instantiated(X,Name,"nonint_rational",TP),
    (rational(X)
     ->
     true
@@ -889,269 +959,362 @@ eval(nonint_rational,X,Name,Throw) :-
     throw_or_fail(domain,X,Name,Throw,"nonint_rational")
     ;
     true).
-eval(proper_rational,X,Name,Throw) :-
-   eval(nonint_rational,X,Name,Throw).
-eval(negnum,X,Name,Throw) :-
-   eval(number,X,Name,Throw), % may throw a type/uninstantiation error; after this, only domain error
-   (X < 0)
-   ->
-   true
-   ;
-   throw_or_fail(domain,X,Name,Throw,"strictly negative number").
-eval(negnumber,X,Name,Throw) :-
-   eval(negnum,X,Name,Throw).
-eval(posnum,X,Name,Throw) :-
-   eval(number,X,Name,Throw), % may throw a type/uninstantiation error; after this, only domain error
-   (X > 0)
-   ->
-   true
-   ;
-   throw_or_fail(domain,X,Name,Throw,"strictly positive number").
-eval(posnumber,X,Name,Throw) :-
-   eval(posnum,X,Name,Throw).
-eval(neg0num,X,Name,Throw) :-
-   eval(number,X,Name,Throw), % may throw a type/uninstantiation error; after this, only domain error
-   (X =< 0)
-   ->
-   true
-   ;
-   throw_or_fail(domain,X,Name,Throw,"number that is =< 0").
-eval(neg0number,X,Name,Throw) :-
-   eval(neg0num,X,Name,Throw).
-eval(pos0num,X,Name,Throw) :-
-   eval(number,X,Name,Throw), % may throw a type/uninstantiation error; after this, only domain error
-   (X >= 0)
-   ->
-   true
-   ;
-   throw_or_fail(domain,X,Name,Throw,"number that is >= 0").
-eval(pos0number,X,Name,Throw) :-
-   eval(pos0num,X,Name,Throw).
-eval(non0num,X,Name,Throw) :-
-   eval(number,X,Name,Throw), % may throw a type/uninstantiation error; after this, only domain error
-   (X =\= 0)
-   ->
-   true
-   ;
-   throw_or_fail(domain,X,Name,Throw,"number that is not 0").
-eval(non0number,X,Name,Throw) :-
-   eval(non0num,X,Name,Throw).
-eval(float_not_nan,X,Name,Throw) :-
-   eval(float,X,Name,Throw), % may throw a type/uninstantiation error; after this, only domain error
-   (NaN is nan,X \== NaN) % arithmetic comparison would fail
-   ->
-   true
-   ;
-   throw_or_fail(domain,X,Name,Throw,"float that is not NaN").
-eval(float_not_inf,X,Name,Throw) :-
-   eval(float,X,Name,Throw), % may throw a type/uninstantiation error; after this, only domain error
-   (X =\= -1.0Inf,X =\= +1.0Inf)
-   ->
-   true
-   ;
-   throw_or_fail(domain,X,Name,Throw,"float that is not positive or negative infinity").
-eval(float_not_neginf,X,Name,Throw) :-
-   eval(float,X,Name,Throw), % may throw a type/uninstantiation error; after this, only domain error
-   (X =\= -1.0Inf)
-   ->
-   true
-   ;
-   throw_or_fail(domain,X,Name,Throw,"float that is not negative infinity").
-eval(float_not_posinf,X,Name,Throw) :-
-   eval(float,X,Name,Throw), % may throw a type/uninstantiation error; after this, only domain error
-   (X =\= +1.0Inf)
-   ->
-   true
-   ;
-   throw_or_fail(domain,X,Name,Throw,"float that is not positive infinity").
-eval(negint,X,Name,Throw) :-
-   eval(int,X,Name,Throw), % may throw a type/uninstantiation error; after this, only domain error
-   (X<0)
-   ->
-   true
-   ;
-   throw_or_fail(domain,X,Name,Throw,"strictly negative integer").
-eval(negative_integer,X,Name,Throw) :-
-   eval(negint,X,Name,Throw).
-eval(posint,X,Name,Throw) :-
-   eval(int,X,Name,Throw), % may throw a type/uninstantiation error; after this, only domain error
-   (X>0)
-   ->
-   true
-   ;
-   throw_or_fail(domain,X,Name,Throw,"strictly positive integer").
-eval(positive_integer,X,Name,Throw) :-
-   eval(posint,X,Name,Throw).
-eval(neg0int,X,Name,Throw) :-
-   eval(int,X,Name,Throw), % may throw a type/uninstantiation error; after this, only domain error
-   (X =< 0)
-   ->
-   true
-   ;
-   throw_or_fail(domain,X,Name,Throw,"integer that is =< 0").
-eval(pos0int,X,Name,Throw) :-
-   eval(int,X,Name,Throw), % may throw a type/uninstantiation error; after this, only domain error
-   (X >= 0)
-   ->
-   true
-   ;
-   throw_or_fail(domain,X,Name,Throw,"integer that is >= 0").
-eval(nonneg,X,Name,Throw) :-
-   eval(pos0int,X,Name,Throw).
-eval(inty,X,Name,Throw) :-
-   just_an_inty(X,Name,Throw). % may throw a type/uninstantiation error
-eval(neginty,X,Name,Throw) :-
-   eval(inty,X,Name,Throw), % may throw a type/uninstantiation error; after this, only domain error
-   ((integer(X),X<0);
-    (float(X),X<0.0))
-   ->
-   true
-   ;
-   throw_or_fail(domain,X,Name,Throw,"strictly negative inty").
-eval(posinty,X,Name,Throw) :-
-   eval(inty,X,Name,Throw), % may throw a type/uninstantiation error; after this, only domain error
-   ((integer(X),X>0);
-    (float(X),X>0.0))
-   ->
-   true
-   ;
-   throw_or_fail(domain,X,Name,Throw,"strictly positive inty").
-eval(neg0inty,X,Name,Throw) :-
-   eval(inty,X,Name,Throw), % may throw a type/uninstantiation error; after this, only domain error
-   ((integer(X),X=<0);
-    (float(X),X=<0.0))
-   ->
-   true
-   ;
-   throw_or_fail(domain,X,Name,Throw,"inty that is =< 0").
-eval(pos0inty,X,Name,Throw) :-
-   eval(inty,X,Name,Throw), % may throw a type/uninstantiation error; after this, only domain error
-   ((integer(X),X>=0);
-    (float(X),X>=0.0))
-   ->
-   true
-   ;
-   throw_or_fail(domain,X,Name,Throw,"inty that is >= 0").
-eval(negfloat,X,Name,Throw) :-
-   eval(float_not_nan,X,Name,Throw), % may throw a type/uninstantiation error; after this, only domain error
-   X<0.0
-   ->
-   true
-   ;
-   throw_or_fail(domain,X,Name,Throw,"strictly negative float").
-eval(posfloat,X,Name,Throw) :-
-   eval(float_not_nan,X,Name,Throw), % may throw a type/uninstantiation error; after this, only domain error
-   X>0.0
-   ->
-   true
-   ;
-   throw_or_fail(domain,X,Name,Throw,"strictly positive float").
-eval(neg0float,X,Name,Throw) :-
-   eval(float_not_nan,X,Name,Throw), % may throw a type/uninstantiation error; after this, only domain error
-   X =< 0.0
-   ->
-   true
-   ;
-   throw_or_fail(domain,X,Name,Throw,"float that is =< 0").
-eval(pos0float,X,Name,Throw) :-
-   eval(float_not_nan,X,Name,Throw), % may throw a type/uninstantiation error; after this, only domain error
-   X >= 0.0
-   ->
-   true
-   ;
-   throw_or_fail(domain,X,Name,Throw,"float that is >= 0").
-eval(list,X,Name,Throw) :-
-   eval(nonvar,X,Name,Throw),
+
+eval(proper_rational,X,Name,Throw,TP) :-
+   eval(nonint_rational,X,Name,Throw,TP).
+
+eval(negnum,X,Name,Throw,TP) :-
+   eval(number,X,Name,Throw,TP),
+   ((X < 0)
+    ->
+    true
+    ;
+    throw_or_fail(domain,X,Name,Throw,"strictly negative number")).
+
+eval(negnumber,X,Name,Throw,TP) :-
+   eval(negnum,X,Name,Throw,TP).
+
+eval(posnum,X,Name,Throw,TP) :-
+   eval(number,X,Name,Throw,TP),
+   ((X > 0)
+    ->
+    true
+    ;
+    throw_or_fail(domain,X,Name,Throw,"strictly positive number")).
+
+eval(posnumber,X,Name,Throw,TP) :-
+   eval(posnum,X,Name,Throw,TP).
+
+eval(neg0num,X,Name,Throw,TP) :-
+   eval(number,X,Name,Throw,TP),
+   ((X =< 0)
+    ->
+    true
+    ;
+    throw_or_fail(domain,X,Name,Throw,"number that is =< 0")).
+
+eval(neg0number,X,Name,Throw,TP) :-
+   eval(neg0num,X,Name,Throw,TP).
+
+eval(pos0num,X,Name,Throw,TP) :-
+   eval(number,X,Name,Throw,TP),
+   ((X >= 0)
+    ->
+    true
+    ;
+    throw_or_fail(domain,X,Name,Throw,"number that is >= 0")).
+
+eval(pos0number,X,Name,Throw,TP) :-
+   eval(pos0num,X,Name,Throw,TP).
+
+eval(non0num,X,Name,Throw,TP) :-
+   eval(number,X,Name,Throw,TP),
+   ((X =\= 0)
+    ->
+    true
+    ;
+    throw_or_fail(domain,X,Name,Throw,"number that is not 0")).
+
+eval(non0number,X,Name,Throw,TP) :-
+   eval(non0num,X,Name,Throw,TP).
+
+eval(float_not_nan,X,Name,Throw,TP) :-
+   eval(float,X,Name,Throw,TP),
+   ((NaN is nan,X \== NaN) % arithmetic comparison would fail
+    ->
+    true
+    ;
+    throw_or_fail(domain,X,Name,Throw,"float that is not NaN")).
+
+eval(float_not_inf,X,Name,Throw,TP) :-
+   eval(float,X,Name,Throw,TP),
+   ((X =\= -1.0Inf,X =\= +1.0Inf)
+    ->
+    true
+    ;
+    throw_or_fail(domain,X,Name,Throw,"float that is not positive or negative infinity")).
+
+eval(float_not_neginf,X,Name,Throw,TP) :-
+   eval(float,X,Name,Throw,TP),
+   ((X =\= -1.0Inf)
+    ->
+    true
+    ;
+    throw_or_fail(domain,X,Name,Throw,"float that is not negative infinity")).
+
+eval(float_not_posinf,X,Name,Throw,TP) :-
+   eval(float,X,Name,Throw,TP),
+   ((X =\= +1.0Inf)
+    ->
+    true
+    ;
+    throw_or_fail(domain,X,Name,Throw,"float that is not positive infinity")).
+
+eval(negint,X,Name,Throw,TP) :-
+   eval(int,X,Name,Throw,TP),
+   ((X<0)
+    ->
+    true
+    ;
+    throw_or_fail(domain,X,Name,Throw,"strictly negative integer")).
+
+eval(negative_integer,X,Name,Throw,TP) :-
+   eval(negint,X,Name,Throw,TP).
+
+eval(posint,X,Name,Throw,TP) :-
+   eval(int,X,Name,Throw,TP),
+   ((X>0)
+    ->
+    true
+    ;
+    throw_or_fail(domain,X,Name,Throw,"strictly positive integer")).
+
+eval(positive_integer,X,Name,Throw,TP) :-
+   eval(posint,X,Name,Throw,TP).
+
+eval(neg0int,X,Name,Throw,TP) :-
+   eval(int,X,Name,Throw,TP),
+   ((X =< 0)
+    ->
+    true
+    ;
+    throw_or_fail(domain,X,Name,Throw,"integer that is =< 0")).
+
+eval(pos0int,X,Name,Throw,TP) :-
+   eval(int,X,Name,Throw,TP),
+   ((X >= 0)
+    ->
+    true
+    ;
+    throw_or_fail(domain,X,Name,Throw,"integer that is >= 0")).
+
+eval(nonneg,X,Name,Throw,TP) :-
+   eval(pos0int,X,Name,Throw,TP).
+
+eval(inty,X,Name,Throw,TP) :-
+   just_an_inty(X,Name,Throw,TP).
+
+eval(neginty,X,Name,Throw,TP) :-
+   eval(inty,X,Name,Throw,TP),
+   (((integer(X),X<0);(float(X),X<0.0))
+    ->
+    true
+    ;
+    throw_or_fail(domain,X,Name,Throw,"strictly negative inty")).
+
+eval(posinty,X,Name,Throw,TP) :-
+   eval(inty,X,Name,Throw,TP),
+   (((integer(X),X>0);(float(X),X>0.0))
+    ->
+    true
+    ;
+    throw_or_fail(domain,X,Name,Throw,"strictly positive inty")).
+
+eval(neg0inty,X,Name,Throw,TP) :-
+   eval(inty,X,Name,Throw,TP),
+   (((integer(X),X=<0);(float(X),X=<0.0))
+    ->
+    true
+    ;
+    throw_or_fail(domain,X,Name,Throw,"inty that is =< 0")).
+
+eval(pos0inty,X,Name,Throw,TP) :-
+   eval(inty,X,Name,Throw,TP),
+   (((integer(X),X>=0);(float(X),X>=0.0))
+    ->
+    true
+    ;
+    throw_or_fail(domain,X,Name,Throw,"inty that is >= 0")).
+
+eval(negfloat,X,Name,Throw,TP) :-
+   eval(float_not_nan,X,Name,Throw,TP),
+   (X<0.0
+    ->
+    true
+    ;
+    throw_or_fail(domain,X,Name,Throw,"strictly negative float")).
+
+eval(posfloat,X,Name,Throw,TP) :-
+   eval(float_not_nan,X,Name,Throw,TP),
+   (X>0.0
+    ->
+    true
+    ;
+    throw_or_fail(domain,X,Name,Throw,"strictly positive float")).
+
+eval(neg0float,X,Name,Throw,TP) :-
+   eval(float_not_nan,X,Name,Throw,TP),
+   (X=<0.0
+    ->
+    true
+    ;
+    throw_or_fail(domain,X,Name,Throw,"float that is =< 0")).
+
+eval(pos0float,X,Name,Throw,TP) :-
+   eval(float_not_nan,X,Name,Throw,TP),
+   (X>=0.0
+    ->
+    true
+    ;
+    throw_or_fail(domain,X,Name,Throw,"float that is >= 0")).
+
+eval(list,X,Name,Throw,TP) :-
+   precondition_X_must_be_instantiated(X,Name,"list",TP),
    (is_proper_list(X)
     ->
     true
     ;
     throw_or_fail(type,X,Name,Throw,"proper list")).
-eval(proper_list,X,Name,Throw) :-
-   eval(list,X,Name,Throw).
-eval(nonempty_list,X,Name,Throw) :-
-   eval(list,X,Name,Throw), % may throw a type/uninstantiation error; after this, only domain error
-   (X == []
+
+eval(proper_list,X,Name,Throw,TP) :-
+   eval(list,X,Name,Throw,TP).
+
+eval(nonempty_list,X,Name,Throw,TP) :-
+   eval(list,X,Name,Throw,TP),
+   (X \== []
     ->
-    throw_or_fail(domain,X,Name,Throw,"proper nonempty list")
+    true
     ;
-    true).
-eval(dict,X,Name,Throw) :-
-   eval(nonvar,X,Name,throw), % uninstantiation error
+    throw_or_fail(domain,X,Name,Throw,"proper nonempty list")).
+
+eval(dict,X,Name,Throw,TP) :-
+   precondition_X_must_be_instantiated(X,Name,"dict",TP),
    (is_dict(X)
     ->
     true
     ;
     throw_or_fail(type,X,Name,Throw,"dict")).
-eval(stringy_typeid,X,Name,Throw) :-
-   eval(atom,X,Name,Throw), % may throw a type/uninstantiation error; after this, only domain error
+
+eval(stringy_typeid,X,Name,Throw,TP) :-
+   eval(atom,X,Name,Throw,TP),
    ((X==atom;X==string)
     ->
     true
     ;
     throw_or_fail(domain,X,Name,Throw,"stringy_typeid")).
-eval(chary_typeid,X,Name,Throw) :-
-   eval(atom,X,Name,Throw), % may throw a type/uninstantiation error; after this, only domain error
+
+eval(chary_typeid,X,Name,Throw,TP) :-
+   eval(atom,X,Name,Throw,TP),
    ((X==char;X==code)
     ->
     true
     ;
     throw_or_fail(domain,X,Name,Throw,"chary_typeid")).
-eval(char_list,X,Name,Throw) :-
-   eval(proper_list,X,Name,Throw), % TODO dual traversal? One is in C, so this may be faster than "unifying" to a single traversal.
-   forall(member(MX,X),eval(char,MX,Name,Throw)). % Simple, but is it fast enough? Also does not indicate the erroneous index.
-eval(chars,X,Name,Throw) :-
-   eval(char_list,X,Name,Throw).
-eval(code_list,X,Name,Throw) :-
-   eval(proper_list,X,Name,Throw),
-   forall(member(MX,X),eval(code,MX,Name,Throw)). % TODO: indicate index too; for this we need our own loop
-eval(codes,X,Name,Throw) :-
-   eval(code_list,X,Name,Throw).
-eval(chary_list,X,Name,Throw) :-
-   eval(proper_list,X,Name,Throw), % TODO dual traversal? One is in C, so this may be faster than "unifying" to a single traversal.
-   eval(forany([chars,codes]),X,Name,Throw). % TODO: indicate index too; for this we need our own loop
-eval(charys,X,Name,Throw) :-
-   eval(chary_list,X,Name,Throw). % Simple but the error is confusing for check_that([a,2],strict(chary_list)) for example and does not give index
 
-% ---
-% eval with compound terms
-% ---
+eval(char_list,X,Name,Throw,TP) :-
+   precondition_X_must_be_instantiated(X,Name,"char_list",TP),
+   precondition_X_must_be_list(X,Name,"char_list",Throw), % Dual traversal, but one is in C, so this may be faster than "unifying" to a single traversal.
+   forall(member(MX,X),eval(char,MX,Name,Throw,TP)). % TODO: Open up to get at the index
 
-eval(member(ListOfValues),X,Name,Throw) :-  % TODO this can probably be optimized
-   throw_if_X_nonground(X,Name,"list-member-ship"),
-   throw_if_X_nonlist(ListOfValues,Name,"member"), % must be a proper list
-   (\+ \+ member(X,ListOfValues)) % \+ \+ to unroll any bindings
-   ->
-   true
-   ;
-   throw_or_fail(domain,X,Name,Throw,"list-member-ship").
-eval(random(Probability),_X,_Name,Throw) :-
+eval(chars,X,Name,Throw,TP) :-
+   eval(char_list,X,Name,Throw,TP).
+
+eval(code_list,X,Name,Throw,TP) :-
+   precondition_X_must_be_instantiated(X,Name,"code_list",TP),
+   precondition_X_must_be_list(X,Name,"code_list",Throw), % Dual traversal, but one is in C, so this may be faster than "unifying" to a single traversal.
+   forall(member(MX,X),eval(code,MX,Name,Throw,TP)). % TODO: Open up to get at the index
+
+eval(codes,X,Name,Throw,TP) :-
+   eval(code_list,X,Name,Throw,TP).
+
+eval(chary_list,X,Name,Throw,TP) :-
+   precondition_X_must_be_instantiated(X,Name,"chary_list",TP),
+   precondition_X_must_be_list(X,Name,"chary_list",Throw), % Dual traversal, but one is in C, so this may be faster than "unifying" to a single traversal.
+   eval(forany([chars,codes]),X,Name,Throw,TP).  % TODO: Open up to get at the index and get better error messages
+   % Simple, but the error is confusing for "check_that([a,2],strict(chary_list))" for example and does not give the index
+
+eval(charys,X,Name,Throw,TP) :-
+   eval(chary_list,X,Name,Throw,TP).
+
+
+
+eval(member(ListOfValues),X,Name,Throw,TP) :-
+   precondition_X_must_be_instantiated(X,Name,"list_membership",TP), % must be ground or must be instantiated ? difficult ...
+   precondition_X_must_be_list(ListOfValues,Name,"list_membership",TP), % actually, it is not X but ListOfValues which must be a list!
+   ((\+ \+ member(X,ListOfValues)) % Use \+ \+ to roll back any accidental bindings
+    ->
+    true
+    ;
+    throw_or_fail(domain,X,Name,Throw,"list_membership")).
+
+eval(random(Probability),_X,_Name,Throw,_TP) :-
    maybe(Probability)  % throws type error on value not in [0.0,1.0]
    ->
    true
    ;
    throw_or_fail_for_case_random(Throw).
 
+% These REALLY are "second order" (i.e. about how the terms are represented)
+% Indeed, asking whether an unbound variable is cyclic or not makes some.
+% These questoins are actually too rough.
+% One might have:
+% 1) Assuredly cyclic
+% 2) Not cyclic for now but can become cyclic later (case of any nonground
+%    compound, including the unbound variable)
+% 3) Not cyclic now and cannot become cyclic later (case of atomic or
+%    ground compound)
+
+eval(cyclic,X,Name,Throw,_TP) :-
+   cyclic_term(X) % fails on X unbound, which is ok
+   ->
+   true
+   ;
+   throw_or_fail(type,X,Name,Throw,"cyclic").
+
+eval(acyclic_now,X,Name,Throw,_TP) :-
+   \+ cyclic_term(X)
+   ->
+   true
+   ;
+   throw_or_fail(type,X,Name,Throw,"tentatively acyclic").
+
+eval(acyclic_forever,X,Name,Throw,_TP) :-
+   (ground(X),\+ cyclic_term(X))
+   ->
+   true
+   ;
+   throw_or_fail(type,X,Name,Throw,"acyclic now and cannot become cyclic later").
+
+eval(stream,X,Name,Throw,TP) :-
+   precondition_X_must_be_instantiated(X,Name,"stream",TP),
+   (atom(X)
+    ->
+       (is_stream(X)
+        ->
+        true
+        ;
+        throw_or_fail(domain,X,Name,Throw,"atom-naming-a-stream"))
+    ;
+    atomic(X)
+    ->
+       (is_stream(X)
+        ->
+        true
+        ;
+        throw_or_fail(domain,X,Name,Throw,"atomic-designating-a-stream"))
+    ;
+    throw_or_fail(type,X,Name,Throw,"atom-or-atomic")).
+
 % ---
 % eval with forall/forany/fornone
 % ---
 
-eval(forall(ListOfChecks),X,Name,Throw) :-
-   forall_forall_loop(ListOfChecks,X,Name,Throw) % Throw is passed
+eval(forall(ListOfChecks),X,Name,Throw,TP) :-
+   forall_forall_loop(ListOfChecks,X,Name,Throw,TP) % Throw is passed
    ->
    true
    ;
    throw_or_fail(forall,checks(ListOfChecks)-item(X),Name,Throw,"all of the checks succeed for the item").
 
-eval(forany(ListOfChecks),X,Name,Throw) :-
-   forany_forall_loop(ListOfChecks,X,Name) % Throw is not upheld, can only fail
+eval(forany(ListOfChecks),X,Name,Throw,TP) :-
+   forany_forall_loop(ListOfChecks,X,Name,TP) % Throw is not upheld, can only fail
    ->
    true
    ;
    throw_or_fail(forany,checks(ListOfChecks)-item(X),Name,Throw,"at least one of the checks succeeds for the item").
 
-eval(fornone(ListOfChecks),X,Name,Throw) :-
-   fornone_forall_loop(ListOfChecks,X,Name) % Throw is not upheld, can only fail
+eval(fornone(ListOfChecks),X,Name,Throw,TP) :-
+   fornone_forall_loop(ListOfChecks,X,Name,TP) % Throw is not upheld, can only fail
    ->
    true
    ;
@@ -1165,20 +1328,22 @@ eval(fornone(ListOfChecks),X,Name,Throw) :-
 %       Is fixing both of these worth the complexity?
 % ---
 
-eval(passall(Check),ListOfX,Name,Throw) :-
-   passall_forall_loop(Check,ListOfX,Name,Throw) % Throw is passed; thrown exception informs about problem
+eval(passall(Check),ListOfX,Name,Throw,TP) :-
+   passall_forall_loop(Check,ListOfX,Name,Throw,TP) % Throw is passed; thrown exception informs about problem
    ->
    true
    ;
    throw_or_fail(passall,check(Check)-items(ListOfX),Name,Throw,"all of the items pass the check").
-eval(passany(Check),ListOfX,Name,Throw) :-
-   passany_forall_loop(Check,ListOfX,Name) % Throw is not upheld, can only fail
+
+eval(passany(Check),ListOfX,Name,Throw,TP) :-
+   passany_forall_loop(Check,ListOfX,Name,TP) % Throw is not upheld, can only fail
    ->
    true
    ;
    throw_or_fail(passany,check(Check)-items(ListOfX),Name,Throw,"at least one of the items passes the check").
-eval(passnone(Check),ListOfX,Name,Throw) :-
-   passnone_forall_loop(Check,ListOfX,Name) % Throw is not upheld, can only fail
+
+eval(passnone(Check),ListOfX,Name,Throw,TP) :-
+   passnone_forall_loop(Check,ListOfX,Name,TP) % Throw is not upheld, can only fail
    ->
    true
    ;
@@ -1188,41 +1353,41 @@ eval(passnone(Check),ListOfX,Name,Throw) :-
 % More helpers
 % ---
 
-forall_forall_loop(ListOfChecks,X,Name,Throw) :-
+forall_forall_loop(ListOfChecks,X,Name,Throw,TP) :-
   forall(                           % success of ListOfChecks is empty
       member(Check,ListOfChecks),
-      eval(Check,X,Name,Throw)).
+      eval(Check,X,Name,Throw,TP)).
 
-forany_forall_loop(ListOfChecks,X,Name) :-
+forany_forall_loop(ListOfChecks,X,Name,TP) :-
    \+forall(                        % failure if ListOfChecks is empty
       member(Check,ListOfChecks),
-      \+eval(Check,X,Name,false)).  % disable throwing
+      \+eval(Check,X,Name,false,TP)).  % disable throwing
 
-fornone_forall_loop(ListOfChecks,X,Name) :-
+fornone_forall_loop(ListOfChecks,X,Name,TP) :-
    (ListOfChecks == [])             % force failure if ListOfChecks is empty
    ->
    false
    ;
    forall(
       member(Check,ListOfChecks),
-      \+eval(Check,X,Name,false)). % disable throwing
+      \+eval(Check,X,Name,false,TP)). % disable throwing
 
-passall_forall_loop(Check,ListOfX,Name,Throw) :-
+passall_forall_loop(Check,ListOfX,Name,Throw,TP) :-
   forall(                           % success if ListOfX is empty
       member(X,ListOfX),
-      eval(Check,X,Name,Throw)).
+      eval(Check,X,Name,Throw,TP)).
 
-passany_forall_loop(Check,ListOfX,Name) :-
+passany_forall_loop(Check,ListOfX,Name,TP) :-
    \+forall(                        % failure if ListOfX is empty
       member(X,ListOfX),
-      \+eval(Check,X,Name,false)).  % disable throwing
+      \+eval(Check,X,Name,false,TP)).  % disable throwing
 
-passnone_forall_loop(Check,ListOfX,Name) :-
+passnone_forall_loop(Check,ListOfX,Name,TP) :-
    (ListOfX == [])                  % force failure if ListOfX is empty
    ->
    false
    ;
    forall(
       member(X,ListOfX),
-      \+eval(Check,X,Name,false)). % disable throwing
+      \+eval(Check,X,Name,false,TP)). % disable throwing
 
