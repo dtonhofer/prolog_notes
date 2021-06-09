@@ -35,69 +35,146 @@
 */
 
 /*
+ * 34567890123456789012345678901234567890123456789012345678901234567890123456789
+  
+check_that/3 and friends: a replacement for the must_be/2 predicate of 
+Prolog. must_be/2 is used to check preconditions on predicate entry, but
+is not very flexible. Can we change that?
+ 
+See: https://eu.swi-prolog.org/pldoc/doc_for?object=must_be/2
+ 
+A call to check_that/3 looks as follows:
 
- * **********************************
- * A replacement for the must_be/2 predicate (which is used to
- * check preconditions on predicate entry) of Prolog, in particular
- * SWI-Prolog.
- *
- * See: https://eu.swi-prolog.org/pldoc/doc_for?object=must_be/2
- * **********************************
+   check_that(X,Conditions,ThrowFlag)
 
-Note the structure given to check_that(X,Cs), with X being the term to check.
+where
 
-Cs is a list of *conditions*, which are compound terms.
+   - X is the term that is subject to being checked.
+   - Conditions is a proper list of conditions to be evaluated left-to-right
+   - ThrowFlag is a flag that determines whether to, in certain settings, 
+     preferentially throw (if it is =|true|= or =|throw|=) or fail
+     (if it is anything else, including an unbound variable)
+
+The simpler
+
+   check_that(X,List)
+
+assumes that Throw is =|false|=.
+
+The more extensive
+
+   check_that_named(X,Conditions,Name)
+   check_that_named(X,Conditions,Name,Throw)
+ 
+also takes a Name to designate the X that is being checked. The Name can then
+be inserted into exception messages. Generally one would not bother with this.
+
+The list of conditions
+----------------------
+
 The list of conditions behaves like a "conditional and" (aka. "short-circuiting and")
-which can also "break out to succees" or throw at a condition.
+of verifications. A condition is a compound term, a tagged check. The functor name
+of the condition specifies what to do depending on the outcome of the check.
 
-  true           : Succeed unconditionally, do not verify conditions "further to the right" in the list of conditions.
-  false,fail     : Fail unconditionally.
-  break(Check)   : Succeed (and break off further tests) if Check succeeds, and do not verify conditions "further to the right" in the list of conditions.
-  fail(Check)    : Fail if Check succeeds.
-  lenient(Check) : If Check succeeds, proceed with conditions "further to the right", otherwise fail if "not throw" or throw a Check-relevant exception if "throw" ("throw" is switched on if Throw is one of =|true|= or =|throw|=).
-  strict(Check)  : If Check succeeds, proceed with conditions "further to the right", otherwise throw a Check-relevant exception, irrespective of the value of Throw.
-  fullylenient(Check) : Fails even if the value is underspecified to make a proper decision (i.e. if X is uninstantiated).
-                        Generally, one would throw in that case.
-                        The Prolog predicates actually behave like that, i.e. "atom(_)" fails instead of throwing, actually performing a second-order check about the state of computation.
-                        In this context, one would eschew "fullylenient" and perform a releavant "fail" check to the left to get the same effect
+The "check precondition fails" generally means that the actual check cannot determine from the current
+state of X whether to reasonably succeed or fail because X is not instantiated enough. The check would
+then raise an instantiation exception (in the current implementation, a non-ISO exception term
+error(check(not_instantiated_enough,_,_,_),_).
 
-Shorther aliases of the above:
+The Prolog default checks like atom/1 take the high way and fail in that case (atom(_) fails, either
+pretending to know something about _ that it doesn't or outing itself as a second-order predicate
+like var/1 that can analyze the momentary state of the computation and say that a term is indeed
+uninstantiated. In either case, it's dubious practice).
 
-  tr
-  fa
-  br(Check)
-  fa(Check)
-  le(Check)
-  st(Check)
-  fule(Check)
+The Prolog behaviour can be recovered with the tag smooth/1. However, it is preferred to use 
+another tag and to explicitly check for var-ness and earlier (to the left in the list of
+conditions) and accept it (e.g. break(var)) or reject it (e.g. nonvar(X)).
 
+The behaviour is as follows for the various tags allowed in conditions:
+
+break/1
+
+- Check precondition fails: 
+  An exception (generally a 'uninstantiated error' exception) is thrown.
+- Verification fails:
+  The condition succeeds, leading to examination of the next condition to the right.
+- Verification succeeds:
+  Condition processing stops and check_that succeeds overall
+
+smooth/1
+
+- Precondition fails: 
+  The condition fails, leading to the whole of check_that/N failing. 
+  This is like the behaviour of prolog predicates like atom/N when
+  they are given an uninstantiated term: They just fail.
+- Verification fails: 
+  The condition fails, leading to the whole of check_that/N failing. 
+- Verification succeeds:
+  The condition succeeds, leading to examination of the next condition to the right.
+
+soft/1
+
+- Precondition fails: 
+  An exception (generally a 'uninstantiated error' exception) is thrown.
+- Verification fails: 
+  The condition fails, leading to the whole of check_that/N failing. 
+- Verification succeeds:
+  The condition succeeds, leading to examination of the next condition to the right.
+
+tuned/1 and the "Throw" flag is unset: behaves like soft/1
+
+- Precondition fails: 
+  An exception (generally a 'uninstantiated error' exception) is thrown.
+- Verification fails: 
+  The condition fails, leading to the whole of check_that/N failing. 
+- Verification succeeds:
+  The condition succeeds, leading to examination of the next condition to the right.
+
+tuned/1 and the "Throw" flag is set: behaves like hard/1
+
+- Precondition fails: 
+  An exception (generally a 'uninstantiated error' exception) is thrown.
+- Verification fails: 
+  An exception (generally a 'type error' if X is out-of-type, and a domain error if X is 'out of domain') is thrown.
+- Verification succeeds:
+  The condition succeeds, leading to examination of the next condition to the right.
+  
+hard/1 
+
+- Check precondition fails: 
+  An exception (generally a 'uninstantiated error' exception) is thrown.
+- Check verification fails: 
+  An exception (generally a 'type error' if X is out-of-type, and a domain error if X is 'out of domain') is thrown.
+- Verification succeeds:
+  The condition succeeds, leading to examination of the next condition to the right.
+ 
 Synopsis:
 
   Fail if X is not a string
 
-     check_that(X,[lenient(string)])
+     check_that(X,[tuned(string)])
 
   Throw if X is not a string
 
-    check_that(X,[strict(string)])
+    check_that(X,[hard(string)])
 
   Throw if X is not an integer and then fail if X is not a positive integer
 
-    check_that(X,[strict(int),lenient(posint)])
+    check_that(X,[hard(int),tuned(posint)])
 
   Or you can switch "lenient" to behave "strictly":
 
-    check_that(X,[strict(int),lenient(posint)],throw)
+    check_that(X,[hard(int),tuned(posint)],throw)
 
   Fail if foo is not a member of the given list with a supplementary argument:
 
-    check_that(foo,[lenient(member([alpha,bravo,charlie]))]).
+    check_that(foo,[tuned(member([alpha,bravo,charlie]))]).
 
   Throw if foo is not a member of the given list (it would really cool if
   one could inject the source code line into the message; that can be done
   with term_expansion I think. Maybe later)
 
-    check_that(foo,[lenient(member([alpha,bravo,charlie]))],throw).
+    check_that(foo,[tuned(member([alpha,bravo,charlie]))],throw).
     ERROR: check failed : domain error: "the culprit is outside the required domain"
     ERROR:    message   : "the value should fulfill 'list-member-ship-ness'"
     ERROR:    culprit   : foo
@@ -144,9 +221,9 @@ Desgin question especially clear in case of complex checking of lists:
     A caller could demand throwing down to any level of the above (and possibly accept var)
     The **proper way to have this flexibility** is exactly to use check_that/2 with the detailed
     more-and-more-precise check sequence, going from strictness to leniency depending on taste, for example
-      check_that(X,[break(var),strict(list),strict(list(nonvar)),lenient(list(char))])
+      check_that(X,[break(var),hard(list),hard(list(nonvar)),tuned(list(char))])
     instead of a single monolitic
-      check_that(X,[break(var),strict(chars)])
+      check_that(X,[break(var),hard(chars)])
     However, in that case the "rightmost checks" may perform wasteful checks against that we already
     know will succeed. So there is a need for doing bare-bones checks (maybe?). Probably not worth it.
     Note that what exception to throw is generally made in this order:
@@ -165,6 +242,8 @@ I am unsure about this. For, it's "as usual".
 The Check is either an atom or a compound term from the following list of atoms and compound terms (aliases are indicated with "/")
 TODO: The unbound variable is mostly a special case and should maybe merit special handling (an unconditional exception)
 
+  true
+  false fail
   var nonvar
   nonground ground
   atom/symbol
@@ -224,7 +303,7 @@ TODO: The unbound variable is mostly a special case and should maybe merit speci
 
 Compare with: Checks from must_be/2. Those marked "Ok" have been implemented in "check_that/N"
 
- n/a any                     : any term, including an unbound variable (this reduces to true)
+  Ok any                     : any term, including an unbound variable (this reduces to true)
   Ok atom,symbol             : passes atom/1
   Ok atomic,constant         : passes atomic/1
   Ok oneof(L)                : ground term that is member of L; if there is an unbound variable in L, everything passes!
@@ -245,7 +324,7 @@ Compare with: Checks from must_be/2. Those marked "Ok" have been implemented in 
   Ok acyclic                 : passes acyclic_term/1, i.e. is an acyclic term; includes unbound var (the term is a tree if one disregards "internal sharing")
   Ok cyclic                  : passes cyclic_term/1, i.e. the term contains cycles (the term is a "rational tree"). Does not accept an unbound variable.
   Ok char                    : atom of length 1
-  Oj chars                   : list of 1-character atoms; includes the empty list
+  Ok chars                   : list of 1-character atoms; includes the empty list
   Ok code                    : unicode code point (any integer between 0 and 0x10FFFF)
   Ok codes                   : list of integers >= 0; includes the empty list
   Ok string                  : passes string/1, an SWI-Prolog string
@@ -280,7 +359,7 @@ Possible extension:
 */
 
 % ---
-% 1) 'lenient' checks will fail instead of throw (unless there the check cannot be executed)
+% 1) For this call, tuned/1 conditions will fail instead of throw (but still throw if the precondition fails)
 % 2) No specific name for the value is given, so messages in exceptions will be relatively generic.
 % If Conditions is not a list, it is transformed into a list first.
 % ---
@@ -289,8 +368,9 @@ check_that(X,Conditions) :-
    check_that(X,Conditions,false).
 
 % ---
-% 1) You can select whether 'lenient' checks should fail or throw. If throwing is preferred,
-%    set Throw to one of the atoms 'throw' or 'true'. Anything else means failing is preferred.
+% 1) For this call, you can select whether tuned/1 conditions should fail or throw. If throwing is preferred,
+%    set Throw to one of the atoms =|throw|= or =|true|=. Anything else means to just failing.
+%    The condition will still throw if the precondition fails.
 % 2) No specific name for the value is given, so messages in exceptions will be relatively generic.
 % If Conditions is not a list, it is transformed into a list first.
 % ---
@@ -330,12 +410,12 @@ check_that_named(X,Conditions,Name,Throw) :-
 % 1) Verify the syntactic correctness of all conditions.
 %    Throw if there is a problems with the syntax.
 %    TODO: That should be done during compilation, i.e. using term expansion, because
-%    checking the syntax once is enough!
-% 2) Evaluate the conditions and their embedded checks.
+%    checking the syntax once instead of at every call should really be enough!
+% 2) Evaluate the check tagged by the condition..
 %
 % For the syntax checks, the code tries to tell the caller _why_ there is a problem,
 % instead of just "failing" with zero information left, so it's a bit unidiomatic,
-% Prolog needs something to handle that elegantly.
+% Prolog needs something to handle that more elegantly.
 % ---
 
 check_that_1(Conditions,X,Name,Throw) :-
@@ -386,21 +466,11 @@ exists_cond_or_throw(Condition) :-
    ;
    throw_various(unknown_condition,"unknown condition found during syntax check",Condition).
 
-exists_cond(true).
-exists_cond(tr).
-exists_cond(false).
-exists_cond(fail).
-exists_cond(fa).
 exists_cond(break(_Check)).
-exists_cond(br(_Check)).
-exists_cond(fail(_Check)).
-exists_cond(fa(_Check)).
-exists_cond(lenient(_Check)).
-exists_cond(le(_Check)).
-exists_cond(strict(_Check)).
-exists_cond(st(_Check)).
-exists_cond(fullylenient(_Check)).
-exists_cond(fule(_Check)).
+exists_cond(smooth(_Check)).
+exists_cond(soft(_Check)).
+exists_cond(tuned(_Check)).
+exists_cond(hard(_Check)).
 
 wellformed_cond_or_throw(Condition,X) :-
    atom(Condition)
@@ -520,57 +590,40 @@ outcome_branching(fail,_,_,_,_,_)            :- !,fail.
 outcome_branching(next,_,More,X,Name,Throw)  :- !,check_that_2(More,X,Name,Throw).
 outcome_branching(Outcome,Condition,_,_,_,_) :- throw_various(unknown_outcome,"bug: condition yields unknown outcome",[Condition,Outcome]).
 
-check_that_3(true  ,_,_,_,break).
-check_that_3(tr    ,_,_,_,break).
-
-check_that_3(fail  ,_,_,_,fail).
-check_that_3(false ,_,_,_,fail).
-check_that_3(fa    ,_,_,_,fail).
-
-check_that_3(break(Check),X,Name,_,Outcome) :-
-   eval(Check,X,Name,false,true)
+check_that_3(break(Check),X,Name,_Throw,Outcome) :-
+   eval(Check,X,Name,fail,throw) % fail for eval, throw for precondition
    ->
    Outcome = break
    ;
    Outcome = next.
-check_that_3(br(Check),X,Name,Throw,Outcome) :-
-   check_that_3(break(Check),X,Name,Throw,Outcome).
 
-check_that_3(fail(Check),X,Name,_,Outcome) :-
-   eval(Check,X,Name,false,true)
-   ->
-   Outcome = fail
-   ;
-   Outcome = next.
-check_that_3(fa(Check),X,Name,Throw,Outcome) :-
-   check_that_3(fail(Check),X,Name,Throw,Outcome).
-
-check_that_3(lenient(Check),X,Name,Throw,Outcome) :-
-   eval(Check,X,Name,Throw,true)
+check_that_3(smooth(Check),X,Name,_Throw,Outcome) :-
+   eval(Check,X,Name,fail,fail)  % fail for eval, fail for precondition
    ->
    Outcome = next
    ;
    Outcome = fail.
-check_that_3(le(Check),X,Name,Throw,Outcome) :-
-   check_that_3(lenient(Check),X,Name,Throw,Outcome).
 
-check_that_3(strict(Check),X,Name,_,Outcome) :-
-   eval(Check,X,Name,throw,true)
+check_that_3(soft(Check),X,Name,_Throw,Outcome) :-
+   eval(Check,X,Name,fail,throw)  % fail for eval, throw for precondition
+   ->
+   Outcome = next
+   ;
+   Outcome = fail.
+
+check_that_3(tuned(Check),X,Name,Throw,Outcome) :-
+   eval(Check,X,Name,Throw,throw)  % tuned for eval, throw for precondition
+   ->
+   Outcome = next
+   ;
+   Outcome = fail.
+
+check_that_3(hard(Check),X,Name,_,Outcome) :-
+   eval(Check,X,Name,throw,throw) % throw for eval, throw for precondition
    ->
    Outcome = next
    ;
    throw_various(strict_check_fails,"check should throw instead of fail",Check).
-check_that_3(st(Check),X,Name,_,Outcome) :-
-   check_that_3(strict(Check),X,Name,_,Outcome).
-
-check_that_3(fullylenient(Check),X,Name,Throw,Outcome) :-
-   eval(Check,X,Name,Throw,Throw) % pass Throw also on last position
-   ->
-   Outcome = next
-   ;
-   Outcome = fail.
-check_that_3(fule(Check),X,Name,Throw,Outcome) :-
-   check_that_3(fullylenient(Check),X,Name,Throw,Outcome).
 
 check_that_3([],_,_,_,done).
 
@@ -586,20 +639,6 @@ throw_is_set(Throw) :- Throw==throw.
 % information for a meaningful answer, i.e. if we encounter an "instantiation error"
 % ---
 
-/*
-precondition_X_must_be_ground(X,Name,Ness,Throw) :-
-   ground(X)
-   ->
-   true
-   ;
-   (
-      throw_is_set(Throw), % if this fails, the call fails (which is what we want)
-      select_name(Name,Name2),
-      format(string(Msg),"~s should be ground. Can't check for '~s-ness'",[Name2,Ness]),
-      throw_2(too_little_instantiation,Msg,X)
-   ).
-*/
-
 precondition_X_must_be_instantiated(X,Name,Ness,Throw) :-
    nonvar(X)
    ->
@@ -611,6 +650,8 @@ precondition_X_must_be_instantiated(X,Name,Ness,Throw) :-
       format(string(Msg),"~s should be instantiated. Can't check for '~s-ness'",[Name2,Ness]),
       throw_2(too_little_instantiation,Msg,X)
    ).
+
+% special case precondition: the list
 
 precondition_X_must_be_list(X,Name,Ness,Throw) :-
    is_proper_list(X)
@@ -775,6 +816,10 @@ is_proper_list(L) :-
 % eval(Check,TermToCheck,NameOfTerm,ThrowOrFail,ThrowOrFailForPrecondition)
 % This predicate needs no internal cuts as a unique decision is taken on arg 1
 % ---
+
+eval(true,_,_,_,_).
+eval(false,_,_,_,_).
+eval(fail,_,_,_,_).
 
 eval(var,X,Name,Throw,_TP) :-
    var(X)
@@ -1221,7 +1266,7 @@ eval(chary_list,X,Name,Throw,TP) :-
    precondition_X_must_be_instantiated(X,Name,"chary_list",TP),
    precondition_X_must_be_list(X,Name,"chary_list",Throw), % Dual traversal, but one is in C, so this may be faster than "unifying" to a single traversal.
    eval(forany([chars,codes]),X,Name,Throw,TP).  % TODO: Open up to get at the index and get better error messages
-   % Simple, but the error is confusing for "check_that([a,2],strict(chary_list))" for example and does not give the index
+   % Simple, but the error is confusing for "check_that([a,2],hard(chary_list))" for example and does not give the index
 
 eval(charys,X,Name,Throw,TP) :-
    eval(chary_list,X,Name,Throw,TP).
