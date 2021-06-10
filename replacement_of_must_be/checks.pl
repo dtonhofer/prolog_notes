@@ -10,6 +10,7 @@
 :- use_module(library(apply)).
 :- use_module(library(apply_macros)).
 
+
 /*  MIT License Follows (https://opensource.org/licenses/MIT)
 
     Copyright 2021 David Tonhofer <ronerycoder@gluino.name>
@@ -292,6 +293,7 @@ TODO: The unbound variable is mostly a special case and should maybe merit speci
   acyclic                            (a term that has no cyclic structure for now, but have acquire it later unless it is also ground)
   acyclic_forever                    (a term that is both ground and acyclic)
   stream                             (a term that is a stream name (atom) or a valid stream handle (blob))
+  unifies(Z)                         (unifies with Z; unification is rolled back by use \+ \+)
   member(ListOfValues)               (member of a list of values; test is unification)
   random(Probability)                (randomly fails with probability 0 =< Probability =< 1)
   forall(ListOfChecks)               (recursive: the term to check must pass all checks in ListOfChecks)
@@ -347,9 +349,9 @@ Possible extension:
   nonempty_list           : A list that is also nonempty
   list_length_X           : Tests for length of lists (larger, smaller, equal)
   subsumes
-  would_unify
   does_not_unify
   dif
+  unifiesany, the counterpart for passany
 
 ## More
 
@@ -490,6 +492,7 @@ wellformed_check_2(Check,_)                 :- atom(Check),!,atomoform_checks(AF
 wellformed_check_2(member(ListOfValues),_)  :- is_proper_list(ListOfValues).
 wellformed_check_2(type(ListOfTypes),_)     :- is_proper_list(ListOfTypes),atomoform_checks(AFCs),maplist({AFCs}/[T]>>memberchk(T,AFCs),ListOfTypes).
 wellformed_check_2(random(Probability),_)   :- number(Probability),0=<Probability,Probability=<1.
+wellformed_check_2(unifies(_),_).
 wellformed_check_2(forall(ListOfChecks),X)  :- wellformed_list_of_checks(ListOfChecks,X).
 wellformed_check_2(forany(ListOfChecks),X)  :- wellformed_list_of_checks(ListOfChecks,X).
 wellformed_check_2(fornone(ListOfChecks),X) :- wellformed_list_of_checks(ListOfChecks,X).
@@ -685,6 +688,10 @@ throw_or_fail(Error,X,Name,Throw,Ness) :-
    format(string(Msg),"~s should fulfill '~s-ness'",[Name2,Ness]),
    throw_2(Error,Msg,X).
 
+throw_or_fail_with_message(Msg,X,Throw) :-
+   throw_is_set(Throw), % if this fails, the call fails (which is what we want)
+   throw_2(type,Msg,X).
+ 
 % ---
 % Basement throwing predicate constructing the exception term itself.
 % ---
@@ -1271,8 +1278,6 @@ eval(chary_list,X,Name,Throw,TP) :-
 eval(charys,X,Name,Throw,TP) :-
    eval(chary_list,X,Name,Throw,TP).
 
-
-
 eval(member(ListOfValues),X,Name,Throw,TP) :-
    precondition_X_must_be_instantiated(X,Name,"list_membership",TP), % must be ground or must be instantiated ? difficult ...
    precondition_X_must_be_list(ListOfValues,Name,"list_membership",TP), % actually, it is not X but ListOfValues which must be a list!
@@ -1282,12 +1287,18 @@ eval(member(ListOfValues),X,Name,Throw,TP) :-
     ;
     throw_or_fail(domain,X,Name,Throw,"list_membership")).
 
-eval(random(Probability),_X,_Name,Throw,_TP) :-
+eval(random(Probability),_,_,Throw,_) :-
    maybe(Probability)  % throws type error on value not in [0.0,1.0]
    ->
    true
    ;
    throw_or_fail_for_case_random(Throw).
+
+eval(fail(Msg),X,_,Throw,_) :-
+   throw_or_fail_with_message(Msg,X,Throw).
+
+eval(unifies(Z),X,_,_,_) :-
+   \+ \+ (Z = X).
 
 % These REALLY are "second order" (i.e. about how the terms are represented)
 % Indeed, asking whether an unbound variable is cyclic or not makes some.
