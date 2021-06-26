@@ -1,0 +1,80 @@
+https://eu.swi-prolog.org/pldoc/man?predicate=cyclic_term/1
+
+Note that acyclic_term/1 is ISO, but cyclic_term/1 is not.
+
+Consider the evolution of a term from "most uninstantiated" to "ground":
+
+```
+                       uninstantiated
+                             |
+                             V
+              +--------------+-------------+
+              |                            |
+              V                            |
+      nonground noncyclic                  |
+              |                            |
+              +----------------------------+
+              |                            |
+              |                            V
+              |                     nonground cyclic
+              |                            |
+              V                            V
+        ground acylic                ground cyclic
+```
+
+Try
+
+```
+examine(X) :-
+   (ground(X)       -> format("ground,",[])   ; format("non-ground,",[])),
+   (cyclic_term(X)  -> format("cyclic,",[])   ; format("not cyclic,",[])),
+   (acyclic_term(X) -> format("acyclic~n",[]) ; format("not acyclic~n",[])).
+   
+X=_      , examine(X). % uninstantiated
+X=s(_)   , examine(X). % nonground, no cycles
+X=s(a)   , examine(X). % ground, no cycles
+X=s(X)   , examine(X). % ground, cycles
+X=s(X,_) , examine(X). % nonground, cylces
+```
+
+To see what the predicates say at every point in the evolution of instantiation
+
+```
+                             X=_ 
+                   not "cyclic", "acyclic"
+                             |
+                             V
+              +--------------+-------------+
+              |                            |
+              V                            |
+            X=s(_)                         |
+   not "cyclic", "acyclic"                 |
+              |                            |
+              +----------------------------+
+              |                            |
+              |                            V
+              |                         X=s(X,_)
+              |                 "cyclic", not "acyclic"       
+              |                            |
+              V                            V
+            X=s(a)                       X=s(X) 
+    not "cyclic", "acyclic"      "cyclic", not "acyclic"         
+                                
+```
+
+`cyclic_term/1` is a bit optimistic as it says "not cyclic" even though the same term can
+become cyclic by instantiations later.
+
+The predicates `cyclic_term/1` and `acyclic_term/1` are in fact "second order": They
+say something about the current state of computation, not about the term they are examining.
+
+One would like to see these predicates:
+
+|                       | `cyclic`           | `cyclic_term/1`       | `acyclic_term/1`      | `acyclic_forever` |
+| **uninstantiated**    | **throw**          | false (could change)  | true (could change)   | false             |
+| **nonground acyclic** | **throw**          | false (could change)  | true (could change)   | false             |
+| **ground acylic**     | fail (for sure)    | false (for sure)      | true (for sure)       | true              |
+| **nonground cyclic**  | succeed (for sure) | true (for sure)       | false (for sure)      | false             |
+| **ground cyclic**     | succeed (for sure) | true (for sure)       | false (for sure)      | false             |
+
+The above have been implemented in [`checks.pl`](https://github.com/dtonhofer/prolog_code/blob/main/unpacked/onepointfour_basics/README_checks.md)

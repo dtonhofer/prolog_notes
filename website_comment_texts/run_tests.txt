@@ -1,0 +1,53 @@
+This predicate succeeds if all the tests succeed and fails otherwise (i.e. it is "semi-deterministic")
+
+Below, the printout has been removed, which can be more or less achieved with 
+
+```
+set_test_options([silent(true)])
+```
+
+Example:
+
+```
+:- begin_tests(fail).
+   test("just fail") :- fail.
+:- end_tests(fail).
+```
+
+Then (removing the printout):
+
+```
+?- run_tests.
+false.
+```
+
+Another example:
+
+```
+:- begin_tests(succeed).
+   test("just succeed") :- true.
+:- end_tests(succeed).
+```
+
+Then (removing the printout):
+
+```
+?- run_tests.
+true.
+```
+
+Yet another example:
+
+```
+:- begin_tests(partially_succeed).
+   test("just succeed") :- true.
+   test("just fail")    :- fail.
+:- end_tests(partially_succeed).
+```
+
+Then (removing the printout):
+
+```
+?- run_tests.
+false.
+```

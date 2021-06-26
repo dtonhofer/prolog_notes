@@ -4,7 +4,7 @@ https://eu.swi-prolog.org/pldoc/doc_for?object=must_be/2
 
 "Type tests in Prolog" by Markus Triska https://youtu.be/ZIv0G4b1xBQ?t=123
 
-## Reviewed list of =|must_be|= keywords
+## Reviewed list of `must_be∕2` keywords
 
 These expressions absolutely need to become compositional. AND, OR, NOT of boolean algebra would be of some use. Maybe one also add `must_be(successful,Goal)`.
 
@@ -82,88 +82,17 @@ Definitely missing:
 
    - must_be(nonempty_list,Term)
 
-## A replacement: =|check_that|=
+## A replacement: `check_that/2` and friends
 
-Not all checks have been implemented yet. Comes with test code.
+Can be found at this page: [**homepage for `checks.pl`**](https://github.com/dtonhofer/prolog_code/blob/main/unpacked/onepointfour_basics/doc/README_checks.md)
 
-https://github.com/dtonhofer/prolog_notes/tree/master/replacement_of_must_be
-
-**Synopsis:**
-
-Fail if X is not a string
+`check_that/2` allows you to write things like:
 
 ```
-check_that(X,[lenient(string)]) 
+check_that(X,[break(var),hard(integer),soft(pos0int))
 ```
 
-Throw if X is not a string
-
-```
-check_that(X,[strict(string)]) 
-```
-
-Throw if X is not an integer _and then_ fail if X is not a positive integer
-
-```
-check_that(X,[strict(int),lenient(posint)]) 
-```
-
-Or you can switch lenient to behave strictly:
-
-Fail if `foo` is not a member of the given list with a supplementary argument:
-
-```
-?- check_that(foo,[lenient(member([alpha,bravo,charlie]))],_).
-false.
-```
-
-Throw if `foo` is not a member of the given list:
-
-```
-?- check_that(foo,[lenient(member([alpha,bravo,charlie]))],throw).
-ERROR: Unknown error term: check(domain,?,"... the value to fulfill listmembership-ness",foo)
-```
-
-(a proper printer for the exception still needs to be injected)
-
-Implemented so far:
-
-```
-  var nonvar
-  nonground ground
-  atom atomic compound
-  string stringy char                ("stringy" means it's an atom or a string)
-  number 
-  float 
-  float_not_nan
-  float_not_inf 
-  float_not_neginf float_not_posinf
-  int/integer                        (an integer)
-  rational                           (a rational, incldues integers)
-  nonint_rational/proper_rational    (a rational that is not an integer)
-  negnum/negnumber                   (strictly negative number)
-  posnum/posnumber                   (strictly positive number)
-  neg0num/neg0number                 (negative-or-zero number)
-  pos0num/pos0number                 (positive-or-zero number)  
-  non0num/non0number                 (non-zero number)
-  negint/negative_integer            (strictly negative integer)
-  posint/positive_integer            (strictly positive integer)
-  neg0int                            (negative-or-zero integer)
-  pos0int/nonneg                     (positive-or-zero integer)
-  negfloat posfloat                  (strictly negative/positive float)
-  neg0float pos0float                (negative-or-zero/positive-or-zero float)
-  inty                               (an integer or a float that represents an integer)
-  neginty posinty                    (strictly negative/positive inty)
-  neg0inty pos0inty                  (negative-or-zero/positive-or-zero inty)
-  list/proper_list                   (a proper list, including the empty list)
-  member(List)                       (member of a list of values)
-  random(V)                          (randomly fails with probability V)
-  forany(List)                       (recursive: pass any type test in list) 
-  forall(List)                       (recursive: pass all type tests in list)
-  fornone(List)                      (recursive: pass no type test in list
-```
-
-
+which means "succeed immediately if X is var, otherwise throw an exception if X fails at being an integer, otherwise fail if X fails at being a positive-or-0-integer"
 
 ## See also
 
@@ -456,34 +385,5 @@ Instead, use the more pedestrian itypes:
 
 http://stackoverflow.com/a/30600104/772868 
 
-~~~~
 
-## A thought on this
 
-This is vague, but...
-
-Prolog probably needs a second truth value, other than _true_ (truth value _false_ doesn't exist and is emulated by "failure to prove"), namely "meaningless". Currently, meaningless is emulated by throwing exceptions as is done with must_be/2.  However, consider:
-
-----
-
-From: "How Java's Floating-Point Hurts Everyone Everywhere" by W. Kahan and Joseph D. Darcy, 2004
-
-Why should computer arithmetic be Algebraically Completed? [this means "you should be able to continue computing with NaN values or infinities or with 0's resulting from underflow"]
-
-Otherwise some exceptions [i.e. floating point exceptions, like overflow/underflow/division by zero] would have to trap. [cause an exception to be thrown] 
-
-Then robust programs could avert loss of control only by precluding those exceptions (at the cost of time wasted pretesting operands to detect rare hazards) or else by anticipating them _all_ and providing handlers for their traps.
-
-Either way is tedious and, because of a plethora of visible or invisible branches, prone to programming mistakes that lose control after all. For example, ... 
-
-**A Cautionary Tale of the Ariane 5** (http://www.esrin.esa.it/htdocs/tidc/Press/Press96/ariane5rep.html) 
-
-In June 1996 a satellite-lifting rocket named Ariane 5 turned cartwheels shortly after launch and scattered itself, a payload worth over half a billion dollars, and the hopes of European scientists over a marsh in French Guiana. A commission of inquiry with perfect hindsight blamed the disaster upon inadequate testing of the rocket's software. 
-
-_What software failure could not be blamed upon inadequate testing?_
-
-The disaster can be blamed just as well upon a programming language (Ada) that disregarded the default exception-handling specifications in IEEE Standard 754 for Binary Floating-Point Arithmetic. Here is why: 
-
-Upon launch, sensors reported acceleration so strong that it caused Conversion-to-Integer Overflow in software intended for recalibration of the rocket's inertial guidance while on the launching pad. This software could have been disabled upon rocket ignition but leaving it enabled had mistakenly been deemed harmless. Lacking a handler for its unanticipated overflow trap, this software trapped to a system diagnostic that dumped its debugging data into an area of memory in use at the time by the programs guiding the rocket's motors. At the same time contral was switched to a backup computer, but it had the same data. This was misinterpreted as necessitating strong corrective action: the rocket's motors swivelled to the limits of their mountings. Disaster ensued. Had overflow merely obeyed the IEEE 754 default policy, the recalibration software would have raised a flag and delivered an invalid result both to be ignored by the motor guidance programs, and the Ariane 5 would have pursued its intended trajectory. 
-
-**The moral of this story: A trap too often catches creatures it was not set to catch.**

@@ -1,0 +1,89 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=atom_string/2
+
+## This also is the "comparison operator for stringy things"
+
+Suppose you have received a "stringy thing". 
+
+How do you compare it against a known atom while not worrying about the actual underlying type? Using this predicate!
+
+```
+atom_string(known,StringyThing)
+```
+
+will compare against atom `known`, doing all conversions for you!
+
+## Doc-needs-help
+
+atom_string/2 takes _anytext_ (as explained [here](https://eu.swi-prolog.org/pldoc/man?section=string)), and these also succeed:
+
+Note: Backticks is the notation for a "list of character codes" (unless Prolog is running with the 'traditional' flag):
+
+```
+?- X=`alpha`.
+X = [97,108,112,104,97].
+```
+
+Then:
+
+```
+atom_string(`alpha`,"alpha").
+atom_string("alpha",`alpha`).
+```
+
+Similarly for lists of characters or "chars":
+
+```
+?- atom_chars(hello,X),atom_string(X,hello).
+X = [104,101,108,108,111].
+
+?- atom_chars(hello,X),atom_string(hello,X).
+X = [104,101,108,108,111].
+```
+
+## Test case
+
+Here is a [**Test case for illustration/documentation purposes**](https://github.com/dtonhofer/prolog_notes/blob/master/code_unit_tests/builtin_demo/test_atom_string.pl)
+
+Note that atom_string/2 does not really behave "predicate-ly" but more like a two-sided pipeline.
+
+```
+Send in anything "stringy" ------>+      +---------> String equivalent of the input 
+                                  |      |
+                   atom_string(?Atom, ?String)
+```
+
+```
+Atom equivalent of the input <----+      +<------ Send in anything "stringy" 
+                                  |      |
+                   atom_string(?Atom, ?String)
+```
+
+```
+Send in anything "stringy" ------>+      +<------ Send in anything "stringy" 
+                                  |      |
+                   atom_string(?Atom, ?String)
+                                  |      |
+                      "true if stringily equivalent" 
+                 (implies equivalence classes across types)
+```
+
+## A generic replacement
+
+A module providing a replacement for
+
+   - atom_string/2
+
+with a type-information taking/providing predicate stringy_morph/4
+
+and a replacement for all of
+
+   - atom_codes/2 
+   - atom_chars/2
+   - string_chars/2
+   - string_codes/2
+
+with a type-information taking/providing predicate stringy_charylist_morph/4
+
+On this page:
+
+[README_stringy_morph.md](https://github.com/dtonhofer/prolog_code/blob/main/unpacked/onepointfour_basics/README_stringy_morph.md)

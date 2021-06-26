@@ -1,6 +1,14 @@
-https://eu.swi-prolog.org/pldoc/doc_for?object=atom_length/2
+https://eu.swi-prolog.org/pldoc/man?predicate=atom_length/2
 
-## Efficiency
+## See also
+
+**string_length/2** for the corresponding predicate for terms that are strings. Both atom_length/2 and string_length/2 transparently accept strings or atoms on first argument position.
+
+Here is simple code for a unique `stringy_length/2` which refers to `atom_length/2` and `string_length/2` as needed. This already happens, but there is still this troubling naming specificity, which I would like to get rid of:
+
+[`stringy_and_charylist_type.pl`](https://github.com/dtonhofer/prolog_code/blob/main/unpacked/onepointfour_basics/README_stringy_and_charylist_type.md)
+
+## Is atom_length∕2 efficient?
 
 This test: 
 
@@ -21,6 +29,8 @@ i.e. the length of =|A|= is determined first, then unified with 1.
 This may be efficient or inefficient depending on how the length of a string is or atom is handled (if it's a C string, it's inefficient). 
 
 Should there be a task-specific =|atom_length_test(A,L)|= predicate where =|L|= needs to be instantiated, which can fail-fast?
+
+TODO: Write some test code that determines length of increasingly larger atoms to see what happens.
 
 ## Doc and Design needs help or surgery
 
@@ -197,7 +207,7 @@ However it refuses to work if the list isn't ground (although in principle it _c
 ERROR: Arguments are not sufficiently instantiated
 ```
 
-Did I mention that Prolog is **full of subtleties**
+Prolog is **full of subtleties**
 
 ## Unit test code
 
@@ -208,58 +218,3 @@ Some unit test code (including unit test code for length/2) can be found here:
 This is based on
 
 https://www.complang.tuwien.ac.at/ulrich/iso-prolog/length
-
-## An atom_length_ng/2 which throws on negative length
-
-In fact, I contend that a predicate should NOT just "silently" fail on out-of-domain arguments, but **always** throw.
-One **does** want to be informed when a predicate is called with garbage. It could be an important information (ok,
-Prolog is probably not going to be used in high-assurance software, but still..)
-
-If the caller really wants to just have the predicate fail on bad input, doing so should be made explicit in the code.
-Thus there should be an `atom_length_ng/2` and  `atom_length_ng/3`:
-
-```
-% Not exported from the module in which this is defined.
-
-atom_length_strict(Atom,Length) :-
-   ((nonvar(Atom),\+atom(Atom))        -> type_error(atom,Atom) ; true),
-   ((nonvar(Length),\+integer(Length)) -> type_error(integer,Length) ; true),
-   ((nonvar(Length),Length<0)          -> domain_error(positive_integer,Length) ; true),
-   atom_length(Atom,Length).
-
-opts_contains_lenient(Opts) :-
-   is_dict(Opts),               % fails if not dict
-   get_dict(lenient,Opts,true). % fails if key does not exist
-
-% Exported from the module in which this is defined.
-
-% Decision whether to be strict or lenient is pulled from an 
-% "options" SWI-Prolog dict (one way of doing it, it seems the most palatable)
-
-% Default behaviour is **strict**:
-
-atom_length_ng(Atom,Length) :- 
-   atom_length_ng(Atom,Length,_).
-   
-% Special way of eliciting **lenient** behaviour:
-
-atom_length_ng(Atom,Length,Opts) :-
-   opts_contains_lenient(Opts) 
-   -> catch(atom_length_strict(Atom,Length),_Catcher,fail) 
-   ;  atom_length_strict(Atom,Length).
-```
-
-And thus:
-
-```
-?- atom_length_ng(atom,-1).
-ERROR: Domain error: `positive_integer' expected, found `-1'
-
-?- atom_length_ng(atom,-1,_).
-ERROR: Domain error: `positive_integer' expected, found `-1'
-
-?- atom_length_ng(atom,-1,_{lenient:true}).
-false.
-```
-
-That's more like it.
