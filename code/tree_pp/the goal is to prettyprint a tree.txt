@@ -1,0 +1,66 @@
+% We would like to prettyprint a tree!
+
+% Tree is a term
+
+% Nodes are dicts
+
+% Dicts refer to their parent Dict (the value for 'parent' shall be it)
+
+% Every dict is given a unique random id
+
+% What do we want to represent? Maybe a box with a name inside only for now
+
+% How to do it?
+
+% We have immutable datastructure, so....
+
+% The current state is a dict, keying attributes by node id
+
+% With that said:
+
+% 1) Label every dict with its depth (root has depth 0)
+
+% 2) All the nodes on the a given depth: find max width of label and how many entroies are there
+
+% 3) Recursively rebox from leafs to root:
+
+% 4) At depth Nfor any node collet its childrn.
+%
+
+
+Prettyprint a tree in ASCII
+---------------------------
+
+The tree will be rotated by 90°, root on the left, leaves on the right
+
+Tree nodes will be represented by SWI-Prolog dicts, they assemble a variety of entries: attribute/value pairs, in one block.
+Tree nodes will be collected in a tree node container.
+This could be for example a list.
+However, we use a dict. In that way, every tree node can be given a unique name, which is the key in the dict.
+Note that if you "have" the node, you cannot find the name of the node unless we store that explicitly in the node, too.
+However in that case, nodes cannot be content-shared among differently name nodes.
+Not having information about edges in the node restricts them to actual "node content" distinct from the
+tree stretucture content. Bot then can change individually (and changin means replacing entired nodes!)
+
+If a node contzent changes - you change the dict in the node container
+If the tree structure changes - you change the pairs of names in the edge container
+However, you cannot call a predicate which has purely "node context" unless it is working on node contents only because
+it has no access to the name.
+
+This is a structure that doesn't use "direct references" (as a Prolog term does for example) but
+is more like a relational database table structure, which uses "names in context" (id fields in a table)
+to identify content and to link content (by foreign key).
+
+This is pretty good!
+
+Tree edges will be represented indirectly, via naming.
+
+The tree nodes may need algorithmic meta-content: 
+
+- Distance from root
+- Number of children
+
+can be kept in a edge dictionary (edge dict)
+
+
+

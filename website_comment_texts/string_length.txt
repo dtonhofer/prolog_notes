@@ -2,8 +2,9 @@ https://eu.swi-prolog.org/pldoc/doc_for?object=string_length/2
 
 For "anytext", see [this page](https://eu.swi-prolog.org/pldoc/man?section=string-predicates).
 
-Take a look at the comments for atom_length/2.
+Also take a look at the comments for atom_length/2.
 
-Here is simple code for a unique `stringy_length/2` which refers to `atom_length/2` and `string_length/2` as needed. This already happens, but there is still this troubling naming specificity, which I would like to get rid of:
+## Replacement
 
-[`stringy_and_charylist_type.pl`](https://github.com/dtonhofer/prolog_code/blob/main/unpacked/onepointfour_basics/README_stringy_and_charylist_type.md)
+[Here is simple code](https://github.com/dtonhofer/prolog_code/blob/main/unpacked/onepointfour_basics/doc/README_stringy_length.md) for a common =|stringy_length∕2|= which refers to atom_length/2 and string_length/2 as needed. This already happens, but there is still this troubling naming specificity, which I would like to get rid of.
+
