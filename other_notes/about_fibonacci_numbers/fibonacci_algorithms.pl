@@ -77,7 +77,8 @@ fib(0,F0) :-
 
 % -----------------------------------------------------------------------------
 % Proceed bottom-up, without using any cache, or rather a cache consisting
-% of two additional arguments.
+% of two additional arguments (in effect, an accumulator that is a pair
+% of arguments).
 %
 % ?- fib_bottomup_direct(10,F).
 % F = 55.
