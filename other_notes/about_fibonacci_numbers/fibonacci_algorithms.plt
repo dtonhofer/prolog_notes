@@ -48,6 +48,18 @@ test("bottom-up, cache is a lazy list (which is open) with a frozen goal on fin"
    test_first_few_values(bottomup_lazylist_cache),
    test_single_value(bottomup_lazylist_cache).
 
+test("bottom-up, based on 2x2 matrix multiplication") :-
+   test_first_few_values(bottomup_matrixmult),
+   test_single_value(bottomup_matrixmult).
+
+test("bottom-up, based on vectors") :-
+   test_first_few_values(bottomup_powvec),
+   test_single_value(bottomup_powvec).
+
+test("bottom-up, based on vectors, but faster") :-
+   test_first_few_values(bottomup_powvec_fast),
+   test_single_value(bottomup_powvec_fast).
+
 test("top-down, cache is a list with fib(N) ascending") :-
    test_first_few_values(topdown_list_cache_ascending),
    test_single_value(topdown_list_cache_ascending).
@@ -126,6 +138,9 @@ fib_algo(bottomup_direct                        , N,F) :- !,fib_bottomup_direct(
 fib_algo(bottomup_dict_cache                    , N,F) :- !,fib_bottomup_dict_cache(N,F,_Cache).
 fib_algo(bottomup_frozen_cache                  , N,F) :- !,fib_bottomup_frozen_cache(N,F,_Cache).
 fib_algo(bottomup_lazylist_cache                , N,F) :- !,fib_bottomup_lazylist_cache(N,F,_Cache).
+fib_algo(bottomup_matrixmult                    , N,F) :- !,fib_bottomup_matrixmult(N,F).
+fib_algo(bottomup_powvec                        , N,F) :- !,fib_bottomup_powvec(N,F).
+fib_algo(bottomup_powvec_fast                   , N,F) :- !,fib_bottomup_powvec_fast(N,F).
 fib_algo(topdown_list_cache_ascending           , N,F) :- !,fib_topdown_list_cache_ascending(N,F,_Cache).
 fib_algo(topdown_list_cache_descending          , N,F) :- !,fib_topdown_list_cache_descending(N,F,_Cache).
 fib_algo(topdown_list_cache_descending_cautious , N,F) :- !,fib_topdown_list_cache_descending_cautious(N,F,_Cache).

@@ -5,6 +5,9 @@
           ,fib_bottomup_dict_cache/3
           ,fib_bottomup_frozen_cache/3
           ,fib_bottomup_lazylist_cache/3
+          ,fib_bottomup_matrixmult/2
+          ,fib_bottomup_powvec/2
+          ,fib_bottomup_powvec_fast/2
           ,fib_topdown_list_cache_ascending/3
           ,fib_topdown_list_cache_descending/3
           ,fib_topdown_list_cache_descending_debug/3
@@ -44,9 +47,10 @@
 % 
 % TODO:
 % 
-% - Grab solution from https://stackoverflow.com/questions/67972830/prolog-finding-the-nth-fibonacci-number-using-accumulators/
 % - Add a CHR example
 % - How to collect performance info and graph it, in repeatable fashion?
+% - Add "double fibonacci" from https://muthu.co/fast-nth-fibonacci-number-algorithm/
+% - Why do "powvec" and "fast powvec" work?
 % =============================================================================
 
 % Carve the constants fib(0) and fib(1) out of the code.
@@ -345,6 +349,152 @@ retrieve_3(K,N,[_|More],F) :-
 retrieve_3(N,N,[F|_],F).
 
 % -----------------------------------------------------------------------------
+% This algorithm based on a post by "Mostowski Collapse" at
+% https://stackoverflow.com/questions/67972830/prolog-finding-the-nth-fibonacci-number-using-accumulators/
+% which references
+% https://kukuruku.co/post/the-nth-fibonacci-number-in-olog-n/ 
+%
+% The original code is licensed by StackOverflow as CC BY-SA 4.0
+% according to https://stackoverflow.com/legal/terms-of-service#licensing
+%
+% Modified to properly follow the definition and not assume that
+% fib(0) = 0, fib(1) = 1.
+% 
+% The principle is based on a matrix identity provided by Donald Knuth 
+% (in Donald E. Knuth. The Art of Computer Programming. Volume 1. Fundamental 
+%  Algorithms, page 80 of the second edition.)
+%
+% For n >= 1 (for n=0, the identity matrix would be on the right-hand side)
+%
+%                                 n
+% [ fib(n+1) fib(n)   ]   [ 1  1 ]
+% [                   ] = [      ]
+% [ fib(n)   fib(n-1) ]   [ 1  0 ]
+%
+% But if we work with fib(0) and fib(1) without assuming their value then
+% we must stipulate that for n >= 1:
+%
+%                                                      n-1
+% [ fib(n+1) fib(n)   ]   [ fib(2) fib(1) ]   [ 1  1 ]
+% [                   ] = [               ] * [      ]
+% [ fib(n)   fib(n-1) ]   [ fib(1) fib(0) ]   [ 1  0 ]
+%
+% This algorithm is actually O(log(N)): it doesn't care about computing
+% all the intermediate values the O(N) algorithms compute. It goes directly
+% from the constants fib(0), fib(1) to the result after computing the 
+% matrix to apply. 
+% -----------------------------------------------------------------------------
+
+fib_bottomup_matrixmult(N,F) :-
+   N>=1,
+   !,
+   Pow is N-1,
+   const(fib0,F0),
+   const(fib1,F1),
+   F2 is F0+F1,
+   powmat(Pow,
+          [[1,1],[1,0]], 
+          [[1,0],[0,1]],
+          PowMx),
+   mulmat([[F2,F1],[F1,F0]],
+          PowMx,
+          [[_,F],[F,_]]).
+fib_bottomup_matrixmult(0,F0) :-
+   const(fib0,F0).
+
+% Taking a 2x2 matrix Mx to the Powth power.
+% This is done by recursively computing (Mx^2)^(Pow//2)
+% with corrections for odd N.
+
+powmat(Pow, Mx, Accum, Result) :- 
+   Pow > 0,
+   Pow mod 2 =:= 1, 
+   !,
+   mulmat(Mx, Accum, NewAccum), 
+   Powm is Pow-1,
+   powmat(Powm, Mx, NewAccum, Result). 
+powmat(Pow, Mx, Accum, Result) :- 
+   Pow > 0,
+   Pow mod 2 =:= 0,
+   !,
+   HalfPow is Pow div 2, 
+   mulmat(Mx, Mx, MxSq), 
+   powmat(HalfPow, MxSq, Accum, Result).
+powmat(0, _, Accum, Accum).
+
+% 2x2 matrix multiplication
+
+mulmat([[A11,A12],[A21,A22]], 
+       [[B11,B12],[B21,B22]],
+       [[C11,C12],[C21,C22]]) :-
+   C11 is A11*B11+A12*B21,
+   C12 is A11*B12+A12*B22,
+   C21 is A21*B11+A22*B21,
+   C22 is A21*B12+A22*B22.
+
+% -----------------------------------------------------------------------------
+% This is a reformulation of fib_bottomup_matrixmult, using vectors.
+% This algorithm based on a post by "Mostowski Collapse" at
+% https://stackoverflow.com/questions/67972830/prolog-finding-the-nth-fibonacci-number-using-accumulators/
+%
+% The original code is licensed by StackOverflow as CC BY-SA 4.0
+% according to https://stackoverflow.com/legal/terms-of-service#licensing
+% -----------------------------------------------------------------------------
+
+% TODO: Bust out the constants F0, F1, which may demand cleanup of
+% this algorithm
+
+fib_bottomup_powvec(N,F) :-
+   powvec(N, v(1,0), v(0,1), v(F,_)).
+
+powvec(Pow, Vx, Accum, Result) :- 
+   Pow > 0,
+   Pow mod 2 =:= 1, 
+   !,
+   mulvec(Vx, Accum, NewAccum), 
+   Powm is Pow-1,
+   powvec(Powm, Vx, NewAccum, Result).
+powvec(Pow, Vx, Accum, Result) :- 
+   Pow > 0,
+   Pow mod 2 =:= 0,
+   !,
+   HalfPow is Pow div 2, 
+   mulvec(Vx, Vx, Vxx), 
+   powvec(HalfPow, Vxx, Accum, Result).
+powvec(0, _, Accum, Accum).
+
+mulvec(v(A1,A2),v(B1,B2),v(C1,C2)) :-
+   C1 is A1*(B1+B2)+A2*B1,  % A1 B1 + A1 B2 + A2 B1
+   C2 is A1*B1+A2*B2.
+
+% -----------------------------------------------------------------------------
+% This is a reformulation of fib_bottomup_powvec by "slago" at
+% https://stackoverflow.com/questions/67972830/prolog-finding-the-nth-fibonacci-number-using-accumulators/
+%
+% This seems to be faster than fub_bottomup_powvec/2 by a factor of 3.
+%
+% The original code is licensed by StackOverflow as CC BY-SA 4.0
+% according to https://stackoverflow.com/legal/terms-of-service#licensing
+%
+% This "fast doubling" (see https://www.nayuki.io/page/fast-fibonacci-algorithms)
+% -----------------------------------------------------------------------------
+
+fib_bottomup_powvec_fast(0,0) :- !.
+fib_bottomup_powvec_fast(N,F) :-
+    fastfast(N, [_,F]).
+
+fastfast(1, [0, 1]) :- !.
+fastfast(N, R) :-
+    M is N // 2,
+    fastfast(M, [A, B]),
+    F1 is A^2   + B^2,
+    F2 is 2*A*B + B^2,
+    (   N mod 2 =:= 0
+    ->  R = [F1, F2]
+    ;   F3 is F1 + F2,
+        R = [F2, F3]   ).
+
+% -----------------------------------------------------------------------------
 % Proceed "top-down", using a preallocated list of length N+1 as cache.
 %
 % fib(X) can be found at place X in the list (0-based).
@@ -361,9 +511,9 @@ retrieve_3(N,N,[F|_],F).
 fib_topdown_list_cache_ascending(N,F,Cache) :-
    M is max(N+1,2),   % max/2 to cover the cases N=0,N=1
    length(Cache,M),   % allocate cache fully
-   const(fib0,FA),
-   const(fib1,FB),
-   Cache = [FA,FB|_],
+   const(fib0,F0),
+   const(fib1,F1),
+   Cache = [F0,F1|_],
    fill_FTLCA(N,F,Cache).
 
 fill_FTLCA(N,F,Cache) :-
@@ -553,5 +703,4 @@ setup_constraints([F,FA,FB|More]) :-
    F #= FA+FB,
    setup_constraints([FA,FB|More]).
  
-
 
