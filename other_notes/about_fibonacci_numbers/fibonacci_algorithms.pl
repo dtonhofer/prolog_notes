@@ -2,12 +2,14 @@
           [
            fib/2
           ,fib_bottomup_direct/2
+          ,fib_bottomup_direct_usv/4
           ,fib_bottomup_dict_cache/3
           ,fib_bottomup_frozen_cache/3
           ,fib_bottomup_lazylist_cache/3
-          ,fib_bottomup_matrixmult/2
           ,fib_bottomup_powvec/2
           ,fib_bottomup_powvec_fast/2
+          ,fib_matrixmult/2
+          ,fib_matrixmult_usv/4
           ,fib_topdown_list_cache_ascending/3
           ,fib_topdown_list_cache_descending/3
           ,fib_topdown_list_cache_descending_debug/3
@@ -73,11 +75,11 @@ fib(N,F) :-
    NA is N-1, fib(NA,FA),
    NB is N-2, fib(NB,FB),
    F is FA + FB.
-fib(1,F1) :- 
-   const(fib1,F1),
+fib(1,Fib1) :- 
+   const(fib1,Fib1),
    !.
-fib(0,F0) :- 
-   const(fib0,F0).
+fib(0,Fib0) :- 
+   const(fib0,Fib0).
 
 % -----------------------------------------------------------------------------
 % Proceed bottom-up, without using any cache, or rather a cache consisting
@@ -91,11 +93,11 @@ fib(0,F0) :-
 fib_bottomup_direct(N,F) :-
    N>0,
    !,
-   const(fib0,FA),
-   const(fib1,FB),
-   up(1,N,FA,FB,F).
-fib_bottomup_direct(0,F0) :-
-   const(fib0,F0).
+   const(fib0,Fib0),
+   const(fib1,Fib1),
+   up(1,N,Fib0,Fib1,F).
+fib_bottomup_direct(0,Fib0) :-
+   const(fib0,Fib0).
 
 % Tail recursive call moving "bottom up" towards N.
 % In Java, I would have the reflex to avoid the last recursive
@@ -116,6 +118,17 @@ up(X,N,FA,FB,F) :-
 up(N,N,_,F,F).
 
 % -----------------------------------------------------------------------------
+% Exactly as fib_bottomup_direct/2, but you can specify your own fib(0) and 
+% fib(1). "usv" stands for "unusual starter values".
+% -----------------------------------------------------------------------------
+
+fib_bottomup_direct_usv(N,F,Fib0,Fib1) :-
+   N>0,
+   !,
+   up(1,N,Fib0,Fib1,F).
+fib_bottomup_direct_usv(0,Fib0,Fib0,_Fib1).
+
+% -----------------------------------------------------------------------------
 % Proceed bottom-up, using an "associative array" (SWI-Prolog dict) as cache.
 % The dict is used as an immutable but growing accumulator (functional style),
 % and needs to be copied repeatedly (this is probably not optimizable as
@@ -129,9 +142,9 @@ up(N,N,_,F,F).
 % -----------------------------------------------------------------------------
 
 fib_bottomup_dict_cache(N,F,CacheFinal) :-
-   const(fib0,FA),
-   const(fib1,FB),
-   up_dict(1,N,cache{0:FA,1:FB},CacheFinal),
+   const(fib0,Fib0),
+   const(fib1,Fib1),
+   up_dict(1,N,cache{0:Fib0,1:Fib1},CacheFinal),
    get_dict(N,CacheFinal,F).
 
 % Tail recursive call moving "bottom up" towards N
@@ -160,7 +173,8 @@ up_dict(1,0,Cache,Cache).        % special case if 0 is queried
 % and the frozen goals unfreeze in turn for higher and higher X. 
 %
 % I'm not sure when this way of doing it would be useful; this is actually
-% the same as what happens when using CLP(FD).
+% the same as what happens when using CLP(FD), but without using the 
+% correct abstraction..
 %
 % ?- fib_bottomup_frozen_cache(10,Fib10,Cache).
 % Fib10 = 55,
@@ -212,10 +226,6 @@ up_dict(1,0,Cache,Cache).        % special case if 0 is queried
 % X = f(Y).
 % -----------------------------------------------------------------------------
 
-% This has a distinct "set up cache" phase, where you as for fib(N) and you
-% a cache as a list containing up to fib(N) at position N (0-based). After that, you
-% can just interrogate the cache if you need some fib(M), N=<M.
-
 % :- debug(fib_freeze).
 
 fib_bottomup_frozen_cache(N,F,Cache) :-
@@ -224,16 +234,19 @@ fib_bottomup_frozen_cache(N,F,Cache) :-
    M is N+1,
    length(Cache,M),
    setup_frozen_cache(Cache),
-   const(fib0,FA),
-   const(fib1,FB),
+   const(fib0,Fib0),
+   const(fib1,Fib1),
    debug(fib_freeze,"Starting computation",[]),
-   Cache=[FA,FB|_],  % is it guaranteed that this will be transactional so that the frozen goal always has all data?
+   % I am actually unsure whether there is some guaranteed that this unification
+   % will be transactional so that the frozen goal always has all data when proceeding.
+   % It *should* be.
+   Cache=[Fib0,Fib1|_],
    nth0(N,Cache,F).
-fib_bottomup_frozen_cache(1,FB,[FA,FB]) :-
-   const(fib0,FA),
-   const(fib1,FB).
-fib_bottomup_frozen_cache(0,FA,[FA]) :- 
-   const(fib0,FA).
+fib_bottomup_frozen_cache(1,Fib1,[Fib0,Fib1]) :-
+   const(fib0,Fib0),
+   const(fib1,Fib1).
+fib_bottomup_frozen_cache(0,Fib0,[Fib0]) :- 
+   const(fib0,Fib0).
 
 setup_frozen_cache([FA,FB,FC|More]) :-   
    freeze(
@@ -308,18 +321,19 @@ setup_frozen_cache([_,_]).
 % freeze(_55906,fibonacci_algorithms:bll_frozen(144,233,_55906)).
 %
 % Note the residual goal being printed out.
+% -----------------------------------------------------------------------------
 
 % :- debug(fib_bll).
 
 fib_bottomup_lazylist_cache(N,F,Cache) :-
-   const(fib0,F0),
-   const(fib1,F1),
-   Cache=[F0,F1|Fin],
+   const(fib0,Fib0),
+   const(fib1,Fib1),
+   Cache=[Fib0,Fib1|Fin],
    freeze(
       Fin,
-      bll_frozen(F0,F1,Fin)),
-   debug(fib_bll,"At this point, the cache just contains [0,1|_]: ~q",Cache),
-   % nth0(N,Cache,F).  
+      bll_frozen(Fib0,Fib1,Fin)),
+   debug(fib_bll,"At this point, the cache just contains: ~q",Cache),
+   % nth0(N,Cache,F). % works too, but let's use retrieve/3 
    retrieve(N,Cache,F).
 
 bll_frozen(FA,FB,FIN) :-
@@ -385,26 +399,38 @@ retrieve_3(N,N,[F|_],F).
 % matrix to apply. 
 % -----------------------------------------------------------------------------
 
-fib_bottomup_matrixmult(N,F) :-
+fib_matrixmult(N,F) :-
    N>=1,
    !,
    Pow is N-1,
-   const(fib0,F0),
-   const(fib1,F1),
-   F2 is F0+F1,
+   const(fib0,Fib0),
+   const(fib1,Fib1),
+   Fib2 is Fib0+Fib1,
    powmat(Pow,
           [[1,1],[1,0]], 
           [[1,0],[0,1]],
           PowMx),
-   mulmat([[F2,F1],[F1,F0]],
+   mulmat([[Fib2,Fib1],[Fib1,Fib0]],
           PowMx,
           [[_,F],[F,_]]).
-fib_bottomup_matrixmult(0,F0) :-
-   const(fib0,F0).
+fib_matrixmult(0,Fib0) :-
+   const(fib0,Fib0).
 
-% Taking a 2x2 matrix Mx to the Powth power.
+% Taking a 2x2 matrix Mx to the Pow-th power.
 % This is done by recursively computing (Mx^2)^(Pow//2)
-% with corrections for odd N.
+% with 1 additional multiplication by Q for odd N. 
+% Note the tail recursion. One could also compute (Mx^(Pow//2))^2
+% but that would be tail recursive.
+%
+% One obtains a tree of top-down operations, where new context
+% with squared matrixes are called:
+%
+%                                                Mx
+%              Mx                               /
+%             /                     Mx^3 -- mult 
+% Mx^5 -- mult                                  \
+%             \                                  \
+%              Mx^4 = (Mx^2)^2 >> (Mx := Mx^2) >> Mx^2 = (Mx^2)^1 >> (Mx := Mx^2) >> Mx^1.
 
 powmat(Pow, Mx, Accum, Result) :- 
    Pow > 0,
@@ -431,6 +457,25 @@ mulmat([[A11,A12],[A21,A22]],
    C12 is A11*B12+A12*B22,
    C21 is A21*B11+A22*B21,
    C22 is A21*B12+A22*B22.
+
+% -----------------------------------------------------------------------------
+% Exactly as fib_bottomup_matrixmult/2, but you can specify your own fib(0) and 
+% fib(1). "usv" stands for "unusual starter values".
+% -----------------------------------------------------------------------------
+
+fib_matrixmult_usv(N,F,Fib0,Fib1) :-
+   N>=1,
+   !,
+   Pow is N-1,
+   Fib2 is Fib0+Fib1,
+   powmat(Pow,
+          [[1,1],[1,0]], 
+          [[1,0],[0,1]],
+          PowMx),
+   mulmat([[Fib2,Fib1],[Fib1,Fib0]],
+          PowMx,
+          [[_,F],[F,_]]).
+fib_matrixmult_usv(0,Fib0,Fib0,_Fib1).
 
 % -----------------------------------------------------------------------------
 % This is a reformulation of fib_bottomup_matrixmult, using vectors.
@@ -511,9 +556,9 @@ fastfast(N, R) :-
 fib_topdown_list_cache_ascending(N,F,Cache) :-
    M is max(N+1,2),   % max/2 to cover the cases N=0,N=1
    length(Cache,M),   % allocate cache fully
-   const(fib0,F0),
-   const(fib1,F1),
-   Cache = [F0,F1|_],
+   const(fib0,Fib0),
+   const(fib1,Fib1),
+   Cache = [Fib0,Fib1|_],
    fill_FTLCA(N,F,Cache).
 
 fill_FTLCA(N,F,Cache) :-
@@ -543,9 +588,9 @@ fill_FTLCA(N,F,Cache) :-
 % -----------------------------------------------------------------------------
 
 fib_topdown_dict_cache(N,F,CacheFinal) :-
-   const(fib0,FA),
-   const(fib1,FB),
-   down_dict(N,cache{0:FA,1:FB},CacheFinal),
+   const(fib0,Fib0),
+   const(fib1,Fib1),
+   down_dict(N,cache{0:Fib0,1:Fib1},CacheFinal),
    get_dict(N,CacheFinal,F).
 
 down_dict(N,Cache,Cache) :-
@@ -573,12 +618,12 @@ fib_topdown_list_cache_descending(N,F,Cache) :-
    fill_FTLCD(N,Cache),
    Cache=[F|_].
 
-fill_FTLCD(0,[F0]) :-
+fill_FTLCD(0,[Fib0]) :-
    !,
-   const(fib0,F0).
-fill_FTLCD(1,[F1|More]) :-
+   const(fib0,Fib0).
+fill_FTLCD(1,[Fib1|More]) :-
    !,
-   const(fib1,F1),
+   const(fib1,Fib1),
    fill_FTLCD(0,More).
 fill_FTLCD(_,[F|_]) :-
    nonvar(F),
@@ -600,12 +645,12 @@ fib_topdown_list_cache_descending_cautious(N,F,Cache) :-
    fill_FTLCD_cautious(N,Cache),
    Cache=[F|_].
 
-fill_FTLCD_cautious(0,[F0]) :-
+fill_FTLCD_cautious(0,[Fib0]) :-
    !,
-   const(fib0,F0).
-fill_FTLCD_cautious(1,[F1|More]) :-
+   const(fib0,Fib0).
+fill_FTLCD_cautious(1,[Fib1|More]) :-
    !,
-   const(fib1,F1),
+   const(fib1,Fib1),
    fill_FTLCD_cautious(0,More). % no use trying to avoid this call
 fill_FTLCD_cautious(N,[F,FA,FB|More]) :-
    assertion(var(F)),
@@ -657,12 +702,12 @@ fill_FTLCD_wrapper(N,OverallN,Cache) :-
    fill_FTLCD(N,OverallN,Cache),
    debug(ftlcd,"<< ~sN=~d, ~q",[Spaces,N,Cache]).
 
-fill_FTLCD(0,_OverallN,[fib(0,F0)]) :-
+fill_FTLCD(0,_OverallN,[fib(0,Fib0)]) :-
    !,
-   const(fib0,F0).
-fill_FTLCD(1,OverallN,[fib(1,F1)|More]) :-
+   const(fib0,Fib0).
+fill_FTLCD(1,OverallN,[fib(1,Fib1)|More]) :-
    !,
-   const(fib1,F1),
+   const(fib1,Fib1),
    fill_FTLCD_wrapper(0,OverallN,More).
 fill_FTLCD(N,_OverallN,[fib(N,F)|_]) :-
    nonvar(F),
@@ -694,11 +739,11 @@ fib_topdown_list_cache_clpfd(N,F,Cache) :-
    setup_constraints(Cache),
    Cache=[F|_].                % pick up solution
 
-setup_constraints([F0]) :-     % covers the case of N=0 
-   const(fib0,F0).
-setup_constraints([F1,F0]) :-  % set up start of list & ground constraint network
-   const(fib0,F0),
-   const(fib1,F1).             % this launches computation
+setup_constraints([Fib0]) :-     % covers the case of N=0 
+   const(fib0,Fib0).
+setup_constraints([Fib1,Fib0]) :-  % set up start of list & ground constraint network
+   const(fib0,Fib0),
+   const(fib1,Fib1).             % this launches computation
 setup_constraints([F,FA,FB|More]) :-
    F #= FA+FB,
    setup_constraints([FA,FB|More]).

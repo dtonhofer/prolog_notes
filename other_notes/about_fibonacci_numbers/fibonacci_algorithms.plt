@@ -48,10 +48,6 @@ test("bottom-up, cache is a lazy list (which is open) with a frozen goal on fin"
    test_first_few_values(bottomup_lazylist_cache),
    test_single_value(bottomup_lazylist_cache).
 
-test("bottom-up, based on 2x2 matrix multiplication") :-
-   test_first_few_values(bottomup_matrixmult),
-   test_single_value(bottomup_matrixmult).
-
 test("bottom-up, based on vectors") :-
    test_first_few_values(bottomup_powvec),
    test_single_value(bottomup_powvec).
@@ -80,6 +76,29 @@ test("top-down, cache is a dict") :-
    test_first_few_values(topdown_dict_cache),
    test_single_value(topdown_dict_cache).
 
+test("matrix multiplication") :-
+   test_first_few_values(matrixmult),
+   test_single_value(matrixmult).
+
+test("Unusual starter values, bottomup-direct") :-
+   Max  = 15,
+   Fib0 = 3,
+   Fib1 = 7,
+   bagof(N-F,
+      (between(0,Max,N),fib_bottomup_direct_usv(N,F,Fib0,Fib1)),
+      Result),
+   assertion(Result == [0-3,1-7,2-10,3-17,4-27,5-44,6-71,7-115,8-186,9-301,10-487,11-788,12-1275,13-2063,14-3338,15-5401]).  
+
+test("Unusual starter values, matrixmult") :-
+   Max  = 15,
+   Fib0 = 3,
+   Fib1 = 7,
+   bagof(N-F,
+      (between(0,Max,N),fib_matrixmult_usv(N,F,Fib0,Fib1)),
+      Result),
+   assertion(Result == [0-3,1-7,2-10,3-17,4-27,5-44,6-71,7-115,8-186,9-301,10-487,11-788,12-1275,13-2063,14-3338,15-5401]).  
+
+%
 % ---
 % What we expect
 % ---
@@ -138,7 +157,6 @@ fib_algo(bottomup_direct                        , N,F) :- !,fib_bottomup_direct(
 fib_algo(bottomup_dict_cache                    , N,F) :- !,fib_bottomup_dict_cache(N,F,_Cache).
 fib_algo(bottomup_frozen_cache                  , N,F) :- !,fib_bottomup_frozen_cache(N,F,_Cache).
 fib_algo(bottomup_lazylist_cache                , N,F) :- !,fib_bottomup_lazylist_cache(N,F,_Cache).
-fib_algo(bottomup_matrixmult                    , N,F) :- !,fib_bottomup_matrixmult(N,F).
 fib_algo(bottomup_powvec                        , N,F) :- !,fib_bottomup_powvec(N,F).
 fib_algo(bottomup_powvec_fast                   , N,F) :- !,fib_bottomup_powvec_fast(N,F).
 fib_algo(topdown_list_cache_ascending           , N,F) :- !,fib_topdown_list_cache_ascending(N,F,_Cache).
@@ -147,6 +165,7 @@ fib_algo(topdown_list_cache_descending_cautious , N,F) :- !,fib_topdown_list_cac
 fib_algo(topdown_list_cache_descending_debug    , N,F) :- !,fib_topdown_list_cache_descending_debug(N,F,_Cache).
 fib_algo(topdown_list_cache_clpfd               , N,F) :- !,fib_topdown_list_cache_clpfd(N,F,_Cache).
 fib_algo(topdown_dict_cache                     , N,F) :- !,fib_topdown_dict_cache(N,F,_Cache).
+fib_algo(matrixmult                             , N,F) :- !,fib_matrixmult(N,F).
 fib_algo(X,_,_)                                        :- existence_error(algorithm_name,X).
 
 /*
