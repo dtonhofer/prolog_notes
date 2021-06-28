@@ -6,10 +6,11 @@
           ,fib_bottomup_dict_cache/3
           ,fib_bottomup_frozen_cache/3
           ,fib_bottomup_lazylist_cache/3
-          ,fib_bottomup_powvec/2
-          ,fib_bottomup_powvec_fast/2
           ,fib_matrixmult/2
           ,fib_matrixmult_usv/4
+          ,fib_matrixmult_streamlined/2
+          ,fib_matrixmult_streamlined_usv/4
+          ,fib_fast_doubling/2
           ,fib_topdown_list_cache_ascending/3
           ,fib_topdown_list_cache_descending/3
           ,fib_topdown_list_cache_descending_debug/3
@@ -18,6 +19,8 @@
           ,fib_topdown_dict_cache/3
           ,fib_bottomup_lazylist_cache/3
           ,retrieve/3
+          ,matrixpow/3
+          ,matrixpow_streamlined/3
           ]).
  
 :- use_module(library(clpfd)).
@@ -51,8 +54,11 @@
 % 
 % - Add a CHR example
 % - How to collect performance info and graph it, in repeatable fashion?
-% - Add "double fibonacci" from https://muthu.co/fast-nth-fibonacci-number-algorithm/
-% - Why do "powvec" and "fast powvec" work?
+% - Add "double fibonacci" from 
+%   https://muthu.co/fast-nth-fibonacci-number-algorithm/
+% - Add "linear algebra fibonacci" which uses the eigenvectors of the 
+%   [[1 1][1 0]] matrix to get a closed formula
+% 
 % =============================================================================
 
 % Carve the constants fib(0) and fib(1) out of the code.
@@ -371,32 +377,55 @@ retrieve_3(N,N,[F|_],F).
 % The original code is licensed by StackOverflow as CC BY-SA 4.0
 % according to https://stackoverflow.com/legal/terms-of-service#licensing
 %
-% Modified to properly follow the definition and not assume that
-% fib(0) = 0, fib(1) = 1.
+% Modified to follow the definition and not assume that fib(0) = 0, fib(1) = 1.
 % 
 % The principle is based on a matrix identity provided by Donald Knuth 
 % (in Donald E. Knuth. The Art of Computer Programming. Volume 1. Fundamental 
 %  Algorithms, page 80 of the second edition.)
 %
-% For n >= 1 (for n=0, the identity matrix would be on the right-hand side)
+% For n >= 1 and the standard Fibonacci sequence:
 %
 %                                 n
 % [ fib(n+1) fib(n)   ]   [ 1  1 ]
 % [                   ] = [      ]
 % [ fib(n)   fib(n-1) ]   [ 1  0 ]
 %
-% But if we work with fib(0) and fib(1) without assuming their value then
-% we must stipulate that for n >= 1:
+% But if we work with a non-standard Fibonacci sequence where we have no 
+% assurance that fib(0)=0 and fib(1)=1 then for n >= 1 (a power of 0 on
+% the right-hand matrix yields the identity matrix):
 %
 %                                                      n-1
 % [ fib(n+1) fib(n)   ]   [ fib(2) fib(1) ]   [ 1  1 ]
 % [                   ] = [               ] * [      ]
 % [ fib(n)   fib(n-1) ]   [ fib(1) fib(0) ]   [ 1  0 ]
 %
+% Note that it is unimportant whether we multiply on the left of right
+% because the two matrixes are symmetric matrixes of real numbers and the
+% product is symmetric, so these matrixes must commute: to see why, take the 
+% transpose on each side.
+%
 % This algorithm is actually O(log(N)): it doesn't care about computing
 % all the intermediate values the O(N) algorithms compute. It goes directly
 % from the constants fib(0), fib(1) to the result after computing the 
 % matrix to apply. 
+%
+% Note the call to matrixpow/3:
+%
+% First argument is the power we want to apply, Pow >= 0
+% Second argument is the standard Fibonacci sequence start matrix [ 1  1 ] 
+% with fib(2) top left.                                           [ 1  0 ]
+% Initially, the accumulator is the identity matrix.
+%                    
+% The PowMx result is a symmetric matrix, and is the identity matrix for 
+% Pow = 0 and otherwise for Pow > 0 a matrix with standard Fibonacci numbers:
+%
+% [ fib(n)   fib(n-1) ]
+% [ fib(n-1) fib(n-2) ], where n = Pow+1
+%
+% Taking a matrix Mx to the Pow-th power is done by recursively computing 
+% (Mx^2)^(Pow//2) with 1 additional multiplication by Mx for odd N. 
+% This gives a tail recursive scheme. One could also compute (Mx^(Pow//2))^2
+% but that would not be tail recursive.
 % -----------------------------------------------------------------------------
 
 fib_matrixmult(N,F) :-
@@ -406,60 +435,46 @@ fib_matrixmult(N,F) :-
    const(fib0,Fib0),
    const(fib1,Fib1),
    Fib2 is Fib0+Fib1,
-   powmat(Pow,
-          [[1,1],[1,0]], 
-          [[1,0],[0,1]],
-          PowMx),
-   mulmat([[Fib2,Fib1],[Fib1,Fib0]],
-          PowMx,
-          [[_,F],[F,_]]).
+   matrixpow(
+      Pow,
+      [[1,1],[1,0]],
+      PowMx),        
+   matrixmult(
+      [[Fib2,Fib1],[Fib1,Fib0]],
+      PowMx,
+      [[_,F],[F,_]]).
 fib_matrixmult(0,Fib0) :-
    const(fib0,Fib0).
 
-% Taking a 2x2 matrix Mx to the Pow-th power.
-% This is done by recursively computing (Mx^2)^(Pow//2)
-% with 1 additional multiplication by Q for odd N. 
-% Note the tail recursion. One could also compute (Mx^(Pow//2))^2
-% but that would be tail recursive.
-%
-% One obtains a tree of top-down operations, where new context
-% with squared matrixes are called:
-%
-%                                                Mx
-%              Mx                               /
-%             /                     Mx^3 -- mult 
-% Mx^5 -- mult                                  \
-%             \                                  \
-%              Mx^4 = (Mx^2)^2 >> (Mx := Mx^2) >> Mx^2 = (Mx^2)^1 >> (Mx := Mx^2) >> Mx^1.
+matrixpow(Pow, Mx, Result) :-
+   matrixpow_2(Pow, Mx, [[1,0],[0,1]], Result).
 
-powmat(Pow, Mx, Accum, Result) :- 
+matrixpow_2(Pow, Mx, Accum, Result) :- 
    Pow > 0,
    Pow mod 2 =:= 1, 
    !,
-   mulmat(Mx, Accum, NewAccum), 
+   matrixmult(Mx, Accum, NewAccum), 
    Powm is Pow-1,
-   powmat(Powm, Mx, NewAccum, Result). 
-powmat(Pow, Mx, Accum, Result) :- 
+   matrixpow_2(Powm, Mx, NewAccum, Result). 
+matrixpow_2(Pow, Mx, Accum, Result) :- 
    Pow > 0,
    Pow mod 2 =:= 0,
    !,
    HalfPow is Pow div 2, 
-   mulmat(Mx, Mx, MxSq), 
-   powmat(HalfPow, MxSq, Accum, Result).
-powmat(0, _, Accum, Accum).
+   matrixmult(Mx, Mx, MxSq), 
+   matrixpow_2(HalfPow, MxSq, Accum, Result).
+matrixpow_2(0, _, Accum, Accum).
 
-% 2x2 matrix multiplication
-
-mulmat([[A11,A12],[A21,A22]], 
-       [[B11,B12],[B21,B22]],
-       [[C11,C12],[C21,C22]]) :-
+matrixmult([[A11,A12],[A21,A22]], 
+           [[B11,B12],[B21,B22]],
+           [[C11,C12],[C21,C22]]) :-
    C11 is A11*B11+A12*B21,
    C12 is A11*B12+A12*B22,
    C21 is A21*B11+A22*B21,
    C22 is A21*B12+A22*B22.
 
 % -----------------------------------------------------------------------------
-% Exactly as fib_bottomup_matrixmult/2, but you can specify your own fib(0) and 
+% Exactly as fib_matrixmult/2, but you can specify your own fib(0) and 
 % fib(1). "usv" stands for "unusual starter values".
 % -----------------------------------------------------------------------------
 
@@ -468,64 +483,122 @@ fib_matrixmult_usv(N,F,Fib0,Fib1) :-
    !,
    Pow is N-1,
    Fib2 is Fib0+Fib1,
-   powmat(Pow,
-          [[1,1],[1,0]], 
-          [[1,0],[0,1]],
-          PowMx),
-   mulmat([[Fib2,Fib1],[Fib1,Fib0]],
-          PowMx,
-          [[_,F],[F,_]]).
+   matrixpow(
+      Pow,
+      [[1,1],[1,0]], 
+      PowMx),
+   matrixmult(
+      [[Fib2,Fib1],[Fib1,Fib0]],
+      PowMx,
+      [[_,F],[F,_]]).
 fib_matrixmult_usv(0,Fib0,Fib0,_Fib1).
 
 % -----------------------------------------------------------------------------
-% This is a reformulation of fib_bottomup_matrixmult, using vectors.
+% This is a reformulation of fib_bottomup_matrixmult, using vectors to 
+% get rid of redundant computations.
+%
 % This algorithm based on a post by "Mostowski Collapse" at
 % https://stackoverflow.com/questions/67972830/prolog-finding-the-nth-fibonacci-number-using-accumulators/
 %
 % The original code is licensed by StackOverflow as CC BY-SA 4.0
 % according to https://stackoverflow.com/legal/terms-of-service#licensing
+%
+% The idea is to get rid of redundant operations in mulat, by using the 
+% fact that all our matrices are symmetric and actually hold Fibonacci
+% numbers
+%
+% [ fib(n+1)  fib(n)   ]
+% [                    ]
+% [ fib(n)    fib(n-1) ]
+%
+% So, if we multiply matrices A and B to C, we always have something of this 
+% form (even if B is the identity matrix):
+%
+% [ A1+A2  A1 ]   [ B1+B2  B1 ]   [ C1+C2  C1 ]
+% [           ] * [           ] = [           ]
+% [ A1     A2 ]   [ B1     B2 ]   [ C1     C2 ]
+%
+% We can just retain the second columns of each matrix w/o loss of info:
+%
+% [ A1 ]  [ B1 ]  [ C1 ]
+% [    ]  [    ]  [    ]
+% [ A2 ]  [ B2 ]  [ C2 ]
+%
+% with C1 = B1*(A1+A2) + B2*A1 = A1*(B1+B2) + A2*B1
+%      C2 = A1*B1 + A2*B2
 % -----------------------------------------------------------------------------
 
-% TODO: Bust out the constants F0, F1, which may demand cleanup of
-% this algorithm
+fib_matrixmult_streamlined(N,F) :-
+   N>=1,
+   !,
+   Pow is N-1,
+   const(fib0,Fib0),
+   const(fib1,Fib1),
+   matrixpow_streamlined(
+      Pow,
+      v(1,0),
+      PowVec),
+   matrixmult_streamlined(
+      v(Fib1,Fib0),
+      PowVec,
+      v(F,_)).
+fib_matrixmult_streamlined(0,Fib0) :-
+   const(fib0,Fib0).
 
-fib_bottomup_powvec(N,F) :-
-   powvec(N, v(1,0), v(0,1), v(F,_)).
+matrixpow_streamlined(Pow, Vec, Result) :-
+   matrixpow_streamlined_2(Pow, Vec, v(0,1), Result).
 
-powvec(Pow, Vx, Accum, Result) :- 
+matrixpow_streamlined_2(Pow, Vec, Accum, Result) :- 
    Pow > 0,
    Pow mod 2 =:= 1, 
    !,
-   mulvec(Vx, Accum, NewAccum), 
+   matrixmult_streamlined(Vec, Accum, NewAccum), 
    Powm is Pow-1,
-   powvec(Powm, Vx, NewAccum, Result).
-powvec(Pow, Vx, Accum, Result) :- 
+   matrixpow_streamlined_2(Powm, Vec, NewAccum, Result). 
+matrixpow_streamlined_2(Pow, Vec, Accum, Result) :- 
    Pow > 0,
    Pow mod 2 =:= 0,
    !,
    HalfPow is Pow div 2, 
-   mulvec(Vx, Vx, Vxx), 
-   powvec(HalfPow, Vxx, Accum, Result).
-powvec(0, _, Accum, Accum).
+   matrixmult_streamlined(Vec, Vec, VecVec), 
+   matrixpow_streamlined_2(HalfPow, VecVec, Accum, Result).
+matrixpow_streamlined_2(0, _, Accum, Accum).
 
-mulvec(v(A1,A2),v(B1,B2),v(C1,C2)) :-
-   C1 is A1*(B1+B2)+A2*B1,  % A1 B1 + A1 B2 + A2 B1
-   C2 is A1*B1+A2*B2.
+matrixmult_streamlined(v(A1,A2),v(B1,B2),v(C1,C2)) :-
+   C1 is A1*(B1+B2) + A2*B1, 
+   C2 is A1*B1 + A2*B2.
+
+% -----------------------------------------------------------------------------
+% Exactly as fib_matrixmult_streamlined/2, but you can specify your own fib(0) 
+% and fib(1). "usv" stands for "unusual starter values".
+% -----------------------------------------------------------------------------
+
+fib_matrixmult_streamlined_usv(N,F,Fib0,Fib1) :-
+   N>=1,
+   !,
+   Pow is N-1,
+   matrixpow_streamlined(
+      Pow,
+      v(1,0),
+      PowVec),
+   matrixmult_streamlined(
+      v(Fib1,Fib0),
+      PowVec,
+      v(F,_)).
+fib_matrixmult_streamlined_usv(0,Fib0,Fib0,_Fib1).
 
 % -----------------------------------------------------------------------------
 % This is a reformulation of fib_bottomup_powvec by "slago" at
 % https://stackoverflow.com/questions/67972830/prolog-finding-the-nth-fibonacci-number-using-accumulators/
 %
-% This seems to be faster than fub_bottomup_powvec/2 by a factor of 3.
+% This "fast doubling" (see https://www.nayuki.io/page/fast-fibonacci-algorithms)
 %
 % The original code is licensed by StackOverflow as CC BY-SA 4.0
 % according to https://stackoverflow.com/legal/terms-of-service#licensing
-%
-% This "fast doubling" (see https://www.nayuki.io/page/fast-fibonacci-algorithms)
-% -----------------------------------------------------------------------------
+%  -----------------------------------------------------------------------------
 
-fib_bottomup_powvec_fast(0,0) :- !.
-fib_bottomup_powvec_fast(N,F) :-
+fib_fast_doubling(0,0) :- !.
+fib_fast_doubling(N,F) :-
     fastfast(N, [_,F]).
 
 fastfast(1, [0, 1]) :- !.

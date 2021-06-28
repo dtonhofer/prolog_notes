@@ -48,14 +48,6 @@ test("bottom-up, cache is a lazy list (which is open) with a frozen goal on fin"
    test_first_few_values(bottomup_lazylist_cache),
    test_single_value(bottomup_lazylist_cache).
 
-test("bottom-up, based on vectors") :-
-   test_first_few_values(bottomup_powvec),
-   test_single_value(bottomup_powvec).
-
-test("bottom-up, based on vectors, but faster") :-
-   test_first_few_values(bottomup_powvec_fast),
-   test_single_value(bottomup_powvec_fast).
-
 test("top-down, cache is a list with fib(N) ascending") :-
    test_first_few_values(topdown_list_cache_ascending),
    test_single_value(topdown_list_cache_ascending).
@@ -80,6 +72,14 @@ test("matrix multiplication") :-
    test_first_few_values(matrixmult),
    test_single_value(matrixmult).
 
+test("matrix multiplication, streamlined") :-
+   test_first_few_values(matrixmult_streamlined),
+   test_single_value(matrixmult_streamlined).
+
+test("fast doubling") :-
+   test_first_few_values(fast_doubling),
+   test_single_value(fast_doubling).
+
 test("Unusual starter values, bottomup-direct") :-
    Max  = 15,
    Fib0 = 3,
@@ -98,7 +98,72 @@ test("Unusual starter values, matrixmult") :-
       Result),
    assertion(Result == [0-3,1-7,2-10,3-17,4-27,5-44,6-71,7-115,8-186,9-301,10-487,11-788,12-1275,13-2063,14-3338,15-5401]).  
 
-%
+test("Unusual starter values, matrixmult streamlined") :-
+   Max  = 15,
+   Fib0 = 3,
+   Fib1 = 7,
+   bagof(N-F,
+      (between(0,Max,N),fib_matrixmult_streamlined_usv(N,F,Fib0,Fib1)),
+      Result),
+   assertion(Result == [0-3,1-7,2-10,3-17,4-27,5-44,6-71,7-115,8-186,9-301,10-487,11-788,12-1275,13-2063,14-3338,15-5401]).  
+
+test("matrixpow") :-
+   bagof(Power-Result,
+      (
+         between(0,12,Power),
+         matrixpow(Power, [[1,1],[1,0]], Result)
+      ),
+      Bag),
+   assertion(Bag == 
+      [0-[[1,0],
+          [0,1]],
+       1-[[1,1],
+          [1,0]],
+       2-[[2,1],
+          [1,1]],
+       3-[[3,2],
+          [2,1]],
+       4-[[5,3],
+          [3,2]],
+       5-[[8,5],
+          [5,3]],
+       6-[[13,8],
+          [8,5]],
+       7-[[21,13],
+          [13,8]],
+       8-[[34,21],
+          [21,13]],
+       9-[[55,34],
+          [34,21]],
+      10-[[89,55],
+          [55,34]],
+      11-[[144,89],
+          [89,55]],
+      12-[[233,144],
+          [144,89]]]).
+
+test("matrixpow_streamlined") :-
+   bagof(Power-Result,
+      (
+         between(0,12,Power),
+         matrixpow_streamlined(Power, v(1,0), Result)
+      ),
+      Bag),
+   assertion(Bag == 
+      [0-v(0,1),
+       1-v(1,0),
+       2-v(1,1),
+       3-v(2,1),
+       4-v(3,2),
+       5-v(5,3),
+       6-v(8,5),
+       7-v(13,8),
+       8-v(21,13),
+       9-v(34,21),
+      10-v(55,34),
+      11-v(89,55),
+      12-v(144,89)]).
+
 % ---
 % What we expect
 % ---
@@ -157,8 +222,6 @@ fib_algo(bottomup_direct                        , N,F) :- !,fib_bottomup_direct(
 fib_algo(bottomup_dict_cache                    , N,F) :- !,fib_bottomup_dict_cache(N,F,_Cache).
 fib_algo(bottomup_frozen_cache                  , N,F) :- !,fib_bottomup_frozen_cache(N,F,_Cache).
 fib_algo(bottomup_lazylist_cache                , N,F) :- !,fib_bottomup_lazylist_cache(N,F,_Cache).
-fib_algo(bottomup_powvec                        , N,F) :- !,fib_bottomup_powvec(N,F).
-fib_algo(bottomup_powvec_fast                   , N,F) :- !,fib_bottomup_powvec_fast(N,F).
 fib_algo(topdown_list_cache_ascending           , N,F) :- !,fib_topdown_list_cache_ascending(N,F,_Cache).
 fib_algo(topdown_list_cache_descending          , N,F) :- !,fib_topdown_list_cache_descending(N,F,_Cache).
 fib_algo(topdown_list_cache_descending_cautious , N,F) :- !,fib_topdown_list_cache_descending_cautious(N,F,_Cache).
@@ -166,6 +229,8 @@ fib_algo(topdown_list_cache_descending_debug    , N,F) :- !,fib_topdown_list_cac
 fib_algo(topdown_list_cache_clpfd               , N,F) :- !,fib_topdown_list_cache_clpfd(N,F,_Cache).
 fib_algo(topdown_dict_cache                     , N,F) :- !,fib_topdown_dict_cache(N,F,_Cache).
 fib_algo(matrixmult                             , N,F) :- !,fib_matrixmult(N,F).
+fib_algo(matrixmult_streamlined                 , N,F) :- !,fib_matrixmult_streamlined(N,F).
+fib_algo(fast_doubling                          , N,F) :- !,fib_fast_doubling(N,F).
 fib_algo(X,_,_)                                        :- existence_error(algorithm_name,X).
 
 /*
