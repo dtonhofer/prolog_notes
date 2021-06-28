@@ -1,5 +1,15 @@
 https://eu.swi-prolog.org/pldoc/doc_for?object=format/2
 
+## Print hex codes
+
+0-padded 4-nibbles:
+
+```
+?- Code=6464, format(atom(T),"0x~|~`0t~16r~4+",[Code]).
+Code = 6464,
+T = '0x1940'.
+```
+
 ## Cheatsheet
 
 A cheatsheet for format/2 can be grabbed here:
@@ -97,7 +107,7 @@ format/2 is **precise in the arguments it expects** and will throw if there are 
 
 If you want to make sure a call to format/2 won't generate further exceptions in situations where you are already handling an exception for example here:
 
-[`safe_format.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/support/safe_format.pl)
+[`safe_format.pl`](https://github.com/dtonhofer/prolog_code/blob/main/unpacked/onepointfour_basics/safe_format.pl)
 
 ```
 ?- safe_format("Hello ~d",[7889],Result).
@@ -186,8 +196,14 @@ Note that tabstop position 0 is after character 0, counted from 0 (as expected):
 
 I did my own code for "string justification" as programming exercise, this becomes complex quickly:
 
-   - [justify.pl](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/strings/justify.pl)
-   - [justify.plt](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/strings/justify.plt) (unit tests)
+[README_stringy_justify.md](https://github.com/dtonhofer/prolog_code/blob/main/unpacked/onepointfour_basics/doc/README_stringy_justify.md)
+
+```
+?- justify_how(left,10,"hello",Result,string).
+Result = "hello     ".
+```
+
+etc.
 
 ## Playing with floats
 
@@ -294,8 +310,9 @@ There are packs offering this functionality:
 
 ## How to prettyprint a dict
 
-   - [`dict_prettyprint.pl`](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/dict_prettyprint.pl)
-   - [`dict_prettyprint.plt`](https://github.com/dtonhofer/prolog_notes/blob/master/code/heavycarbon/utils/dict_prettyprint.plt)
+   - [README_dict_pp.md](https://github.com/dtonhofer/prolog_code/blob/main/unpacked/onepointfour_basics/doc/README_dict_pp.md)
+
+For example:
 
 ```
 ?- dict_pp(various{w: 0.25984759, ww: 1.4587598, www: 643764856, wwww: 400},
@@ -342,4 +359,3 @@ true.
 true.
 ```
 
-Just gotta put this into a pack.
