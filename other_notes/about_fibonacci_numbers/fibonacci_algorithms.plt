@@ -28,84 +28,161 @@
 
 :- begin_tests(fibonacci).
 
+% --- helpers ---
+
+the_first_twenty( 
+   [0-0, 1-1, 2-1, 3-2, 4-3, 5-5, 6-8, 7-13, 8-21, 9-34, 10-55,
+    11-89, 12-144, 13-233, 14-377, 15-610, 16-987, 17-1597, 
+    18-2584, 19-4181]).
+
+the_1001st(N) :-
+   atomic_list_concat(
+      ["43466557686937456435688527675040625802564660517371",
+       "78040248172908953655541794905189040387984007925516",
+       "92959225930803226347752096896232398733224711616429",
+       "96440906533187938298969649928516003704476137795166",
+       "849228875"],NumberAsAtom),
+   atom_number(NumberAsAtom,N).
+
+first_few_values(Algo) :-
+   the_first_twenty(Expected),
+   collect_pairs(Algo,19,Result),
+   assertion(Result == Expected).
+
+single_value(Algo) :-
+   the_1001st(Expected),
+   fib_algo(Algo,1000,F),
+   assertion(F == Expected).
+
+collect_pairs(Algo,Max,Result) :-
+   bagof(N-F,
+      (between(0,Max,N),
+       fib_algo(Algo,N,F)),
+      Result).
+
+% Calling an algorithm by name. 
+
+fib_algo(naive_tabled                           , N,F) :- !,fib(N,F).
+fib_algo(bottomup_direct                        , N,F) :- !,fib_bottomup_direct(N,F).
+fib_algo(bottomup_dict_cache                    , N,F) :- !,fib_bottomup_dict_cache(N,F,_Cache).
+fib_algo(bottomup_frozen_cache                  , N,F) :- !,fib_bottomup_frozen_cache(N,F,_Cache).
+fib_algo(bottomup_lazylist_cache                , N,F) :- !,fib_bottomup_lazylist_cache(N,F,_Cache).
+fib_algo(topdown_list_cache_ascending           , N,F) :- !,fib_topdown_list_cache_ascending(N,F,_Cache).
+fib_algo(topdown_list_cache_descending          , N,F) :- !,fib_topdown_list_cache_descending(N,F,_Cache).
+fib_algo(topdown_list_cache_descending_cautious , N,F) :- !,fib_topdown_list_cache_descending_cautious(N,F,_Cache).
+fib_algo(topdown_list_cache_descending_debug    , N,F) :- !,fib_topdown_list_cache_descending_debug(N,F,_Cache).
+fib_algo(topdown_list_cache_clpfd               , N,F) :- !,fib_topdown_list_cache_clpfd(N,F,_Cache).
+fib_algo(topdown_dict_cache                     , N,F) :- !,fib_topdown_dict_cache(N,F,_Cache).
+fib_algo(matrixmult                             , N,F) :- !,fib_matrixmult(N,F).
+fib_algo(matrixmult_streamlined                 , N,F) :- !,fib_matrixmult_streamlined(N,F).
+fib_algo(fast_doubling                          , N,F) :- !,fib_fast_doubling(N,F).
+fib_algo(golden_ratio                           , N,F) :- !,fib_golden_ratio(N,F).
+fib_algo(X,_,_)                                        :- existence_error(algorithm_name,X).
+
+
+% --- actual tests ---
+
 test("naive, tabled") :-
-   test_first_few_values(naive_tabled),
-   test_single_value(naive_tabled).
+   first_few_values(naive_tabled),
+   single_value(naive_tabled).
 
 test("bottom-up, direct") :-
-   test_first_few_values(bottomup_direct),
-   test_single_value(bottomup_direct).
+   first_few_values(bottomup_direct),
+   single_value(bottomup_direct).
 
 test("bottom-up, cache is a dict") :-
-   test_first_few_values(bottomup_dict_cache),
-   test_single_value(bottomup_dict_cache).
+   first_few_values(bottomup_dict_cache),
+   single_value(bottomup_dict_cache).
 
 test("bottom-up, cache is a list of var with frozen goals") :-
-   test_first_few_values(bottomup_frozen_cache),
-   test_single_value(bottomup_frozen_cache).
+   first_few_values(bottomup_frozen_cache),
+   single_value(bottomup_frozen_cache).
 
 test("bottom-up, cache is a lazy list (which is open) with a frozen goal on fin") :-
-   test_first_few_values(bottomup_lazylist_cache),
-   test_single_value(bottomup_lazylist_cache).
+   first_few_values(bottomup_lazylist_cache),
+   single_value(bottomup_lazylist_cache).
 
 test("top-down, cache is a list with fib(N) ascending") :-
-   test_first_few_values(topdown_list_cache_ascending),
-   test_single_value(topdown_list_cache_ascending).
+   first_few_values(topdown_list_cache_ascending),
+   single_value(topdown_list_cache_ascending).
 
 test("top-down, cache is list with fib(N) descending") :-
-   test_first_few_values(topdown_list_cache_descending),
-   test_single_value(topdown_list_cache_descending).
+   first_few_values(topdown_list_cache_descending),
+   single_value(topdown_list_cache_descending).
 
 test("top-down, cache is list with fib(N) descending, cautious") :-
-   test_first_few_values(topdown_list_cache_descending_cautious),
-   test_single_value(topdown_list_cache_descending_cautious).
+   first_few_values(topdown_list_cache_descending_cautious),
+   single_value(topdown_list_cache_descending_cautious).
 
 test("top-down, cache is list with fib(N) descending, using constraints") :-
-   test_first_few_values(topdown_list_cache_clpfd),
-   test_single_value(topdown_list_cache_clpfd).
+   first_few_values(topdown_list_cache_clpfd),
+   single_value(topdown_list_cache_clpfd).
 
 test("top-down, cache is a dict") :-
-   test_first_few_values(topdown_dict_cache),
-   test_single_value(topdown_dict_cache).
+   first_few_values(topdown_dict_cache),
+   single_value(topdown_dict_cache).
 
 test("matrix multiplication") :-
-   test_first_few_values(matrixmult),
-   test_single_value(matrixmult).
+   first_few_values(matrixmult),
+   single_value(matrixmult).
 
 test("matrix multiplication, streamlined") :-
-   test_first_few_values(matrixmult_streamlined),
-   test_single_value(matrixmult_streamlined).
+   first_few_values(matrixmult_streamlined),
+   single_value(matrixmult_streamlined).
 
 test("fast doubling") :-
-   test_first_few_values(fast_doubling),
-   test_single_value(fast_doubling).
+   first_few_values(fast_doubling),
+   single_value(fast_doubling).
+
+test("golden ratio") :-
+   first_few_values(golden_ratio),
+   single_value(golden_ratio).
+
+:- end_tests(fibonacci).
+
+% =============================================================================
+% Tests where you start not with 0 and 1 but some other values.
+% =============================================================================
+
+:- begin_tests(fibonacci_with_unusual_starter_values).
+
+expected_result(Fib0,Fib1,Pairs,Max) :-
+   Fib0 = 3,
+   Fib1 = 7,
+   Pairs = [0-3,1-7,2-10,3-17,4-27,5-44,6-71,7-115,8-186,9-301,10-487,11-788,12-1275,13-2063,14-3338,15-5401],
+   length(Pairs,MaxPlusOne),
+   Max is MaxPlusOne-1.
 
 test("Unusual starter values, bottomup-direct") :-
-   Max  = 15,
-   Fib0 = 3,
-   Fib1 = 7,
-   bagof(N-F,
+   expected_result(Fib0,Fib1,Pairs,Max),
+   bagof(
+      N-F,
       (between(0,Max,N),fib_bottomup_direct_usv(N,F,Fib0,Fib1)),
       Result),
-   assertion(Result == [0-3,1-7,2-10,3-17,4-27,5-44,6-71,7-115,8-186,9-301,10-487,11-788,12-1275,13-2063,14-3338,15-5401]).  
+   assertion(Result == Pairs).
 
 test("Unusual starter values, matrixmult") :-
-   Max  = 15,
-   Fib0 = 3,
-   Fib1 = 7,
-   bagof(N-F,
+   expected_result(Fib0,Fib1,Pairs,Max),
+   bagof(
+      N-F,
       (between(0,Max,N),fib_matrixmult_usv(N,F,Fib0,Fib1)),
       Result),
-   assertion(Result == [0-3,1-7,2-10,3-17,4-27,5-44,6-71,7-115,8-186,9-301,10-487,11-788,12-1275,13-2063,14-3338,15-5401]).  
+   assertion(Result == Pairs).
 
 test("Unusual starter values, matrixmult streamlined") :-
-   Max  = 15,
-   Fib0 = 3,
-   Fib1 = 7,
+   expected_result(Fib0,Fib1,Pairs,Max),
    bagof(N-F,
       (between(0,Max,N),fib_matrixmult_streamlined_usv(N,F,Fib0,Fib1)),
       Result),
-   assertion(Result == [0-3,1-7,2-10,3-17,4-27,5-44,6-71,7-115,8-186,9-301,10-487,11-788,12-1275,13-2063,14-3338,15-5401]).  
+   assertion(Result == Pairs).
+
+:- end_tests(fibonacci_with_unusual_starter_values).
+
+% =============================================================================
+% Tests of only the "matrixpow" predicates, which also comput Fibonacci numbers
+% =============================================================================
+
+:- begin_tests(matrixpow).
 
 test("matrixpow") :-
    bagof(Power-Result,
@@ -164,74 +241,8 @@ test("matrixpow_streamlined") :-
       11-v(89,55),
       12-v(144,89)]).
 
-% ---
-% What we expect
-% ---
+:- end_tests(matrixpow).
 
-the_first_twenty( 
-   [0-0, 1-1, 2-1, 3-2, 4-3, 5-5, 6-8, 7-13, 8-21, 9-34, 10-55,
-    11-89, 12-144, 13-233, 14-377, 15-610, 16-987, 17-1597, 
-    18-2584, 19-4181]).
-
-the_1001st(N) :-
-   atomic_list_concat(
-      ["43466557686937456435688527675040625802564660517371",
-       "78040248172908953655541794905189040387984007925516",
-       "92959225930803226347752096896232398733224711616429",
-       "96440906533187938298969649928516003704476137795166",
-       "849228875"],NumberAsAtom),
-   atom_number(NumberAsAtom,N).
-
-% ---
-% Common code for a single algorithm
-% ---
-
-test_first_few_values(Algo) :-
-   the_first_twenty(Expected),
-   nf_points(Algo,19,Result),
-   assertion(Result == Expected).
-
-test_single_value(Algo) :-
-   the_1001st(Expected),
-   fib_algo(Algo,1000,F),
-   assertion(F == Expected).
-
-% ---
-% Collecting pairs x-fib(x), with x going from 0..Max.
-% Eeach point is computed individually.
-% ---
-
-nf_points(Algo,Max,Result) :-
-   bagof(N-F,bagging_goal(Algo,N,F,Max),Result).
-
-bagging_goal(Algo,N,F,Max) :-
-   between(0,Max,N),
-   fib_algo(Algo,N,F).
-
-
-:- end_tests(fibonacci).
-
-% ---
-% Calling an algorithm by name. 
-% Name is the first argument to use Prolog's indexing. This
-% means we don't need to cut to achieve determinism.
-% ---
-
-fib_algo(naive_tabled                           , N,F) :- !,fib(N,F).
-fib_algo(bottomup_direct                        , N,F) :- !,fib_bottomup_direct(N,F).
-fib_algo(bottomup_dict_cache                    , N,F) :- !,fib_bottomup_dict_cache(N,F,_Cache).
-fib_algo(bottomup_frozen_cache                  , N,F) :- !,fib_bottomup_frozen_cache(N,F,_Cache).
-fib_algo(bottomup_lazylist_cache                , N,F) :- !,fib_bottomup_lazylist_cache(N,F,_Cache).
-fib_algo(topdown_list_cache_ascending           , N,F) :- !,fib_topdown_list_cache_ascending(N,F,_Cache).
-fib_algo(topdown_list_cache_descending          , N,F) :- !,fib_topdown_list_cache_descending(N,F,_Cache).
-fib_algo(topdown_list_cache_descending_cautious , N,F) :- !,fib_topdown_list_cache_descending_cautious(N,F,_Cache).
-fib_algo(topdown_list_cache_descending_debug    , N,F) :- !,fib_topdown_list_cache_descending_debug(N,F,_Cache).
-fib_algo(topdown_list_cache_clpfd               , N,F) :- !,fib_topdown_list_cache_clpfd(N,F,_Cache).
-fib_algo(topdown_dict_cache                     , N,F) :- !,fib_topdown_dict_cache(N,F,_Cache).
-fib_algo(matrixmult                             , N,F) :- !,fib_matrixmult(N,F).
-fib_algo(matrixmult_streamlined                 , N,F) :- !,fib_matrixmult_streamlined(N,F).
-fib_algo(fast_doubling                          , N,F) :- !,fib_fast_doubling(N,F).
-fib_algo(X,_,_)                                        :- existence_error(algorithm_name,X).
 
 /*
 test("Some performance printout") :-

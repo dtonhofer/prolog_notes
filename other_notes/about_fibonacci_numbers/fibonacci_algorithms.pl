@@ -21,6 +21,7 @@
           ,retrieve/3
           ,matrixpow/3
           ,matrixpow_streamlined/3
+          ,fib_golden_ratio/2
           ]).
  
 :- use_module(library(clpfd)).
@@ -55,10 +56,11 @@
 % - Add a CHR example
 % - How to collect performance info and graph it, in repeatable fashion?
 % - Add "double fibonacci" from 
-%   https://muthu.co/fast-nth-fibonacci-number-algorithm/
+%     https://muthu.co/fast-nth-fibonacci-number-algorithm/
 % - Add "linear algebra fibonacci" which uses the eigenvectors of the 
-%   [[1 1][1 0]] matrix to get a closed formula
-% 
+%   [[1 1][1 0]] transformation matrix to get a closed formula
+%     https://stackoverflow.com/questions/38445069/fast-fibonacci-computation/41771104#41771104
+%     https://stackoverflow.com/questions/67972830/prolog-finding-the-nth-fibonacci-number-using-accumulators/
 % =============================================================================
 
 % Carve the constants fib(0) and fib(1) out of the code.
@@ -426,6 +428,10 @@ retrieve_3(N,N,[F|_],F).
 % (Mx^2)^(Pow//2) with 1 additional multiplication by Mx for odd N. 
 % This gives a tail recursive scheme. One could also compute (Mx^(Pow//2))^2
 % but that would not be tail recursive.
+%
+% If your starter matrix is sure to be `[[1,1],[1,0]]` you can collapse the
+% two operations matrixpow/3 followed by matrixmult/3 in the main predicate
+% into a single call to matrixpow/3.
 % -----------------------------------------------------------------------------
 
 fib_matrixmult(N,F) :-
@@ -503,29 +509,35 @@ fib_matrixmult_usv(0,Fib0,Fib0,_Fib1).
 % The original code is licensed by StackOverflow as CC BY-SA 4.0
 % according to https://stackoverflow.com/legal/terms-of-service#licensing
 %
-% The idea is to get rid of redundant operations in mulat, by using the 
-% fact that all our matrices are symmetric and actually hold Fibonacci
-% numbers
+% The idea is to get rid of redundant operations in matrixmult/3, by using
+% the fact that all our matrices are symmetric and actually hold Fibonacci
+% numbers:
 %
 % [ fib(n+1)  fib(n)   ]
 % [                    ]
 % [ fib(n)    fib(n-1) ]
 %
-% So, if we multiply matrices A and B to C, we always have something of this 
-% form (even if B is the identity matrix):
+% So, if we multiply matrices A and B to yield C, we always have something
+% of this form (even in the starter case where B is the identity matrix):
 %
 % [ A1+A2  A1 ]   [ B1+B2  B1 ]   [ C1+C2  C1 ]
 % [           ] * [           ] = [           ]
 % [ A1     A2 ]   [ B1     B2 ]   [ C1     C2 ]
 %
+% We can just retain the second columns of each matrix w/o loss of
+% information. The operation between these vectors is not some
+% standard operation like multiplication, let's mark it with ><:
+
 % We can just retain the second columns of each matrix w/o loss of info:
 %
-% [ A1 ]  [ B1 ]  [ C1 ]
-% [    ]  [    ]  [    ]
-% [ A2 ]  [ B2 ]  [ C2 ]
+% [ A1 ]    [ B1 ]   [ C1 ] 
+% [    ] >< [    ] = [    ] 
+% [ A2 ]    [ B2 ]   [ C2 ]
 %
-% with C1 = B1*(A1+A2) + B2*A1 = A1*(B1+B2) + A2*B1
-%      C2 = A1*B1 + A2*B2
+% where:
+%
+% C1 = B1*(A1+A2) + B2*A1 or A1*(B1+B2) + A2*B1
+% C2 = A1*B1 + A2*B2
 % -----------------------------------------------------------------------------
 
 fib_matrixmult_streamlined(N,F) :-
@@ -821,4 +833,30 @@ setup_constraints([F,FA,FB|More]) :-
    F #= FA+FB,
    setup_constraints([FA,FB|More]).
  
+% -----------------------------------------------------------------------------
+% Another one by Mostowski Collapse. This should be the "linear algebra" 
+% approach (to be confirmed)
+% -----------------------------------------------------------------------------
+
+fib_golden_ratio(N, S) :-
+   powrad(N,(1,1),(1,0),(_,X)),
+   powrad(N,(1,-1),(1,0),(_,Y)),
+   S is (X-Y)//2^N.
+
+powrad(0, _, R, R) :- !.
+powrad(N, A, R, S) :- 
+   N rem 2 =\= 0, !,
+   mulrad(A, R, H), 
+   M is N//2, 
+   mulrad(A, A, B), 
+   powrad(M, B, H, S).
+powrad(N, A, R, S) :-
+   M is N//2, 
+   mulrad(A, A, B), 
+   powrad(M, B, R, S).
+
+mulrad((A,B),(C,D),(E,F)) :-
+   E is A*C+B*D*5,
+   F is A*D+B*C.
+
 
