@@ -62,10 +62,10 @@ collect_pairs(Algo,Max,Result) :-
 
 % Calling an algorithm by name. 
 
-fib_algo(naive_tabled                           , N,F) :- !,fib(N,F).
-fib_algo(bottomup_direct                        , N,F) :- !,fib_bottomup_direct(N,F).
-fib_algo(bottomup_dict_cache                    , N,F) :- !,fib_bottomup_dict_cache(N,F,_Cache).
-fib_algo(bottomup_frozen_cache                  , N,F) :- !,fib_bottomup_frozen_cache(N,F,_Cache).
+fib_algo(topdown_tabled                         , N,F) :- !,fib_topdown_tabled(N,F).
+fib_algo(bottomup_two_args_cache                , N,F) :- !,fib_bottomup_two_args_cache(N,F).
+fib_algo(bottomup_dict_full_cache               , N,F) :- !,fib_bottomup_dict_full_cache(N,F,_Cache).
+fib_algo(bottomup_frozen_full_cache             , N,F) :- !,fib_bottomup_frozen_full_cache(N,F,_Cache).
 fib_algo(bottomup_lazylist_cache                , N,F) :- !,fib_bottomup_lazylist_cache(N,F,_Cache).
 fib_algo(topdown_list_cache_ascending           , N,F) :- !,fib_topdown_list_cache_ascending(N,F,_Cache).
 fib_algo(topdown_list_cache_descending          , N,F) :- !,fib_topdown_list_cache_descending(N,F,_Cache).
@@ -82,21 +82,21 @@ fib_algo(X,_,_)                                        :- existence_error(algori
 
 % --- actual tests ---
 
-test("naive, tabled") :-
-   first_few_values(naive_tabled),
-   single_value(naive_tabled).
+test("topdown, tabled") :-
+   first_few_values(topdown_tabled),
+   single_value(topdown_tabled).
 
-test("bottom-up, direct") :-
-   first_few_values(bottomup_direct),
-   single_value(bottomup_direct).
+test("bottom-up, two-args cache") :-
+   first_few_values(bottomup_two_args_cache),
+   single_value(bottomup_two_args_cache).
 
-test("bottom-up, cache is a dict") :-
-   first_few_values(bottomup_dict_cache),
-   single_value(bottomup_dict_cache).
+test("bottom-up, cache is a dict, caching fully") :-
+   first_few_values(bottomup_dict_full_cache),
+   single_value(bottomup_dict_full_cache).
 
-test("bottom-up, cache is a list of var with frozen goals") :-
-   first_few_values(bottomup_frozen_cache),
-   single_value(bottomup_frozen_cache).
+test("bottom-up, cache is a list of unbound variables with frozen goals") :-
+   first_few_values(bottomup_frozen_full_cache),
+   single_value(bottomup_frozen_full_cache).
 
 test("bottom-up, cache is a lazy list (which is open) with a frozen goal on fin") :-
    first_few_values(bottomup_lazylist_cache),
@@ -153,11 +153,11 @@ expected_result(Fib0,Fib1,Pairs,Max) :-
    length(Pairs,MaxPlusOne),
    Max is MaxPlusOne-1.
 
-test("Unusual starter values, bottomup-direct") :-
+test("Unusual starter values, bottomup, two args cache") :-
    expected_result(Fib0,Fib1,Pairs,Max),
    bagof(
       N-F,
-      (between(0,Max,N),fib_bottomup_direct_usv(N,F,Fib0,Fib1)),
+      (between(0,Max,N),fib_bottomup_two_args_cache_usv(N,F,Fib0,Fib1)),
       Result),
    assertion(Result == Pairs).
 

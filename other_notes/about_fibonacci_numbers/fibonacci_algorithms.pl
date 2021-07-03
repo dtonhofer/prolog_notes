@@ -1,10 +1,10 @@
 :- module(fibonacci_algorithms,
           [
-           fib/2
-          ,fib_bottomup_direct/2
-          ,fib_bottomup_direct_usv/4
-          ,fib_bottomup_dict_cache/3
-          ,fib_bottomup_frozen_cache/3
+           fib_topdown_tabled/2
+          ,fib_bottomup_two_args_cache/2
+          ,fib_bottomup_two_args_cache_usv/4
+          ,fib_bottomup_dict_full_cache/3
+          ,fib_bottomup_frozen_full_cache/3
           ,fib_bottomup_lazylist_cache/3
           ,fib_matrixmult/2
           ,fib_matrixmult_usv/4
@@ -17,7 +17,6 @@
           ,fib_topdown_list_cache_descending_cautious/3 
           ,fib_topdown_list_cache_clpfd/3
           ,fib_topdown_dict_cache/3
-          ,fib_bottomup_lazylist_cache/3
           ,retrieve/3
           ,matrixpow/3
           ,matrixpow_streamlined/3
@@ -69,47 +68,47 @@ const(fib0,0).
 const(fib1,1).
 
 % -----------------------------------------------------------------------------
-% Naive implementation, but "tabled" (i.e. Prolog caches the call results)
+% Naive implementation: a direct implementation, top-down, of the definition
+% fib(x) = fib(x-1) + fib(x-2)), but predicate fib_topdown_naive/2 is 
+% "tabled" (aka. "memoized", i.e. Prolog caches the predicate call results)
+% to make this approach viable. 
 %
-% ?- fib(10,F).
+% ?- fib_topdown_tabled(10,F).
 % F = 55.
 % -----------------------------------------------------------------------------
 
-:- table fib/2.
+:- table fib_topdown_tabled/2.
 
-fib(N,F) :-
+fib_topdown_tabled(N,F) :-
    N>1,
    !,
-   NA is N-1, fib(NA,FA),
-   NB is N-2, fib(NB,FB),
+   NA is N-1, fib_topdown_tabled(NA,FA),
+   NB is N-2, fib_topdown_tabled(NB,FB),
    F is FA + FB.
-fib(1,Fib1) :- 
+fib_topdown_tabled(1,Fib1) :- 
    const(fib1,Fib1),
    !.
-fib(0,Fib0) :- 
+fib_topdown_tabled(0,Fib0) :- 
    const(fib0,Fib0).
 
 % -----------------------------------------------------------------------------
-% Proceed bottom-up, without using any cache, or rather a cache consisting
-% of two additional arguments (in effect, an accumulator that is a pair
-% of arguments).
+% Proceed bottom-up, with a cache consisting of two additional arguments
+% (in effect, an accumulator that is a pair of arguments). 
 %
-% ?- fib_bottomup_direct(10,F).
+% ?- fib_bottomup_two_args(10,F).
 % F = 55.
 % -----------------------------------------------------------------------------
 
-fib_bottomup_direct(N,F) :-
+fib_bottomup_two_args_cache(N,F) :-
    N>0,
    !,
    const(fib0,Fib0),
    const(fib1,Fib1),
    up(1,N,Fib0,Fib1,F).
-fib_bottomup_direct(0,Fib0) :-
+fib_bottomup_two_args_cache(0,Fib0) :-
    const(fib0,Fib0).
 
 % Tail recursive call moving "bottom up" towards N.
-% In Java, I would have the reflex to avoid the last recursive
-% call, but here the last "do-nothing" call looks natural.
 %
 % X:  the "current point of progress"
 % N:  the N we want to reach
@@ -126,15 +125,15 @@ up(X,N,FA,FB,F) :-
 up(N,N,_,F,F).
 
 % -----------------------------------------------------------------------------
-% Exactly as fib_bottomup_direct/2, but you can specify your own fib(0) and 
+% Exactly as fib_bottomup_two_args/2, but you can specify your own fib(0) and 
 % fib(1). "usv" stands for "unusual starter values".
 % -----------------------------------------------------------------------------
 
-fib_bottomup_direct_usv(N,F,Fib0,Fib1) :-
+fib_bottomup_two_args_cache_usv(N,F,Fib0,Fib1) :-
    N>0,
    !,
    up(1,N,Fib0,Fib1,F).
-fib_bottomup_direct_usv(0,Fib0,Fib0,_Fib1).
+fib_bottomup_two_args_cache_usv(0,Fib0,Fib0,_Fib1).
 
 % -----------------------------------------------------------------------------
 % Proceed bottom-up, using an "associative array" (SWI-Prolog dict) as cache.
@@ -142,14 +141,15 @@ fib_bottomup_direct_usv(0,Fib0,Fib0,_Fib1).
 % and needs to be copied repeatedly (this is probably not optimizable as
 % a dict is actually a compound term). At the end we have all the x:f(x)
 % in the cache, so this is the way to go if you want to keep that map around
-% for later.
+% for later. Alternatively, you could just keep the "latest two elements"
+% in the dict, thus having the same case as for fib_bottmup_two_args_cache/2.
 % 
-% ?- fib_bottomup_dict_cache(10,F,Cache).
+% ?- fib_bottomup_dict_full_cache(10,F,Cache).
 % F = 55,
 % Cache = cache{0:0,1:1,2:1,3:2,4:3,5:5,6:8,7:13,8:21,9:34,10:55}.
 % -----------------------------------------------------------------------------
 
-fib_bottomup_dict_cache(N,F,CacheFinal) :-
+fib_bottomup_dict_full_cache(N,F,CacheFinal) :-
    const(fib0,Fib0),
    const(fib1,Fib1),
    up_dict(1,N,cache{0:Fib0,1:Fib1},CacheFinal),
@@ -178,19 +178,20 @@ up_dict(1,0,Cache,Cache).        % special case if 0 is queried
 % Proceed bottom-up by defining a N+1-sized list of vars, with
 % a frozen goal to compute fib(X) on the variable at place X for every 
 % X > 1. Once that has been done, we bind the variables at places 0 and 1
-% and the frozen goals unfreeze in turn for higher and higher X. 
+% and the frozen goals unfreeze in sequence for higher and higher X. 
 %
 % I'm not sure when this way of doing it would be useful; this is actually
 % the same as what happens when using CLP(FD), but without using the 
-% correct abstraction..
+% correct abstraction.
 %
-% ?- fib_bottomup_frozen_cache(10,Fib10,Cache).
+% ?- fib_bottomup_frozen_full_cache(10,Fib10,Cache).
 % Fib10 = 55,
 % Cache = [0,1,1,2,3,5,8,13,21,34,55].
 %
 % or with debugging on:
 %
-% ?- fib_bottomup_frozen_cache(10,Fib10,Cache).
+% ?- debug(fib_freeze),
+%    fib_bottomup_frozen_full_cache(10,Fib10,Cache).
 % Starting computation
 % Unfrozen: FB = 1
 % Unfrozen: FB = 1
@@ -234,9 +235,7 @@ up_dict(1,0,Cache,Cache).        % special case if 0 is queried
 % X = f(Y).
 % -----------------------------------------------------------------------------
 
-% :- debug(fib_freeze).
-
-fib_bottomup_frozen_cache(N,F,Cache) :-
+fib_bottomup_frozen_full_cache(N,F,Cache) :-
    1<N,
    !,
    M is N+1,
@@ -245,15 +244,15 @@ fib_bottomup_frozen_cache(N,F,Cache) :-
    const(fib0,Fib0),
    const(fib1,Fib1),
    debug(fib_freeze,"Starting computation",[]),
-   % I am actually unsure whether there is some guaranteed that this unification
+   % I am actually unsure whether there is some guaranteed that the following unification
    % will be transactional so that the frozen goal always has all data when proceeding.
    % It *should* be.
    Cache=[Fib0,Fib1|_],
    nth0(N,Cache,F).
-fib_bottomup_frozen_cache(1,Fib1,[Fib0,Fib1]) :-
+fib_bottomup_frozen_full_cache(1,Fib1,[Fib0,Fib1]) :-
    const(fib0,Fib0),
    const(fib1,Fib1).
-fib_bottomup_frozen_cache(0,Fib0,[Fib0]) :- 
+fib_bottomup_frozen_full_cache(0,Fib0,[Fib0]) :- 
    const(fib0,Fib0).
 
 setup_frozen_cache([FA,FB,FC|More]) :-   
@@ -271,11 +270,28 @@ setup_frozen_cache([_,_]).
 % Proceed "bottom-up" with a "lazy list" as cache. The "lazy list" is an 
 % open list that has a frozen goal to compute the next list entry on its "fin".
 %
+%        [|]
+%       /   \
+%      0    [|]
+%          /   \
+%         1    [|]
+%             /   \
+%            1    [|] <--- last listcell of the open list
+%                /   \
+%               2     ~  <--- Fin as an empty cell,
+%                             with frozen goal bll_frozen(1,2,Fin)
+%                             to compute fib(4) and unify ~ with a 
+%                             new listcell
+%
+% This representation is great as one may choose to drop old list parts
+% that one is no longer interested in (in fact, one just needs to keep
+% the last listcell, as the frozen goal keeps track of fib(x-1) and fib(x-2)).
+%
 % Retrieving a member of the list using nth0(N,Cache,F) causes unification of
-% the unbound "fin" with a new listbox [_|_]. This thaws the goal on the 
-% "fin", which then computes the next Fibonacci number, unifies it with arg1
-% of the listbox and then sets up a new frozen goal on arg2 of the listbox, the
-% new "fin" of the lazy list.
+% the unbound "Fin" with a new listbox [_|_]. This thaws the goal on the
+% "Fin", which then computes the next Fibonacci number, unifies it with the 
+% first argument of the listbox and then sets up a new frozen goal on the 
+% second argument of the listbox, which is the new "Fin" of the lazy list.
 %
 % It is not directly evident why this works with nth0/3, so a replacement
 % predicate retrieve/3 which also prints debugging messages has been provided.
@@ -284,8 +300,8 @@ setup_frozen_cache([_,_]).
 %
 % Example:
 %
-% ?- debug(fib_bll).
-% ?- fib_bottomup_lazylist_cache(10,F,Cache).
+% ?- debug(fib_bll),
+%    fib_bottomup_lazylist_cache(10,F,Cache).
 % At this point, the cache just contains [0,1|_]: [0,1|_28196]
 % At K = 0, N = 10, No unfreeze at this point
 % At K = 1, N = 10, No unfreeze at this point
@@ -331,8 +347,6 @@ setup_frozen_cache([_,_]).
 % Note the residual goal being printed out.
 % -----------------------------------------------------------------------------
 
-% :- debug(fib_bll).
-
 fib_bottomup_lazylist_cache(N,F,Cache) :-
    const(fib0,Fib0),
    const(fib1,Fib1),
@@ -344,15 +358,17 @@ fib_bottomup_lazylist_cache(N,F,Cache) :-
    % nth0(N,Cache,F). % works too, but let's use retrieve/3 
    retrieve(N,Cache,F).
 
-bll_frozen(FA,FB,FIN) :-
+bll_frozen(FA,FB,Fin) :-
    FC is FA + FB,
-   FIN=[FC|NewFIN],
-   debug(fib_bll,"Unfrozen: FA = ~d, FB = ~d, FIN has been unified to ~q",[FA,FB,FIN]),
+   Fin=[FC|NewFin],
+   debug(fib_bll,"Unfrozen: FA = ~d, FB = ~d, Fin has been unified to ~q",[FA,FB,Fin]),
    freeze(
-      NewFIN,
-      bll_frozen(FB,FC,NewFIN)).
+      NewFin,
+      bll_frozen(FB,FC,NewFin)).
 
-% A replacement for nth0/3 to show what's going on
+% ---
+% A replacement for nth0/3 to properly show what's going on
+% ---
 
 retrieve(N,Cache,F) :-
    retrieve_2(0,N,Cache,F).
@@ -603,7 +619,7 @@ fib_matrixmult_streamlined_usv(0,Fib0,Fib0,_Fib1).
 % This is a reformulation of fib_bottomup_powvec by "slago" at
 % https://stackoverflow.com/questions/67972830/prolog-finding-the-nth-fibonacci-number-using-accumulators/
 %
-% This "fast doubling" (see https://www.nayuki.io/page/fast-fibonacci-algorithms)
+% This is called "fast doubling" (see https://www.nayuki.io/page/fast-fibonacci-algorithms)
 %
 % The original code is licensed by StackOverflow as CC BY-SA 4.0
 % according to https://stackoverflow.com/legal/terms-of-service#licensing
