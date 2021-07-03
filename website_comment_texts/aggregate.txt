@@ -1,65 +1,125 @@
-https://eu.swi-prolog.org/pldoc/doc_for?object=aggregate/3
+https://eu.swi-prolog.org/pldoc/man?section=aggregate
 
-## Beware of the empty solution 
+## 0 vs failure
 
-"The aggregate/3 version performs bagof/3 on Goal." means that the call will **fail** when there are no solutions. This is exactly right when working in "logical mode" where you search for an acceptable solution and fail if there is none. As opposed to "computational/traditional mode" where you are ok with an empty solution set and then decide to throw, issue an error message or explicity try something else. (Prolog code is actually an interleaving of those two thinking modes, one driven by logic&search, the other by computation&interaction, but this is never made really explicit anywhere)
+As expected, aggregate_all/3, which uses findall/3, yields 0 if there is nothing:
 
-Take this logic program:
+```
+?- aggregate_all(sum(P),false,Payoff).
+Payoff = 0.
+```
 
-==
-fact(a,a).
-fact(a,b).
-fact(a,c).
-==
+But  aggregate/3, which uses bagof/3, fails if there is nothing:
 
-Then
-
-==
-?- aggregate(count, X^fact(a,X), Count).
-Count = 3.
-==
-
-But instead of `Count==0`, you get a failure if there are no solutions:
-
-==
-?- aggregate(count, X^fact(c,X), Count).
+```
+?- aggregate(sum(P),false,Payoff).
 false.
-==
+```
 
-To "switch to computational mode" use the if-then-else operator ->/2.
+## Properly quantifying free variables in the goal of aggregate∕3
 
-==
-?- (aggregate(count, X^fact(c,X), Count) -> true ; Count=0).
-Count = 0.
-==
+Do not forget to properly quantify free variables in the goal of aggregate/3 in the same way as you would do for bagof/3 and setof/3 (using the `X^` notation) or you will get unexpected results: 
 
-Or use aggregate_all/3, which is based on findall/3, which works in "computational mode" (its solution is the empty list if there are no solutions). That predicate doesn't use the caret notation because findall/3 doesn't use the caret notation:
+```
+:- begin_tests(aggregate).
 
-==
-?- aggregate_all(count, fact(c,X), Count).
-Count = 0.
+test("aggregate all, sum, member-of-list") :-
+   aggregate_all(sum(P),member(P,[1,2,3]),Sum),
+   assertion(Sum == 6).
 
-?- aggregate_all(count, fact(a,X), Count).
-Count = 3.
-==
-
-## Example with a dict
-
-Suppose you have an SWI-Prolog dict with integer values and you want to sum over those values:
-
-==
-dict_sum(_{} ,0) :- !.
-
-dict_sum(Dict,Total) :- 
-   aggregate(sum(Val), Key^get_dict(Key,Dict,Val), Total).
+test("aggregate all, sum, key-value of dict") :-
+   aggregate_all(sum(Value),get_dict(_Key,_{a:1,b:2,c:3},Value),Sum),
+   assertion(Sum == 6).
    
-:- begin_tests(sum).
+test("aggregate all, sum, but no values") :-
+   aggregate_all(sum(P),member(P,[]),Sum),
+   assertion(Sum == 0).
 
-test(sum1, [ true(Total == 0) ]) :-
-   dict_sum(_{},Total).
+test("aggregate, sum, member-of-list") :-
+   aggregate(sum(P),member(P,[1,2,3]),Sum),
+   assertion(Sum == 6).
+
+test("aggregate all, sum, key-value of dict, forgot to quantify, thus wrong result and open choicepoint",[nondet]) :-
+   aggregate(sum(Value),get_dict(_Key,_Tag{a:1,b:2,c:3},Value),Sum),
+   assertion(Sum == 1).
    
-test(sum2, [ true(Total == 3) ]) :-
-   dict_sum(_{x:1,y:2},Total).
+test("aggregate all, sum, key-value of dict, properly quantified") :-
+   aggregate(sum(Value),Tag^Key^get_dict(Key,Tag{a:1,b:2,c:3},Value),Sum),
+   assertion(Sum == 6).
 
-:- end_tests(sum).
-==
+test("aggregate all, sum, key-value of dict, call 'hiding' predicate") :-
+   aggregate(sum(Value),hide(Value),Sum),
+   assertion(Sum == 6).
+
+hide(Value) :-
+   get_dict(_Key,_Tag{a:1,b:2,c:3},Value).
+   
+test("aggregate, sum, but no values", fail) :-
+   aggregate(sum(P),member(P,[]),_Sum).
+
+:- end_tests(aggregate).
+```
+
+## Usage example
+
+An example using aggregates to find a worker-task assignment yielding maximum payoff (testing all possibilites):
+
+```
+                 % -------------------> tasks 1...MaxTask  % workers 1..maxWorker
+payoff_matrix( [ [22, 9,47,24,37,25,25],                   % |
+                 [45,49,38,13, 7,45,50],                   % |
+                 [33,10,10,40,13,25,32],                   % | 
+                 [ 6, 5,48,36,36,15, 3] ] ).               % V
+
+max_task(MaxTask) :-
+   payoff_matrix(M),
+   nth0(0,M,Row),
+   length(Row,MaxTask).
+
+max_worker(MaxWorker) :-
+   payoff_matrix(M),
+   length(M,MaxWorker).
+
+% What is the Payoff of assigning worker Worker
+% to task Task? This predicate can also be redone
+% to generate all Worker/Task combinations though we
+% don't use it that way.
+
+payoff(Worker,Task,Payoff) :-
+   payoff_matrix(M),
+   nth1(Worker,M,Row),
+   nth1(Task,Row,Payoff).
+
+% Find the best assignment using aggregate/3
+
+best(WitnessAssignment,MaxPayoff) :-
+   aggregate(
+      max(Payoff,Assignment),
+      gen_assignment(Assignment,Payoff),
+      max(MaxPayoff,WitnessAssignment)).
+
+% Backtrackably generate an Assignment. It has the given Payoff
+
+gen_assignment(Assignment,Payoff) :-
+   max_task(MaxTask),
+   max_worker(MaxWorker),
+   bagof(X,between(1,MaxTask,X),Tasks),                  % Tasks now contains the task numbers 1...MaxTask
+   bagof(X,between(1,MaxWorker,X),Workers),              % Workers now contains the worker numbers 1...MaxWorkers
+   gen_assignment_2(Tasks,[],Workers,Assignment),
+   aggregate_all(sum(P),member(_{worker:_,task:_,payoff:P},Assignment),Payoff). % Use aggregate_all to not care about free variables
+
+% gen_assignment_2(Tasks,TasksPicked,WorkersLeft,Assignment)
+%
+% Generate an assignment (a list of dicts, with each dict a worker-task
+% pairing) by successively (and backtrackably) picking a task for the next
+% worker from the list of tasks that haven't been assigned yet,
+% getting the payoff for that worker-task pairing and recursively moving
+% on to the next worker.
+
+gen_assignment_2(Tasks,TasksPicked,[W|Ws],[_{worker:W,task:T,payoff:P}|As]) :-
+   member(T,Tasks),
+   \+ member(T,TasksPicked),
+   payoff(W,T,P),
+   gen_assignment_2(Tasks,[T|TasksPicked],Ws,As).
+gen_assignment_2(_,_,[],[]).
+```

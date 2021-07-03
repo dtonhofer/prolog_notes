@@ -1,0 +1,72 @@
+https://eu.swi-prolog.org/pldoc/doc_for?object=(%5C%3D)/2
+
+```
+X = Y
+```
+
+means:
+
+"Proceeding down this path of computation, =|X|= and =|Y|= designate the same thing"
+
+But 
+
+```
+X \= Y
+```
+
+means:
+
+"Unify =|X|= and =|Y|= and if this succeeds, fail (rolling the unification back)"
+
+or alternatively
+
+"If =|X|= and =|Y|= can designate the same thing **at this instant of the computation**, fail"
+
+This is suspect. If =|X|= and =|Y|= are unbound the question whether they designate the same thing is ill-defined. We just don't know! This can also happen if the terms are non-ground. Still, we fail. IMHO, Prolog should throw as replacement for the missing "don't know" truth value:
+
+```
+?- X \= Y.
+false.
+
+?- f(X) \= f(Y).
+false.
+```
+
+On the other hand, these queries makes sense:
+
+Definitely "the same thing":
+
+```
+?- f(a) \= f(a).
+false.
+```
+
+Definitely "not the same thing":
+
+```
+?- f(_) \= g(_).
+true.
+
+?- f(a) \= f(b).
+true.
+```
+
+Using
+
+=|dif(X,Y)|=
+
+means:
+
+"Proceeding down this path of computation, =|X|= and =|Y|= cannot designate the same thing"
+
+i.e. if we don't know we still proceed, and any attempt at making =|X|= and =|Y|= designate the same thing will fail (i.e. the unification that would entail sameness will fail) and another path of computation will be taken. Much saner.
+
+```
+?- dif(X,Y).
+dif(X,Y).     <--- The residual unresolved constraint is printed out here
+
+?- dif(X,Y),write("#1"),X=foo,write("#2"),(Y=foo;Y=bar).
+#1#2
+X = foo,
+Y = bar.
+```
