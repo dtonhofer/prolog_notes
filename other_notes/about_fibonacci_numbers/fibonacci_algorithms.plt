@@ -26,13 +26,15 @@
 :- debug(fib). % Debug printing on!
 % :- debug(fib_freeze).
 
+
+
 :- begin_tests(fibonacci).
 
-% --- helpers ---
+:- discontiguous fib_algo/3.
 
-the_first_twenty( 
+the_first_twenty(
    [0-0, 1-1, 2-1, 3-2, 4-3, 5-5, 6-8, 7-13, 8-21, 9-34, 10-55,
-    11-89, 12-144, 13-233, 14-377, 15-610, 16-987, 17-1597, 
+    11-89, 12-144, 13-233, 14-377, 15-610, 16-987, 17-1597,
     18-2584, 19-4181]).
 
 the_1001st(N) :-
@@ -60,79 +62,136 @@ collect_pairs(Algo,Max,Result) :-
        fib_algo(Algo,N,F)),
       Result).
 
-% Calling an algorithm by name. 
-
-fib_algo(topdown_tabled                         , N,F) :- !,fib_topdown_tabled(N,F).
-fib_algo(bottomup_two_args_cache                , N,F) :- !,fib_bottomup_two_args_cache(N,F).
-fib_algo(bottomup_dict_full_cache               , N,F) :- !,fib_bottomup_dict_full_cache(N,F,_Cache).
-fib_algo(bottomup_frozen_full_cache             , N,F) :- !,fib_bottomup_frozen_full_cache(N,F,_Cache).
-fib_algo(bottomup_lazylist_cache                , N,F) :- !,fib_bottomup_lazylist_cache(N,F,_Cache).
-fib_algo(topdown_list_cache_ascending           , N,F) :- !,fib_topdown_list_cache_ascending(N,F,_Cache).
-fib_algo(topdown_list_cache_descending          , N,F) :- !,fib_topdown_list_cache_descending(N,F,_Cache).
-fib_algo(topdown_list_cache_descending_cautious , N,F) :- !,fib_topdown_list_cache_descending_cautious(N,F,_Cache).
-fib_algo(topdown_list_cache_descending_debug    , N,F) :- !,fib_topdown_list_cache_descending_debug(N,F,_Cache).
-fib_algo(topdown_list_cache_clpfd               , N,F) :- !,fib_topdown_list_cache_clpfd(N,F,_Cache).
-fib_algo(topdown_dict_cache                     , N,F) :- !,fib_topdown_dict_cache(N,F,_Cache).
-fib_algo(matrixmult                             , N,F) :- !,fib_matrixmult(N,F).
-fib_algo(matrixmult_streamlined                 , N,F) :- !,fib_matrixmult_streamlined(N,F).
-fib_algo(fast_doubling                          , N,F) :- !,fib_fast_doubling(N,F).
-fib_algo(golden_ratio                           , N,F) :- !,fib_golden_ratio(N,F).
-fib_algo(X,_,_)                                        :- existence_error(algorithm_name,X).
+% Calling an algorithm by name.
 
 
-% --- actual tests ---
+
+% ---
+
+fib_algo(topdown_tabled,N,F) :- !,fib_topdown_tabled(N,F).
 
 test("topdown, tabled") :-
    first_few_values(topdown_tabled),
    single_value(topdown_tabled).
 
+% ---
+fib_algo(bottomup_two_args_cache,N,F) :- !,fib_bottomup_two_args_cache(N,F).
+
 test("bottom-up, two-args cache") :-
    first_few_values(bottomup_two_args_cache),
    single_value(bottomup_two_args_cache).
+
+% ---
+
+fib_algo(bottomup_dict_full_cache,N,F) :- !,fib_bottomup_dict_full_cache(N,F,_Cache).
 
 test("bottom-up, cache is a dict, caching fully") :-
    first_few_values(bottomup_dict_full_cache),
    single_value(bottomup_dict_full_cache).
 
+% ---
+
+fib_algo(bottomup_frozen_full_cache,N,F) :- !,fib_bottomup_frozen_full_cache(N,F,_Cache).
+
 test("bottom-up, cache is a list of unbound variables with frozen goals") :-
    first_few_values(bottomup_frozen_full_cache),
    single_value(bottomup_frozen_full_cache).
+
+% ---
+
+fib_algo(bottomup_lazylist_cache,N,F) :- !,fib_bottomup_lazylist_cache(N,F,_Cache).
 
 test("bottom-up, cache is a lazy list (which is open) with a frozen goal on fin") :-
    first_few_values(bottomup_lazylist_cache),
    single_value(bottomup_lazylist_cache).
 
+% ---
+
+fib_algo(topdown_list_cache_ascending,N,F) :- !,fib_topdown_list_cache_ascending(N,F,_Cache).
+
 test("top-down, cache is a list with fib(N) ascending") :-
    first_few_values(topdown_list_cache_ascending),
    single_value(topdown_list_cache_ascending).
+
+% ---
+
+fib_algo(topdown_list_cache_descending,N,F) :- !,fib_topdown_list_cache_descending(N,F,_Cache).
 
 test("top-down, cache is list with fib(N) descending") :-
    first_few_values(topdown_list_cache_descending),
    single_value(topdown_list_cache_descending).
 
+% ---
+
+fib_algo(topdown_list_cache_descending_cautious , N,F) :- !,fib_topdown_list_cache_descending_cautious(N,F,_Cache).
+
 test("top-down, cache is list with fib(N) descending, cautious") :-
    first_few_values(topdown_list_cache_descending_cautious),
    single_value(topdown_list_cache_descending_cautious).
+
+% ---
+
+fib_algo(topdown_list_cache_descending_debug,N,F) :- !,fib_topdown_list_cache_descending_debug(N,F,_Cache).
+
+% ---
+
+fib_algo(topdown_list_cache_clpfd,N,F) :- !,fib_topdown_list_cache_clpfd(N,F,_Cache).
 
 test("top-down, cache is list with fib(N) descending, using constraints") :-
    first_few_values(topdown_list_cache_clpfd),
    single_value(topdown_list_cache_clpfd).
 
+% ---
+
+fib_algo(topdown_dict_cache,N,F) :- !,fib_topdown_dict_cache(N,F,_Cache).
+
 test("top-down, cache is a dict") :-
    first_few_values(topdown_dict_cache),
    single_value(topdown_dict_cache).
 
-test("matrix multiplication") :-
-   first_few_values(matrixmult),
-   single_value(matrixmult).
+% ---
 
-test("matrix multiplication, streamlined") :-
-   first_few_values(matrixmult_streamlined),
-   single_value(matrixmult_streamlined).
+fib_algo(matrixpow,N,F) :- !,fib_matrixpow(N,F).
+
+test("matrix exponentiation") :-
+   first_few_values(matrixpow),
+   single_value(matrixpow).
+
+% ---
+
+fib_algo(matrixpow_streamlined,N,F) :- !,fib_matrixpow_streamlined(N,F).
+
+test("matrix exponentiation, streamlined") :-
+   first_few_values(matrixpow_streamlined),
+   single_value(matrixpow_streamlined).
+
+% ---
+
+fib_algo(fast_doubling,N,F) :- !,fib_fast_doubling(N,F).
 
 test("fast doubling") :-
    first_few_values(fast_doubling),
    single_value(fast_doubling).
+
+% ---
+
+fib_algo(fast_doubling_streamlined,N,F) :- !,fib_fast_doubling_streamlined(N,F).
+
+test("fast doubling, streamlined") :-
+   first_few_values(fast_doubling_streamlined),
+   single_value(fast_doubling_streamlined).
+
+% ---
+
+fib_algo(fast_doubling_standard_compressed,N,F) :- !,fib_fast_doubling_standard_compressed(N,F).
+
+test("fast doubling, standard, compressed") :-
+   first_few_values(fast_doubling_standard_compressed),
+   single_value(fast_doubling_standard_compressed).
+
+% ---
+
+fib_algo(golden_ratio,N,F) :- !,fib_golden_ratio(N,F).
 
 test("golden ratio") :-
    first_few_values(golden_ratio),
@@ -161,18 +220,33 @@ test("Unusual starter values, bottomup, two args cache") :-
       Result),
    assertion(Result == Pairs).
 
-test("Unusual starter values, matrixmult") :-
+test("Unusual starter values, matrixpow") :-
    expected_result(Fib0,Fib1,Pairs,Max),
    bagof(
       N-F,
-      (between(0,Max,N),fib_matrixmult_usv(N,F,Fib0,Fib1)),
+      (between(0,Max,N),fib_matrixpow_usv(N,F,Fib0,Fib1)),
       Result),
    assertion(Result == Pairs).
 
-test("Unusual starter values, matrixmult streamlined") :-
+test("Unusual starter values, matrixpow streamlined") :-
    expected_result(Fib0,Fib1,Pairs,Max),
    bagof(N-F,
-      (between(0,Max,N),fib_matrixmult_streamlined_usv(N,F,Fib0,Fib1)),
+      (between(0,Max,N),fib_matrixpow_streamlined_usv(N,F,Fib0,Fib1)),
+      Result),
+   assertion(Result == Pairs).
+
+test("Unusual starter values, fast doubling") :-
+   expected_result(Fib0,Fib1,Pairs,Max),
+   bagof(
+      N-F,
+      (between(0,Max,N),fib_fast_doubling_usv(N,F,Fib0,Fib1)),
+      Result),
+   assertion(Result == Pairs).
+
+test("Unusual starter values, fast doubling streamlined") :-
+   expected_result(Fib0,Fib1,Pairs,Max),
+   bagof(N-F,
+      (between(0,Max,N),fib_fast_doubling_streamlined_usv(N,F,Fib0,Fib1)),
       Result),
    assertion(Result == Pairs).
 
@@ -182,7 +256,7 @@ test("Unusual starter values, matrixmult streamlined") :-
 % Tests of only the "matrixpow" predicates, which also comput Fibonacci numbers
 % =============================================================================
 
-:- begin_tests(matrixpow).
+:- begin_tests(matrixmanip).
 
 test("matrixpow") :-
    bagof(Power-Result,
@@ -191,42 +265,73 @@ test("matrixpow") :-
          matrixpow(Power, [[1,1],[1,0]], Result)
       ),
       Bag),
-   assertion(Bag == 
-      [0-[[1,0],
-          [0,1]],
-       1-[[1,1],
-          [1,0]],
-       2-[[2,1],
-          [1,1]],
-       3-[[3,2],
-          [2,1]],
-       4-[[5,3],
-          [3,2]],
-       5-[[8,5],
-          [5,3]],
-       6-[[13,8],
-          [8,5]],
-       7-[[21,13],
-          [13,8]],
-       8-[[34,21],
-          [21,13]],
-       9-[[55,34],
-          [34,21]],
-      10-[[89,55],
-          [55,34]],
-      11-[[144,89],
-          [89,55]],
-      12-[[233,144],
-          [144,89]]]).
+   assertion(Bag ==
+      [0-[[1,0],[0,1]],
+       1-[[1,1],[1,0]],
+       2-[[2,1],[1,1]],
+       3-[[3,2],[2,1]],
+       4-[[5,3],[3,2]],
+       5-[[8,5],[5,3]],
+       6-[[13,8],[8,5]],
+       7-[[21,13],[13,8]],
+       8-[[34,21],[21,13]],
+       9-[[55,34],[34,21]],
+      10-[[89,55],[55,34]],
+      11-[[144,89],[89,55]],
+      12-[[233,144],[144,89]]]).
 
-test("matrixpow_streamlined") :-
+test("matrixpow streamlined") :-
    bagof(Power-Result,
       (
          between(0,12,Power),
          matrixpow_streamlined(Power, v(1,0), Result)
       ),
       Bag),
-   assertion(Bag == 
+   assertion(Bag ==
+      [0-v(0,1),
+       1-v(1,0),
+       2-v(1,1),
+       3-v(2,1),
+       4-v(3,2),
+       5-v(5,3),
+       6-v(8,5),
+       7-v(13,8),
+       8-v(21,13),
+       9-v(34,21),
+      10-v(55,34),
+      11-v(89,55),
+      12-v(144,89)]).
+
+test("matrix fast doubling") :-
+   bagof(Power-Result,
+      (
+         between(0,12,Power),
+         matrix_fast_doubling(Power, Result)
+      ),
+      Bag),
+   assertion(Bag ==
+      [0-[[1,0],[0,1]],
+       1-[[1,1],[1,0]],
+       2-[[2,1],[1,1]],
+       3-[[3,2],[2,1]],
+       4-[[5,3],[3,2]],
+       5-[[8,5],[5,3]],
+       6-[[13,8],[8,5]],
+       7-[[21,13],[13,8]],
+       8-[[34,21],[21,13]],
+       9-[[55,34],[34,21]],
+      10-[[89,55],[55,34]],
+      11-[[144,89],[89,55]],
+      12-[[233,144],[144,89]]]).
+
+test("matrix fast doubling streamlined") :-
+   bagof(Power-Result,
+      (
+         between(0,12,Power),
+         matrix_fast_doubling_streamlined(Power, Result)
+      ),
+      Bag),
+   assertion(Bag ==
       [0-v(0,1),
        1-v(1,0),
        2-v(1,1),

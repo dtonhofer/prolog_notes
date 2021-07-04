@@ -1,28 +1,44 @@
 :- module(fibonacci_algorithms,
           [
            fib_topdown_tabled/2
+
           ,fib_bottomup_two_args_cache/2
           ,fib_bottomup_two_args_cache_usv/4
           ,fib_bottomup_dict_full_cache/3
           ,fib_bottomup_frozen_full_cache/3
           ,fib_bottomup_lazylist_cache/3
-          ,fib_matrixmult/2
-          ,fib_matrixmult_usv/4
-          ,fib_matrixmult_streamlined/2
-          ,fib_matrixmult_streamlined_usv/4
+
+          ,fib_matrixpow/2
+          ,fib_matrixpow_usv/4
+
+          ,fib_matrixpow_streamlined/2
+          ,fib_matrixpow_streamlined_usv/4
+
           ,fib_fast_doubling/2
+          ,fib_fast_doubling_usv/4
+
+          ,fib_fast_doubling_streamlined/2
+          ,fib_fast_doubling_streamlined_usv/4
+
+          ,fib_fast_doubling_standard_compressed/2
+
           ,fib_topdown_list_cache_ascending/3
           ,fib_topdown_list_cache_descending/3
           ,fib_topdown_list_cache_descending_debug/3
-          ,fib_topdown_list_cache_descending_cautious/3 
+          ,fib_topdown_list_cache_descending_cautious/3
           ,fib_topdown_list_cache_clpfd/3
           ,fib_topdown_dict_cache/3
           ,retrieve/3
+
           ,matrixpow/3
           ,matrixpow_streamlined/3
+
+          ,matrix_fast_doubling/2
+          ,matrix_fast_doubling_streamlined/2
+
           ,fib_golden_ratio/2
           ]).
- 
+
 :- use_module(library(clpfd)).
 
 /*  Zero-Clause BSD (0BSD) follows (https://opensource.org/licenses/0BSD)
@@ -49,14 +65,12 @@
 %
 % The idea for the lazy list comes from
 % http://rosettacode.org/wiki/Fibonacci_sequence#Prolog
-% 
+%
 % TODO:
-% 
+%
 % - Add a CHR example
 % - How to collect performance info and graph it, in repeatable fashion?
-% - Add "double fibonacci" from 
-%     https://muthu.co/fast-nth-fibonacci-number-algorithm/
-% - Add "linear algebra fibonacci" which uses the eigenvectors of the 
+% - Add "linear algebra fibonacci" which uses the eigenvectors of the
 %   [[1 1][1 0]] transformation matrix to get a closed formula
 %     https://stackoverflow.com/questions/38445069/fast-fibonacci-computation/41771104#41771104
 %     https://stackoverflow.com/questions/67972830/prolog-finding-the-nth-fibonacci-number-using-accumulators/
@@ -69,9 +83,9 @@ const(fib1,1).
 
 % -----------------------------------------------------------------------------
 % Naive implementation: a direct implementation, top-down, of the definition
-% fib(x) = fib(x-1) + fib(x-2)), but predicate fib_topdown_naive/2 is 
+% fib(x) = fib(x-1) + fib(x-2)), but predicate fib_topdown_naive/2 is
 % "tabled" (aka. "memoized", i.e. Prolog caches the predicate call results)
-% to make this approach viable. 
+% to make this approach viable.
 %
 % ?- fib_topdown_tabled(10,F).
 % F = 55.
@@ -85,15 +99,15 @@ fib_topdown_tabled(N,F) :-
    NA is N-1, fib_topdown_tabled(NA,FA),
    NB is N-2, fib_topdown_tabled(NB,FB),
    F is FA + FB.
-fib_topdown_tabled(1,Fib1) :- 
+fib_topdown_tabled(1,Fib1) :-
    const(fib1,Fib1),
    !.
-fib_topdown_tabled(0,Fib0) :- 
+fib_topdown_tabled(0,Fib0) :-
    const(fib0,Fib0).
 
 % -----------------------------------------------------------------------------
 % Proceed bottom-up, with a cache consisting of two additional arguments
-% (in effect, an accumulator that is a pair of arguments). 
+% (in effect, an accumulator that is a pair of arguments).
 %
 % ?- fib_bottomup_two_args(10,F).
 % F = 55.
@@ -125,7 +139,7 @@ up(X,N,FA,FB,F) :-
 up(N,N,_,F,F).
 
 % -----------------------------------------------------------------------------
-% Exactly as fib_bottomup_two_args/2, but you can specify your own fib(0) and 
+% Exactly as fib_bottomup_two_args/2, but you can specify your own fib(0) and
 % fib(1). "usv" stands for "unusual starter values".
 % -----------------------------------------------------------------------------
 
@@ -143,7 +157,7 @@ fib_bottomup_two_args_cache_usv(0,Fib0,Fib0,_Fib1).
 % in the cache, so this is the way to go if you want to keep that map around
 % for later. Alternatively, you could just keep the "latest two elements"
 % in the dict, thus having the same case as for fib_bottmup_two_args_cache/2.
-% 
+%
 % ?- fib_bottomup_dict_full_cache(10,F,Cache).
 % F = 55,
 % Cache = cache{0:0,1:1,2:1,3:2,4:3,5:5,6:8,7:13,8:21,9:34,10:55}.
@@ -176,12 +190,12 @@ up_dict(1,0,Cache,Cache).        % special case if 0 is queried
 
 % -----------------------------------------------------------------------------
 % Proceed bottom-up by defining a N+1-sized list of vars, with
-% a frozen goal to compute fib(X) on the variable at place X for every 
+% a frozen goal to compute fib(X) on the variable at place X for every
 % X > 1. Once that has been done, we bind the variables at places 0 and 1
-% and the frozen goals unfreeze in sequence for higher and higher X. 
+% and the frozen goals unfreeze in sequence for higher and higher X.
 %
 % I'm not sure when this way of doing it would be useful; this is actually
-% the same as what happens when using CLP(FD), but without using the 
+% the same as what happens when using CLP(FD), but without using the
 % correct abstraction.
 %
 % ?- fib_bottomup_frozen_full_cache(10,Fib10,Cache).
@@ -252,22 +266,22 @@ fib_bottomup_frozen_full_cache(N,F,Cache) :-
 fib_bottomup_frozen_full_cache(1,Fib1,[Fib0,Fib1]) :-
    const(fib0,Fib0),
    const(fib1,Fib1).
-fib_bottomup_frozen_full_cache(0,Fib0,[Fib0]) :- 
+fib_bottomup_frozen_full_cache(0,Fib0,[Fib0]) :-
    const(fib0,Fib0).
 
-setup_frozen_cache([FA,FB,FC|More]) :-   
+setup_frozen_cache([FA,FB,FC|More]) :-
    freeze(
       FB, % "trigger" variable: once FB is known, compute FC from FA and FB
       (
         debug(fib_freeze,"Unfrozen: FB = ~d",[FB]),
         (FC is FA+FB)
       )
-   ), 
+   ),
    setup_frozen_cache([FB,FC|More]).
-setup_frozen_cache([_,_]). 
+setup_frozen_cache([_,_]).
 
 % -----------------------------------------------------------------------------
-% Proceed "bottom-up" with a "lazy list" as cache. The "lazy list" is an 
+% Proceed "bottom-up" with a "lazy list" as cache. The "lazy list" is an
 % open list that has a frozen goal to compute the next list entry on its "fin".
 %
 %        [|]
@@ -280,7 +294,7 @@ setup_frozen_cache([_,_]).
 %                /   \
 %               2     ~  <--- Fin as an empty cell,
 %                             with frozen goal bll_frozen(1,2,Fin)
-%                             to compute fib(4) and unify ~ with a 
+%                             to compute fib(4) and unify ~ with a
 %                             new listcell
 %
 % This representation is great as one may choose to drop old list parts
@@ -289,8 +303,8 @@ setup_frozen_cache([_,_]).
 %
 % Retrieving a member of the list using nth0(N,Cache,F) causes unification of
 % the unbound "Fin" with a new listbox [_|_]. This thaws the goal on the
-% "Fin", which then computes the next Fibonacci number, unifies it with the 
-% first argument of the listbox and then sets up a new frozen goal on the 
+% "Fin", which then computes the next Fibonacci number, unifies it with the
+% first argument of the listbox and then sets up a new frozen goal on the
 % second argument of the listbox, which is the new "Fin" of the lazy list.
 %
 % It is not directly evident why this works with nth0/3, so a replacement
@@ -331,7 +345,7 @@ setup_frozen_cache([_,_]).
 % Note that for call to retrieve/3, where K==N, the same debug message is issued
 % twice. This is because "retrieve_3(K,N,[_|More],F)" is attempted first, leading to
 % thawing, but then a rollback is issued due to K<N, and the frozen goal is
-% reinstated. The second clause "retrieve_3(N,N,[F|_],F)" is then attempted, 
+% reinstated. The second clause "retrieve_3(N,N,[F|_],F)" is then attempted,
 % leading to the same thawing. Side-effects in Prolog: interesting.
 %
 % This approach allows you to widen the cache on request, too. For example,
@@ -355,7 +369,7 @@ fib_bottomup_lazylist_cache(N,F,Cache) :-
       Fin,
       bll_frozen(Fib0,Fib1,Fin)),
    debug(fib_bll,"At this point, the cache just contains: ~q",Cache),
-   % nth0(N,Cache,F). % works too, but let's use retrieve/3 
+   % nth0(N,Cache,F). % works too, but let's use retrieve/3
    retrieve(N,Cache,F).
 
 bll_frozen(FA,FB,Fin) :-
@@ -376,7 +390,7 @@ retrieve(N,Cache,F) :-
 retrieve_2(K,N,Cache,F) :-
    (var(Cache)
     -> debug(fib_bll,"At K = ~d, N = ~d, Will call unification with a listbox that will unfreeze the goal",[K,N])
-    ;  debug(fib_bll,"At K = ~d, N = ~d, No unfreeze at this point",[K,N])), 
+    ;  debug(fib_bll,"At K = ~d, N = ~d, No unfreeze at this point",[K,N])),
    retrieve_3(K,N,Cache,F).
 
 retrieve_3(K,N,[_|More],F) :-
@@ -387,70 +401,91 @@ retrieve_3(K,N,[_|More],F) :-
 retrieve_3(N,N,[F|_],F).
 
 % -----------------------------------------------------------------------------
-% This algorithm based on a post by "Mostowski Collapse" at
-% https://stackoverflow.com/questions/67972830/prolog-finding-the-nth-fibonacci-number-using-accumulators/
-% which references
-% https://kukuruku.co/post/the-nth-fibonacci-number-in-olog-n/ 
+% This one is based on a matrix identity provided by Donald Knuth
+% (in Donald E. Knuth. The Art of Computer Programming. Volume 1. Fundamental
+%  Algorithms, page 80 of the second edition.) See also
+% https://kukuruku.co/post/the-nth-fibonacci-number-in-olog-n/
 %
-% The original code is licensed by StackOverflow as CC BY-SA 4.0
-% according to https://stackoverflow.com/legal/terms-of-service#licensing
+% Let U be the following matrix:
 %
-% Modified to follow the definition and not assume that fib(0) = 0, fib(1) = 1.
-% 
-% The principle is based on a matrix identity provided by Donald Knuth 
-% (in Donald E. Knuth. The Art of Computer Programming. Volume 1. Fundamental 
-%  Algorithms, page 80 of the second edition.)
+%     [ 1  1 ]
+% U = [      ]
+%     [ 1  0 ]
 %
-% For n >= 1 and the standard Fibonacci sequence:
+% Let F_{k} be the matrix:
+%
+%         [ fib(k)     fib(k-1) ]
+% F_{k} = [                     ]
+%         [ fib(k-1)   fib(k-2) ]
+%
+% If we are working with the standard Fibonacci sequence starting with
+% fib(0) = 0, fib(1) = 1, we notice that for n >= 1:
 %
 %                                 n
 % [ fib(n+1) fib(n)   ]   [ 1  1 ]
 % [                   ] = [      ]
 % [ fib(n)   fib(n-1) ]   [ 1  0 ]
 %
-% But if we work with a non-standard Fibonacci sequence where we have no 
-% assurance that fib(0)=0 and fib(1)=1 then for n >= 1 (a power of 0 on
-% the right-hand matrix yields the identity matrix):
+% i.e.
+%             n
+% F_{n+1} = U
 %
-%                                                      n-1
-% [ fib(n+1) fib(n)   ]   [ fib(2) fib(1) ]   [ 1  1 ]
-% [                   ] = [               ] * [      ]
-% [ fib(n)   fib(n-1) ]   [ fib(1) fib(0) ]   [ 1  0 ]
+% If we work with a non-standard Fibonacci sequence where we have no
+% assurance that fib(0)=0 and fib(1)=1, we can define the "starter matrix":
 %
-% Note that it is unimportant whether we multiply on the left of right
-% because the two matrixes are symmetric matrixes of real numbers and the
-% product is symmetric, so these matrixes must commute: to see why, take the 
+%     [ fib(2) fib(1) ]
+% S = [               ] = F_{2}
+%     [ fib(1) fib(0) ]
+%
+% then for n >= 1
+%
+%                 n-1
+% F_{n+1} = S * U
+%
+% for n=1, U^0 yields the identity matrix.
+%
+% Note that it is unimportant whether we multiply S with U^(n-1) on the left
+% of right: the two matrixes are symmetric matrixes of real numbers and the
+% product is symmetric, so these matrixes must commute: to see why, take the
 % transpose on each side.
 %
-% This algorithm is actually O(log(N)): it doesn't care about computing
-% all the intermediate values the O(N) algorithms compute. It goes directly
-% from the constants fib(0), fib(1) to the result after computing the 
-% matrix to apply. 
+% No we just need a fast way of computing U^(n-1), n >= 1.
+%
+% In this case, this is done by recursively squaring the matrix, halving the
+% exponent and then doing a recursive call:
+%
+% U^w -> (U^2)^(w/2)
+%     -> ((U^2)^2)^(w/4)
+%     -> ..
+%     -> ((((U^2)^2)^2)...^2)^1
+%
+% with appropriate adjustements if w happens to not be k^2.
+%
+% This gives a tail recursive scheme.
+%
+% One could also compute (U^(w/2))^2 but that would not be tail recursive.
+% That approach is taken in "fast doubling" (see below)
+%
+% At the end, we just need to multiply with S.
+%
+% This algorithm is O(log(n)) as it doesn't care about computing the long
+% sequence of intermediate values towards fib(n).
 %
 % Note the call to matrixpow/3:
 %
-% First argument is the power we want to apply, Pow >= 0
-% Second argument is the standard Fibonacci sequence start matrix [ 1  1 ] 
-% with fib(2) top left.                                           [ 1  0 ]
-% Initially, the accumulator is the identity matrix.
-%                    
-% The PowMx result is a symmetric matrix, and is the identity matrix for 
-% Pow = 0 and otherwise for Pow > 0 a matrix with standard Fibonacci numbers:
+% First argument is the power we want to apply, Pow >= 0.
+% Second argument is U.
+% Third argument is the accumulator, initially is the identity matrix.
 %
-% [ fib(n)   fib(n-1) ]
-% [ fib(n-1) fib(n-2) ], where n = Pow+1
+% Evident special case:
 %
-% Taking a matrix Mx to the Pow-th power is done by recursively computing 
-% (Mx^2)^(Pow//2) with 1 additional multiplication by Mx for odd N. 
-% This gives a tail recursive scheme. One could also compute (Mx^(Pow//2))^2
-% but that would not be tail recursive.
-%
-% If your starter matrix is sure to be `[[1,1],[1,0]]` you can collapse the
-% two operations matrixpow/3 followed by matrixmult/3 in the main predicate
-% into a single call to matrixpow/3.
+% If your starter matrix is U (standard Fibonacci sequence),
+% you can collapse the two operations matrixpow/3 followed by matrixmult/3
+% in the main predicate into a single call to matrixpow/3, leading to
+% simpler code.
 % -----------------------------------------------------------------------------
 
-fib_matrixmult(N,F) :-
+fib_matrixpow(N,F) :-
    N>=1,
    !,
    Pow is N-1,
@@ -460,34 +495,38 @@ fib_matrixmult(N,F) :-
    matrixpow(
       Pow,
       [[1,1],[1,0]],
-      PowMx),        
+      PowMx),
    matrixmult(
       [[Fib2,Fib1],[Fib1,Fib0]],
       PowMx,
       [[_,F],[F,_]]).
-fib_matrixmult(0,Fib0) :-
+fib_matrixpow(0,Fib0) :-
    const(fib0,Fib0).
+
+% ---
+% The helpers
+% ---
 
 matrixpow(Pow, Mx, Result) :-
    matrixpow_2(Pow, Mx, [[1,0],[0,1]], Result).
 
-matrixpow_2(Pow, Mx, Accum, Result) :- 
+matrixpow_2(Pow, Mx, Accum, Result) :-
    Pow > 0,
-   Pow mod 2 =:= 1, 
+   Pow mod 2 =:= 1,
    !,
-   matrixmult(Mx, Accum, NewAccum), 
+   matrixmult(Mx, Accum, NewAccum),
    Powm is Pow-1,
-   matrixpow_2(Powm, Mx, NewAccum, Result). 
-matrixpow_2(Pow, Mx, Accum, Result) :- 
+   matrixpow_2(Powm, Mx, NewAccum, Result).
+matrixpow_2(Pow, Mx, Accum, Result) :-
    Pow > 0,
    Pow mod 2 =:= 0,
    !,
-   HalfPow is Pow div 2, 
-   matrixmult(Mx, Mx, MxSq), 
+   HalfPow is Pow div 2,
+   matrixmult(Mx, Mx, MxSq),
    matrixpow_2(HalfPow, MxSq, Accum, Result).
 matrixpow_2(0, _, Accum, Accum).
 
-matrixmult([[A11,A12],[A21,A22]], 
+matrixmult([[A11,A12],[A21,A22]],
            [[B11,B12],[B21,B22]],
            [[C11,C12],[C21,C22]]) :-
    C11 is A11*B11+A12*B21,
@@ -496,42 +535,38 @@ matrixmult([[A11,A12],[A21,A22]],
    C22 is A21*B12+A22*B22.
 
 % -----------------------------------------------------------------------------
-% Exactly as fib_matrixmult/2, but you can specify your own fib(0) and 
+% Exactly as fib_matrixpow/2, but you can specify your own fib(0) and
 % fib(1). "usv" stands for "unusual starter values".
 % -----------------------------------------------------------------------------
 
-fib_matrixmult_usv(N,F,Fib0,Fib1) :-
+fib_matrixpow_usv(N,F,Fib0,Fib1) :-
    N>=1,
    !,
    Pow is N-1,
    Fib2 is Fib0+Fib1,
    matrixpow(
       Pow,
-      [[1,1],[1,0]], 
+      [[1,1],[1,0]],
       PowMx),
    matrixmult(
       [[Fib2,Fib1],[Fib1,Fib0]],
       PowMx,
       [[_,F],[F,_]]).
-fib_matrixmult_usv(0,Fib0,Fib0,_Fib1).
+fib_matrixpow_usv(0,Fib0,Fib0,_Fib1).
 
 % -----------------------------------------------------------------------------
-% This is a reformulation of fib_bottomup_matrixmult, using vectors to 
-% get rid of redundant computations.
+% This is a reformulation of fib_matrixpow/2, using vectors to get rid of
+% redundant computations present in matrix multiplication.
 %
 % This algorithm based on a post by "Mostowski Collapse" at
 % https://stackoverflow.com/questions/67972830/prolog-finding-the-nth-fibonacci-number-using-accumulators/
 %
-% The original code is licensed by StackOverflow as CC BY-SA 4.0
-% according to https://stackoverflow.com/legal/terms-of-service#licensing
+% Use the fact that all the matrices involved in multiplications are
+% symmetric and actually hold (standard) Fibonacci numbers:
 %
-% The idea is to get rid of redundant operations in matrixmult/3, by using
-% the fact that all our matrices are symmetric and actually hold Fibonacci
-% numbers:
-%
-% [ fib(n+1)  fib(n)   ]
-% [                    ]
-% [ fib(n)    fib(n-1) ]
+%           [ fib(n+1)  fib(n)   ]
+% F_{n+1} = [                    ]
+%           [ fib(n)    fib(n-1) ]
 %
 % So, if we multiply matrices A and B to yield C, we always have something
 % of this form (even in the starter case where B is the identity matrix):
@@ -543,20 +578,18 @@ fib_matrixmult_usv(0,Fib0,Fib0,_Fib1).
 % We can just retain the second columns of each matrix w/o loss of
 % information. The operation between these vectors is not some
 % standard operation like multiplication, let's mark it with ><:
-
-% We can just retain the second columns of each matrix w/o loss of info:
 %
-% [ A1 ]    [ B1 ]   [ C1 ] 
-% [    ] >< [    ] = [    ] 
+% [ A1 ]    [ B1 ]   [ C1 ]
+% [    ] >< [    ] = [    ]
 % [ A2 ]    [ B2 ]   [ C2 ]
 %
 % where:
 %
-% C1 = B1*(A1+A2) + B2*A1 or A1*(B1+B2) + A2*B1
+% C1 = B1*(A1+A2) + B2*A1 = A1*(B1+B2) + A2*B1
 % C2 = A1*B1 + A2*B2
 % -----------------------------------------------------------------------------
 
-fib_matrixmult_streamlined(N,F) :-
+fib_matrixpow_streamlined(N,F) :-
    N>=1,
    !,
    Pow is N-1,
@@ -570,38 +603,42 @@ fib_matrixmult_streamlined(N,F) :-
       v(Fib1,Fib0),
       PowVec,
       v(F,_)).
-fib_matrixmult_streamlined(0,Fib0) :-
+fib_matrixpow_streamlined(0,Fib0) :-
    const(fib0,Fib0).
+
+% ---
+% The helpers
+% ---
 
 matrixpow_streamlined(Pow, Vec, Result) :-
    matrixpow_streamlined_2(Pow, Vec, v(0,1), Result).
 
-matrixpow_streamlined_2(Pow, Vec, Accum, Result) :- 
+matrixpow_streamlined_2(Pow, Vec, Accum, Result) :-
    Pow > 0,
-   Pow mod 2 =:= 1, 
+   Pow mod 2 =:= 1,
    !,
-   matrixmult_streamlined(Vec, Accum, NewAccum), 
+   matrixmult_streamlined(Vec, Accum, NewAccum),
    Powm is Pow-1,
-   matrixpow_streamlined_2(Powm, Vec, NewAccum, Result). 
-matrixpow_streamlined_2(Pow, Vec, Accum, Result) :- 
+   matrixpow_streamlined_2(Powm, Vec, NewAccum, Result).
+matrixpow_streamlined_2(Pow, Vec, Accum, Result) :-
    Pow > 0,
    Pow mod 2 =:= 0,
    !,
-   HalfPow is Pow div 2, 
-   matrixmult_streamlined(Vec, Vec, VecVec), 
+   HalfPow is Pow div 2,
+   matrixmult_streamlined(Vec, Vec, VecVec),
    matrixpow_streamlined_2(HalfPow, VecVec, Accum, Result).
 matrixpow_streamlined_2(0, _, Accum, Accum).
 
 matrixmult_streamlined(v(A1,A2),v(B1,B2),v(C1,C2)) :-
-   C1 is A1*(B1+B2) + A2*B1, 
+   C1 is A1*(B1+B2) + A2*B1,
    C2 is A1*B1 + A2*B2.
 
 % -----------------------------------------------------------------------------
-% Exactly as fib_matrixmult_streamlined/2, but you can specify your own fib(0) 
+% Exactly as fib_matrixpow_streamlined/2, but you can specify your own fib(0)
 % and fib(1). "usv" stands for "unusual starter values".
 % -----------------------------------------------------------------------------
 
-fib_matrixmult_streamlined_usv(N,F,Fib0,Fib1) :-
+fib_matrixpow_streamlined_usv(N,F,Fib0,Fib1) :-
    N>=1,
    !,
    Pow is N-1,
@@ -613,24 +650,168 @@ fib_matrixmult_streamlined_usv(N,F,Fib0,Fib1) :-
       v(Fib1,Fib0),
       PowVec,
       v(F,_)).
-fib_matrixmult_streamlined_usv(0,Fib0,Fib0,_Fib1).
+fib_matrixpow_streamlined_usv(0,Fib0,Fib0,_Fib1).
 
 % -----------------------------------------------------------------------------
-% This is a reformulation of fib_bottomup_powvec by "slago" at
-% https://stackoverflow.com/questions/67972830/prolog-finding-the-nth-fibonacci-number-using-accumulators/
+% This is a reformulation of fib_matrixpow/2. Here, the fast exponentiation of
+% U is carried out by halving the exponent, doing a recursive call and then
+% squaring the result
 %
-% This is called "fast doubling" (see https://www.nayuki.io/page/fast-fibonacci-algorithms)
+% U^w -> (U^(w/2))^2
+%     -> ((U^(w/4))^2)^2
+%     -> ..
+%     -> (((U^1)^2)^2) ...)^2
 %
-% The original code is licensed by StackOverflow as CC BY-SA 4.0
-% according to https://stackoverflow.com/legal/terms-of-service#licensing
-%  -----------------------------------------------------------------------------
+% with appropriate adjustements if w happens to be odd.
+%
+% This gives a **non-tail recursive scheme**. Note that we don't need to pass
+% the U going "down" - it is a constant that can be encoded in the base case.
+%
+% This approach is called "fast doubling" (and there is a streamlined
+% form of it, too, see below).
+%
+% See for example:
+% https://www.nayuki.io/page/fast-fibonacci-algorithms
+% https://muthu.co/fast-nth-fibonacci-number-algorithm/
+% -----------------------------------------------------------------------------
 
-fib_fast_doubling(0,0) :- !.
 fib_fast_doubling(N,F) :-
-    fastfast(N, [_,F]).
+   N>=1,
+   !,
+   Pow is N-1,
+   const(fib0,Fib0),
+   const(fib1,Fib1),
+   Fib2 is Fib0+Fib1,
+   matrix_fast_doubling(Pow,UPow),
+   matrixmult(
+      [[Fib2,Fib1],[Fib1,Fib0]],
+      UPow,
+      [[_,F],[F,_]]).
+fib_fast_doubling(0,Fib0) :-
+   const(fib0,Fib0).
 
-fastfast(1, [0, 1]) :- !.
+% ---
+% The helpers
+% ---
+
+matrix_fast_doubling(Pow,UPow) :-
+   Pow > 1,
+   !,
+   HalfPow is Pow div 2,
+   matrix_fast_doubling(HalfPow,X1),
+   matrixmult(X1,X1,X2), % squaring
+   (
+      (Pow mod 2 =:= 1)
+      ->
+      matrixmult([[1,1],[1,0]],X2,UPow)
+      ;
+      UPow=X2
+   ).
+matrix_fast_doubling(1,[[1,1],[1,0]]).
+matrix_fast_doubling(0,[[1,0],[0,1]]).
+
+% -----------------------------------------------------------------------------
+% Exactly as fib_fast_doubling/2, but you can specify your own fib(0) and
+% fib(1). "usv" stands for "unusual starter values".
+% -----------------------------------------------------------------------------
+
+fib_fast_doubling_usv(N,F,Fib0,Fib1) :-
+   N>=1,
+   !,
+   Pow is N-1,
+   Fib2 is Fib0+Fib1,
+   matrix_fast_doubling(Pow,UPow),
+   matrixmult(
+      [[Fib2,Fib1],[Fib1,Fib0]],
+      UPow,
+      [[_,F],[F,_]]).
+fib_fast_doubling_usv(0,Fib0,Fib0,_Fib1).
+
+% -----------------------------------------------------------------------------
+% This is the streamlined version of "fast doubling", where we get rid of
+% redundant computations in matrix multiplications.
+%
+% Use the fact that all the matrices involved in multiplications are
+% symmetric and actually hold (standard) Fibonacci numbers:
+%
+%           [ fib(n+1)  fib(n)   ]
+% F_{n+1} = [                    ]
+%           [ fib(n)    fib(n-1) ]
+%
+% So, if we square matrix A to yield C, we always have something of this form:
+%
+% [ A1+A2  A1 ]   [ A1+A2  A1 ]   [ C1+C2  C1 ]
+% [           ] * [           ] = [           ]
+% [ A1     A2 ]   [ A1     A2 ]   [ C1     C2 ]
+%
+% We can just retain the second columns of each matrix w/o loss of
+% information. The operation between these vectors is not some
+% standard operation like multiplication, let's mark it with ><:
+%
+% [ A1 ]    [ A1 ]   [ C1 ]
+% [    ] >< [    ] = [    ]
+% [ A2 ]    [ A2 ]   [ C2 ]
+%
+% where:
+%
+% C1 = A1^2 + 2*A1*A2
+% C2 = A1^2 + A2^2
+% -----------------------------------------------------------------------------
+
+fib_fast_doubling_streamlined(N,F) :-
+   N>=1,
+   !,
+   Pow is N-1,
+   const(fib0,Fib0),
+   const(fib1,Fib1),
+   matrix_fast_doubling_streamlined(Pow,UPow),
+   matrixmult_streamlined(v(Fib1,Fib0),UPow,v(F,_)).
+fib_fast_doubling_streamlined(0,Fib0) :-
+   const(fib0,Fib0).
+
+% ---
+% The helpers.
+% ---
+
+matrix_fast_doubling_streamlined(Pow,UPow) :-
+   Pow > 1,
+   !,
+   HalfPow is Pow div 2,
+   matrix_fast_doubling_streamlined(HalfPow,X1),
+   matrixsq_streamlined(X1,X2),
+   (
+      (Pow mod 2 =:= 1)
+      ->
+      matrixmult_with_U_streamlined(X2,UPow)
+      ;
+      UPow=X2
+   ).
+matrix_fast_doubling_streamlined(1,v(1,0)).
+matrix_fast_doubling_streamlined(0,v(0,1)).
+
+matrixsq_streamlined(v(A1,A2),v(C1,C2)) :-
+   C1 is A1*A1 + 2*A1*A2,
+   C2 is A1*A1 + A2*A2.
+
+% This is an optimized matrixmult_streamlined(v(1,0),B,C)
+
+matrixmult_with_U_streamlined(v(B1,B2),v(C1,C2)) :-
+   C1 is B1+B2,
+   C2 is B1.
+
+% -----------------------------------------------------------------------------
+% Compressed code for "fast doubling" for the standard Fibonacci sequence.
+% -----------------------------------------------------------------------------
+
+fib_fast_doubling_standard_compressed(N,F) :-
+    N>0,
+    !,
+    fastfast(N, [_,F]).
+fib_fast_doubling_standard_compressed(0,0).
+
 fastfast(N, R) :-
+    N > 1,
+    !,
     M is N // 2,
     fastfast(M, [A, B]),
     F1 is A^2   + B^2,
@@ -639,6 +820,20 @@ fastfast(N, R) :-
     ->  R = [F1, F2]
     ;   F3 is F1 + F2,
         R = [F2, F3]   ).
+fastfast(1, [0, 1]).
+
+% -----------------------------------------------------------------------------
+% Exactly as fib_fast_doubling_streamlined/2, but you can specify your own
+% fib(0) and fib(1). "usv" stands for "unusual starter values".
+% -----------------------------------------------------------------------------
+
+fib_fast_doubling_streamlined_usv(N,F,Fib0,Fib1) :-
+   N>=1,
+   !,
+   Pow is N-1,
+   matrix_fast_doubling_streamlined(Pow,UPow),
+   matrixmult_streamlined(v(Fib1,Fib0),UPow,v(F,_)).
+fib_fast_doubling_streamlined_usv(0,Fib0,Fib0,_Fib1).
 
 % -----------------------------------------------------------------------------
 % Proceed "top-down", using a preallocated list of length N+1 as cache.
@@ -648,7 +843,7 @@ fastfast(N, R) :-
 % We could set up a special case for fib(0) and fib(1) to keep the cache
 % at length 1 and 2 respectively, but we don't bother. The cache will
 % always have at least length 2.
-% 
+%
 % ?- fib_topdown_list_cache_ascending(10,Fib10,Cache).
 % Fib10 = 55,
 % Cache = [0,1,1,2,3,5,8,13,21,34,55].
@@ -664,14 +859,14 @@ fib_topdown_list_cache_ascending(N,F,Cache) :-
 
 fill_FTLCA(N,F,Cache) :-
    nth0(N,Cache,F), % this certainly has a cost for high N
-   (var(F) 
-    -> 
+   (var(F)
+    ->
     (
-       NA is N-1, fill_FTLCA(NA,FA,Cache),    
+       NA is N-1, fill_FTLCA(NA,FA,Cache),
        % this call is always just retrieval and can be coded as such
-       % NB is N-2, fill_FTLCA(NB,FB,Cache), 
+       % NB is N-2, fill_FTLCA(NB,FB,Cache),
        NB is N-2, nth0(NB,Cache,FB),
-       F is FA+FB   
+       F is FA+FB
     )
     ;
     true
@@ -698,9 +893,9 @@ down_dict(N,Cache,Cache) :-
    get_dict(N,Cache,_F),  % success, the value already exists in the cache
    !.
 down_dict(N,Cache,CacheFinal) :-
-   NA is N-1, down_dict(NA,Cache,Cache2), 
+   NA is N-1, down_dict(NA,Cache,Cache2),
    % the next call is not needed and can be replaced by a simple lookup
-   % NB is N-2, down_dict(NB,Cache2,Cache3), 
+   % NB is N-2, down_dict(NB,Cache2,Cache3),
    NB is N-2, Cache3 = Cache2,
    FC is Cache3.NA + Cache3.NB,      % retrieve from cache using . notation
    put_dict(N,Cache3,FC,CacheFinal). % build new dict with new N:FC mapping
@@ -755,7 +950,7 @@ fill_FTLCD_cautious(1,[Fib1|More]) :-
    fill_FTLCD_cautious(0,More). % no use trying to avoid this call
 fill_FTLCD_cautious(N,[F,FA,FB|More]) :-
    assertion(var(F)),
-   (var(FA) -> 
+   (var(FA) ->
       ( NA is N-1, fill_FTLCD_cautious(NA,[FA,FB|More]) )
       ; true),
    F is FA+FB.
@@ -765,7 +960,7 @@ fill_FTLCD_cautious(N,[F,FA,FB|More]) :-
 %
 % 1) Prints output using debug/3
 % 2) The x values are maintained in the the list, too.
-% 
+%
 % This generates output that is nice to look at:
 %
 % ?- fib_topdown_list_cache_descending_debug(6,F,Cache).
@@ -835,12 +1030,12 @@ fill_FTLCD(N,OverallN,[fib(N,F),fib(NA,FA),fib(NB,FB)|More]) :-
 % -----------------------------------------------------------------------------
 
 fib_topdown_list_cache_clpfd(N,F,Cache) :-
-   M is N+1, 
+   M is N+1,
    length(Cache,M),            % allocate cache fully
    setup_constraints(Cache),
    Cache=[F|_].                % pick up solution
 
-setup_constraints([Fib0]) :-     % covers the case of N=0 
+setup_constraints([Fib0]) :-     % covers the case of N=0
    const(fib0,Fib0).
 setup_constraints([Fib1,Fib0]) :-  % set up start of list & ground constraint network
    const(fib0,Fib0),
@@ -848,9 +1043,9 @@ setup_constraints([Fib1,Fib0]) :-  % set up start of list & ground constraint ne
 setup_constraints([F,FA,FB|More]) :-
    F #= FA+FB,
    setup_constraints([FA,FB|More]).
- 
+
 % -----------------------------------------------------------------------------
-% Another one by Mostowski Collapse. This should be the "linear algebra" 
+% Another one by Mostowski Collapse. This should be the "linear algebra"
 % approach (to be confirmed)
 % -----------------------------------------------------------------------------
 
@@ -860,15 +1055,15 @@ fib_golden_ratio(N, S) :-
    S is (X-Y)//2^N.
 
 powrad(0, _, R, R) :- !.
-powrad(N, A, R, S) :- 
+powrad(N, A, R, S) :-
    N rem 2 =\= 0, !,
-   mulrad(A, R, H), 
-   M is N//2, 
-   mulrad(A, A, B), 
+   mulrad(A, R, H),
+   M is N//2,
+   mulrad(A, A, B),
    powrad(M, B, H, S).
 powrad(N, A, R, S) :-
-   M is N//2, 
-   mulrad(A, A, B), 
+   M is N//2,
+   mulrad(A, A, B),
    powrad(M, B, R, S).
 
 mulrad((A,B),(C,D),(E,F)) :-
