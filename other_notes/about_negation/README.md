@@ -612,6 +612,46 @@ Abstract:
    
 ![LNCS 764 Cover](pics/cover_LNCS764.png)
 
+Page 8:
+
+> While in many (rather academic) approaches knowledge is represented as a set of arbitrary first-order formulas,
+> a vivid approach seeks for inference systems based on appropriately restricted query and representation languages,
+> thus taking into account the trade-off between expressiveness and efficiency. Both RDBs and DDBs can be considered
+> as paradigms of real world knowledge representation. They implement a form of nonmonotonic reasoning caused by 
+> the use of negation-as-failure which deals with implicit negative information. 
+> 
+> (In the literature an RDB is 
+> sometimes considered to specify a classical first-order model. According to this view database tables are complete
+> specifications of two-valued relations, and negation in database queries is classical negation, i.e. there is no
+> nomnonotonicity. Since the dynamics of information change cannot be captured by classical two-valued models, and
+> since it seems to be a gross overidealization to assume database tables to be always complete (...), a syntactic
+> interpretation of RDBs as a set of ground atoms is certainly more adequate, and more natural.)
+>
+> Although this negation operation clearly violates the semantics of classical standard logic, various attempts
+> have been made to explain it in the framework of classical semantics, such as the completion semantics of Clark (1978).
+> As Sheperdson already noticed, besides other shortcomings the completion semantics blatantly violates the WYSIWYM
+> (What You See Is What You Mean) principle.
+> 
+> The handling of negative information in databases and logic programs has turned out to be one of the biggest
+> problems both practically and theoretically. Negation-as-failure allows for the querying and processing of
+> implicit negative information only. It is not able to take care of explicit negative information. Although
+> several authors have attempted to justify the restriction of the representation language to positive information, 
+> this is questioned today.
+> 
+> (There seems to be no clear attitude towards the role of falsity, negative information and negation among AI
+> researchers. For example, _Przymusinski 1989_ states that logic programs and deductive databases should be 
+> "free from excessive amounts of explicit negative information and as close to natural discourse as possible". 
+> And in _Rajasekar, Lobo & Minker 1989_ it is maintained, that "explicit representation of negative information
+> in logic programs is not feasible in many applications such as deductive databases and artificial intelligence".
+> These statements are obviously questionable. First, logic programs and deductive databases do not usually 
+> permit one to represent explicit negative information at all. Secondly, explicit negative information clearly
+> plays an important role in natural discourse, and hence, should be taken into consideration in vivid knowledge
+> bases, deductive databases and logic programs.)
+> 
+> Notably _Pearce and Wagner 1989_ have argued that it would be more natural to treat negative information on
+> a par with positive information, and therefore to allow for a means of direct reasoning to the explicit 
+> falsity of a query. 
+
 **Logic programming and negation: A survey** (1994)
 
    - Krzysztof R. Apt, Roland N. Bol
