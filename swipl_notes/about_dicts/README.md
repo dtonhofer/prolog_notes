@@ -51,7 +51,7 @@ Dict = data{0:a,1:b,2:c,3:d,4:e}.
 
 ## Large dicts? Why not!
 
-Dicts can be LARGE and lookup performance is very good.
+Dicts can be LARGE and lookup performance is very good. They can thus be used as arrays, with the keys the numeric index.
 
 Here is some performance-exercising code:
 
