@@ -2,59 +2,75 @@
 % Testing retrieval from possibly large SWI-Prolog dicts
 % ============================================================================
 %
+% This is supposed to be run on a Linux system as it samples /proc/self/status
+% to get information about the process.
+%
 % Call with:
 %
-% ?- using_dict(50_000,500_000,dicts,builtin).
+% ?- using_dict(50_000, 500_000, dict, builtin, verbose).
 %
 % This will create a dict with atom keys of size 50'000, and perform
 % 500'000 lookups on it. 
 %
-% Arg 1: Size of the dict on which lookup will be performed
+% Arg 1: Size of the dict on which lookup will be performed.
+%
 % Arg 2: Number of lookups to perform. 
 %        The duration that  lookups take will be timed.
+%
 % Arg 3: 'dict' or 'list': How the sequence (a list) of lookups to 
-%        perform is constructed: by renadom lookup in a dict or 
+%        perform is constructed: by random lookup in a dict or 
 %        a list of allowed keys. 
-%        This takes quite some time.
-% Arg 4: 'builtin' or 'loop'; build the dict on which lookups
-%        will be performed with 'dict_create/3 or put_dict/4
-%        in a loop (foldl)
+%
+% Arg 4: 'builtin' or 'loop': How to build the dict on which lookups
+%        will be performed, either with dict_create/3 or with 
+%        put_dict/4 in a loop (i.e. in foldl)
+%
 % Arg 5: 'quiet' or 'verbose'; print progress messages or not 
+%
 %
 % The preparation of the dict can take some time too and the individual
 % actions will also be timed.
 %
-% ?- using_dict(50_000,500_000,builtin,dict,verbose).
-%
 % ============================================================================
 % TODO: Add code using library(assoc) and linear lookup in lists, too.
-% TODO: Pull the statistics into the program for better processing. Needs
-%       a change to the statistics predicates
+% TODO: Pull the statistics directly into the program for better processing.
+%       There are versions of the statistics predicates to do that.
 % ============================================================================
 
-% :- use_module(library(yall)).
-% :- use_module(library(apply_macros)).
+:- use_module(library(yall)).
+:- use_module(library(apply_macros)).
+:- use_module(library(dcg/basics)).
 
-using_dict(SizeOfDict,LookupCount,BuildDictHow,BuildLookupSequenceHow,Quiet) :-
+using_dict(SizeOfDict,LookupCount,BuildLookupSequenceHow,BuildDictHow,Quiet) :-
+
    assertion(integer_strictly_positive(SizeOfDict)),
+
    assertion(integer_strictly_positive(LookupCount)),
+
    assertion(member(BuildLookupSequenceHow,[dict,list])),
+
    assertion(member(BuildDictHow,[builtin,loop])),
+
    assertion(member(Quiet,[quiet,verbose])),
+
    build_list_of_random_atoms(SizeOfDict,10,Keys),
+
    randomly_valuate(Keys,3,Pairs1), % should we worry about the birthday paradox here?
+
    switch(
       (BuildDictHow==builtin),
          build_dict_from_pairs_using_builtin(Pairs1,Dict,p),
       (BuildDictHow==loop),
          build_dict_from_pairs_using_loop(Pairs1,Dict,p),
       domain_error([builtin,loop],BuildDictHow)),
+
    switch(
       (BuildLookupSequenceHow==dict), 
          build_random_lookup_sequence_using_dict(Keys,LookupCount,Sequence,Quiet),
       (BuildLookupSequenceHow==list), 
          build_random_lookup_sequence_using_list(Keys,LookupCount,Sequence,Quiet),
       domain_error([dict,list],BuildLookupSequenceHow)),
+
    perform_lookup_and_store(Dict,Sequence,Quiet). % main timed test
 
 % ---

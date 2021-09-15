@@ -1,10 +1,27 @@
-https://eu.swi-prolog.org/pldoc/doc_for?object=maplist/2
-
 ## Explainer
 
 Explainer including examples for the use of maplist/2 (and maplist/3 and maplist/4) here, including on using [`library(yall)`](https://eu.swi-prolog.org/pldoc/man?section=yall) lambda expressions: 
 
-[**Examples for the Prolog predicate maplist∕2**](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_maplist/maplist_2_examples.md), including on how to build the _Goal_.
+[**Examples for the Prolog predicate maplist∕2**](https://github.com/dtonhofer/prolog_notes/blob/master/swipl_notes/about_maplist/maplist_2_examples.md)
+
+...including on how to build the _Goal_.
+
+## A predicate one needs again and again: Zipping/Unzipping a list
+
+```
+zip_unzip(Names,Values,Zipped) :- maplist([N,V,N-V]>>true,Names,Values,Zipped).
+```
+
+And thus:
+
+```
+?- zip_unzip([a,b,c,d],[alpha,bravo,charlie,delta],Z).
+Z = [a-alpha,b-bravo,c-charlie,d-delta].
+
+?- zip_unzip(N,V,[a-alpha,b-bravo,c-charlie,d-delta]).
+N = [a,b,c,d],
+V = [alpha,bravo,charlie,delta].
+```
 
 ## What if argument 2 is not a list?
 

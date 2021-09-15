@@ -55,7 +55,7 @@ Dicts can be LARGE and lookup performance is very good.
 
 Here is some performance-exercising code:
 
-[`dictperftest.pl`](/blob/master/code/perf/dictperftest.pl)
+[`dict_perf_test.pl`](/blob/master/code/perf/dict_perf_test.pl)
 
 Building a dict of **50'000 entries** and performing **500'000 lookups** on it is fast.
 
@@ -65,11 +65,21 @@ We are getting 1'000'000 lookups/s on a Linux machine for which:
    - `free -h` reports 23GiB free
 
 ```
-?- using_dict(50_000,500_000,builtin,dict,verbose).
-...
+?- using_dict(50_000, 500_000, dict, builtin, quiet).
+
+Filling a list of length 50000 with random atoms of length 10
+% 10,991,240 inferences, 2.277 CPU in 2.287 seconds (100% CPU, 4827997 Lips)
+Creating pairs from 50000 keys, where the values are strings of length 3
+% 4,957,654 inferences, 1.123 CPU in 1.128 seconds (100% CPU, 4413060 Lips)
+Creating a dict of size 50000, with tag 'p' using built-in predicate dict_create/3
+% 1 inferences, 0.012 CPU in 0.012 seconds (100% CPU, 83 Lips)
+Creating a random lookup sequence of size 500000 based on 50000 keys (using dicts)
+% 3,500,002 inferences, 0.897 CPU in 0.900 seconds (100% CPU, 3901866 Lips)
 Looking up 500000 entries in a dict of size 50000 (storing the result)
-% 2,709,105 inferences, 0.474 CPU in 0.476 seconds (100% CPU, 5719981 Lips)
-Performed 1050336 lookup/s (delta = 0.476038 s)
+ResultLength is 500000
+% 2,000,005 inferences, 0.242 CPU in 0.243 seconds (100% CPU, 8264940 Lips)
+Performed 2057894 lookup/s (delta = 0.242967 s)
+true.
 ```
 
 ## Comparison and unification
