@@ -55,7 +55,7 @@ Dicts can be LARGE and lookup performance is very good.
 
 Here is some performance-exercising code:
 
-[`dict_perf_test.pl`](/blob/master/code/perf/dict_perf_test.pl)
+[`dict_perf_test.pl`](/swipl_notes/about_dicts/code/perf/dict_perf_test.pl)
 
 Building a dict of **50'000 entries** and performing **500'000 lookups** on it is fast.
 
